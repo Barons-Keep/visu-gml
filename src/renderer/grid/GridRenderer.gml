@@ -501,16 +501,25 @@ function GridRenderer() constructor {
         .setScaleY(scaleY)
       shader_reset()
     } else {
+      var focus = Struct.get(player.gameMode, "focus") == true
+      var focusCooldown = Struct.get(player.gameMode, "focusCooldown")
+      var focusTime = Struct.get(focusCooldown, "time")
+      var focusDuration = Struct.get(focusCooldown, "duration")
+      var focusFactor = Optional.is(focusTime) && Optional.is(focusDuration) ? focusTime / focusDuration : 0.0
+      Core.print("focusFactor", focusFactor * 100.0)
+
       var _x = (player.x - ((player.sprite.texture.width * player.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) + ((player.sprite.texture.offsetX * player.sprite.scaleX) / GRID_SERVICE_PIXEL_WIDTH) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH,
       var _y = (player.y - ((player.sprite.texture.height * player.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) + ((player.sprite.texture.offsetY * player.sprite.scaleY) / GRID_SERVICE_PIXEL_HEIGHT) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT
 
-      var _swing = (sin(this.playerZTimer.update().time * 6.66) + 1.0) / 5.0
-      var _scaleX = scaleFactor + (0.33 + _swing) * (player.sprite.getWidth() * player.sprite.getScaleX()) / sprite_get_width(texture_particle)
-      var _scaleY = scaleFactor + (0.33 + _swing) * (player.sprite.getHeight() * player.sprite.getScaleY()) / sprite_get_height(texture_particle)
-      var _alpha = 1.0 * alpha * player.fadeIn * 0.9
+      var _swing = (sin(this.playerZTimer.update().time * 5.0) + 1.0) / 2.0
+
+      var _scaleX = ((player.sprite.getWidth() * player.sprite.getScaleX()) / sprite_get_width(texture_player_shadow)) * (3.0 + (1.5 * focusFactor)) * (scaleFactor + _swing)
+      var _scaleY = ((player.sprite.getHeight() * player.sprite.getScaleY()) / sprite_get_height(texture_player_shadow)) * (3.0 + (1.5 * focusFactor)) * (scaleFactor + _swing)
+      var _alpha = alpha * player.fadeIn * 0.75
       if (_alpha > 0 && player.sprite.texture.asset != texture_empty) {
         draw_sprite_ext(texture_player_shadow, 0, _x, _y, _scaleX, _scaleY, 0.0, this.playerShadowColor.toGMColor(), _alpha)
       }
+      
       player.sprite
         .setAlpha(alpha * ((cos(player.stats.godModeCooldown * 15.0) + 2.0) / 3.0) * player.fadeIn)
         .setAngle(angle - 90.0 - (360.0 * player.stats.godModeCooldown))
@@ -1665,7 +1674,6 @@ function GridRenderer() constructor {
         || this.player2DCoords.x > width 
         || this.player2DCoords.y < 0 
         || this.player2DCoords.y > height)) {
-
       var configX = layout.x()
       var configY = layout.y()
       var player = playerService.player
@@ -1753,8 +1761,33 @@ function GridRenderer() constructor {
       .update(ceil(width * shaderQuality), ceil(height * shaderQuality))
       .renderOn(this.renderShaderCombinedSurface, layout)
 
-    if (surface_exists(this.gameSurface.asset)) {
-      var middleColor = surface_getpixel(this.gameSurface.asset, width / 2.0, height / 2.0)
+    var controller = Beans.get(BeanVisuController)
+    var properties = controller.gridService.properties
+    var middleSurface = (properties.renderBackgroundShaders
+        && Visu.settings.getValue("visu.graphics.bkg-shaders")
+        && controller.shaderBackgroundPipeline.executor.tasks.size() > 0)
+      ? this.shaderBackgroundSurface.asset
+      : this.backgroundSurface.asset
+
+    if (surface_exists(middleSurface)) {
+      var playerService = controller.playerService
+      var player = playerService.player
+      var configX = layout.x()
+      var configY = layout.y()
+      var _x = configX + (width / 2.0)
+      var _y = configY + (height / 2.0)
+      var player = playerService.player
+      if (Optional.is(player) && Optional.is(player2DCoords.x) && Optional.is(player2DCoords.y)) {
+        _x = configX + clamp(this.player2DCoords.x, player.sprite.getWidth() - player.sprite.texture.offsetX, width - player.sprite.getWidth() + player.sprite.texture.offsetX)
+        _y = configY + clamp(this.player2DCoords.y, player.sprite.getHeight() - player.sprite.texture.offsetY, height - player.sprite.getHeight() + player.sprite.texture.offsetY)
+      }
+
+      if (middleSurface == this.shaderBackgroundSurface.asset) {
+        _x = _x * (this.shaderBackgroundSurface.width / this.backgroundSurface.width)
+        _y = _y * (this.shaderBackgroundSurface.height / this.backgroundSurface.height)
+      }
+
+      var middleColor = surface_getpixel(middleSurface, _x, _y)
       playerShadowColor.red = lerp(playerShadowColor.red, 1.0 - (color_get_red(middleColor) / 255.0), 0.1)
       playerShadowColor.green = lerp(playerShadowColor.green, 1.0 - (color_get_green(middleColor) / 255.0), 0.1)
       playerShadowColor.blue = lerp(playerShadowColor.blue, 1.0 - (color_get_blue(middleColor) / 255.0), 0.1)
