@@ -17,14 +17,41 @@ function PlayerBulletHellGameMode(json) {
     ///@type {Boolean}
     focus: Struct.getIfType(json, "focus", Boolean, false),
 
-    ///@type {Timer}
-    focusCooldown: new Timer(Struct.getIfType(json, "focusCooldown", Number, FRAME_MS * 5)),
+    ///@type {Struct}
+    focusCooldown: {
+      time: 0.0,
+      duration: Struct.getIfType(json, "focusCooldown", Number, FRAME_MS * 10),
+      finished: false,
+      increment: function() {
+        this.finished = false
+        this.time += DeltaTime.apply()
+        if (this.time >= this.duration) {
+          this.finished = true
+          this.time = this.duration
+        }
+
+        return this
+      },
+      decrement: function() {
+        this.finished = false
+        this.time -= DeltaTime.apply()
+        if (this.time <= 0.0) {
+          this.time = 0.0
+        }
+
+        return this
+      },
+    },
+    
 
     ///@type {Array<Struct>}
     guns: new Array(Struct, Core.isType(Struct.get(json, "guns"), GMArray)
       ? GMArray.map(json.guns, function(gun) {
         return {
-          cooldown: new Timer(FRAME_MS * Struct.getIfType(gun, "cooldown", Number, 8.0), { loop: Infinity }),
+          cooldown: new Timer(FRAME_MS * Struct.getIfType(gun, "cooldown", Number, 8.0), { 
+            loop: Infinity,
+            time: Struct.getIfType(gun, "time", Number, 0.0),
+          }),
           bullet: Struct.getIfType(gun, "bullet", String, "bullet-default"),
           angle: Struct.getIfType(gun, "angle", Number, 90.0),
           speed: Struct.getIfType(gun, "speed", Number, 10.0),
@@ -135,8 +162,8 @@ function PlayerBulletHellGameMode(json) {
       }
 
       static updateKeyActionOnDisabled = function(gun) {
-        if (!gun.cooldown.finished) {
-          gun.cooldown.update()
+        if (!gun.cooldown.finished && gun.cooldown.update().finished) {
+          gun.cooldown.reset()
         }
       }
 
@@ -148,8 +175,8 @@ function PlayerBulletHellGameMode(json) {
       
       var keys = player.keyboard.keys
       this.focus = keys.focus.on
-        ? this.focusCooldown.update().finished
-        : this.focusCooldown.reset().finished
+        ? this.focusCooldown.increment().finished
+        : this.focusCooldown.decrement().finished
 
       if (GMTFContext.isFocused()) {
         Struct.forEach(keys, updateGMTFContextFocused)
