@@ -80,8 +80,8 @@ function ShootFeature(json) {
         }
       }
 
-      var offsetLength = fetchLength(0.0, 0.0, this.offsetX, this.offsetY)
-      var offsetAngle = fetchPointsAngle(0.0, 0.0, this.offsetX, this.offsetY)
+      var offsetLength = Math.fetchLength(0.0, 0.0, this.offsetX, this.offsetY)
+      var offsetAngle = Math.fetchPointsAngle(0.0, 0.0, this.offsetX, this.offsetY)
       for (var index = 0; index < amount; index++) {
         controller.bulletService.spawnBullet(
           this.bullet, 
