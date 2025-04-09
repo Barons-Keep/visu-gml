@@ -532,6 +532,7 @@ global.__VELayouts = new Map(String, Callable, {
       name: "text-field-button-channel",
       type: Assert.isEnum(Struct.getDefault(config, "type", UILayoutType.NONE), UILayoutType),
       height: function() { return 28 },
+      margin: Struct.getIfType(config, "margin", Struct),
       nodes: {
         label: {
           name: "text-field-button-channel.label",
