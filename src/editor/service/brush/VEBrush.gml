@@ -131,6 +131,10 @@ function VEBrush(template) constructor {
               : this.value
       },
       data: new Array(String, BRUSH_TEXTURES),
+    },
+    "brush-hidden": {
+      type: Boolean,
+      value: Struct.getIfType(template, "hidden", Boolean, false)
     }
   })
 
@@ -143,10 +147,15 @@ function VEBrush(template) constructor {
       config: { 
         layout: { type: UILayoutType.VERTICAL },
         label: { text: $"{Struct.get(VEBrushTypeNames, template.type)}" },
+        checkbox: { 
+          spriteOn: { name: "visu_texture_checkbox_show" },
+          spriteOff: { name: "visu_texture_checkbox_hide" },
+          store: { key: "brush-hidden" },
+        },
       },
     },
     {
-      name: "brush_name",
+      name: "brush-name",
       template: VEComponents.get("text-field"),
       layout: VELayouts.get("text-field"),
       config: { 
@@ -154,12 +163,18 @@ function VEBrush(template) constructor {
           type: UILayoutType.VERTICAL,
           margin: { top: 4, bottom: 4 },
         },
-        label: { text: "Name" },
-        field: { store: { key: "brush-name" } },
+        label: {
+          text: "Name",
+          hidden: { key: "brush-hidden" },
+        },
+        field: {
+          store: { key: "brush-name" },
+          hidden: { key: "brush-hidden" },
+        },
       },
     },
     {
-      name: "brush_texture",
+      name: "brush-texture",
       template: VEComponents.get("spin-select"),
       layout: VELayouts.get("spin-select"),
       config: {
@@ -168,10 +183,17 @@ function VEBrush(template) constructor {
           height: function() { return 32 },
           margin: { top: 4, bottom: 4 },
         },
-        label: { text: "Icon" },
-        previous: { store: { key: "brush-texture" } },
+        label: {
+          text: "Icon",
+          hidden: { key: "brush-hidden" },
+        },
+        previous: {
+          store: { key: "brush-texture" },
+          hidden: { key: "brush-hidden" },
+        },
         preview: Struct.appendRecursive({ 
           store: { key: "brush-texture" },
+          hidden: { key: "brush-hidden" },
           imageBlendStoreKey: "brush-color",
           updateCustom: function() {
             var key = Struct.get(this, "imageBlendStoreKey")
@@ -229,6 +251,8 @@ function VEBrush(template) constructor {
             var beginX = round(this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2.0) - (width / 2.0))
             var beginY = this.context.area.getY() + this.area.getY(),
             var color = ColorUtil.parse(VETheme.color.primaryLight).toGMColor()
+            var color2 = ColorUtil.parse("#d1a1ff").toGMColor()
+            var enableFactor = Struct.get(this.enable, "value") == true ? 1.0 : 0.5
             for (var idx = from; idx <= to; idx += 1.0) {
               if (idx == 0.0) {
                 GPU.render.rectangle(
@@ -243,7 +267,18 @@ function VEBrush(template) constructor {
                   color,
                   0.75
                 )
-
+                GPU.render.rectangle(
+                  beginX - 2,
+                  beginY - 2,
+                  beginX + width + 1,
+                  beginY + width + 1,
+                  true,
+                  color,
+                  color,
+                  color,
+                  color,
+                  0.50
+                )
                 continue
               }
 
@@ -251,11 +286,8 @@ function VEBrush(template) constructor {
                 continue
               }
 
-              var textureName = (index + idx < 0.0) || (index + idx >= data.size())
-                ? (idx < 0.0 
-                  ? data.get(data.size() + idx) 
-                  : data.get(idx))
-                : data.get(index + idx)
+              var wrappedIndex = (((index + idx) mod data.size()) + data.size()) mod data.size()
+              var textureName = data.get(wrappedIndex)
               
               if (!Optional.is(textureName)) {
                 continue
@@ -270,7 +302,7 @@ function VEBrush(template) constructor {
               texture.render(
                 beginX + (idx * (width + margin)) + (texture.offsetX * scale),
                 beginY + (texture.offsetY * scale),
-                0.0, scale, scale, 0.33
+                0.0, scale, scale, 1.6*enableFactor, 0.0, color2
               )
             }
           },
@@ -315,11 +347,8 @@ function VEBrush(template) constructor {
                 continue
               }
 
-              var textureName = (index + idx < 0.0) || (index + idx >= data.size())
-                ? (idx < 0.0 
-                  ? data.get(data.size() + idx) 
-                  : data.get(idx))
-                : data.get(index + idx)
+              var wrappedIndex = (((index + idx) mod data.size()) + data.size()) mod data.size()
+              var textureName = data.get(wrappedIndex)
               
               if (!Optional.is(textureName)) {
                 continue
@@ -334,11 +363,14 @@ function VEBrush(template) constructor {
             }
           },
         }, Struct.get(VEStyles.get("spin-select-image"), "preview"), false),
-        next: { store: { key: "brush-texture" } },
+        next: {
+          store: { key: "brush-texture" },
+          hidden: { key: "brush-hidden" },
+        },
       }
     },
     {
-      name: "brush_color",
+      name: "brush-color",
       template: VEComponents.get("color-picker"),
       layout: VELayouts.get("color-picker"),
       config: {
@@ -348,31 +380,68 @@ function VEBrush(template) constructor {
         },
         //title: { 
         //  label: { text: "Icon" },
-        //  input: { store: { key: "brush-color" } }
+        //  input: { store: { key: "brush-color" } },
+        //  hidden: { key: "brush-hidden" },
         //},
         red: {
-          label: { text: "Red" },
-          field: { store: { key: "brush-color" } },
-          slider: { store: { key: "brush-color" } },
+          label: {
+            text: "Red",
+            hidden: { key: "brush-hidden" },
+          },
+          field: {
+            store: { key: "brush-color" },
+            hidden: { key: "brush-hidden" },
+          },
+          slider: {
+            store: { key: "brush-color" },
+            hidden: { key: "brush-hidden" },
+          },
         },
         green: {
-          label: { text: "Green" },
-          field: { store: { key: "brush-color" } },
-          slider: { store: { key: "brush-color" } },
+          label: {
+            text: "Green",
+            hidden: { key: "brush-hidden" },
+          },
+          field: {
+            store: { key: "brush-color" },
+            hidden: { key: "brush-hidden" },
+          },
+          slider: {
+            store: { key: "brush-color" },
+            hidden: { key: "brush-hidden" },
+          },
         },
         blue: {
-          label: { text: "Blue" },
-          field: { store: { key: "brush-color" } },
-          slider: { store: { key: "brush-color" } },
+          label: {
+            text: "Blue",
+            hidden: { key: "brush-hidden" },
+          },
+          field: {
+            store: { key: "brush-color" },
+            hidden: { key: "brush-hidden" },
+          },
+          slider: {
+            store: { key: "brush-color" },
+            hidden: { key: "brush-hidden" },
+          },
         },
         hex: { 
-          label: { text: "Hex" },
-          field: { store: { key: "brush-color" } },
+          label: {
+            text: "Hex",
+            hidden: { key: "brush-hidden" },
+          },
+          field: {
+            store: { key: "brush-color" },
+            hidden: { key: "brush-hidden" },
+          },
+          button: {
+            hidden: { key: "brush-hidden" },
+          }
         },
       },
     },
     {
-      name: "brush_start-properties-line-h",
+      name: "brush-properties-line-h",
       template: VEComponents.get("line-h"),
       layout: VELayouts.get("line-h"),
       config: { layout: { type: UILayoutType.VERTICAL } },
@@ -391,13 +460,15 @@ function VEBrush(template) constructor {
       type: Assert.isEnum(this.type, VEBrushType),
       color: Assert.isType(this.store.getValue("brush-color"), Color).toHex(),
       texture: Assert.isType(this.store.getValue("brush-texture"), String),
+      hidden: Assert.isType(this.store.getValue("brush-hidden"), Boolean),
     }
 
     var properties = this.serializeData(this.store.container
       .filter(function(item) {
         return item.name != "brush-name" 
             && item.name != "brush-color" 
-            && item.name != "brush-texture" 
+            && item.name != "brush-texture"
+            && item.name != "brush-hidden"
       })
       .toStruct(function(item) { 
         return item.serialize()

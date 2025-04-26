@@ -550,6 +550,9 @@ global.__VisuBrushContainers = new Map(String, Callable, {
       brushToolbar: brushToolbar,
       layout: layout,
       scrollbarY: { align: HAlign.RIGHT },
+      fetchViewHeight: function() {
+        return 32 * this.collection.size()
+      },
       updateArea: Callable.run(UIUtil.updateAreaTemplates.get("scrollableY")),
       renderItem: Callable.run(UIUtil.renderTemplates.get("renderItemDefaultScrollable")),
       renderDefaultScrollable: new BindIntent(Callable.run(UIUtil.renderTemplates.get("renderDefaultScrollable"))),
@@ -829,8 +832,8 @@ global.__VisuBrushContainers = new Map(String, Callable, {
                   var inspectorNode = Struct.get(this.context.layout.context.nodes, "inspector-view")
                   var typeNode = Struct.get(this.context.layout.context.nodes, "type")
                   var controlNode = Struct.get(this.context.layout.context.nodes, "control")
-                  var top = titleBar.layout.height() + typeNode.height() + typeNode.margin.top + typeNode.margin.bottom
-                  var bottom = GuiHeight() - statusBar.layout.height() - (controlNode.height() + controlNode.margin.top + controlNode.margin.bottom) - (toolNode.height() + toolNode.margin.top + toolNode.margin.bottom)
+                  var top = titleBar.layout.height() + typeNode.height() + typeNode.margin().top + typeNode.margin().bottom
+                  var bottom = GuiHeight() - statusBar.layout.height() - (controlNode.height() + controlNode.margin().top + controlNode.margin().bottom) - (toolNode.height() + toolNode.margin().top + toolNode.margin().bottom)
                   var length = bottom - top
                   var before = inspectorNode.percentageHeight
                   inspectorNode.percentageHeight = clamp(inspectorNode.percentageHeight, 4.0 / length, 1.0 - (48.0 / length))
@@ -851,8 +854,8 @@ global.__VisuBrushContainers = new Map(String, Callable, {
               var toolNode = Struct.get(this.context.layout.context.nodes, "inspector-tool")
               var typeNode = Struct.get(this.context.layout.context.nodes, "type")
               var controlNode = Struct.get(this.context.layout.context.nodes, "control")
-              var top = titleBar.layout.height() + typeNode.height() + typeNode.margin.top + typeNode.margin.bottom
-              var bottom = GuiHeight() - statusBar.layout.height() - (controlNode.height() + controlNode.margin.top + controlNode.margin.bottom) - (toolNode.height() + toolNode.margin.top + toolNode.margin.bottom)
+              var top = titleBar.layout.height() + typeNode.height() + typeNode.margin().top + typeNode.margin().bottom
+              var bottom = GuiHeight() - statusBar.layout.height() - (controlNode.height() + controlNode.margin().top + controlNode.margin().bottom) - (toolNode.height() + toolNode.margin().top + toolNode.margin().bottom)
               var length = bottom - top
               var position = clamp(_position - top, 4.0, length - 4.0)
               var before = inspectorNode.percentageHeight
@@ -896,8 +899,8 @@ global.__VisuBrushContainers = new Map(String, Callable, {
             width: function() { return this.context.height() },
             x: function() { return this.context.x()
               + (this.collection.getIndex() * this.width())
-              + (this.collection.getIndex() * this.margin.right)
-              + ((this.collection.getIndex() + 1) * this.margin.left) },
+              + (this.collection.getIndex() * this.margin().right)
+              + ((this.collection.getIndex() + 1) * this.margin().left) },
           }
         },
         config: {
@@ -1758,16 +1761,16 @@ function VEBrushToolbar(_editor) constructor {
             margin: { top: 1, bottom: 1, left: 0, right: 10 },
             x: function() { return this.context.x()
               + this.context.nodes.resize.width()
-              + this.margin.left },
+              + this.margin().left },
             width: function() { return this.context.width() 
               - this.context.nodes.resize.width()
-              - this.margin.left 
-              - this.margin.right },
-            y: function() { return this.margin.top
+              - this.margin().left 
+              - this.margin().right },
+            y: function() { return this.margin().top
                + Struct.get(this.context.nodes, "brush-bar").bottom() },
             height: function() { return ceil((this.context.height() 
                - this.context.staticHeight()) * this.percentageHeight) 
-               - this.margin.top - this.margin.bottom },
+               - this.margin().top - this.margin().bottom },
           },
           "inspector-bar": {
             name: "brush-toolbar.inspector-bar",
@@ -1823,16 +1826,16 @@ function VEBrushToolbar(_editor) constructor {
             margin: { top: 1, bottom: 1, left: 0, right: 10 },
             x: function() { return this.context.x()
               + this.context.nodes.resize.width()
-              + this.margin.left },
+              + this.margin().left },
             width: function() { return this.context.width() 
               - this.context.nodes.resize.width()
-              - this.margin.left 
-              - this.margin.right },
-            y: function() { return this.margin.top
+              - this.margin().left 
+              - this.margin().right },
+            y: function() { return this.margin().top
               + Struct.get(this.context.nodes, "inspector-tool").bottom() },
             height: function() { return ceil((this.context.height() 
               - this.context.staticHeight()) * this.percentageHeight) 
-              - this.margin.top - this.margin.bottom - 1},
+              - this.margin().top - this.margin().bottom - 1},
           },
           "control": {
             name: "brush-toolbar.category",

@@ -25,11 +25,11 @@ function VETrackControl(_editor) constructor {
           timeline: {
             name: "track-control.timeline",
             margin: { left: 0, right: 32 },
-            x: function() { return this.margin.left },
+            x: function() { return this.margin().left },
             y: function() { return 0 },
             width: function() { return this.context.width() 
-              - this.margin.left
-              - this.margin.right },
+              - this.margin().left
+              - this.margin().right },
             height: function() { 
               return 28
             },
@@ -39,9 +39,9 @@ function VETrackControl(_editor) constructor {
             width: function() { return 64 },
             height: function() { return 20 },
             margin: { top: 8, right: 8 },
-            x: function() { return this.margin.right },
+            x: function() { return this.margin().right },
             y: function() { return this.context.nodes.timeline.bottom()
-              + this.margin.top },
+              + this.margin().top },
           },
           backward: {
             name: "track-control.backward",
@@ -50,7 +50,7 @@ function VETrackControl(_editor) constructor {
             margin: { top: 0 },
             x: function() { return this.context.fetchNodeX(0, 4, this.width(), 4) },
             y: function() { return this.context.nodes.timeline.bottom()
-              + this.margin.top },
+              + this.margin().top },
           },
           play: {
             name: "track-control.play",
@@ -59,7 +59,7 @@ function VETrackControl(_editor) constructor {
             margin: { top: 0 },
             x: function() { return this.context.fetchNodeX(1, 4, this.width(), 4) },
             y: function() { return this.context.nodes.timeline.bottom()
-              + this.margin.top },
+              + this.margin().top },
           },
           pause: {
             name: "track-control.pause",
@@ -68,7 +68,7 @@ function VETrackControl(_editor) constructor {
             margin: { top: 0 },
             x: function() { return this.context.fetchNodeX(2, 4, this.width(), 4) },
             y: function() { return this.context.nodes.timeline.bottom()
-              + this.margin.top },
+              + this.margin().top },
           },
           forward: {
             name: "track-control.forward",
@@ -77,16 +77,16 @@ function VETrackControl(_editor) constructor {
             margin: { top: 0 },
             x: function() { return this.context.fetchNodeX(3, 4, this.width(), 4) },
             y: function() { return this.context.nodes.timeline.bottom()
-              + this.margin.top },
+              + this.margin().top },
           },
           clearShaderBkg: {
             name: "track-control.clearShaderBkg",
             width: function() { return 20 },
             height: function() { return 20 },
             margin: { top: 1, bottom: 1, left: 20, right: 0 },
-            x: function() { return this.margin.left },
+            x: function() { return this.margin().left },
             y: function() { return this.context.height()
-              - this.margin.bottom 
+              - this.margin().bottom 
               - this.height() },
           },
           clearShaderGrid: {
@@ -95,9 +95,9 @@ function VETrackControl(_editor) constructor {
             height: function() { return 20 },
             margin: { top: 1, bottom: 1, left: 0, right: 0 },
             x: function() { return this.context.nodes.clearShaderBkg.right() 
-              + this.margin.left },
+              + this.margin().left },
             y: function() { return this.context.height()
-              - this.margin.bottom 
+              - this.margin().bottom 
               - this.height() },
           },
           clearShaderCombined: {
@@ -106,9 +106,9 @@ function VETrackControl(_editor) constructor {
             height: function() { return 20 },
             margin: { top: 1, bottom: 1, left: 0, right: 0 },
             x: function() { return this.context.nodes.clearShaderGrid.right() 
-              + this.margin.left },
+              + this.margin().left },
             y: function() { return this.context.height()
-              - this.margin.bottom 
+              - this.margin().bottom 
               - this.height() },
           },
           clearBkg: {
@@ -117,9 +117,9 @@ function VETrackControl(_editor) constructor {
             height: function() { return 20 },
             margin: { top: 1, bottom: 1, left: 0, right: 0 },
             x: function() { return this.context.nodes.clearShaderCombined.right() 
-              + this.margin.left },
+              + this.margin().left },
             y: function() { return this.context.height()
-              - this.margin.bottom 
+              - this.margin().bottom 
               - this.height() },
           },
           clearFrg: {
@@ -128,9 +128,9 @@ function VETrackControl(_editor) constructor {
             height: function() { return 20 },
             margin: { top: 1, bottom: 1, left: 0, right: 0 },
             x: function() { return this.context.nodes.clearBkg.right() 
-              + this.margin.left },
+              + this.margin().left },
             y: function() { return this.context.height()
-              - this.margin.bottom 
+              - this.margin().bottom 
               - this.height() },
           },
           clearShroom: {
@@ -139,9 +139,9 @@ function VETrackControl(_editor) constructor {
             height: function() { return 20 },
             margin: { top: 1, bottom: 1, left: 0, right: 0 },
             x: function() { return this.context.nodes.clearFrg.right() 
-              + this.margin.left },
+              + this.margin().left },
             y: function() { return this.context.height()
-              - this.margin.bottom 
+              - this.margin().bottom 
               - this.height() },
           },
           clearBullet: {
@@ -150,9 +150,9 @@ function VETrackControl(_editor) constructor {
             height: function() { return 20 },
             margin: { top: 1, bottom: 1, left: 0, right: 0 },
             x: function() { return this.context.nodes.clearShroom.right() 
-              + this.margin.left },
+              + this.margin().left },
             y: function() { return this.context.height()
-              - this.margin.bottom 
+              - this.margin().bottom 
               - this.height() },
           },
           clearParticle: {
@@ -161,9 +161,9 @@ function VETrackControl(_editor) constructor {
             height: function() { return 20 },
             margin: { top: 1, bottom: 1, left: 0, right: 1 },
             x: function() { return this.context.nodes.clearBullet.right() 
-              + this.margin.left },
+              + this.margin().left },
             y: function() { return this.context.height()
-              - this.margin.bottom 
+              - this.margin().bottom 
               - this.height() },
           },
           redo: {
@@ -172,10 +172,10 @@ function VETrackControl(_editor) constructor {
             height: function() { return 20 },
             margin: { top: 1, bottom: 1, left: 0, right: 0 },
             x: function() { return this.context.nodes.zoom.left() 
-              - this.margin.right
+              - this.margin().right
               - this.width() },
             y: function() { return this.context.height()
-              - this.margin.bottom 
+              - this.margin().bottom 
               - this.height()
             },
           },
@@ -185,10 +185,10 @@ function VETrackControl(_editor) constructor {
             height: function() { return 20 },
             margin: { top: 1, bottom: 1, left: 1, right: 1 },
             x: function() { return this.context.nodes.redo.left() 
-              - this.margin.right
+              - this.margin().right
               - this.width() },
             y: function() { return this.context.height()
-              - this.margin.bottom 
+              - this.margin().bottom 
               - this.height()
             },
           },
@@ -198,10 +198,10 @@ function VETrackControl(_editor) constructor {
             height: function() { return 24 },
             margin: { top: 1, bottom: 1, left: 15, right: 35 },
             x: function() { return this.context.width() 
-              - this.margin.right
+              - this.margin().right
               - this.width() },
             y: function() { return this.context.height()
-              - this.margin.bottom 
+              - this.margin().bottom 
               - this.height() },
           },
         }

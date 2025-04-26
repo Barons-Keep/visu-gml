@@ -137,17 +137,14 @@ function VETemplate(json) constructor {
     var json = {
       name: Assert.isType(this.store.getValue("template-name"), String),
       sprite: sprite.serialize(),
+      inherit: JSON.parse(this.store.getValue("shroom_inherit")).getContainer(),
       gameModes: {
-        bulletHell: {
-          features: JSON.parse(this.store.getValue("shroom_game-mode_bullet-hell_features")).getContainer()
-        },
-        platformer: {
-          features: JSON.parse(this.store.getValue("shroom_game-mode_platformer_features")).getContainer()
-        },
-        racing: {
-          features: JSON.parse(this.store.getValue("shroom_game-mode_racing_features")).getContainer()
-        },
-      }
+        bulletHell: { features: JSON.parse(this.store.getValue("shroom_game-mode_bullet-hell_features")).getContainer() },
+        //platformer: { features: JSON.parse(this.store.getValue("shroom_game-mode_platformer_features")).getContainer() },
+        //racing: { features: JSON.parse(this.store.getValue("shroom_game-mode_racing_features")).getContainer() },
+        platformer: { features: [ ] },
+        racing: { features: [ ] },
+      },
     }
 
     if (this.store.getValue("shroom_use-lifespan")) {

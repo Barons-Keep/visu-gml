@@ -45,6 +45,8 @@ global.__entity_track_event = {
         "en-shr_rng-y": Struct.parse.number(data, "en-shr_rng-y", 0.0,
           0.0,
           SHROOM_SPAWN_ROW_AMOUNT),
+        "en-shr_use-inherit": Struct.parse.boolean(data, "en-shr_use-inherit"),
+        "en-shr_inherit": Struct.getIfType(data, "en-shr_inherit", GMArray, [ ]),
         "en-shr_use-texture": Struct.parse.boolean(data, "en-shr_use-texture"),
         "en-shr_texture": Struct.parse.sprite(data, "en-shr_texture"),
         "en-shr_use-mask": Struct.parse.boolean(data, "en-shr_use-mask"),
@@ -126,6 +128,7 @@ global.__entity_track_event = {
       var snapV = Struct.getDefault(data, "en-shr_snap-y", false)
       var lifespan = Struct.get(data, "en-shr_use-lifespan") ? Struct.get(data, "en-shr_lifespan") : null
       var hp = Struct.get(data, "en-shr_use-hp") ? Struct.get(data, "en-shr_hp") : null
+      var inherit = Struct.get(data, "en-shr_use-inherit") ? Struct.get(data, "en-shr_inherit") : null
       controller.shroomService.spawnShroom(
         Struct.get(data, "en-shr_template"),
         spawnX,
@@ -135,7 +138,8 @@ global.__entity_track_event = {
         snapH,
         snapV,
         lifespan,
-        hp
+        hp,
+        inherit
       )
 
       ///@description ecs

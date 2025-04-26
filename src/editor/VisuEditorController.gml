@@ -467,12 +467,13 @@ function VisuEditorController() constructor {
       name: "visu-editor",
       width: function() { return GuiWidth() },
       height: function() { return GuiHeight() },
+      _y: 0,
       x: function() { return 0 },
       y: function() { return 0 },
       nodes: {
         "title-bar": {
           name: "visu-editor.title-bar",
-          height: function() { return 24 },
+          height: function() { return 24 + this.context._y },
         },
         "accordion": {
           name: "visu-editor.accordion",
@@ -568,6 +569,7 @@ function VisuEditorController() constructor {
       container.finishUpdateTimer()
     }
 
+    this.layout._y = Visu.settings.getValue("visu.debug", false) ? 20 : 0
     var lerpFactor = 0.2
     var renderBrush = this.store.getValue("render-brush")
     var brushNode = Struct.get(this.layout.nodes, "brush-toolbar")

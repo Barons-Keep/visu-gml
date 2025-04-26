@@ -30,15 +30,15 @@ function VEEventInspector(_editor) constructor {
     return new UILayout({ 
       name: "event-inspector",
       staticHeight: new BindIntent(function() { 
-        return this.nodes.title.height() + this.nodes.title.margin.top
+        return this.nodes.title.height() + this.nodes.title.margin().top
             + this.nodes.control.height() 
-            + this.nodes.view.margin.top 
-            + this.nodes.view.margin.bottom
+            + this.nodes.view.margin().top 
+            + this.nodes.view.margin().bottom
       }),
       nodes: {
         "title": {
           name: "event-inspector.title",
-          y: function() { return this.context.y() + this.margin.top },
+          y: function() { return this.context.y() + this.margin().top },
           height: function() { return 16 },
           margin: { left: 1, right: 1, top: 0 },
         },
@@ -46,14 +46,14 @@ function VEEventInspector(_editor) constructor {
           name: "event-inspector.view",
           margin: { top: 1, bottom: 0, left: 10, right: 1, },
           height: function() { return this.context.height() - this.context.staticHeight()
-            - this.margin.top - this.margin.bottom },
-          y: function() { return this.margin.top + this.context.nodes.title.bottom() },
+            - this.margin().top - this.margin().bottom },
+          y: function() { return this.margin().top + this.context.nodes.title.bottom() },
         },
         "control": {
           name: "event-inspector.control",
           height: function() { return 40 },
           margin: { left: 0, right: 1, },
-          y: function() { return this.context.nodes.view.bottom() + this.context.nodes.view.margin.bottom },
+          y: function() { return this.context.nodes.view.bottom() + this.context.nodes.view.margin().bottom },
         }
       }
     }, parent)
@@ -182,6 +182,17 @@ function VEEventInspector(_editor) constructor {
             onMousePressedLeft: function(event) {
               Beans.get(BeanVisuEditorIO).mouse.setClipboard(this.clipboard)
             },
+            onMousePressedRight: function(event) {
+              var editor = Beans.get(BeanVisuEditorController)
+              var accordion = editor.accordion
+              Struct.set(accordion.layout.store, "events-percentage", Struct.get(this, "__expandPercentageHeight") == true ? 0.0 : 1.0)
+              Struct.set(this, "__percentage", null)
+              Struct.set(this, "__expandPercentageHeight", !(Struct.get(this, "__expandPercentageHeight") == true))
+              this.updateCustom()
+              accordion.containers.forEach(accordion.resetUpdateTimer)
+              accordion.templateToolbar.containers.forEach(accordion.resetUpdateTimer)
+              accordion.eventInspector.containers.forEach(accordion.resetUpdateTimer)
+            },
             onMouseHoverOver: function(event) {
               if (!mouse_check_button(mb_left)) {
                 this.clipboard.drag()
@@ -264,6 +275,9 @@ function VEEventInspector(_editor) constructor {
         },
         executor: null,
         scrollbarY: { align: HAlign.LEFT },
+        fetchViewHeight: function() {
+          return 32 * this.collection.size()
+        },
         onMousePressedLeft: Callable.run(UIUtil.mouseEventTemplates.get("onMouseScrollbarY")),
         onMouseWheelUp: Callable.run(UIUtil.mouseEventTemplates.get("scrollableOnMouseWheelUpY")),
         onMouseWheelDown: Callable.run(UIUtil.mouseEventTemplates.get("scrollableOnMouseWheelDownY")),
@@ -414,7 +428,6 @@ function VEEventInspector(_editor) constructor {
                 label: { text: "Preview" },
                 layout: {
                   height: function() { return 40 },
-                  margin: { top: 0 },
                 },
                 callback: function() { 
                   var eventInspector = this.context.eventInspector
@@ -512,7 +525,6 @@ function VEEventInspector(_editor) constructor {
                 label: { text: "To brush" },
                 layout: {
                   height: function() { return 40 },
-                  margin: { top: 0 },
                 },
                 callback: function() { 
                   var eventInspector = this.context.eventInspector

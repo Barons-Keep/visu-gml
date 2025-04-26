@@ -194,7 +194,7 @@ function VisuRenderer() constructor {
     if ((enableEditor || enableDebugOverlay)
         && (gridCamera.enableKeyboardLook || gridCamera.enableMouseLook)) {
       gridCameraMessage = gridCameraMessage 
-        + $"x:     {gridCamera.x + (sin(camera.breathTimer2.time) * GRID_SERVICE_PIXEL_WIDTH * -1.0)}\n"
+        + $"x:     {gridCamera.x + (sin(this.gridRenderer.camera.breathTimer2.time) * GRID_SERVICE_PIXEL_WIDTH * -1.0)}\n"
         + $"y:     {gridCamera.y}\n"
         + $"z:     {gridCamera.z}\n"
         + $"pitch: {gridCamera.pitch + (sin(this.gridRenderer.camera.breathTimer1.time) * BREATH_TIMER_FACTOR_1)}\n"

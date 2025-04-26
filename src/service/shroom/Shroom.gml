@@ -22,6 +22,9 @@ function ShroomTemplate(_name, json) constructor {
   ///@type {Boolean}
   hostile = Struct.getIfType(json, "hostile", Boolean, true)
 
+  ///@type {GMArray}
+  inherit = Struct.getIfType(json, "inherit", GMArray, [ ])
+
   ///@type {Struct}
   //gameModes = Struct.appendUnique(
   //  Struct.filter(Struct.getDefault(json, "gameModes", {}), function(gameMode, key) { 
@@ -46,9 +49,14 @@ function ShroomTemplate(_name, json) constructor {
       healthPoints: this.healthPoints,
       hostile: this.hostile,
       gameModes: JSON.clone(this.gameModes),
+      inherit: GMArray.clone(this.inherit),
     }
   }
 
+  serializeGameModes = function() {
+    return JSON.clone(this.gameModes)
+  }
+  
   serializeSpawn = function(x, y, speed, angle, uid, lifespan = null, hp = null) {
     return {
       name: this.name,
@@ -58,6 +66,7 @@ function ShroomTemplate(_name, json) constructor {
       healthPoints: Optional.is(hp) ? hp : this.healthPoints,
       hostile: this.hostile,
       gameModes: JSON.clone(this.gameModes),
+      inherit: GMArray.clone(this.inherit),
       x: x,
       y: y,
       speed: speed,

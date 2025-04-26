@@ -207,6 +207,8 @@ function Bullet(template): GridItem(template) constructor {
       target: template.changeAngleOffset ? template.angleOffset.target : (template.useAngleOffset ? template.angleOffset.value : 0.0),
       factor: template.changeAngleOffset ? template.angleOffset.factor : (template.useAngleOffset ? abs(template.angleOffset.value) : 999.9),
       increase: template.changeAngleOffset ? template.angleOffset.increase : 0.0,
+      duration: template.changeAngleOffset ? Struct.get(template.angleOffset, "duration") : 0.0,
+      ease: Struct.get(template.angleOffset, "ease"),
     })
     : null
 
@@ -223,6 +225,8 @@ function Bullet(template): GridItem(template) constructor {
       target: template.changeSpeedOffset ? template.speedOffset.target : (template.useSpeedOffset ? template.speedOffset.value : 0.0),
       factor: template.changeSpeedOffset ? template.speedOffset.factor : (template.useSpeedOffset ? abs(template.speedOffset.value) : 999.9),
       increase: template.changeSpeedOffset ? template.speedOffset.increase : 0.0,
+      duration: template.changeSpeedOffset ?  Struct.get(template.speedOffset, "duration") : 0.0,
+      ease: Struct.get(template.speedOffset, "ease"),
     })
     : null
   

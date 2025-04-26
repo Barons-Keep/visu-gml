@@ -38,26 +38,29 @@ function template_shroom(json) {
         type: Rectangle,
         value: new Rectangle(Struct.getIfType(json, "mask", Struct)),
       },
+      "shroom_inherit": {
+        type: String,
+        value: JSON.stringify(Struct.getIfType(json, "inherit", GMArray, []), { pretty: true }),
+        serialize: UIUtil.serialize.getStringGMArray(),
+        passthrough: UIUtil.passthrough.getStringGMArray(),
+      },
       "shroom_game-mode_bullet-hell_features": {
         type: String,
-        value: JSON.stringify(Struct
-          .getIfType(json.gameModes.bulletHell, "features", GMArray, []), { 
-            pretty: true 
-          })
+        value: JSON.stringify(Struct.getIfType(json.gameModes.bulletHell, "features", GMArray, []), { pretty: true }),
+        serialize: UIUtil.serialize.getStringGMArray(),
+        passthrough: UIUtil.passthrough.getStringGMArray(),
       },
       "shroom_game-mode_platformer_features": {
         type: String,
-        value: JSON.stringify(Struct
-          .getIfType(json.gameModes.platformer, "features", GMArray, []), { 
-            pretty: true 
-          })
+        value: JSON.stringify(Struct.getIfType(json.gameModes.platformer, "features", GMArray, []), { pretty: true }),
+        serialize: UIUtil.serialize.getStringGMArray(),
+        passthrough: UIUtil.passthrough.getStringGMArray(),
       },
       "shroom_game-mode_racing_features": {
         type: String,
-        value: JSON.stringify(Struct
-          .getIfType(json.gameModes.racing, "features", GMArray, []), { 
-            pretty: true 
-          })
+        value: JSON.stringify(Struct.getIfType(json.gameModes.racing, "features", GMArray, []), { pretty: true }),
+        serialize: UIUtil.serialize.getStringGMArray(),
+        passthrough: UIUtil.passthrough.getStringGMArray(),
       },
     }),
     components: new Array(Struct, [
@@ -392,6 +395,40 @@ function template_shroom(json) {
       },
       {
         name: "shroom_mask-line-h",
+        template: VEComponents.get("line-h"),
+        layout: VELayouts.get("line-h"),
+        config: { layout: { type: UILayoutType.VERTICAL } },
+      },
+      {
+        name: "shroom_inherit-title",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: {
+            text: "Inherit",
+            backgroundColor: VETheme.color.accentShadow,
+          },
+          input: { backgroundColor: VETheme.color.accentShadow },
+          checkbox: { backgroundColor: VETheme.color.accentShadow },
+        },
+      },
+      {
+        name: "shroom_inherit",
+        template: VEComponents.get("text-area"),
+        layout: VELayouts.get("text-area"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          field: { 
+            v_grow: true,
+            w_min: 570,
+            store: { key: "shroom_inherit" },
+            updateCustom: UIItemUtils.textField.getUpdateJSONTextArea(),
+          },
+        },
+      },
+      {
+        name: "shroom_inherit-line-h",
         template: VEComponents.get("line-h"),
         layout: VELayouts.get("line-h"),
         config: { layout: { type: UILayoutType.VERTICAL } },

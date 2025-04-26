@@ -367,6 +367,8 @@ global.__view_track_event = {
         target: angleTarget,
         factor: (changeAngleTransformer ? angleTransformer.factor : angleTarget),
         increase: (changeAngleTransformer ? angleTransformer.increase : 0.0),
+        duration: changeAngleTransformer ? angleTransformer.duration : 0.0,
+        ease: angleTransformer.easeType,
       })
 
       var useSpeedTransformer = Struct.get(data, "vw-layer_use-spd")
@@ -377,6 +379,8 @@ global.__view_track_event = {
         target: changeSpeedTransformer ? speedTransformer.target : (useSpeedTransformer ? speedTransformer.value : lastSpeed),
         factor: changeSpeedTransformer ? speedTransformer.factor : (useSpeedTransformer ? abs(speedTransformer.value) : 99.9),
         increase: changeSpeedTransformer ? speedTransformer.increase : 0.0,
+        duration: changeSpeedTransformer ? speedTransformer.duration : 0.0,
+        ease: speedTransformer.easeType,
       })
 
       var useXScaleTransformer = Struct.get(data, "vw-layer_use-scale-x")
@@ -387,6 +391,8 @@ global.__view_track_event = {
         target: changeXScaleTransformer ? xScaleTransformer.target : (useXScaleTransformer ? xScaleTransformer.value : lastXScale),
         factor: changeXScaleTransformer ? xScaleTransformer.factor : (useXScaleTransformer ? abs(xScaleTransformer.value) : 99.9),
         increase: changeXScaleTransformer ? xScaleTransformer.increase : 0.0,
+        duration: changeXScaleTransformer ? xScaleTransformer.duration : 0.0,
+        ease: xScaleTransformer.easeType,
       })
 
       var useYScaleTransformer = Struct.get(data, "vw-layer_use-scale-y")
@@ -397,6 +403,8 @@ global.__view_track_event = {
         target: changeYScaleTransformer ? yScaleTransformer.target : (useYScaleTransformer ? yScaleTransformer.value : lastYScale),
         factor: changeYScaleTransformer ? yScaleTransformer.factor : (useYScaleTransformer ? abs(yScaleTransformer.value) : 99.9),
         increase: changeYScaleTransformer ? yScaleTransformer.increase : 0.0,
+        duration: changeYScaleTransformer ? yScaleTransformer.duration : 0.0,
+        ease: yScaleTransformer.easeType,
       })
       
       ///@description feature TODO view.layer.texture
@@ -527,6 +535,10 @@ global.__view_track_event = {
           increase: (Struct.get(data, "vw-sub_change-dir")
             ? Struct.get(data, "vw-sub_dir").increase
             : 0.0),
+          duration: (Struct.get(data, "vw-sub_change-dir")
+            ? Struct.get(data, "vw-sub_dir").duration
+            : 0.0),
+          ease: Struct.get(data, "vw-sub_dir").easeType,
         }),
         speedTransformer: new NumberTransformer({
           value: (Struct.get(data, "vw-sub_use-spd")
@@ -545,6 +557,10 @@ global.__view_track_event = {
           increase: (Struct.get(data, "vw-sub_change-spd")
             ? Struct.get(data, "vw-sub_spd").increase
             : 0.0),
+          duration: (Struct.get(data, "vw-sub_change-spd")
+            ? Struct.get(data, "vw-sub_spd").duration
+            : 0.0),
+          ease: Struct.get(data, "vw-sub_spd").easeType,
         }),
         fadeIn: Struct.get(data, "vw-sub_fade-in"),
         fadeOut: Struct.get(data, "vw-sub_fade-out"),

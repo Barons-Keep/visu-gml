@@ -186,11 +186,11 @@ function SpriteFeature(json) {
       if (this.angle != null) {
         if (this.angle.transform != null) {
           if (!this.angle.initialized) {
-            this.angle.transform.value = item.sprite.angle
+            this.angle.initialized = true
             this.angle.transform.startValue = item.sprite.angle
             this.angle.transform.target = item.angle + ((this.angle.transform.factor >= 0 ? 1 : -1) * Math.fetchPointsAngleDiff(this.angle.transform.target, item.sprite.angle))
-            this.angle.transform.factor = abs(this.angle.transform.factor)
-            this.angle.initialized = true
+            this.angle.transform.startFactor = abs(this.angle.transform.factor)
+            this.angle.transform.reset()
           }
           item.sprite.setAngle(this.angle.transform.update().value)
         }
@@ -203,8 +203,8 @@ function SpriteFeature(json) {
       if (this.alpha != null) {
         if (this.alpha.transform != null) {
           if (!this.alpha.initialized) {
-            this.alpha.transform.value = item.sprite.alpha
             this.alpha.transform.startValue = item.sprite.alpha
+            this.alpha.transform.reset()
             this.alpha.initialized = true
           }
           item.sprite.setAlpha(this.alpha.transform.update().value)

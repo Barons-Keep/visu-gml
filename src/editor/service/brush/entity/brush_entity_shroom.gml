@@ -123,6 +123,16 @@ function brush_entity_shroom(json) {
           SHROOM_SPAWN_ROW_AMOUNT / 2.0
         ),
       },
+      "en-shr_use-inherit": {
+        type: Boolean,
+        value: Struct.get(json, "en-shr_use-inherit"),
+      },
+      "en-shr_inherit": {
+        type: String,
+        value: JSON.stringify(Struct.getIfType(json, "en-shr_inherit", GMArray, []), { pretty: true }),
+        serialize: UIUtil.serialize.getStringGMArray(),
+        passthrough: UIUtil.passthrough.getStringGMArray(),
+      },
       "en-shr_use-texture": {
         type: Boolean,
         value: Struct.get(json, "en-shr_use-texture"),
@@ -139,6 +149,10 @@ function brush_entity_shroom(json) {
         type: Rectangle,
         value: Struct.get(json, "en-shr_mask"),
       },
+      "en-shr_spawn-map": {
+        type: TextureTemplate,
+        value: new TextureTemplate("texture_shroom_spawn_map", { asset: texture_shroom_spawn_map, file: "" }),
+      }
     }),
     components: new Array(Struct, [
       {
@@ -372,6 +386,99 @@ function brush_entity_shroom(json) {
           },
           input: {
             backgroundColor: VETheme.color.accentShadow,
+          }
+        },
+      },
+      {
+        name: "en-shr_spawn-map",
+        template: VEComponents.get("texture-field-intent"),
+        layout: VELayouts.get("texture-field-intent-simple"),
+        config: { 
+          layout: { 
+            type: UILayoutType.VERTICAL,
+
+          },
+          image: { 
+            name: "texture_shroom_spawn_map",
+            disableTextureService: true,
+          },
+          origin: "en-shr_spawn-map",
+          store: { key: "en-shr_spawn-map" },
+          resolution: { 
+            store: { 
+              key: "en-shr_spawn-map",
+              callback: function(value, data) { 
+                if (!Core.isType(value, TextureTemplate)) {
+                  return
+                }
+                
+                data.label.text = ""//$"width: {sprite_get_width(value.asset)} height: {sprite_get_height(value.asset)}"
+              },
+            },
+          },
+          onMouseOnLeft: function(event) {
+            var _x = event.data.x - this.context.area.getX() - this.area.getX() - this.context.offset.x
+            var _y = event.data.y - this.context.area.getY() - this.area.getY() - this.context.offset.y
+            var areaWidth = this.area.getWidth()
+            var areaHeight = this.area.getHeight()
+            var scaleX = this.image.getScaleX()
+            var scaleY = this.image.getScaleY()
+            this.image.scaleToFit(areaWidth, areaHeight)
+
+            var width = this.image.getWidth() * this.image.getScaleX()
+            var height = this.image.getHeight() * this.image.getScaleY()
+            this.image.setScaleX(scaleX).setScaleY(scaleY)
+
+            var marginH = (areaWidth - width) / 2.0
+            var marginV = (areaHeight - height) / 2.0
+
+            var originX = round(this.image.getWidth() * ((clamp(_x, marginH, areaWidth - marginH) - marginH) / width))
+            var originY = round(this.image.getHeight() * ((clamp(_y, marginV, areaHeight - marginV) - marginV) / height))
+
+            var textureIntent = this.store.getValue()
+            if (textureIntent.originX != originX
+               || textureIntent.originY != originY) {
+              textureIntent.originX = originX
+              textureIntent.originY = originY
+              this.store.get().set(textureIntent)
+
+              var store = this.store.getStore()
+              if (Optional.is(store)) {
+                var horizontal = round(((originX / this.image.getWidth()) * 50.0) - 25.0)
+                var vertical = round(((originY / this.image.getHeight()) * 50.0) - 25.0)
+                store.get("en-shr_x").set(horizontal)
+                store.get("en-shr_y").set(vertical)
+              }
+            }
+
+            return this
+          },
+          preRender: function() {
+            var store = this.store.getStore()
+            if (Optional.is(store)) {
+              var horizontal = (store.getValue("en-shr_x") + 25.0) / 50.0
+              var vertical = (store.getValue("en-shr_y") + 25.0) / 50.0
+              var originX = round(horizontal * this.image.getWidth())
+              var originY = round(vertical * this.image.getHeight())
+              var textureIntent = this.store.getValue()
+              if (textureIntent.originX != originX
+                || textureIntent.originY != originY) {
+                textureIntent.originX = originX
+                textureIntent.originY = originY
+                this.store.get().set(textureIntent)
+              }
+            }
+                    
+            if (!mouse_check_button(mb_left)) {
+              return this
+            }
+
+            Beans.get(BeanVisuEditorController).uiService.send(new Event("MouseOnLeft", { 
+              x: MouseUtil.getMouseX(), 
+              y: MouseUtil.getMouseY(),
+            }))
+           
+            return this
           }
         },
       },
@@ -821,8 +928,52 @@ function brush_entity_shroom(json) {
           },
         },
       },
-      /*
       {
+        name: "en-shr_inherit-line-h",
+        template: VEComponents.get("line-h"),
+        layout: VELayouts.get("line-h"),
+        config: { layout: { type: UILayoutType.VERTICAL } },
+      },
+      {
+        name: "en-shr_inherit-title",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: {
+            text: "Inherit",
+            backgroundColor: VETheme.color.accentShadow,
+            enable: { key: "en-shr_use-inherit"},
+          },
+          input: {
+            backgroundColor: VETheme.color.accentShadow,
+            enable: { key: "en-shr_use-inherit" },
+          },
+          checkbox: {
+            backgroundColor: VETheme.color.accentShadow,
+            store: { key: "en-shr_use-inherit" },
+            spriteOn: { name: "visu_texture_checkbox_on" },
+            spriteOff: { name: "visu_texture_checkbox_off" },
+          },
+        },
+      },
+      {
+        name: "en-shr_inherit",
+        template: VEComponents.get("text-area"),
+        layout: VELayouts.get("text-area"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          field: { 
+            v_grow: true,
+            w_min: 570,
+            store: { key: "en-shr_inherit" },
+            enable: { key: "en-shr_use-inherit"},
+            updateCustom: UIItemUtils.textField.getUpdateJSONTextArea(),
+          },
+        },
+      }
+      /*
+      ,{
         name: "en-shr-dir-rng-y-line-h",
         template: VEComponents.get("line-h"),
         layout: VELayouts.get("line-h"),

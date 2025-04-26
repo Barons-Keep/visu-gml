@@ -110,8 +110,8 @@ function GridItem(config = {}) constructor {
     : new Rectangle({ 
       x: 0, 
       y: 0, 
-      width: this.sprite.getWidth(), 
-      height: this.sprite.getHeight()
+      width: this.sprite.getWidth() * this.sprite.getScaleX(), 
+      height: this.sprite.getHeight() * this.sprite.getScaleY()
   })
 
   ///@type {Number}

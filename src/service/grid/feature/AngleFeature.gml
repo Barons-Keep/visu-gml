@@ -46,11 +46,10 @@ function AngleFeature(json) {
     update: function(item, controller) {
       if (this.transform != null) {
         if (!this.isAngleSet) {
-          this.transform.value = item.angle
           this.transform.startValue = item.angle
-          this.transform.target = item.angle + ((this.transform.factor >= 0 ? 1 : -1)
-            * Math.fetchPointsAngleDiff(item.angle, (this.isRelative ? item.angle : 0.0) + this.transform.target))
-          this.transform.factor = abs(this.transform.factor)
+          this.transform.target = item.angle + ((this.transform.factor >= 0 ? 1 : -1) * Math.fetchPointsAngleDiff(item.angle, (this.isRelative ? item.angle : 0.0) + this.transform.target))
+          this.transform.startFactor = abs(this.transform.factor)
+          this.transform.reset()
           this.isAngleSet = true
         }
         

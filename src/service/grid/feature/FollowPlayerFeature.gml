@@ -32,10 +32,11 @@ function FollowPlayerFeature(json = {}) {
         return
       }
 
-      this.transformer.value = 0
-      this.transformer.finished = false
+      ///@todo This will not work
+      this.transformer.startValue = 0.0
       this.transformer.target = Math.fetchPointsAngleDiff(item.angle, Math.fetchPointsAngle(item.x, item.y, player.x, player.y))
-      this.transformer.factor = abs(this.value.factor) * sign(this.transformer.target)
+      this.transformer.startFactor = abs(this.value.factor) * sign(this.transformer.target)
+      this.transformer.reset()
       item.setAngle(item.angle - this.transformer.update().value)
     },
   }))
