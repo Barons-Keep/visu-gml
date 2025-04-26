@@ -209,7 +209,7 @@ function brush_effect_shader(json) {
           },
           checkbox: { },
         },
-      }
+      },
       {
         name: "ef-shd_fade-out-line-h",
         template: VEComponents.get("line-h"),
