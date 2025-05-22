@@ -40,7 +40,7 @@ function ShroomTemplate(_name, json) constructor {
   }
 
   //@return {Struct}
-  serialize = function() {
+  _serialize = function() {
     return {
       name: this.name,
       sprite: JSON.clone(this.sprite),
@@ -53,6 +53,20 @@ function ShroomTemplate(_name, json) constructor {
     }
   }
 
+  //@return {Struct}
+  serialize = function() {
+    return {
+      name: this.name,
+      sprite: this.sprite,
+      mask: this.mask,
+      lifespanMax: this.lifespanMax,
+      healthPoints: this.healthPoints,
+      hostile: this.hostile,
+      gameModes: this.serializeGameModes(),
+      inherit: this.inherit,
+    }
+  }
+
   serializeGameModes = function() {
     return JSON.clone(this.gameModes)
   }
@@ -60,8 +74,8 @@ function ShroomTemplate(_name, json) constructor {
   serializeSpawn = function(x, y, speed, angle, uid, lifespan = null, hp = null) {
     return {
       name: this.name,
-      sprite: JSON.clone(this.sprite),
-      mask: Optional.is(this.mask) ? JSON.clone(this.mask) : null,
+      sprite: this.sprite,
+      mask: this.mask,
       lifespanMax: Optional.is(lifespan) ? lifespan : this.lifespanMax,
       healthPoints: Optional.is(hp) ? hp : this.healthPoints,
       hostile: this.hostile,
@@ -88,10 +102,6 @@ function Shroom(template): GridItem(template) constructor {
 
   ///@type {Boolean}
   hostile = template.hostile
-
-  ///@private
-  ///@type {Map<String, any>}
-  state = new Map(String, any)
 
   ///@param {VisuController} controller
   ///@return {Shroom}

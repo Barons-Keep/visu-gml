@@ -6,6 +6,10 @@ function brush_effect_glitch(json = null) {
   return {
     name: "brush_effect_glitch",
     store: new Map(String, Struct, {
+      "ef-glt_hide": {
+        type: Boolean,
+        value: Struct.get(json, "ef-glt_hide"),
+      },
       "ef-glt_use-fade-out": {
         type: Boolean,
         value: Struct.get(json, "ef-glt_use-fade-out"),
@@ -18,6 +22,14 @@ function brush_effect_glitch(json = null) {
       "ef-glt_use-config": {
         type: Boolean,
         value: Struct.get(json, "ef-glt_use-config"),
+      },
+      "ef-glt_hide-cfg": {
+        type: Boolean,
+        value: Struct.get(json, "ef-glt_hide-cfg"),
+      },
+      "ef-glt_hide-line": {
+        type: Boolean,
+        value: Struct.get(json, "ef-glt_hide-line"),
       },
       "ef-glt_line-spd": {
         type: Number,
@@ -49,6 +61,10 @@ function brush_effect_glitch(json = null) {
         passthrough: UIUtil.passthrough.getClampedStringNumber(),
         data: new Vector2(0.0, 1.0),
       },
+      "ef-glt_hide-jumb": {
+        type: Boolean,
+        value: Struct.get(json, "ef-glt_hide-jumb"),
+      },
       "ef-glt_jumb-spd": {
         type: Number,
         value: Struct.get(json, "ef-glt_jumb-spd"),
@@ -72,6 +88,10 @@ function brush_effect_glitch(json = null) {
         value: Struct.get(json, "ef-glt_jumb-chaos"),
         passthrough: UIUtil.passthrough.getClampedStringNumber(),
         data: new Vector2(0.0, 1.0),
+      },
+      "ef-glt_hide-shd": {
+        type: Boolean,
+        value: Struct.get(json, "ef-glt_hide-shd"),
       },
       "ef-glt_shd-dispersion": {
         type: Number,
@@ -111,6 +131,74 @@ function brush_effect_glitch(json = null) {
       },  
     }),
     components: new Array(Struct, [
+      {
+        name: "ef-glt_fade_out-title",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "Fade out",
+            //color: VETheme.color.textShadow,
+            enable: { key: "ef-glt_use-fade-out" },
+            //backgroundColor: VETheme.color.side,
+          },
+          checkbox: {
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "ef-glt_hide" },
+            //backgroundColor: VETheme.color.side,
+          },
+          input: {
+            spriteOn: { name: "visu_texture_checkbox_switch_on" },
+            spriteOff: { name: "visu_texture_checkbox_switch_off" },
+            store: { key: "ef-glt_use-fade-out" },
+            //backgroundColor: VETheme.color.side,
+          },
+        },
+      },
+      {
+        name: "ef-glt_fade-out",  
+        template: VEComponents.get("numeric-slider-increase-field"),
+        layout: VELayouts.get("numeric-slider-increase-field"),
+        config: { 
+          layout: {
+            type: UILayoutType.VERTICAL,
+            //margin: { top: 4.0 },
+          },
+          label: { 
+            text: "Factor",
+            enable: { key: "ef-glt_use-fade-out" },
+            hidden: { key: "ef-glt_hide" },
+          },
+          field: { 
+            enable: { key: "ef-glt_use-fade-out" },
+            store: { key: "ef-glt_line-spd" },
+            hidden: { key: "ef-glt_hide" },
+          },
+          slider: { 
+            minValue: 0.0,
+            maxValue: 1.0,
+            snapValue: 0.001 / 1.0,
+            store: { key: "ef-glt_fade-out" },
+            enable: { key: "ef-glt_use-fade-out" },
+            hidden: { key: "ef-glt_hide" },
+          },
+          decrease: {
+            factor: -0.001,
+            store: { key: "ef-glt_fade-out" },
+            enable: { key: "ef-glt_use-fade-out" },
+            hidden: { key: "ef-glt_hide" },
+          },
+          increase: {
+            factor: 0.001,
+            store: { key: "ef-glt_fade-out" },
+            enable: { key: "ef-glt_use-fade-out" },
+            hidden: { key: "ef-glt_hide" },
+          },
+        },
+      },
+      /*
       {
         name: "ef-glt_fade-out-slider",  
         template: VEComponents.get("numeric-slider"),
@@ -166,29 +254,38 @@ function brush_effect_glitch(json = null) {
           },
         },
       },
+      */
       {
         name: "ef-glt_use-config_line-h",
         template: VEComponents.get("line-h"),
         layout: VELayouts.get("line-h"),
-        config: { layout: { type: UILayoutType.VERTICAL } },
+        config: {
+          layout: { type: UILayoutType.VERTICAL },
+          image: { hidden: { key: "ef-glt_hide" } },
+        },
       },
       {
-        name: "ef-glt_use-config",
+        name: "ef-glt_cfg",
         template: VEComponents.get("property"),
         layout: VELayouts.get("property"),
         config: { 
           layout: { type: UILayoutType.VERTICAL },
           label: { 
-            text: "Glitch config",
+            text: "Config",
+            backgroundColor: VETheme.color.accentShadow,
             enable: { key: "ef-glt_use-config" },
-            backgroundColor: VETheme.color.accentShadow,
           },
-          input: { backgroundColor: VETheme.color.accentShadow },
-          checkbox: { 
-            spriteOn: { name: "visu_texture_checkbox_on" },
-            spriteOff: { name: "visu_texture_checkbox_off" },
-            store: { key: "ef-glt_use-config" },
+          checkbox: {
             backgroundColor: VETheme.color.accentShadow,
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "ef-glt_hide-cfg" },
+          },
+          input: {
+            backgroundColor: VETheme.color.accentShadow,
+            spriteOn: { name: "visu_texture_checkbox_switch_on" },
+            spriteOff: { name: "visu_texture_checkbox_switch_off" },
+            store: { key: "ef-glt_use-config" },
           },
         },
       },
@@ -200,12 +297,22 @@ function brush_effect_glitch(json = null) {
           layout: { type: UILayoutType.VERTICAL },
           label: { 
             text: "Line",
-            color: VETheme.color.textShadow,
-            //enable: { key: "ef-glt_use-config" },
-            backgroundColor: VETheme.color.side,
+            //color: VETheme.color.textShadow,
+            enable: { key: "ef-glt_use-config" },
+            //backgroundColor: VETheme.color.side,
+            hidden: { key: "ef-glt_hide-cfg" },
           },
-          input: { backgroundColor: VETheme.color.side },
-          checkbox: { backgroundColor: VETheme.color.side },
+          checkbox: {
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "ef-glt_hide-line" },
+            hidden: { key: "ef-glt_hide-cfg" },
+            //backgroundColor: VETheme.color.side,
+          },
+          input: {
+            hidden: { key: "ef-glt_hide-cfg" },
+            //backgroundColor: VETheme.color.side,
+          },
         },
       },
       {
@@ -219,11 +326,23 @@ function brush_effect_glitch(json = null) {
           },
           label: { 
             text: "Speed",
-            enable: { key: "ef-glt_use-config" }
+            enable: { key: "ef-glt_use-config" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-line" }
+              ]
+            },
           },
           field: { 
             enable: { key: "ef-glt_use-config" },
             store: { key: "ef-glt_line-spd" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-line" }
+              ]
+            },
           },
           slider: { 
             minValue: 0.0,
@@ -231,16 +350,34 @@ function brush_effect_glitch(json = null) {
             snapValue: 0.01 / 0.5,
             store: { key: "ef-glt_line-spd" },
             enable: { key: "ef-glt_use-config" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-line" }
+              ]
+            },
           },
           decrease: {
             store: { key: "ef-glt_line-spd" },
             enable: { key: "ef-glt_use-config" },
             factor: -0.01,
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-line" }
+              ]
+            },
           },
           increase: {
             store: { key: "ef-glt_line-spd" },
             enable: { key: "ef-glt_use-config" },
             factor: 0.01,
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-line" }
+              ]
+            },
           },
         },
       },
@@ -253,10 +390,22 @@ function brush_effect_glitch(json = null) {
           label: { 
             text: "Shift",
             enable: { key: "ef-glt_use-config" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-line" }
+              ]
+            },
           },
           field: { 
             enable: { key: "ef-glt_use-config" },
             store: { key: "ef-glt_line-shift" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-line" }
+              ]
+            },
           },
           slider: {
             minValue: 0.0,
@@ -264,16 +413,34 @@ function brush_effect_glitch(json = null) {
             snapValue: 0.001 / 0.05,
             store: { key: "ef-glt_line-shift" },
             enable: { key: "ef-glt_use-config" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-line" }
+              ]
+            },
           },
           decrease: {
             store: { key: "ef-glt_line-shift" },
             enable: { key: "ef-glt_use-config" },
             factor: -0.001,
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-line" }
+              ]
+            },
           },
           increase: {
             store: { key: "ef-glt_line-shift" },
             enable: { key: "ef-glt_use-config" },
             factor: 0.001,
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-line" }
+              ]
+            },
           },
         }
       },
@@ -286,10 +453,22 @@ function brush_effect_glitch(json = null) {
           label: { 
             text: "Resolution",
             enable: { key: "ef-glt_use-config" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-line" }
+              ]
+            },
           },
           field: { 
             enable: { key: "ef-glt_use-config" },
             store: { key: "ef-glt_line-res" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-line" }
+              ]
+            },
           },
           slider: {
             minValue: 0.0,
@@ -297,16 +476,34 @@ function brush_effect_glitch(json = null) {
             snapValue: 0.01 / 3.0,
             store: { key: "ef-glt_line-res" },
             enable: { key: "ef-glt_use-config" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-line" }
+              ]
+            },
           },
           decrease: {
             store: { key: "ef-glt_line-res" },
             enable: { key: "ef-glt_use-config" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-line" }
+              ]
+            },
             factor: -0.01,
           },
           increase: {
             store: { key: "ef-glt_line-res" },
             enable: { key: "ef-glt_use-config" },
             factor: 0.01,
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-line" }
+              ]
+            },
           },
         }
       },
@@ -319,10 +516,22 @@ function brush_effect_glitch(json = null) {
           label: {
             text: "V shift",
             enable: { key: "ef-glt_use-config" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-line" }
+              ]
+            },
           },
           field: { 
             enable: { key: "ef-glt_use-config" },
             store: { key: "ef-glt_line-v-shift" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-line" }
+              ]
+            },
           },
           slider: {
             minValue: 0.0,
@@ -330,16 +539,34 @@ function brush_effect_glitch(json = null) {
             snapValue: 0.01 / 1.0,
             store: { key: "ef-glt_line-v-shift" },
             enable: { key: "ef-glt_use-config" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-line" }
+              ]
+            },
           },
           decrease: {
             store: { key: "ef-glt_line-v-shift" },
             enable: { key: "ef-glt_use-config" },
             factor: -0.01,
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-line" }
+              ]
+            },
           },
           increase: {
             store: { key: "ef-glt_line-v-shift" },
             enable: { key: "ef-glt_use-config" },
             factor: 0.01,
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-line" }
+              ]
+            },
           },
         }
       },
@@ -355,10 +582,22 @@ function brush_effect_glitch(json = null) {
           label: {
             text: "Drift",
             enable: { key: "ef-glt_use-config" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-line" }
+              ]
+            },
           },
           field: { 
             enable: { key: "ef-glt_use-config" },
             store: { key: "ef-glt_line-drift" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-line" }
+              ]
+            },
           },
           slider: {
             minValue: 0.0,
@@ -366,16 +605,34 @@ function brush_effect_glitch(json = null) {
             snapValue: 0.01 / 1.0,
             store: { key: "ef-glt_line-drift" },
             enable: { key: "ef-glt_use-config" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-line" }
+              ]
+            },
           },
           decrease: {
             store: { key: "ef-glt_line-drift" },
             enable: { key: "ef-glt_use-config" },
             factor: -0.01,
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-line" }
+              ]
+            },
           },
           increase: {
             store: { key: "ef-glt_line-drift" },
             enable: { key: "ef-glt_use-config" },
             factor: 0.01,
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-line" }
+              ]
+            },
           },
         }
       },
@@ -383,7 +640,17 @@ function brush_effect_glitch(json = null) {
         name: "ef-glt_jumb-title_line-h",
         template: VEComponents.get("line-h"),
         layout: VELayouts.get("line-h"),
-        config: { layout: { type: UILayoutType.VERTICAL } },
+        config: {
+          layout: { type: UILayoutType.VERTICAL },
+          image: {
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-line" }
+              ]
+            },
+          },
+        },
       },
       {
         name: "ef-glt_jumb-title",
@@ -393,12 +660,22 @@ function brush_effect_glitch(json = null) {
           layout: { type: UILayoutType.VERTICAL },
           label: { 
             text: "Jumble",
-            color: VETheme.color.textShadow,
-            //enable: { key: "ef-glt_use-config" },
-            backgroundColor: VETheme.color.side,
+            //color: VETheme.color.textShadow,
+            enable: { key: "ef-glt_use-config" },
+            //backgroundColor: VETheme.color.side,
+            hidden: { key: "ef-glt_hide-cfg" },
           },
-          input: { backgroundColor: VETheme.color.side },
-          checkbox: { backgroundColor: VETheme.color.side },
+          checkbox: {
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "ef-glt_hide-jumb" },
+            //backgroundColor: VETheme.color.side,
+            hidden: { key: "ef-glt_hide-cfg" },
+          },
+          input: {
+            hidden: { key: "ef-glt_hide-cfg" },
+            //backgroundColor: VETheme.color.side,
+          },
         },
       },
       {
@@ -413,10 +690,22 @@ function brush_effect_glitch(json = null) {
           label: {
             text: "Speed",
             enable: { key: "ef-glt_use-config" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-jumb" }
+              ]
+            },
           },
           field: { 
             enable: { key: "ef-glt_use-config" },
             store: { key: "ef-glt_jumb-spd" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-jumb" }
+              ]
+            },
           },
           slider: {
             minValue: 0.0,
@@ -424,16 +713,34 @@ function brush_effect_glitch(json = null) {
             snapValue: 0.1 / 25.0,
             store: { key: "ef-glt_jumb-spd" },
             enable: { key: "ef-glt_use-config" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-jumb" }
+              ]
+            },
           },
           decrease: {
             store: { key: "ef-glt_jumb-spd" },
             enable: { key: "ef-glt_use-config" },
             factor: -0.1,
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-jumb" }
+              ]
+            },
           },
           increase: {
             store: { key: "ef-glt_jumb-spd" },
             enable: { key: "ef-glt_use-config" },
             factor: 0.1,
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-jumb" }
+              ]
+            },
           },
         }
       },
@@ -446,10 +753,22 @@ function brush_effect_glitch(json = null) {
           label: {
             text: "Shift",
             enable: { key: "ef-glt_use-config" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-jumb" }
+              ]
+            },
           },
           field: { 
             enable: { key: "ef-glt_use-config" },
             store: { key: "ef-glt_jumb-shift" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-jumb" }
+              ]
+            },
           },
           slider: {
             minValue: 0.0,
@@ -457,16 +776,34 @@ function brush_effect_glitch(json = null) {
             snapValue: 0.01 / 1.0,
             store: { key: "ef-glt_jumb-shift" },
             enable: { key: "ef-glt_use-config" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-jumb" }
+              ]
+            },
           },
           decrease: {
             store: { key: "ef-glt_jumb-shift" },
             enable: { key: "ef-glt_use-config" },
             factor: -0.01,
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-jumb" }
+              ]
+            },
           },
           increase: {
             store: { key: "ef-glt_jumb-shift" },
             enable: { key: "ef-glt_use-config" },
             factor: 0.01,
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-jumb" }
+              ]
+            },
           },
         }
       },
@@ -479,10 +816,22 @@ function brush_effect_glitch(json = null) {
           label: { 
             text: "Resolution",
             enable: { key: "ef-glt_use-config" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-jumb" }
+              ]
+            },
           },
           field: { 
             enable: { key: "ef-glt_use-config" },
             store: { key: "ef-glt_jumb-res" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-jumb" }
+              ]
+            },
           },
           slider: {
             minValue: 0.0,
@@ -490,16 +839,34 @@ function brush_effect_glitch(json = null) {
             snapValue: 0.01 / 1.0,
             store: { key: "ef-glt_jumb-res" },
             enable: { key: "ef-glt_use-config" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-jumb" }
+              ]
+            },
           },
           decrease: {
             store: { key: "ef-glt_jumb-res" },
             enable: { key: "ef-glt_use-config" },
             factor: -0.01,
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-jumb" }
+              ]
+            },
           },
           increase: {
             store: { key: "ef-glt_jumb-res" },
             enable: { key: "ef-glt_use-config" },
             factor: 0.01,
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-jumb" }
+              ]
+            },
           },
         }
       },
@@ -515,10 +882,22 @@ function brush_effect_glitch(json = null) {
           label: {
             text: "Chaos",
             enable: { key: "ef-glt_use-config" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-jumb" }
+              ]
+            },
           },
           field: { 
             enable: { key: "ef-glt_use-config" },
             store: { key: "ef-glt_jumb-chaos" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-jumb" }
+              ]
+            },
           },
           slider: {
             minValue: 0.0,
@@ -526,16 +905,34 @@ function brush_effect_glitch(json = null) {
             snapValue: 0.01 / 1.0,
             store: { key: "ef-glt_jumb-chaos" },
             enable: { key: "ef-glt_use-config" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-jumb" }
+              ]
+            },
           },
           decrease: {
             store: { key: "ef-glt_jumb-chaos" },
             enable: { key: "ef-glt_use-config" },
             factor: -0.01,
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-jumb" }
+              ]
+            },
           },
           increase: {
             store: { key: "ef-glt_jumb-chaos" },
             enable: { key: "ef-glt_use-config" },
             factor: 0.01,
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-jumb" }
+              ]
+            },
           },
         }
       },
@@ -543,7 +940,17 @@ function brush_effect_glitch(json = null) {
         name: "ef-glt_shd-title_line-h",
         template: VEComponents.get("line-h"),
         layout: VELayouts.get("line-h"),
-        config: { layout: { type: UILayoutType.VERTICAL } },
+        config: {
+          layout: { type: UILayoutType.VERTICAL },
+          image: {
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-jumb" }
+              ]
+            },
+          },
+        },
       },
       {
         name: "ef-glt_shd-title",
@@ -553,12 +960,22 @@ function brush_effect_glitch(json = null) {
           layout: { type: UILayoutType.VERTICAL },
           label: { 
             text: "Shader",
-            color: VETheme.color.textShadow,
-            //enable: { key: "ef-glt_use-config" },
-            backgroundColor: VETheme.color.side,
+            //color: VETheme.color.textShadow,
+            enable: { key: "ef-glt_use-config" },
+            //backgroundColor: VETheme.color.side,
+            hidden: { key: "ef-glt_hide-cfg" },
           },
-          input: { backgroundColor: VETheme.color.side },
-          checkbox: { backgroundColor: VETheme.color.side },
+          checkbox: {
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "ef-glt_hide-shd" },
+            hidden: { key: "ef-glt_hide-cfg" },
+            //backgroundColor: VETheme.color.side,
+          },
+          input: {
+            hidden: { key: "ef-glt_hide-cfg" },
+            //backgroundColor: VETheme.color.side,
+          },
         },
       },
       {
@@ -573,10 +990,22 @@ function brush_effect_glitch(json = null) {
           label: {
             text: "Dispersion",
             enable: { key: "ef-glt_use-config" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-shd" }
+              ]
+            },
           },
           field: { 
             enable: { key: "ef-glt_use-config" },
             store: { key: "ef-glt_shd-dispersion" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-shd" }
+              ]
+            },
           },
           slider: {
             minValue: 0.0,
@@ -584,16 +1013,34 @@ function brush_effect_glitch(json = null) {
             snapValue: 0.001 / 0.5,
             store: { key: "ef-glt_shd-dispersion" },
             enable: { key: "ef-glt_use-config" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-shd" }
+              ]
+            },
           },
           decrease: {
             store: { key: "ef-glt_shd-dispersion" },
             enable: { key: "ef-glt_use-config" },
             factor: -0.001,
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-shd" }
+              ]
+            },
           },
           increase: {
             store: { key: "ef-glt_shd-dispersion" },
             enable: { key: "ef-glt_use-config" },
             factor: 0.001,
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-shd" }
+              ]
+            },
           },
         }
       },
@@ -606,10 +1053,22 @@ function brush_effect_glitch(json = null) {
           label: {
             text: "Ch. shift",
             enable: { key: "ef-glt_use-config" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-shd" }
+              ]
+            },
           },
           field: { 
             enable: { key: "ef-glt_use-config" },
             store: { key: "ef-glt_shd-ch-shift" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-shd" }
+              ]
+            },
           },
           slider: {
             minValue: 0.0,
@@ -617,16 +1076,34 @@ function brush_effect_glitch(json = null) {
             snapValue: 0.0001 / 0.05,
             store: { key: "ef-glt_shd-ch-shift" },
             enable: { key: "ef-glt_use-config" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-shd" }
+              ]
+            },
           },
           decrease: {
             store: { key: "ef-glt_shd-ch-shift" },
             enable: { key: "ef-glt_use-config" },
             factor: -0.001,
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-shd" }
+              ]
+            },
           },
           increase: {
             store: { key: "ef-glt_shd-ch-shift" },
             enable: { key: "ef-glt_use-config" },
             factor: 0.001,
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-shd" }
+              ]
+            },
           },
         }
       },
@@ -639,10 +1116,22 @@ function brush_effect_glitch(json = null) {
           label: {
             text: "Noise level",
             enable: { key: "ef-glt_use-config" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-shd" }
+              ]
+            },
           },
           field: { 
             enable: { key: "ef-glt_use-config" },
             store: { key: "ef-glt_shd-noise" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-shd" }
+              ]
+            },
           },
           slider: {
             minValue: 0.0,
@@ -650,16 +1139,34 @@ function brush_effect_glitch(json = null) {
             snapValue: 0.01 / 1.0,
             store: { key: "ef-glt_shd-noise" },
             enable: { key: "ef-glt_use-config" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-shd" }
+              ]
+            },
           },
           decrease: {
             store: { key: "ef-glt_shd-noise" },
             enable: { key: "ef-glt_use-config" },
             factor: -0.01,
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-shd" }
+              ]
+            },
           },
           increase: {
             store: { key: "ef-glt_shd-noise" },
             enable: { key: "ef-glt_use-config" },
             factor: 0.01,
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-shd" }
+              ]
+            },
           },
         }
       },
@@ -672,10 +1179,22 @@ function brush_effect_glitch(json = null) {
           label: {
             text: "Shakiness",
             enable: { key: "ef-glt_use-config" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-shd" }
+              ]
+            },
           },
           field: { 
             enable: { key: "ef-glt_use-config" },
             store: { key: "ef-glt_shd-shakiness" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-shd" }
+              ]
+            },
           },
           slider: {
             minValue: 0.0,
@@ -683,16 +1202,34 @@ function brush_effect_glitch(json = null) {
             snapValue: 0.1 / 10.0,
             store: { key: "ef-glt_shd-shakiness" },
             enable: { key: "ef-glt_use-config" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-shd" }
+              ]
+            },
           },
           decrease: {
             store: { key: "ef-glt_shd-shakiness" },
             enable: { key: "ef-glt_use-config" },
             factor: -0.1,
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-shd" }
+              ]
+            },
           },
           increase: {
             store: { key: "ef-glt_shd-shakiness" },
             enable: { key: "ef-glt_use-config" },
             factor: 0.1,
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-shd" }
+              ]
+            },
           },
         }
       },
@@ -705,10 +1242,22 @@ function brush_effect_glitch(json = null) {
           label: {
             text: "RNG seed",
             enable: { key: "ef-glt_use-config" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-shd" }
+              ]
+            },
           },
           field: { 
             enable: { key: "ef-glt_use-config" },
             store: { key: "ef-glt_shd-rng-seed" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-shd" }
+              ]
+            },
           },
           slider: {
             minValue: 0.0,
@@ -716,16 +1265,34 @@ function brush_effect_glitch(json = null) {
             snapValue: 0.01 / 1.0,
             store: { key: "ef-glt_shd-rng-seed" },
             enable: { key: "ef-glt_use-config" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-shd" }
+              ]
+            },
           },
           decrease: {
             store: { key: "ef-glt_shd-rng-seed" },
             enable: { key: "ef-glt_use-config" },
             factor: -0.01,
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-shd" }
+              ]
+            },
           },
           increase: {
             store: { key: "ef-glt_shd-rng-seed" },
             enable: { key: "ef-glt_use-config" },
             factor: 0.01,
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-shd" }
+              ]
+            },
           },
         }
       },
@@ -741,10 +1308,22 @@ function brush_effect_glitch(json = null) {
           label: {
             text: "Intensity",
             enable: { key: "ef-glt_use-config" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-shd" }
+              ]
+            },
           },
           field: { 
             store: { key: "ef-glt_shd-intensity" },
             enable: { key: "ef-glt_use-config" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-shd" }
+              ]
+            },
           },
           slider: {
             minValue: 0.0,
@@ -752,16 +1331,34 @@ function brush_effect_glitch(json = null) {
             snapValue: 0.01 / 5.0,
             store: { key: "ef-glt_shd-intensity" },
             enable: { key: "ef-glt_use-config" },
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-shd" }
+              ]
+            },
           },
           decrease: {
             store: { key: "ef-glt_shd-intensity" },
             enable: { key: "ef-glt_use-config" },
             factor: -0.01,
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-shd" }
+              ]
+            },
           },
           increase: {
             store: { key: "ef-glt_shd-intensity" },
             enable: { key: "ef-glt_use-config" },
             factor: 0.01,
+            hidden: {
+              keys: [
+                { key: "ef-glt_hide-cfg" },
+                { key: "ef-glt_hide-shd" }
+              ]
+            },
           },
         }
       },

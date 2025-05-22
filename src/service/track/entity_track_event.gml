@@ -17,6 +17,9 @@ global.__entity_track_event = {
     parse: function(data) {
       return {
         "icon": Struct.parse.sprite(data, "icon"),
+        "en-shr_hide": Struct.parse.boolean(data, "en-shr_hide", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "en-shr_hide-spawn": Struct.parse.boolean(data, "en-shr_hide-spawn", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "en-shr_hide-inherit": Struct.parse.boolean(data, "en-shr_hide-inherit", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-shr_preview": Struct.parse.boolean(data, "en-shr_preview"),
         "en-shr_template": Struct.parse.text(data, "en-shr_template", "shroom-default"),
         "en-shr_use-lifespan": Struct.parse.boolean(data, "en-shr_use-lifespan", false),
@@ -24,6 +27,7 @@ global.__entity_track_event = {
         "en-shr_use-hp": Struct.parse.boolean(data, "en-shr_use-hp", false),
         "en-shr_hp": Struct.parse.number(data, "en-shr_hp", 1.0),
         "en-shr_spd": Struct.parse.number(data, "en-shr_spd", 10.0, 0.0, 99.9),
+        "en-shr_spd-grid": Struct.parse.boolean(data, "en-shr_spd-grid"),
         "en-shr_use-spd-rng": Struct.parse.boolean(data, "en-shr_use-spd-rng"),
         "en-shr_spd-rng": Struct.parse.number(data, "en-shr_spd-rng", 0.0, 0.0, 99.9),
         "en-shr_dir": Struct.parse.number(data, "en-shr_dir", 270.0, 0.0, 360.0),
@@ -103,6 +107,9 @@ global.__entity_track_event = {
           ? (random(Struct.get(data, "en-shr_spd-rng") / 2.0)
             * choose(1.0, -1.0))
           : 0.01))
+        + (Struct.get(data, "en-shr_spd-grid")
+          ? controller.gridService.properties.speed
+          : 0.0)
       var angle = Math.normalizeAngle(Struct.get(data, "en-shr_dir")
         + (Struct.get(data, "en-shr_use-dir-rng")
           ? (random(Struct.get(data, "en-shr_dir-rng") / 2.0)
@@ -170,6 +177,8 @@ global.__entity_track_event = {
     parse: function(data) {
       return {
         "icon": Struct.parse.sprite(data, "icon"),
+        "en-coin_hide": Struct.parse.boolean(data, "en-coin_hide", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "en-coin_hide-spawn": Struct.parse.boolean(data, "en-shr_coin-spawn", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-coin_preview": Struct.parse.boolean(data, "en-coin_preview"),
         "en-coin_template": Struct.parse.text(data, "en-coin_template", "coin-default"),
         "en-coin_x": Struct.parse.number(data, "en-coin_x", 0.0,
@@ -230,6 +239,11 @@ global.__entity_track_event = {
     parse: function(data) {
       return {
         "icon": Struct.parse.sprite(data, "icon"),
+        "en-pl_hide": Struct.parse.boolean(data, "en-pl_texture-hide", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "en-pl_hide-texture": Struct.parse.boolean(data, "en-pl_hide-texture", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "en-pl_hide-mask": Struct.parse.boolean(data, "en-pl_hide-mask", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "en-pl_hide-stats": Struct.parse.boolean(data, "en-pl_hide-stats", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "en-pl_hide-cfg": Struct.parse.boolean(data, "en-pl_hide-cfg"), TRACK_EVENT_DEFAULT_HIDDEN_VALUE,
         "en-pl_texture": Struct.parse.sprite(data, "en-pl_texture", { name: "texture_player" }),
         "en-pl_use-mask": Struct.parse.boolean(data, "en-pl_use-mask"),
         "en-pl_mask": Struct.parse.rectangle(data, "en-pl_mask"),
@@ -316,6 +330,13 @@ global.__entity_track_event = {
     parse: function(data) {
       return {
         "icon": Struct.parse.sprite(data, "icon"),
+        "en-cfg_hide-render": Struct.parse.boolean(data, "en-cfg_hide-render", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "en-cfg_hide-cls": Struct.parse.boolean(data, "en-cfg_hide-cls", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "en-cfg_hide-cfg": Struct.parse.boolean(data, "en-cfg_hide-cfg", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "en-cfg_hide-shroom": Struct.parse.boolean(data, "en-cfg_hide-shroom", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "en-cfg_hide-player": Struct.parse.boolean(data, "en-cfg_hide-player", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "en-cfg_hide-coin": Struct.parse.boolean(data, "en-cfg_hide-coin", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "en-cfg_hide-bullet": Struct.parse.boolean(data, "en-cfg_hide-bullet", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-cfg_use-render-shr": Struct.parse.boolean(data, "en-cfg_use-render-shr"),
         "en-cfg_render-shr": Struct.parse.boolean(data, "en-cfg_render-shr"),
         "en-cfg_use-render-player": Struct.parse.boolean(data, "en-cfg_use-render-player"),

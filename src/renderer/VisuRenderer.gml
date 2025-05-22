@@ -14,6 +14,9 @@ function VisuRenderer() constructor {
   ///@type {DialogueRenderer}
   dialogueRenderer = new DialogueRenderer()
 
+  ///@type {TaskExecutor}
+  executor = new TaskExecutor(this)
+
   ///@private
   ///@type {UILayout}
   layout = new UILayout({
@@ -23,14 +26,6 @@ function VisuRenderer() constructor {
     width: GuiWidth,
     height: GuiHeight,
   })
-
-  ///@private
-  ///@type {DebugTimer}
-  renderTimer = new DebugTimer("Render")
-  
-  ///@private
-  ///@type {DebugTimer}
-  renderGUITimer = new DebugTimer("RenderGUI")
 
   ///@private
   ///@type {Sprite}
@@ -85,38 +80,47 @@ function VisuRenderer() constructor {
       var color = c_black
       this.spinnerFactor = lerp(this.spinnerFactor, 100.0, 0.08)
 
-      GPU.render.rectangle(
-        0, 0, 
-        GuiWidth(), GuiHeight(), 
-        false, 
-        color, color, color, color, 
-        (this.spinnerFactor / 100) * 0.5
-      )
+      var alpha = clamp((this.spinnerFactor / 100) * 0.5, 0.0, 1.0)
+      if (alpha > 0) {
+        GPU.render.rectangle(
+          0, 0, 
+          GuiWidth(), GuiHeight(), 
+          false, 
+          color, color, color, color, 
+          alpha
+        )
+      }
 
       this.spinner
         .setAngle(30.0 * (this.spinnerFactor / 100))
-        .setAlpha(0.85 * (this.spinnerFactor / 100))
+        .setAlpha(0.85 * alpha)
         .render(GuiWidth() / 2.0, (GuiHeight() * 0.75) - this.spinnerFactor)
     } else if (this.spinnerFactor > 0) {
       var color = c_black
       this.spinnerFactor = lerp(this.spinnerFactor, 0.0, 0.08)
 
-      GPU.render.rectangle(
-        0, 0, 
-        GuiWidth(), GuiHeight(), 
-        false, 
-        color, color, color, color, 
-        (this.spinnerFactor / 100) * 0.5
-      )
+      var alpha = clamp((this.spinnerFactor / 100) * 0.5, 0.0, 1.0)
+      if (alpha > 0) {
+        GPU.render.rectangle(
+          0, 0, 
+          GuiWidth(), GuiHeight(), 
+          false, 
+          color, color, color, color, 
+          alpha
+        )
+      }
 
       this.spinner
         .setAngle(-30.0 * (this.spinnerFactor / 100.0))
-        .setAlpha(0.85 * (this.spinnerFactor / 100.0))
+        .setAlpha(0.85 * alpha)
         .render(GuiWidth() / 2.0, (GuiHeight() * 0.75) - this.spinnerFactor)
     }
 
     return this
   }
+
+  debugFPSLowCooldown = 0.0
+  debugMinFPS = GAME_FPS
 
   ///@private
   ///@return {VisuRenderer}
@@ -148,34 +152,35 @@ function VisuRenderer() constructor {
     var gridService = controller.gridService
     var enableEditor = Optional.is(editor) && editor.renderUI
     var enableDebugOverlay = is_debug_overlay_open()
+
+    if (this.debugFPSLowCooldown > 0) {
+      this.debugFPSLowCooldown--
+    } else {
+      this.debugMinFPS = GAME_FPS
+    }
+
+    var fpsReal = round(fps_real)
+    if (fpsReal < this.debugMinFPS) {
+      this.debugMinFPS = fpsReal
+      this.debugFPSLowCooldown = GAME_FPS * 2
+    }
+    
     if (enableDebugOverlay) {
       var shrooms = controller.shroomService.shrooms.size()
       var bullets = controller.bulletService.bullets.size()
   
-      var timeSum = gridService.moveGridItemsTimer.getValue()
-        + gridService.signalGridItemsCollisionTimer.getValue()
-        + gridService.updatePlayerServiceTimer.getValue()
-        + gridService.updateShroomServiceTimer.getValue()
-        + gridService.updateBulletServiceTimer.getValue()
-        + this.renderTimer.getValue()
-        + this.renderGUITimer.getValue()
-      gridService.avgTime.add(timeSum)        
-  
-      var text = $"shrooms: {shrooms}" + "\n"
-        + $"bullets: {bullets}" + "\n"
-        + $"fps: {fps}, fps-real: {fps_real}" + "\n\n"
-        + gridService.moveGridItemsTimer.getMessage() + "\n"
-        + gridService.signalGridItemsCollisionTimer.getMessage() + "\n"
-        + gridService.updatePlayerServiceTimer.getMessage() + "\n"
-        + gridService.updateShroomServiceTimer.getMessage() + "\n"
-        + gridService.updateBulletServiceTimer.getMessage() + "\n"
-        + this.renderTimer.getMessage() + "\n"
-        + this.renderGUITimer.getMessage() + "\n"
-        + $"Sum: {timeSum}ms" + "\n"
-        + $"Avg: {gridService.avgTime.get()}ms" + "\n"
+      var renderSum = controller.renderTimer.getValue() + controller.renderGUITimer.getValue()
+      var updateSum = controller.updateDebugTimer.getValue() + (enableEditor ? editor.updateDebugTimer.getValue() : 0.0)
+      var timeSum = renderSum + updateSum
+      gridService.avgTime.add(timeSum)
+      gridService.avgCircular.add(fpsReal)
+      var text = $"fps: {String.format(round(fps), 2, 0)}, fps-min: {String.format(this.debugMinFPS, 2, 0)}, fps-real-avg: {String.format(gridService.avgCircular.value, 3, 0)}, fps-real: {String.format(fpsReal, 3, 0)}" + "\n"
+        + $"update: {String.format(updateSum, 2, 2)}ms, render: {String.format(renderSum, 2, 2)}ms, total: {String.format(timeSum, 2, 2)}ms, avg: {String.format(gridService.avgTime.get(), 2, 2)}ms" + "\n"
+        + $"shrooms: {String.format(shrooms, 4, 0)}, bullets: {String.format(bullets, 4, 0)}" + "\n"
+        
       GPU.render.text(
-        32,
-        32,
+        64,
+        80,
         text,
         1.0,
         0.0,
@@ -260,10 +265,7 @@ function VisuRenderer() constructor {
   render = function() {
     var editor = Beans.get(BeanVisuEditorController)
     var _layout = editor == null ? this.layout : editor.layout.nodes.preview
-    
-    this.renderTimer.start()
     this.gridRenderer.render(_layout)
-    this.renderTimer.finish()
     return this
   }
 
@@ -273,7 +275,6 @@ function VisuRenderer() constructor {
     var editor = Beans.get(BeanVisuEditorController)
     var _layout = editor == null ? this.layout : editor.layout.nodes.preview
 
-    this.renderGUITimer.start()
     if (controller.menu.containers.size() == 0) {
       this.blur.reset()
       this.gridRenderer.renderGUI(_layout)
@@ -307,9 +308,9 @@ function VisuRenderer() constructor {
       }
       this.dialogueRenderer.render()
     } else {
-      if (!Optional.is(controller.track)) {
-        controller.gridService.properties.update(controller.gridService)
-      }
+      //if (!Optional.is(controller.track)) {
+      //  controller.gridService.properties.update(controller.gridService)
+      //}
       
       this.blur.update()
       if (shader_is_compiled(shader_gaussian_blur)) {
@@ -324,28 +325,35 @@ function VisuRenderer() constructor {
     }
     this.renderUI()
     this.renderSpinner(_layout)
-    this.renderGUITimer.finish()
     this.renderDebugGUI()
 
     if (!this.initTimer.finished) {
-      GPU.render.rectangle(
-        0, 0, 
-        GuiWidth(), GuiHeight(), 
-        false, 
-        c_black, c_black, c_black, c_black, 
-        clamp(this.initTimer.duration - this.initTimer.time, 0.0, 1.0)
-      )
+      var alpha = clamp(this.initTimer.duration - this.initTimer.time, 0.0, 1.0)
+      if (alpha > 0) {
+        GPU.render.rectangle(
+          0, 0, 
+          GuiWidth(), GuiHeight(), 
+          false, 
+          c_black, c_black, c_black, c_black, 
+          alpha
+        )
+      }
     }
 
     if (!this.fadeTimer.finished) {
-      GPU.render.rectangle(
-        0, 0, 
-        GuiWidth(), GuiHeight(), 
-        false, 
-        c_black, c_black, c_black, c_black, 
-        clamp(this.fadeTimer.duration - this.fadeTimer.time, 0.0, 1.0)
-      )
+      var alpha = clamp(this.fadeTimer.duration - this.fadeTimer.time, 0.0, 1.0)
+      if (alpha > 0) {
+        GPU.render.rectangle(
+          0, 0, 
+          GuiWidth(), GuiHeight(), 
+          false, 
+          c_black, c_black, c_black, c_black, 
+          alpha
+        )
+      }
     }
+
+    this.executor.update()
 
     return this
   }

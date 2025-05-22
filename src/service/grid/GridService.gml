@@ -27,7 +27,7 @@ function GridItemChunkService(_size) constructor {
   ///@type {Number}
   size = Assert.isType(_size, Number)
 
-  ///@type {Map<String, Array<GridItem>>}
+  ///@type {Map<String, Arrat<GridItem>>}
   chunks = new Map(String, Array)
 
   ///@param {Number} x
@@ -218,26 +218,6 @@ function GridService(_config = null) constructor {
   ///@private
   ///@type {Number}
   uidPointer = toInt(Struct.getIfType(config, "uidPointer", Number, 0)) 
-
-  ///@private
-  ///@type {DebugTimer}
-  moveGridItemsTimer = new DebugTimer("MoveGridItems")
-
-  ///@private
-  ///@type {DebugTimer}
-  signalGridItemsCollisionTimer = new DebugTimer("GrdCollission")
-
-  ///@private
-  ///@type {DebugTimer}
-  updatePlayerServiceTimer = new DebugTimer("PlayerService")
-
-  ///@private
-  ///@type {DebugTimer}
-  updateShroomServiceTimer = new DebugTimer("ShroomService")
-
-  ///@private
-  ///@type {DebugTimer}
-  updateBulletServiceTimer = new DebugTimer("BulletService")
   
   ///@type {Struct}
   targetLocked = {
@@ -334,6 +314,43 @@ function GridService(_config = null) constructor {
     speed: new NumberTransformer({ value: 0.0, target: 1.0, factor: 0.01, increase: 0.0 }),
   }
   
+  avgCircular = {
+    buffer: IntStream.map(0, GAME_FPS, function(index, idx, value) {
+      return value
+    }, GAME_FPS),
+    pointer: 0,
+    value: GAME_FPS,
+    add: function(value) {
+      this.pointer += 1
+      if (this.pointer >= this.buffer.size()) {
+        this.pointer = 0
+        this.value = round(this.get())
+      }
+
+      this.buffer.set(this.pointer, value)
+      return this
+    },
+    reset: function() {
+      this.buffer.forEach(function(value, index, buffer) {
+        buffer.set(index, GAME_FPS)
+      }, this.buffer)
+      return this
+    },
+    get: function() {
+      var sum = {
+        value: 0,
+        count: 0,
+      }
+
+      this.buffer.forEach(function(value, index, sum) {
+        sum.value += value
+        sum.count = max(sum.count, index + 1)
+      }, sum)
+
+      return sum.value / sum.count
+    },
+  }
+
   ///@type {Struct}
   avgTime = {
     value: 0,
@@ -673,26 +690,11 @@ function GridService(_config = null) constructor {
   ///@return {GridService}
   updateGridItemsOriginal = function() {
     var controller = Beans.get(BeanVisuController)
-
-    this.moveGridItemsTimer.start()
     this.moveGridItems()
-    this.moveGridItemsTimer.finish()
-
-    this.signalGridItemsCollisionTimer.start()
     this.signalGridItemsCollision()
-    this.signalGridItemsCollisionTimer.finish()
-
-    this.updatePlayerServiceTimer.start()
     controller.playerService.update(this)
-    this.updatePlayerServiceTimer.finish()
-
-    this.updateShroomServiceTimer.start()
     controller.shroomService.update(this)
-    this.updateShroomServiceTimer.finish()
-
-    this.updateBulletServiceTimer.start()
     controller.bulletService.update(this)
-    this.updateBulletServiceTimer.finish()
     return this
   }
 
@@ -726,7 +728,6 @@ function GridService(_config = null) constructor {
       player.move()
     }
 
-    this.updateBulletServiceTimer.start()
     bulletService.dispatcher.update()
     bulletService.bullets.forEach(bulletLambda, {
       controller: controller,
@@ -737,9 +738,7 @@ function GridService(_config = null) constructor {
       gridService: gridService,
       bulletService: bulletService,
     }).runGC() 
-    this.updateBulletServiceTimer.finish()
 
-    this.updateShroomServiceTimer.start()
     if (controller.gameMode != shroomService.gameMode) {
       shroomService.gameMode = controller.gameMode
       shroomService.shrooms.forEach(shroomService.updateGameMode, shroomService.gameMode)
@@ -758,12 +757,8 @@ function GridService(_config = null) constructor {
       player: player,
       shroomService: shroomService,
     }).runGC()
-    this.updateShroomServiceTimer.finish()
-
-    this.updatePlayerServiceTimer.start()
     
     playerService.update()
-    this.updatePlayerServiceTimer.finish()
     return this
   }
 

@@ -29,6 +29,7 @@ function migrateShaderPipelineType(type) {
   }
 }
 
+#macro TRACK_EVENT_DEFAULT_HIDDEN_VALUE false
 
 ///@static
 ///@type {Struct}
@@ -45,6 +46,7 @@ global.__effect_track_event = {
       
       return {
         "icon": Struct.parse.sprite(data, "icon"),
+        "ef-shd_hide": Struct.parse.boolean(data, "ef-shd_hide", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "ef-shd_template": template,
         "ef-shd_duration": Struct.parse.number(data, "ef-shd_duration", 5.0, 0.0, 9999.9),
         "ef-shd_fade-in": Struct.parse.number(data, "ef-shd_fade-in", 1.0, 0.0, 9999.9),
@@ -52,6 +54,7 @@ global.__effect_track_event = {
         "ef-shd_alpha": Struct.parse.normalizedNumber(data, "ef-shd_alpha", 1.0),
         "ef-shd_pipeline": Struct.parse.enumerable(data, "ef-shd_pipeline", ShaderPipelineType, ShaderPipelineType.BACKGROUND),
         "ef-shd_use-merge-cfg": Struct.parse.boolean(data, "ef-shd_use-merge-cfg"),
+        "ef-shd_hide-merge-cfg": Struct.parse.boolean(data, "ef-shd_hide-merge-cfg", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "ef-shd_merge-cfg": Struct.getIfType(data, "ef-shd_merge-cfg", Struct, { }),
       }
     },
@@ -91,6 +94,11 @@ global.__effect_track_event = {
     parse: function(data) {
       return {
         "icon": Struct.parse.sprite(data, "icon"),
+        "ef-glt_hide": Struct.parse.boolean(data, "ef-glt_hide", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "ef-glt_hide-cfg": Struct.parse.boolean(data, "ef-glt_hide-cfg", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "ef-glt_hide-line": Struct.parse.boolean(data, "ef-glt_hide-line", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "ef-glt_hide-jumb": Struct.parse.boolean(data, "ef-glt_hide-jumb", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "ef-glt_hide-shd": Struct.parse.boolean(data, "ef-glt_hide-shd", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "ef-glt_use-fade-out": Struct.parse.boolean(data, "ef-glt_use-fade-out"),
         "ef-glt_fade-out": Struct.parse.number(data, "ef-glt_fade-out", 0.01, 0.0, 1.0),
         "ef-glt_use-config": Struct.parse.boolean(data, "ef-glt_use-config"),
@@ -213,8 +221,10 @@ global.__effect_track_event = {
     parse: function(data) {
       return {
         "icon": Struct.parse.sprite(data, "icon"),
+        "ef-part_hide": Struct.parse.boolean(data, "ef-part_hide", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "ef-part_preview": Struct.parse.boolean(data, "ef-part_preview"),
         "ef-part_template": Struct.parse.text(data, "ef-part_template", "particle-default"),
+        "ef-part_hide-area": Struct.parse.boolean(data, "ef-part_hide-area", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "ef-part_area": Struct.parse.rectangle(data, "ef-part_area", { width: 1.0, height: 1.0 }),
         "ef-part_amount": Struct.parse.integer(data, "ef-part_amount", 1, 1, 999),
         "ef-part_duration": Struct.parse.number(data, "ef-part_duration", 0.0, 0, 999.9),
@@ -257,6 +267,12 @@ global.__effect_track_event = {
     parse: function(data) {
       return {
         "icon": Struct.parse.sprite(data, "icon"),
+        "ef-cfg_hide-render": Struct.parse.boolean(data, "ef-cfg_hide-render", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "ef-cfg_hide-cls": Struct.parse.boolean(data, "ef-cfg_hide-cls", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "ef-cfg_hide-cfg": Struct.parse.boolean(data, "ef-cfg_hide-cfg", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "ef-cfg_hide-shd-cls-col": Struct.parse.boolean(data, "ef-cfg_hide-shd-cls-col", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "ef-cfg_hide-shd-cls-alpha": Struct.parse.boolean(data, "ef-cfg_hide-shd-cls-alpha", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "ef-cfg_hide-particle-z": Struct.parse.boolean(data, "ef-cfg_hide-particle-z", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "ef-cfg_use-render-shd-bkg": Struct.parse.boolean(data, "ef-cfg_use-render-shd-bkg"),
         "ef-cfg_render-shd-bkg": Struct.parse.boolean(data, "ef-cfg_render-shd-bkg"),
         "ef-cfg_cls-shd-bkg": Struct.parse.boolean(data, "ef-cfg_cls-shd-bkg"),

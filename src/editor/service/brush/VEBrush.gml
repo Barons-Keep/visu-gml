@@ -146,7 +146,8 @@ function VEBrush(template) constructor {
       layout: VELayouts.get("property"),
       config: { 
         layout: { type: UILayoutType.VERTICAL },
-        label: { text: $"{Struct.get(VEBrushTypeNames, template.type)}" },
+        //label: { text: $"{Struct.get(VEBrushTypeNames, template.type)}" },
+        label: { text: $"Brush" },
         checkbox: { 
           spriteOn: { name: "visu_texture_checkbox_show" },
           spriteOff: { name: "visu_texture_checkbox_hide" },
@@ -161,7 +162,6 @@ function VEBrush(template) constructor {
       config: { 
         layout: { 
           type: UILayoutType.VERTICAL,
-          margin: { top: 4, bottom: 4 },
         },
         label: {
           text: "Name",
@@ -170,6 +170,76 @@ function VEBrush(template) constructor {
         field: {
           store: { key: "brush-name" },
           hidden: { key: "brush-hidden" },
+        },
+      },
+    },
+    {
+      name: "brush-color",
+      template: VEComponents.get("color-picker"),
+      layout: VELayouts.get("color-picker"),
+      config: {
+        layout: { 
+          type: UILayoutType.VERTICAL,
+        },
+        //title: { 
+        //  label: { text: "Icon" },
+        //  input: { store: { key: "brush-color" } },
+        //  hidden: { key: "brush-hidden" },
+        //},
+        red: {
+          label: {
+            text: "Red",
+            hidden: { key: "brush-hidden" },
+          },
+          field: {
+            store: { key: "brush-color" },
+            hidden: { key: "brush-hidden" },
+          },
+          slider: {
+            store: { key: "brush-color" },
+            hidden: { key: "brush-hidden" },
+          },
+        },
+        green: {
+          label: {
+            text: "Green",
+            hidden: { key: "brush-hidden" },
+          },
+          field: {
+            store: { key: "brush-color" },
+            hidden: { key: "brush-hidden" },
+          },
+          slider: {
+            store: { key: "brush-color" },
+            hidden: { key: "brush-hidden" },
+          },
+        },
+        blue: {
+          label: {
+            text: "Blue",
+            hidden: { key: "brush-hidden" },
+          },
+          field: {
+            store: { key: "brush-color" },
+            hidden: { key: "brush-hidden" },
+          },
+          slider: {
+            store: { key: "brush-color" },
+            hidden: { key: "brush-hidden" },
+          },
+        },
+        hex: { 
+          label: {
+            text: "Hex",
+            hidden: { key: "brush-hidden" },
+          },
+          field: {
+            store: { key: "brush-color" },
+            hidden: { key: "brush-hidden" },
+          },
+          button: {
+            hidden: { key: "brush-hidden" },
+          }
         },
       },
     },
@@ -184,7 +254,7 @@ function VEBrush(template) constructor {
           margin: { top: 4, bottom: 4 },
         },
         label: {
-          text: "Icon",
+          text: "Texture",
           hidden: { key: "brush-hidden" },
         },
         previous: {
@@ -370,81 +440,13 @@ function VEBrush(template) constructor {
       }
     },
     {
-      name: "brush-color",
-      template: VEComponents.get("color-picker"),
-      layout: VELayouts.get("color-picker"),
-      config: {
-        layout: { 
-          type: UILayoutType.VERTICAL,
-          hex: { margin: { top: 4 } },
-        },
-        //title: { 
-        //  label: { text: "Icon" },
-        //  input: { store: { key: "brush-color" } },
-        //  hidden: { key: "brush-hidden" },
-        //},
-        red: {
-          label: {
-            text: "Red",
-            hidden: { key: "brush-hidden" },
-          },
-          field: {
-            store: { key: "brush-color" },
-            hidden: { key: "brush-hidden" },
-          },
-          slider: {
-            store: { key: "brush-color" },
-            hidden: { key: "brush-hidden" },
-          },
-        },
-        green: {
-          label: {
-            text: "Green",
-            hidden: { key: "brush-hidden" },
-          },
-          field: {
-            store: { key: "brush-color" },
-            hidden: { key: "brush-hidden" },
-          },
-          slider: {
-            store: { key: "brush-color" },
-            hidden: { key: "brush-hidden" },
-          },
-        },
-        blue: {
-          label: {
-            text: "Blue",
-            hidden: { key: "brush-hidden" },
-          },
-          field: {
-            store: { key: "brush-color" },
-            hidden: { key: "brush-hidden" },
-          },
-          slider: {
-            store: { key: "brush-color" },
-            hidden: { key: "brush-hidden" },
-          },
-        },
-        hex: { 
-          label: {
-            text: "Hex",
-            hidden: { key: "brush-hidden" },
-          },
-          field: {
-            store: { key: "brush-color" },
-            hidden: { key: "brush-hidden" },
-          },
-          button: {
-            hidden: { key: "brush-hidden" },
-          }
-        },
-      },
-    },
-    {
       name: "brush-properties-line-h",
       template: VEComponents.get("line-h"),
       layout: VELayouts.get("line-h"),
-      config: { layout: { type: UILayoutType.VERTICAL } },
+      config: {
+        layout: { type: UILayoutType.VERTICAL },
+        image: { hidden: { key: "brush-hidden" } },
+      },
     }
   ])
 

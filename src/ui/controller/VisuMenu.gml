@@ -2383,13 +2383,13 @@ function VisuMenu(_config = null) constructor {
             name: "visu-menu.content",
             x: function() { return this.context.x() + ((this.context.width() - this.width()) / 2.0) },
             y: function() { return Struct.get(this.context.nodes, "visu-menu.title").bottom() 
-              + this.margin().top 
-              + ((this._height(this.context, this.margin()) - this.height()) / 2.0)
+              + this.__margin.top 
+              + ((this._height(this.context, this.__margin) - this.height()) / 2.0)
             },
             width: function() { return max(this.context.width() * 0.4, 540) },
             viewHeight: 0.0,
             height: function() {
-              this.viewHeight = clamp(this.viewHeight, 0.0, this._height(this.context, this.margin()))
+              this.viewHeight = clamp(this.viewHeight, 0.0, this._height(this.context, this.__margin))
               return this.viewHeight
             },
             _height: function(context, margin) { 

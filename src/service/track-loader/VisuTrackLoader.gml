@@ -58,6 +58,7 @@ function VisuTrackLoader(_controller): Service() constructor {
             controller.displayService.setCaption(game_display_name)
             controller.brushService.clearTemplates()
             controller.visuRenderer.gridRenderer.clear()
+            controller.visuRenderer.executor.tasks.forEach(TaskUtil.fullfill).clear()
             var editor = Beans.get(BeanVisuEditorController)
             if (Core.isType(editor, VisuEditorController)) {
               editor.popupQueue.dispatcher.execute(new Event("clear"))
@@ -588,6 +589,50 @@ function VisuTrackLoader(_controller): Service() constructor {
       "cooldown": {
         actions: {
           onStart: function(fsm, fsmState) {
+            var stack = new Stack(TextureTemplate)
+            Beans.get(BeanTextureService).templates.forEach(function(template, name, stack) {
+              stack.push(template)
+            }, stack)
+            Visu.assets().textures.forEach(function(template, name, stack) {
+              stack.push(template)
+            }, stack)
+
+            var textureLoadTask = new Task("texture-load-task")
+              .setState({
+                stack: stack
+              })
+              .setPromise(new Promise())
+              .whenUpdate(function() {
+                try {
+                  repeat (1) {
+                    if (this.state.stack.size() == 0) {
+                      this.fullfill()
+                      break
+                    } else {
+                      var template = this.state.stack.pop()
+                      for (var index = 0; index < template.frames; index++) {
+                        draw_sprite_ext(
+                          template.asset, 
+                          index, 
+                          random(GuiWidth()), 
+                          random(GuiHeight()),
+                          random(10.0),
+                          random(10.0),
+                          random(360.0),
+                          make_color_rgb(irandom(255), irandom(255), irandom(255)),
+                          0.075
+                        )
+                      }
+                    }
+                  }
+                } catch (exception) {
+                  Logger.error("VisuTrackLoader", $"texture-load-task exception: {exception.message}")
+                  Core.printStackTrace()
+                  this.reject()
+                }
+              })
+            Beans.get(BeanVisuController).visuRenderer.executor.add(textureLoadTask)
+            fsmState.state.set("texture-load-task", textureLoadTask)
             fsmState.state.set("cooldown-timer", new Timer(2.0))
 
             var controller = Beans.get(BeanVisuController)
@@ -657,6 +702,12 @@ function VisuTrackLoader(_controller): Service() constructor {
         },
         update: function(fsm) {
           try {
+            var textureLoadTask = this.state.get("texture-load-task")
+            if (textureLoadTask.promise.status == PromiseStatus.PENDING) {
+              return
+            }
+            Assert.isTrue(textureLoadTask.promise.status != PromiseStatus.REJECTED, "textureLoadTask.promise.status must be fullfilled")
+            
             var timer = this.state.get("cooldown-timer")
             var editorIO = Beans.get(BeanVisuEditorIO)
             if (timer.update().finished) {

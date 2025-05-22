@@ -7,6 +7,14 @@ global.__view_track_event = {
     parse: function(data) {
       return {
         "icon": Struct.parse.sprite(data, "icon"),
+        "vw-cam_hide-view": Struct.parse.boolean(data, "vw-cam_hide-view", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "vw-cam_hide-pos": Struct.parse.boolean(data, "vw-cam_hide-pos", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "vw-cam_hide-x": Struct.parse.boolean(data, "vw-cam_hide-x", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "vw-cam_hide-x": Struct.parse.boolean(data, "vw-cam_hide-x", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "vw-cam_hide-y": Struct.parse.boolean(data, "vw-cam_hide-y", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "vw-cam_hide-z": Struct.parse.boolean(data, "vw-cam_hide-z", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "vw-cam_hide-dir": Struct.parse.boolean(data, "vw-cam_hide-dir", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "vw-cam_hide-pitch": Struct.parse.boolean(data, "vw-cam_hide-pitch"),
         "vw-cam_use-lock-x": Struct.parse.boolean(data, "vw-cam_use-lock-x"),
         "vw-cam_lock-x": Struct.parse.boolean(data, "vw-cam_lock-x"),
         "vw-cam_use-lock-y": Struct.parse.boolean(data, "vw-cam_use-lock-y"),
@@ -204,6 +212,17 @@ global.__view_track_event = {
       
       return {
         "icon": Struct.parse.sprite(data, "icon"),
+        "vw-layer_hide": Struct.parse.boolean(data, "vw-layer_hide", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "vw-layer_hide-blend": Struct.parse.boolean(data, "vw-layer_hide-blend", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "vw-layer_hide-cls": Struct.parse.boolean(data, "vw-layer_hide-cls", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "vw-layer_hide-tx-layer": Struct.parse.boolean(data, "vw-layer_hide-tx-layer", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "vw-layer_hide-tx": Struct.parse.boolean(data, "vw-layer_hide-tx", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "vw-layer_hide-tx-blend": Struct.parse.boolean(data, "vw-layer_hide-tx-blend", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "vw-layer_hide-tx-spd": Struct.parse.boolean(data, "vw-layer_hide-tx-spd", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "vw-layer_hide-tx-dir": Struct.parse.boolean(data, "vw-layer_hide-tx-dir", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "vw-layer_hide-tx-scale-x": Struct.parse.boolean(data, "vw-layer_hide-tx-scale-x", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "vw-layer_hide-tx-scale-y": Struct.parse.boolean(data, "vw-layer_hide-tx-scale-y", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "vw-layer_hide-col": Struct.parse.boolean(data, "vw-layer_hide-col", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "vw-layer_type": Struct.parse.enumerableKey(data, "vw-layer_type", WallpaperType, WallpaperType.BACKGROUND),
         "vw-layer_fade-in": Struct.parse.number(data, "vw-layer_fade-in", 0.0, 0.0, 999.9),
         "vw-layer_fade-out": Struct.parse.number(data, "vw-layer_fade-out", 0.0, 0.0, 999.9),
@@ -445,6 +464,11 @@ global.__view_track_event = {
     parse: function(data) {
       return {
         "icon": Struct.parse.sprite(data, "icon"),
+        "vw-sub_hide": Struct.parse.boolean(data, "vw-sub_hide", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "vw-sub_hide-area": Struct.parse.boolean(data, "vw-sub_hide-area", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "vw-sub_hide-font": Struct.parse.boolean(data, "vw-sub_hide-font", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "vw-sub_hide-spd": Struct.parse.boolean(data, "vw-sub_hide-spd", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "vw-sub_hide-dir": Struct.parse.boolean(data, "vw-sub_hide-dir", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "vw-sub_template": Struct.parse.text(data, "vw-sub_template"),
         "vw-sub_font": Struct.parse.text(data, "vw-sub_font", VISU_FONT[0]),
         "vw-sub_fh": Struct.parse.number(data, "vw-sub_fh", 12, 0, 999),
@@ -571,6 +595,12 @@ global.__view_track_event = {
     parse: function(data) {
       return {
         "icon": Struct.parse.sprite(data, "icon"),
+        "vw-cfg_hide-render": Struct.parse.boolean(data, "vw-cfg_hide-render", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "vw-cfg_hide-cls": Struct.parse.boolean(data, "vw-cfg_hide-cls", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "vw-cfg_hide-video": Struct.parse.boolean(data, "vw-cfg_hide-video", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "vw-cfg_hide-video-blend": Struct.parse.boolean(data, "vw-cfg_hide-video-blend", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "vw-cfg_hide-video-col": Struct.parse.boolean(data, "vw-cfg_hide-video-col", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "vw-cfg_hide-video-alpha": Struct.parse.boolean(data, "vw-cfg_hide-video-alpha", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "vw-cfg_use-render-hud": Struct.parse.boolean(data, "vw-cfg_use-render-hud"),
         "vw-cfg_render-hud": Struct.parse.boolean(data, "vw-cfg_render-hud"),
         "vw-cfg_use-render-subtitle": Struct.parse.boolean(data, "vw-cfg_use-render-subtitle"),

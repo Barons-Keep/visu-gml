@@ -518,13 +518,13 @@ global.__VEComponents = new Map(String, Callable, {
   "texture-field-intent": function(name, layout, config = null) {
     var items = new Array(UIItem, [
       UIImage(
-        $"{name}_image",
+        $"{name}_preview",
         Struct.appendRecursive(
           { 
-            layout: layout.nodes.image,
+            layout: layout.nodes.preview,
             updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
           }, 
-          config,
+          Struct.get(config, "preview"),
           false
         )
       )
@@ -1996,16 +1996,6 @@ global.__VEComponents = new Map(String, Callable, {
 
     var items = new Array(UIItem)
 
-    if (Optional.is(Struct.get(config, "title"))) {
-      factoryTitle(
-        $"{name}_title", 
-        layout.nodes.title, 
-        Struct.get(config, "title")
-      ).forEach(addItem, items)
-    } else {
-      layout.nodes.title.proxyHeight = function() { return 0 }
-    }
-
     factoryTextField(
       $"{name}_texture",
       layout.nodes.texture, 
@@ -3148,11 +3138,11 @@ global.__VEComponents = new Map(String, Callable, {
 
     var items = new Array(UIItem)
 
-    factoryTitle(
-      $"{name}_title", 
-      layout.nodes.title, 
-      Struct.get(config, "title")
-    ).forEach(addItem, items)
+    //factoryTitle(
+    //  $"{name}_title", 
+    //  layout.nodes.title, 
+    //  Struct.get(config, "title")
+    //).forEach(addItem, items)
 
     factoryTextField(
       $"{name}_texture",
@@ -4352,28 +4342,6 @@ global.__VEComponents = new Map(String, Callable, {
         Struct.set(config.title, "input", { backgroundColor: button.button.backgroundColor })
       }
 
-      if (Struct.get(Struct.get(config, "line"), "disable")) {
-        Struct.set(layout.nodes.line, "height", method(layout.nodes.line, function() { return 0 }))
-        Struct.set(layout.nodes.line, "marginRef", new Margin())
-      } else {
-        items.add(UIImage(
-          $"{name}_line",
-          Struct.appendRecursive(
-            { 
-              layout: layout.nodes.line,
-              updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
-            }, 
-            Struct.appendRecursive(
-              Struct.get(config, "line"),
-              VEStyles.get("line-h").image,
-              false
-            ),
-            false
-          )
-        ))
-      }
-
-      Struct.set(layout.nodes.hex, "height", method(layout.nodes.hex, function() { return 28 }))
       factoryTitle(
         $"{name}_title",
         layout.nodes.title,
@@ -4383,8 +4351,8 @@ global.__VEComponents = new Map(String, Callable, {
     } else {
       button = {
         layout: { 
-          type: layout.type,
-          propagateHidden: false,
+          //type: layout.type,
+          propagateHidden: true,
         },
         button: {
           enable: Optional.is(Struct.getIfType(config.hex.field, "enable", Struct)) 
@@ -4400,9 +4368,7 @@ global.__VEComponents = new Map(String, Callable, {
       }
       Struct.set(layout.nodes.title, "height", method(layout.nodes.title, function() { return 0 }))
       Struct.set(layout.nodes.title, "marginRef", new Margin())
-      Struct.set(layout.nodes.hex, function() { return this.context.y() + this.margin().top })
-      Struct.set(layout.nodes.line, "height", method(layout.nodes.line, function() { return 0 }))
-      Struct.set(layout.nodes.line, "marginRef", new Margin())
+      //Struct.set(layout.nodes.hex, function() { return this.context.y() + this.__margin.top })
     }
 
     factoryHex(
@@ -4423,7 +4389,7 @@ global.__VEComponents = new Map(String, Callable, {
         Struct.get(config, "red"), 
         {
           layout: { 
-            type: layout.type,
+            //type: layout.type,
             propagateHidden: true,
           },
           field: { colorChannel: "red" }, 
@@ -4442,7 +4408,7 @@ global.__VEComponents = new Map(String, Callable, {
         Struct.get(config, "green"),
         {
           layout: { 
-            type: layout.type,
+            //type: layout.type,
             propagateHidden: true,
           },
           field: { colorChannel: "green" }, 
@@ -4461,7 +4427,7 @@ global.__VEComponents = new Map(String, Callable, {
         Struct.get(config, "blue"),
         {
           layout: { 
-            type: layout.type,
+            //type: layout.type,
             propagateHidden: true,
           },
           field: { colorChannel: "blue" }, 
@@ -4481,13 +4447,496 @@ global.__VEComponents = new Map(String, Callable, {
           Struct.get(config, "alpha"),
           {
             layout: { 
-              type: layout.type,
+              //type: layout.type,
               propagateHidden: true,
             },
             field: { colorChannel: "alpha" }, 
             slider: { colorChannel: "alpha" },
             decrease: { colorChannel: "alpha" },
             increase: { colorChannel: "alpha" },
+          },
+          false
+        )
+      ).forEach(addItem, items)
+    }
+
+    return items
+  },
+
+  ///@param {String} name
+  ///@param {UILayout} layout
+  ///@param {?Struct} [config]
+  ///@return {Array<UIItem>}
+  "color-picker-transformer": function(name, layout, config = null) {
+    ///@todo move to Lambda util
+    static addItem = function(item, index, items) {
+      items.add(item)
+    }
+
+    ///@param {String} name
+    ///@param {UILayout} layout
+    ///@param {?Struct} [config]
+    ///@return {UIItem}
+    static factoryHex = function(name, layout, config) {
+      return new UIComponent({
+        name: name,
+        template: VEComponents.get("text-field-button"),
+        layout: VELayouts.get("text-field-square-center-button"),
+        config: Struct.appendRecursive(
+          config, 
+          {
+            field: {
+              store: {
+                callback: function(value, data) { 
+                  var colorKey = Struct.get(data, "colorKey", "value")
+                  var color = Struct.get(value, colorKey)
+                  data.textField.setText(color.toHex(color.alpha < 1.0))
+                },
+                set: function(value) {
+                  var item = this.get()
+                  if (item == null) {
+                    return 
+                  }
+
+                  var transformer = item.get()
+                  var colorKey = Struct.get(this.context, "colorKey", "value")
+                  var color = Struct.get(transformer, colorKey)
+                  var parsedColor = ColorUtil.parse(value)
+                  color.red = parsedColor.red
+                  color.green = parsedColor.green
+                  color.blue = parsedColor.blue
+                  color.alpha = parsedColor.alpha
+
+                  item.set(transformer)
+                },
+              },
+            },
+            button: {
+              colorKey: config.field.colorKey,
+              store: {
+                callback: function(value, data) { 
+                  var factor = Struct.get(data.enable, "value") == false ? 0.5 : 1.0
+                  var colorKey = Struct.get(data, "colorKey", "value")
+                  var color = Struct.get(value, colorKey)
+                  data.backgroundAlpha = color.alpha * factor
+                  data.backgroundColor = color.toGMColor()
+                },
+                set: function(value) { return },
+              },
+            }
+          },
+          false
+        ),
+      }).toUIItems(layout)
+    }
+
+    ///@param {String} name
+    ///@param {UILayout} layout
+    ///@param {?Struct} [config]
+    ///@return {UIItem}
+    static factoryColorIncreaseField = function(name, layout, config) {
+      static factoryStore = {
+        callbackField: function() {
+          return function(value, data) { 
+            var key = Struct.get(data, "colorChannel")
+            if (!ColorUtil.isColorProperty(key)) {
+              return 
+            }
+
+            var colorKey = Struct.get(data, "colorKey")
+            var color = Struct.get(value, colorKey)
+            if (!Core.isType(color, Color)) {
+              return
+            }
+
+            data.textField.setText(clamp(round(Struct.get(color, key) * 255.0), 0.0, 255.0))
+          }
+        },
+        callbackSlider: function() {
+          return function(value, data) {
+            var key = Struct.get(data, "colorChannel")
+            if (!ColorUtil.isColorProperty(key)) {
+              return 
+            }
+
+            var colorKey = Struct.get(data, "colorKey")
+            var color = Struct.get(value, colorKey)
+            if (!Core.isType(color, Color)) {
+              return
+            }
+
+            Struct.set(data, "_color", color)            
+            data.value = clamp(round(Struct.get(color, key) * 255.0), 0.0, 255.0)
+            data.updateCustom()
+          }
+        },
+        set: function() {
+          return function(value) {
+            var item = this.get()
+            var key = Struct.get(this.context, "colorChannel")
+            if (item == null || !ColorUtil.isColorProperty(key)) {
+              return 
+            }
+
+            var transformer = item.get()
+            var colorKey = Struct.get(this.context, "colorKey")
+            var color = Struct.get(transformer, colorKey)
+            Struct.set(color, key, clamp(NumberUtil.parse(value / 255.0, Struct.get(color, key)), 0.0, 1.0))
+            item.set(transformer)
+          }
+        },
+      }
+
+      static factoryIncrease = function(config, factor) {
+        return {
+          factor: factor,
+          enable: Optional.is(Struct.getIfType(config.field, "enable", Struct)) 
+            ? JSON.clone(config.field.enable) 
+            : null,
+          hidden: Optional.is(Struct.getIfType(config.field, "hidden", Struct)) 
+            ? JSON.clone(config.field.hidden) 
+            : null,
+          colorChannel: Struct.get(config.field, "colorChannel"),
+          colorKey: Struct.get(config.field, "colorKey"),
+          callback: function() {
+            var factor = Struct.get(this, "factor")
+            var key = Struct.get(this, "colorChannel")
+            if (!Core.isType(factor, Number) 
+                || !Core.isType(this.store, UIStore)
+                || !ColorUtil.isColorProperty(key)) {
+              return
+            }
+  
+            var item = this.store.get()
+            if (!Core.isType(item, StoreItem)) {
+              return
+            }
+
+            var transformer = item.get()
+            var colorKey = Struct.get(this, "colorKey")
+            var color = Struct.get(transformer, colorKey)
+            if (!Core.isType(color, Color)) {
+              return 
+            }
+  
+            Struct.set(color, key, clamp(Struct.get(color, key) + (factor / 255.0), 0.0, 1.0))
+            item.set(transformer)
+          },
+          store: Struct.appendRecursive({ callback: function(value, data) { }, set: function(value) { } },
+            Optional.is(Struct.get(config.field, "store")) ? JSON.clone(config.field.store) : null,
+            false
+          ),
+        }
+      }
+
+      return new UIComponent({
+        name: name,
+        template: VEComponents.get("numeric-slider-increase-field"),
+        layout: VELayouts.get("numeric-slider-increase-field"),
+        config: Struct.appendRecursive(
+          config, 
+          {
+            field: {
+              store: {
+                callback: factoryStore.callbackField(),
+                set: factoryStore.set(),
+              },
+              GMTF_DECIMAL: 0,
+            },
+            slider: {
+              minValue: 0.0,
+              maxValue: 255.0,
+              snapValue: 1.0 / 255.0,
+              store: {
+                callback: factoryStore.callbackSlider(),
+                set: factoryStore.set()
+              },
+              backgroundMargin: new Margin({ top: 2, bottom: 3, left: 0, right: 1 }),
+              postRender: function() {
+                var fromX = this.context.area.getX() + this.area.getX()
+                var fromY = this.context.area.getY() + this.area.getY() + (this.area.getHeight() / 2)
+                var widthMax = this.area.getWidth()
+                var width = ((this.value - this.minValue) / abs(this.minValue - this.maxValue)) * widthMax
+                var pointerBorder = Struct.get(this, "pointerBorder")
+                if (!Core.isType(pointerBorder, Sprite)) {
+                  pointerBorder = SpriteUtil.parse({ name: "texture_slider_pointer_border" })
+                  Struct.set(this, "pointerBorder", pointerBorder)
+                }
+                
+                var factor = Struct.get(this.enable, "value") == false ? 0.5 : 1.0    
+                var alpha = pointerBorder.getAlpha()
+                pointerBorder
+                  .setAlpha(alpha * factor)
+                  .setScaleX(this.pointer.getScaleX())
+                  .setScaleY(this.pointer.getScaleY())
+                  .render(fromX + width, fromY)
+                  .setAlpha(alpha)
+              },
+              updateCustom: function() {
+                var color = Struct.getIfType(this, "_color", Color)
+                if (!Optional.is(color)) {
+                  return
+                }
+                
+                this.progress.blend = c_white
+                this.progress.thickness = 0.0
+                this.background.thickness = (this.area.getHeight() - 4.0) / 4.0
+                //this.backgroundMargin = new Margin({ top: 2, bottom: 3, left: 0, right: 1})
+                this.pointer.setBlend(color.toGMColor())
+                this.backgroundAlpha = Struct.get(this.enable, "value") == false ? 0.5 : 1.0
+                switch (Struct.get(this, "colorChannel")) {
+                  case "red":
+                    this.background.blend = make_color_rgb(255, color.green * 255, color.blue * 255)
+                    this.backgroundColor = make_color_rgb(0, color.green * 255, color.blue * 255)
+                    break
+                  case "green": 
+                    this.background.blend = make_color_rgb(color.red * 255, 255, color.blue * 255)
+                    this.backgroundColor = make_color_rgb(color.red * 255, 0, color.blue * 255)
+                    break
+                  case "blue": 
+                    this.background.blend = make_color_rgb(color.red * 255, color.green * 255, 255)
+                    this.backgroundColor = make_color_rgb(color.red * 255, color.green * 255, 0)
+                    break
+                }
+              },
+              progress: {
+                line: { name: "texture_empty" },
+                cornerFrom: { name: "texture_empty" },
+                cornerTo: { name: "texture_empty" },
+              },
+              background: {
+                line: { name: "texture_slider_color_picker" },
+                cornerFrom: { name: "texture_empty" },
+                cornerTo: { name: "texture_empty" },
+              },
+            },
+            increase: factoryIncrease(config, 1.0),
+            decrease: factoryIncrease(config, -1.0),
+          },
+          false
+        ),
+      }).toUIItems(layout)
+    }
+
+        ///@param {String} name
+    ///@param {UILayout} layout
+    ///@param {?Struct} [config]
+    ///@return {UIItem}
+    static factoryDuration = function(name, layout, config) {
+      return new UIComponent({
+        name: name,
+        template: VEComponents.get("numeric-input"),
+        layout: VELayouts.get("div"),
+        config: Struct.appendRecursive(
+          config, 
+          {
+            layout: { type: UILayoutType.VERTICAL }, 
+            field: { 
+              store: {
+                callback: function(value, data) {
+                  if (!Core.isType(value, ColorTransformer) || !Core.isType(data, UIItem)) {
+                    return
+                  }
+                  
+                  if (data.textField.isFocused()) {
+                    return
+                  }
+
+                  data.textField.setText(value.duration)
+                },
+                set: function(value) {
+                  var item = this.get()
+                  if (item == null) {
+                    return 
+                  }
+                  
+                  var parsedValue = NumberUtil.parse(value, null)
+                  if (parsedValue == null) {
+                    return
+                  }
+
+                  var transformer = item.get()
+                  transformer.setDuration(parsedValue)
+                  item.set(transformer)
+                },
+              },
+            },
+            decrease: {
+              store: {
+                callback: Lambda.passthrough,
+                set: Lambda.passthrough,
+              },
+              factor: -0.1,
+              callback: function() {
+                var factor = Struct.get(this, "factor")
+                if (!Core.isType(factor, Number) || !Core.isType(this.store, UIStore)) {
+                  return
+                }
+      
+                var item = this.store.get()
+                if (!Core.isType(item, StoreItem)) {
+                  return
+                }
+
+                var transformer = item.get()
+                transformer.setDuration(transformer.duration + factor)
+                item.set(transformer)
+              },
+            },
+            increase: {
+              store: {
+                callback: Lambda.passthrough,
+                set: Lambda.passthrough,
+              },
+              factor: 0.1,
+              callback: function() {
+                var factor = Struct.get(this, "factor")
+                if (!Core.isType(factor, Number) || !Core.isType(this.store, UIStore)) {
+                  return
+                }
+      
+                var item = this.store.get()
+                if (!Core.isType(item, StoreItem)) {
+                  return
+                }
+
+                var transformer = item.get()
+                transformer.setDuration(transformer.duration + factor)
+                item.set(transformer)
+              },
+            },
+            stick: {
+              store: {
+                callback: Lambda.passthrough,
+                set: function(value) {
+                  var item = this.get()
+                  if (!Optional.is(item)) {
+                    return 
+                  }
+
+                  var parsedValue = NumberUtil.parse(value, null)
+                  if (!Optional.is(parsedValue)) {
+                    return
+                  }
+
+                  var transformer = item.get()
+                  transformer.setDuration(parsedValue)
+                  item.set(transformer)
+                },
+              },
+              factor: 1.0,
+              getValue: function(uiItem) {
+                return uiItem.store.getValue().duration
+              },
+            },
+            checkbox: {
+
+            },
+          },
+          false
+        ),
+      }).toUIItems(layout)
+    }
+
+    var items = new Array(UIItem)
+
+    Struct.set(layout.nodes.title, "height", method(layout.nodes.title, function() { return 0 }))
+    Struct.set(layout.nodes.title, "marginRef", new Margin())
+
+    factoryHex(
+      $"{name}_hex",
+      layout.nodes.hex,
+      Struct.appendRecursive(
+        {
+          layout: { 
+            //type: layout.type,
+            propagateHidden: true,
+          },
+          button: {
+            enable: Optional.is(Struct.getIfType(config.hex.field, "enable", Struct)) 
+              ? JSON.clone(config.hex.field.enable) 
+              : null,
+            store: Optional.is(Struct.get(config.hex.field, "store")) 
+              ? JSON.clone(config.hex.field.store) 
+              : { },
+            hidden: Optional.is(Struct.getIfType(config.hex.field, "hidden", Struct)) 
+              ? JSON.clone(config.hex.field.hidden) 
+              : null,
+          }
+        },
+        Struct.get(config, "hex"),
+        false
+      )  
+    ).forEach(addItem, items)
+        
+    factoryColorIncreaseField(
+      $"{name}_red",
+      layout.nodes.red,
+      Struct.appendRecursive(
+        Struct.get(config, "red"), 
+        {
+          layout: { 
+            //type: layout.type,
+            propagateHidden: true,
+          },
+          field: { colorChannel: "red" }, 
+          slider: { colorChannel: "red" },
+          decrease: { colorChannel: "red" },
+          increase: { colorChannel: "red" },
+        },
+        false
+      )
+    ).forEach(addItem, items)
+
+    factoryColorIncreaseField (
+      $"{name}_green",
+      layout.nodes.green,
+      Struct.appendRecursive(
+        Struct.get(config, "green"),
+        {
+          layout: { 
+            //type: layout.type,
+            propagateHidden: true,
+          },
+          field: { colorChannel: "green" }, 
+          slider: { colorChannel: "green" },
+          decrease: { colorChannel: "green" },
+          increase: { colorChannel: "green" },
+        },
+        false
+      )
+    ).forEach(addItem, items)
+
+    factoryColorIncreaseField (
+      $"{name}_blue",
+      layout.nodes.blue,
+      Struct.appendRecursive(
+        Struct.get(config, "blue"),
+        {
+          layout: { 
+            //type: layout.type,
+            propagateHidden: true,
+          },
+          field: { colorChannel: "blue" }, 
+          slider: { colorChannel: "blue" },
+          decrease: { colorChannel: "blue" },
+          increase: { colorChannel: "blue" },
+        },
+        false
+      )
+    ).forEach(addItem, items)
+
+    if (Struct.contains(config, "duration")) {
+      factoryDuration(
+        $"{name}_duration",
+        layout.nodes.blue,
+        Struct.appendRecursive(
+          Struct.get(config, "duration"),
+          {
+            layout: { 
+              //type: layout.type,
+              propagateHidden: true,
+            },
           },
           false
         )
@@ -4963,7 +5412,9 @@ global.__VEComponents = new Map(String, Callable, {
         layout: VELayouts.get("spin-select"),
         config: Struct.appendRecursive(
           {
-            label: { text: "Ease" },
+            label: { 
+              text: "Ease"
+            },
             layout: { 
               type: UILayoutType.VERTICAL,
               height: function() { return 32 },
@@ -5159,6 +5610,10 @@ global.__VEComponents = new Map(String, Callable, {
                 var labelAlpha = label.alpha
                 label.alpha *= enableFactor
                 label.text = String.replaceAll(transformer.easeType, "_", " ")
+                if (keyboard_check(vk_control)) {
+                  label.text = $"F: {String.format(transformer.factor, 8, 4)},  I: {String.format(transformer.increase, 8, 4)}"
+                }
+
                 label.render(
                   // todo VALIGN HALIGN
                   this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2),
@@ -5286,6 +5741,10 @@ global.__VEComponents = new Map(String, Callable, {
       layout.nodes.value,
       Struct.appendRecursive(
         { 
+          layout: { 
+            //type: layout.type,
+            propagateHidden: true,
+          },
           field: { transformNumericProperty: "value" },
           decrease: { transformNumericProperty: "value" },
           increase: { transformNumericProperty: "value" },
@@ -5293,6 +5752,7 @@ global.__VEComponents = new Map(String, Callable, {
             transformNumericProperty: "value",
             enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "value"), "field"), "enable", Struct, { })),
             store: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "value"), "field"), "store", Struct, { })),
+            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "value"), "field"), "hidden", Struct, { })),
           },
         },
         Struct.get(config, "value"),
@@ -5306,6 +5766,10 @@ global.__VEComponents = new Map(String, Callable, {
       Struct.appendRecursive(
         Struct.get(config, "target"),
         { 
+          layout: { 
+            //type: layout.type,
+            propagateHidden: true,
+          },
           field: { transformNumericProperty: "target" },
           decrease: { transformNumericProperty: "target" },
           increase: { transformNumericProperty: "target" },
@@ -5313,18 +5777,24 @@ global.__VEComponents = new Map(String, Callable, {
             transformNumericProperty: "target",
             enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "target"), "field"), "enable", Struct, { })),
             store: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "target"), "field"), "store", Struct, { })),
+            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "target"), "field"), "hidden", Struct, { })),
           },
         },
         false
       )
     ).forEach(addItem, items)
 
+    /*
     factoryTextFieldIncreaseStickCheckbox(
       $"{name}_factor",
       layout.nodes.factor,
       Struct.appendRecursive(
         Struct.get(config, "factor"),
         {
+          layout: { 
+            //type: layout.type,
+            propagateHidden: true,
+          },
           field: { transformNumericProperty: "factor" },
           decrease: { transformNumericProperty: "factor" },
           increase: { transformNumericProperty: "factor" },
@@ -5332,6 +5802,7 @@ global.__VEComponents = new Map(String, Callable, {
             transformNumericProperty: "factor",
             enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "factor"), "field"), "enable", Struct, { })),
             store: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "factor"), "field"), "store", Struct, { })),
+            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "factor"), "field"), "hidden", Struct, { })),
           },
         },
         false
@@ -5344,6 +5815,10 @@ global.__VEComponents = new Map(String, Callable, {
       Struct.appendRecursive(
         Struct.get(config, "increase"),
         {
+          layout: { 
+            //type: layout.type,
+            propagateHidden: true,
+          },
           field: { transformNumericProperty: "increase" },
           decrease: { transformNumericProperty: "increase" },
           increase: { transformNumericProperty: "increase" },
@@ -5351,11 +5826,13 @@ global.__VEComponents = new Map(String, Callable, {
             transformNumericProperty: "increase",
             enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "enable", Struct, { })),
             store: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "store", Struct, { })),
+            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "hidden", Struct, { })),
           },
         },
         false
       )
     ).forEach(addItem, items)
+    */
 
     factoryTextFieldIncreaseStickCheckbox(
       $"{name}_duration",
@@ -5363,30 +5840,45 @@ global.__VEComponents = new Map(String, Callable, {
       Struct.appendRecursive(
         Struct.get(config, "duration"),
         {
+          layout: { 
+            //type: layout.type,
+            propagateHidden: true,
+          },
           label: {
             text: "Duration",
             color: VETheme.color.textShadow,
             enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "enable", Struct, { })),
+            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "hidden", Struct, { })),
           },
           field: {
             transformNumericProperty: "duration",
             enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "enable", Struct, { })),
             store: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "store", Struct, { })),
+            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "hidden", Struct, { })),
           },
           decrease: {
             transformNumericProperty: "duration",
             enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "enable", Struct, { })),
             store: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "store", Struct, { })),
+            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "hidden", Struct, { })),
           },
           increase: {
             transformNumericProperty: "duration",
             enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "enable", Struct, { })),
             store: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "store", Struct, { })),
+            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "hidden", Struct, { })),
           },
           stick: {
             transformNumericProperty: "duration",
             enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "enable", Struct, { })),
             store: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "store", Struct, { })),
+            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "hidden", Struct, { })),
+          },
+          checkbox: { 
+            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "hidden", Struct, { })),
+          },
+          title: { 
+            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "hidden", Struct, { })),
           },
         },
         false
@@ -5396,24 +5888,36 @@ global.__VEComponents = new Map(String, Callable, {
     factorySpinSelect(
       $"{name}_ease",
       layout.nodes.duration,
-      {
-        label: {
-          text: "Ease",
-          enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "enable", Struct, { })),
+      Struct.appendRecursive(
+        Struct.get(config, "ease"),
+        {
+          layout: { 
+            //type: layout.type,
+            propagateHidden: true,
+          },
+          label: {
+            text: "Ease",
+            enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "enable", Struct, { })),
+            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "hidden", Struct, { })),
+          },
+          previous: { 
+            enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "enable", Struct, { })),
+            store: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "store", Struct, { })),
+            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "hidden", Struct, { })),
+          },
+          preview: { 
+            enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "enable", Struct, { })),
+            store: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "store", Struct, { })),
+            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "hidden", Struct, { })),
+          },
+          next: { 
+            enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "enable", Struct, { })),
+            store: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "store", Struct, { })),
+            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "hidden", Struct, { })),
+          },
         },
-        previous: { 
-          enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "enable", Struct, { })),
-          store: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "store", Struct, { })),
-        },
-        preview: { 
-          enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "enable", Struct, { })),
-          store: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "store", Struct, { })),
-        },
-        next: { 
-          enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "enable", Struct, { })),
-          store: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "store", Struct, { })),
-        },
-      },
+        false
+      )
     ).forEach(addItem, items)
 
     return items
@@ -5427,19 +5931,6 @@ global.__VEComponents = new Map(String, Callable, {
     ///@todo move to Lambda util
     static addItem = function(item, index, items) {
       items.add(item)
-    }
-
-    ///@param {String} name
-    ///@param {UILayout} layout
-    ///@param {?Struct} [config]
-    ///@return {Array<UIItem>}
-    static factoryTitle = function(name, layout, config) {
-      return new UIComponent({
-        name: name,
-        template: VEComponents.get("property"),
-        layout: VELayouts.get("property"),
-        config: config,
-      }).toUIItems(layout)
     }
 
     ///@param {String} name
@@ -5750,6 +6241,10 @@ global.__VEComponents = new Map(String, Callable, {
                 var labelAlpha = label.alpha
                 label.alpha *= enableFactor
                 label.text = String.replaceAll(transformer.easeType, "_", " ")
+                if (keyboard_check(vk_control)) {
+                  label.text = $"F: {String.format(transformer.factor, 8, 4)},  I: {String.format(transformer.increase, 8, 4)}"
+                }
+
                 label.render(
                   // todo VALIGN HALIGN
                   this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2),
@@ -5872,18 +6367,16 @@ global.__VEComponents = new Map(String, Callable, {
 
     var items = new Array(UIItem)
 
-    factoryTitle(
-      $"{name}_title",
-      layout.nodes.title,
-      Struct.get(config, "title")
-    ).forEach(addItem, items)
-
     factoryTextFieldIncrease(
       $"{name}_value",
       layout.nodes.value,
       Struct.appendRecursive(
         Struct.get(config, "value"),
         {
+          layout: { 
+            //type: layout.type,
+            propagateHidden: true,
+          },
           field: { transformNumericProperty: "value" },
           decrease: { transformNumericProperty: "value" },
           increase: { transformNumericProperty: "value" },
@@ -5899,6 +6392,10 @@ global.__VEComponents = new Map(String, Callable, {
       Struct.appendRecursive(
         Struct.get(config, "target"),
         {
+          layout: { 
+            //type: layout.type,
+            propagateHidden: true,
+          },
           field: { transformNumericProperty: "target" },
           decrease: { transformNumericProperty: "target" },
           increase: { transformNumericProperty: "target" },
@@ -5908,12 +6405,17 @@ global.__VEComponents = new Map(String, Callable, {
       )
     ).forEach(addItem, items)
 
+    /*
     factoryTextFieldIncrease(
       $"{name}_factor", 
       layout.nodes.factor, 
       Struct.appendRecursive(
         Struct.get(config, "factor"), 
         {
+          layout: { 
+            //type: layout.type,
+            propagateHidden: true,
+          },
           field: { transformNumericProperty: "factor" },
           decrease: { transformNumericProperty: "factor" },
           increase: { transformNumericProperty: "factor" },
@@ -5929,6 +6431,10 @@ global.__VEComponents = new Map(String, Callable, {
       Struct.appendRecursive(
         Struct.get(config, "increase"), 
         {
+          layout: { 
+            //type: layout.type,
+            propagateHidden: true,
+          },
           field: { transformNumericProperty: "increase" },
           decrease: { transformNumericProperty: "increase" },
           increase: { transformNumericProperty: "increase" },
@@ -5937,13 +6443,17 @@ global.__VEComponents = new Map(String, Callable, {
         false
       )
     ).forEach(addItem, items)
-
+    */
     factoryTextFieldIncrease(
       $"{name}_duration",
       layout.nodes.duration, 
       Struct.appendRecursive(
         Struct.get(config, "duration"), 
         {
+          layout: { 
+            //type: layout.type,
+            propagateHidden: true,
+          },
           field: { transformNumericProperty: "duration" },
           decrease: { transformNumericProperty: "duration" },
           increase: { transformNumericProperty: "duration" },
@@ -5959,6 +6469,10 @@ global.__VEComponents = new Map(String, Callable, {
       Struct.appendRecursive(
         Struct.get(config, $"ease"),
         {
+          layout: { 
+            //type: layout.type,
+            propagateHidden: true,
+          },
           label: {
             text: "Ease",
             enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "ease"), "label"), "enable", Struct, { })),
@@ -5987,19 +6501,6 @@ global.__VEComponents = new Map(String, Callable, {
     ///@todo move to Lambda util
     static addItem = function(item, index, items) {
       items.add(item)
-    }
-
-    ///@param {String} name
-    ///@param {UILayout} layout
-    ///@param {?Struct} [config]
-    ///@return {Array<UIItem>}
-    static factoryTitle = function(name, layout, config) {
-      return new UIComponent({
-        name: name,
-        template: VEComponents.get("property"),
-        layout: VELayouts.get("property"),
-        config: config,
-      }).toUIItems(layout)
     }
 
     ///@param {String} name
@@ -6370,6 +6871,10 @@ global.__VEComponents = new Map(String, Callable, {
                 var labelAlpha = label.alpha
                 label.alpha *= enableFactor
                 label.text = String.replaceAll(transformer.easeType, "_", " ")
+                if (keyboard_check(vk_control)) {
+                  label.text = $"F: {String.format(transformer.factor, 8, 4)},  I: {String.format(transformer.increase, 8, 4)}"
+                }
+
                 label.render(
                   // todo VALIGN HALIGN
                   this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2),
@@ -6506,15 +7011,6 @@ global.__VEComponents = new Map(String, Callable, {
 
     var items = new Array(UIItem)
     var vectorProperty = String.toLowerCase(Struct.getIfType(config, "vectorProperty", String, "x"))
-    if (vectorProperty == "x") {
-      factoryTitle(
-        $"{name}_title",
-        layout.nodes.title,
-        Struct.get(config, "title")
-      ).forEach(addItem, items)
-    } else {
-      layout.nodes.title.proxyHeight = function() { return 0 }
-    }
 
     factoryTextFieldIncrease(
       $"{name}_value-{vectorProperty}",
@@ -6522,6 +7018,10 @@ global.__VEComponents = new Map(String, Callable, {
       Struct.appendRecursive(
         Struct.get(config, $"value"),
         {
+          layout: { 
+            //type: layout.type,
+            propagateHidden: true,
+          },
           field: {
             transformNumericProperty: "value",
             transformVectorProperty: vectorProperty,
@@ -6549,6 +7049,10 @@ global.__VEComponents = new Map(String, Callable, {
       Struct.appendRecursive(
         Struct.get(config, $"target"),
         {
+          layout: { 
+            //type: layout.type,
+            propagateHidden: true,
+          },
           field: {
             transformNumericProperty: "target",
             transformVectorProperty: vectorProperty,
@@ -6570,12 +7074,17 @@ global.__VEComponents = new Map(String, Callable, {
       )
     ).forEach(addItem, items)
 
+    /*
     factoryTextFieldIncrease(
       $"{name}_factor-{vectorProperty}",
       layout.nodes.factor,
       Struct.appendRecursive(
         Struct.get(config, $"factor"),
         {
+          layout: { 
+            //type: layout.type,
+            propagateHidden: true,
+          },
           field: {
             transformNumericProperty: "factor",
             transformVectorProperty: vectorProperty,
@@ -6603,6 +7112,10 @@ global.__VEComponents = new Map(String, Callable, {
       Struct.appendRecursive(
         Struct.get(config, $"increase"),
         {
+          layout: { 
+            //type: layout.type,
+            propagateHidden: true,
+          },
           field: {
             transformNumericProperty: "increase",
             transformVectorProperty: vectorProperty,
@@ -6623,13 +7136,18 @@ global.__VEComponents = new Map(String, Callable, {
         false
       )
     ).forEach(addItem, items)
-    
+    */
+
     factoryTextFieldIncrease(
       $"{name}_duration-{vectorProperty}",
       layout.nodes.duration,
       Struct.appendRecursive(
         Struct.get(config, $"duration"),
         {
+          layout: { 
+            //type: layout.type,
+            propagateHidden: true,
+          },
           field: {
             transformNumericProperty: "duration",
             transformVectorProperty: vectorProperty,
@@ -6657,6 +7175,10 @@ global.__VEComponents = new Map(String, Callable, {
       Struct.appendRecursive(
         Struct.get(config, $"ease"),
         {
+          layout: { 
+            //type: layout.type,
+            propagateHidden: true,
+          },
           label: {
             text: "Ease",
             enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "ease"), "label"), "enable", Struct, { })),
@@ -6676,20 +7198,6 @@ global.__VEComponents = new Map(String, Callable, {
         }
       )
     ).forEach(addItem, items)
-
-    items.add(
-      UIImage(
-        $"{name}_{vectorProperty}-line-h",
-        Struct.appendRecursive(
-          { 
-            layout: layout.nodes.line,
-            updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
-          }, 
-          VEStyles.get("line-h").image,
-          false
-        )
-      )
-    )
 
     return items
   },
@@ -6855,6 +7363,10 @@ global.__VEComponents = new Map(String, Callable, {
       Struct.appendRecursive(
         Struct.get(config, "x"),
         {
+          layout: { 
+            //type: layout.type,
+            propagateHidden: true,
+          },
           field: { vec4Property: "x" },
           slider: { vec4Property: "x" },
           decrease: { vec4Property: "x" },
@@ -6870,6 +7382,10 @@ global.__VEComponents = new Map(String, Callable, {
       Struct.appendRecursive(
         Struct.get(config, "y"),
         { 
+          layout: { 
+            //type: layout.type,
+            propagateHidden: true,
+          },
           field: { vec4Property: "y" },
           slider: { vec4Property: "y" },
           decrease: { vec4Property: "y" },
@@ -6885,6 +7401,10 @@ global.__VEComponents = new Map(String, Callable, {
       Struct.appendRecursive(
         Struct.get(config, "z"),
         {
+          layout: { 
+            //type: layout.type,
+            propagateHidden: true,
+          },
           field: { vec4Property: "z" },
           slider: { vec4Property: "z" },
           decrease: { vec4Property: "z" },
@@ -6900,6 +7420,10 @@ global.__VEComponents = new Map(String, Callable, {
       Struct.appendRecursive(
         Struct.get(config, "a"),
         {
+          layout: { 
+            //type: layout.type,
+            propagateHidden: true,
+          },
           field: { vec4Property: "a" },
           slider: { vec4Property: "a" },
           decrease: { vec4Property: "a" },
@@ -6931,7 +7455,6 @@ global.__VEComponents = new Map(String, Callable, {
         name: name,
         template: VEComponents.get("numeric-input"),
         layout: VELayouts.get("text-field-increase-stick-checkbox"),
-        
         config: Struct.appendRecursive(
           {
             field: {
@@ -7078,6 +7601,10 @@ global.__VEComponents = new Map(String, Callable, {
       Struct.appendRecursive(
         Struct.get(config, "x"),
         {
+          layout: { 
+            //type: layout.type,
+            propagateHidden: true,
+          },
           field: { vec4Property: "x" },
           stick: { vec4Property: "x" },
           decrease: { vec4Property: "x" },
@@ -7092,7 +7619,11 @@ global.__VEComponents = new Map(String, Callable, {
       layout.nodes.y,
       Struct.appendRecursive(
         Struct.get(config, "y"),
-        { 
+        {
+          layout: { 
+            //type: layout.type,
+            propagateHidden: true,
+          },
           field: { vec4Property: "y" },
           stick: { vec4Property: "y" },
           decrease: { vec4Property: "y" },
@@ -7108,6 +7639,10 @@ global.__VEComponents = new Map(String, Callable, {
       Struct.appendRecursive(
         Struct.get(config, "z"),
         {
+          layout: { 
+            //type: layout.type,
+            propagateHidden: true,
+          },
           field: { vec4Property: "z" },
           stick: { vec4Property: "z" },
           decrease: { vec4Property: "z" },
@@ -7123,6 +7658,10 @@ global.__VEComponents = new Map(String, Callable, {
       Struct.appendRecursive(
         Struct.get(config, "a"),
         {
+          layout: { 
+            //type: layout.type,
+            propagateHidden: true,
+          },
           field: { vec4Property: "a" },
           stick: { vec4Property: "a" },
           decrease: { vec4Property: "a" },

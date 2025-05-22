@@ -17,19 +17,25 @@ function factoryVEBrushToolbarTypeItem(config, index) {
         var brushToolbar = this.context.brushToolbar
         var templatesCache = brushToolbar.templatesCache
         var store = brushToolbar.store
-        var template = store.getValue("template")
-        if (Optional.is(template)) {
+        //var template = store.getValue("template")
+
+        var brush = brushToolbar.containers
+          .get("ve-brush-toolbar_inspector-view").state
+          .get("brush")
+
+        if (Optional.is(brush)) {
+          var template = brush.toTemplate()
           templatesCache.set(template.type, template.toStruct())
         }
 
-        if (store.getValue("type") != this.brushType) {
+        //if (store.getValue("type") != this.brushType) {
           store.get("type").set(this.brushType)
           var templateCached = templatesCache.get(this.brushType)
           if (Optional.is(templateCached)) {
-            template = new VEBrushTemplate(templateCached)
+            var template = new VEBrushTemplate(templateCached)
             store.get("template").set(template)
           }
-        }
+        //}
       },
       updateCustom: function() {
         this.backgroundColor = this.brushType == this.context.brushToolbar.store.getValue("type")
@@ -539,7 +545,7 @@ global.__VisuBrushContainers = new Map(String, Callable, {
         "type": null,
         "background-color": ColorUtil.fromHex(VETheme.color.side).toGMColor(),
         "empty-label": new UILabel({
-          text: "Click to\nadd template",
+          text: "Click to\nadd brush",
           font: "font_inter_10_regular",
           color: VETheme.color.textShadow,
           align: { v: VAlign.CENTER, h: HAlign.CENTER },
@@ -570,7 +576,9 @@ global.__VisuBrushContainers = new Map(String, Callable, {
           || this.collection.size() == 0) {
           this.state.get("empty-label").render(
             this.area.getX() + (this.area.getWidth() / 2),
-            this.area.getY() + (this.area.getHeight() / 2)
+            this.area.getY() + (this.area.getHeight() / 2),
+            this.area.getWidth(),
+            this.area.getHeight()
           )
         }
 
@@ -798,10 +806,16 @@ global.__VisuBrushContainers = new Map(String, Callable, {
             margin: { top: 1 },
             clipboard: {
               name: "resize_brush_inspector",
+              mouseY: null,
+              percentageHeight: null,
               drag: function() {
+                this.mouseY = MouseUtil.getMouseY()
+                this.percentageHeight = null
                 Beans.get(BeanVisuController).displayService.setCursor(Cursor.RESIZE_VERTICAL)
               },
               drop: function() {
+                this.mouseY = null
+                this.percentageHeight = null
                 Beans.get(BeanVisuController).displayService.setCursor(Cursor.DEFAULT)
               }
             },
@@ -813,6 +827,14 @@ global.__VisuBrushContainers = new Map(String, Callable, {
               var mouse = editorIO.mouse
               if (mouse.hasMoved() && mouse.getClipboard() == this.clipboard) {
                 this.updateLayout(MouseUtil.getMouseY())
+              //if (mouse.hasMoved() && mouse.getClipboard() == this.clipboard && Optional.is(this.clipboard.mouseY)) {
+              //  var mouseY = MouseUtil.getMouseY()
+              //  var mouseDiff = mouseY - this.clipboard.mouseY
+              //  if (!Optional.is(this.clipboard.percentageHeight)) {
+              //    var inspectorNode = Struct.get(this.context.layout.context.nodes, "inspector-view")
+              //    this.clipboard.percentageHeight = inspectorNode.percentageHeight
+              //  }
+              //  this.updateLayout(mouseDiff, this.clipboard.percentageHeight)
                 this.context.brushToolbar.containers.forEach(UIUtil.clampUpdateTimerToCooldown, this.context.updateTimerCooldown)
                  
                 if (!mouse_check_button(mb_left)) {
@@ -832,8 +854,8 @@ global.__VisuBrushContainers = new Map(String, Callable, {
                   var inspectorNode = Struct.get(this.context.layout.context.nodes, "inspector-view")
                   var typeNode = Struct.get(this.context.layout.context.nodes, "type")
                   var controlNode = Struct.get(this.context.layout.context.nodes, "control")
-                  var top = titleBar.layout.height() + typeNode.height() + typeNode.margin().top + typeNode.margin().bottom
-                  var bottom = GuiHeight() - statusBar.layout.height() - (controlNode.height() + controlNode.margin().top + controlNode.margin().bottom) - (toolNode.height() + toolNode.margin().top + toolNode.margin().bottom)
+                  var top = titleBar.layout.height() + typeNode.height() + typeNode.__margin.top + typeNode.__margin.bottom
+                  var bottom = GuiHeight() - statusBar.layout.height() - (controlNode.height() + controlNode.__margin.top + controlNode.__margin.bottom) - (toolNode.height() + toolNode.__margin.top + toolNode.__margin.bottom)
                   var length = bottom - top
                   var before = inspectorNode.percentageHeight
                   inspectorNode.percentageHeight = clamp(inspectorNode.percentageHeight, 4.0 / length, 1.0 - (48.0 / length))
@@ -845,6 +867,7 @@ global.__VisuBrushContainers = new Map(String, Callable, {
               }
             },
             updateLayout: new BindIntent(function(_position) {
+            //updateLayout: new BindIntent(function(_position, _percentageHeight) {
               var editor = Beans.get(BeanVisuEditorController)
               var uiService = Beans.get(BeanVisuEditorController).uiService
               var titleBar = uiService.find("ve-title-bar")
@@ -854,13 +877,19 @@ global.__VisuBrushContainers = new Map(String, Callable, {
               var toolNode = Struct.get(this.context.layout.context.nodes, "inspector-tool")
               var typeNode = Struct.get(this.context.layout.context.nodes, "type")
               var controlNode = Struct.get(this.context.layout.context.nodes, "control")
-              var top = titleBar.layout.height() + typeNode.height() + typeNode.margin().top + typeNode.margin().bottom
-              var bottom = GuiHeight() - statusBar.layout.height() - (controlNode.height() + controlNode.margin().top + controlNode.margin().bottom) - (toolNode.height() + toolNode.margin().top + toolNode.margin().bottom)
+              var top = titleBar.layout.height() + typeNode.height() + typeNode.__margin.top + typeNode.__margin.bottom
+              var bottom = GuiHeight() - statusBar.layout.height() - (controlNode.height() + controlNode.__margin.top + controlNode.__margin.bottom) - (toolNode.height() + toolNode.__margin.top + toolNode.__margin.bottom)
               var length = bottom - top
               var position = clamp(_position - top, 4.0, length - 4.0)
               var before = inspectorNode.percentageHeight
               inspectorNode.percentageHeight = clamp((length - position) / length, 8.0 / length, 1.0 - (48.0 / length))
+              //var position = _position;//clamp(_position - top, 4.0, length - 4.0)
+              //inspectorNode.percentageHeight = _percentageHeight
+              //brushNode.percentageHeight = 1.0 - _percentageHeight
+              //var before = round(inspectorNode.percentageHeight * length)
+              //inspectorNode.percentageHeight = clamp((before - position) / length, 0.0, 1.0) 
               brushNode.percentageHeight = 1.0 - inspectorNode.percentageHeight
+              //if (before != round(inspectorNode.percentageHeight * length)) {
               if (before != inspectorNode.percentageHeight) {
                 editor.brushToolbar.containers.forEach(editor.accordion.resetUpdateTimer)
               }
@@ -899,8 +928,8 @@ global.__VisuBrushContainers = new Map(String, Callable, {
             width: function() { return this.context.height() },
             x: function() { return this.context.x()
               + (this.collection.getIndex() * this.width())
-              + (this.collection.getIndex() * this.margin().right)
-              + ((this.collection.getIndex() + 1) * this.margin().left) },
+              + (this.collection.getIndex() * this.__margin.right)
+              + ((this.collection.getIndex() + 1) * this.__margin.left) },
           }
         },
         config: {
@@ -1761,16 +1790,16 @@ function VEBrushToolbar(_editor) constructor {
             margin: { top: 1, bottom: 1, left: 0, right: 10 },
             x: function() { return this.context.x()
               + this.context.nodes.resize.width()
-              + this.margin().left },
+              + this.__margin.left },
             width: function() { return this.context.width() 
               - this.context.nodes.resize.width()
-              - this.margin().left 
-              - this.margin().right },
-            y: function() { return this.margin().top
+              - this.__margin.left 
+              - this.__margin.right },
+            y: function() { return this.__margin.top
                + Struct.get(this.context.nodes, "brush-bar").bottom() },
             height: function() { return ceil((this.context.height() 
                - this.context.staticHeight()) * this.percentageHeight) 
-               - this.margin().top - this.margin().bottom },
+               - this.__margin.top - this.__margin.bottom },
           },
           "inspector-bar": {
             name: "brush-toolbar.inspector-bar",
@@ -1826,16 +1855,16 @@ function VEBrushToolbar(_editor) constructor {
             margin: { top: 1, bottom: 1, left: 0, right: 10 },
             x: function() { return this.context.x()
               + this.context.nodes.resize.width()
-              + this.margin().left },
+              + this.__margin.left },
             width: function() { return this.context.width() 
               - this.context.nodes.resize.width()
-              - this.margin().left 
-              - this.margin().right },
-            y: function() { return this.margin().top
+              - this.__margin.left 
+              - this.__margin.right },
+            y: function() { return this.__margin.top
               + Struct.get(this.context.nodes, "inspector-tool").bottom() },
             height: function() { return ceil((this.context.height() 
               - this.context.staticHeight()) * this.percentageHeight) 
-              - this.margin().top - this.margin().bottom - 1},
+              - this.__margin.top - this.__margin.bottom - 1},
           },
           "control": {
             name: "brush-toolbar.category",
@@ -1919,9 +1948,9 @@ function VEBrushToolbar(_editor) constructor {
           text: template.name,
           onMouseReleasedLeft: function() {
             var template = this.context.brushToolbar.store.get("template")
-            if (!Core.isType(template.get(), VEBrushTemplate)
-                || template.get().name != this.brushTemplate.name
-                || template.get().type != this.brushTemplate.type) {
+            //if (!Core.isType(template.get(), VEBrushTemplate)
+            //    || template.get().name != this.brushTemplate.name
+            //    || template.get().type != this.brushTemplate.type) {
 
               var templates = Beans.get(BeanVisuController).brushService
                 .fetchTemplates(this.brushTemplate.type)
@@ -1930,7 +1959,7 @@ function VEBrushToolbar(_editor) constructor {
               }
 
               var foundTemplate = templates.find(function(template, index, name) {
-                return template.name = name
+                return template.name == name
               }, this.brushTemplate.name)
               if (!Core.isType(foundTemplate, VEBrushTemplate)) {
                 return
@@ -1942,7 +1971,7 @@ function VEBrushToolbar(_editor) constructor {
               if (Optional.is(inspector)) {
                 inspector.finishUpdateTimer()
               }
-            }
+            //}
           },
           brushTemplate: template,
         },
@@ -1962,9 +1991,9 @@ function VEBrushToolbar(_editor) constructor {
           },
           callback: function() {
             var template = this.context.brushToolbar.store.get("template")
-            if (!Core.isType(template.get(), VEBrushTemplate)
-                || template.get().name != this.brushTemplate.name
-                || template.get().type != this.brushTemplate.type) {
+            //if (!Core.isType(template.get(), VEBrushTemplate)
+            //    || template.get().name != this.brushTemplate.name
+            //    || template.get().type != this.brushTemplate.type) {
 
               var templates = Beans.get(BeanVisuController).brushService
                 .fetchTemplates(this.brushTemplate.type)
@@ -1973,7 +2002,7 @@ function VEBrushToolbar(_editor) constructor {
               }
 
               var foundTemplate = templates.find(function(template, index, name) {
-                return template.name = name
+                return template.name == name
               }, this.brushTemplate.name)
               if (!Core.isType(foundTemplate, VEBrushTemplate)) {
                 return
@@ -1985,7 +2014,7 @@ function VEBrushToolbar(_editor) constructor {
               if (Optional.is(inspector)) {
                 inspector.finishUpdateTimer()
               }
-            }
+            //}
           },
           brushTemplate: template,
         },

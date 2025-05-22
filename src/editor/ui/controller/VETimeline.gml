@@ -197,67 +197,67 @@ function VETimeline(_editor) constructor {
               return ceil(clamp(
                 max(this.percentageWidth * this.context.context.context.width(), this.minWidth), 
                 this.minWidth, 
-                this.maxWidth)) - this.margin().left - this.margin().right - 4
+                this.maxWidth)) - this.__margin.left - this.__margin.right - 4
             },
             height: function() { return 29 
-              - this.margin().bottom
+              - this.__margin.bottom
               + this.context.nodes.toolbar.height()
-              + this.context.nodes.toolbar.margin().top
-              + this.context.nodes.toolbar.margin().bottom },
+              + this.context.nodes.toolbar.__margin.top
+              + this.context.nodes.toolbar.__margin.bottom },
             x: function() { return 0 },
-            y: function() { return this.context.y() + this.context.nodes.resize.height() + this.margin().top },
+            y: function() { return this.context.y() + this.context.nodes.resize.height() + this.__margin.top },
           },
           settings: {
             name: "timeline.settings",
             margin: { top: 3, bottom: 4, left: 10, right: 0 },
-            width: function() { return this.context.nodes.form.width() - this.margin().left },
+            width: function() { return this.context.nodes.form.width() - this.__margin.left },
             height: function() { return this.context.height()
-              - this.context.nodes.resize.height() - this.margin().top },
-            x: function() { return this.context.x() + this.margin().left },
-            y: function() { return this.context.y() + this.context.nodes.resize.height() + this.margin().top },
+              - this.context.nodes.resize.height() - this.__margin.top },
+            x: function() { return this.context.x() + this.__margin.left },
+            y: function() { return this.context.y() + this.context.nodes.resize.height() + this.__margin.top },
           },
           toolbar: {
             name: "timeline.toolbar",
             width: function() { return this.context.x() + this.context.width() 
               - this.context.nodes.resizeHorizontal.right()
-              - this.margin().left
-              - this.margin().right },
+              - this.__margin.left
+              - this.__margin.right },
             height: function() { return 0
-              - this.margin().top
-              - this.margin().bottom },
+              - this.__margin.top
+              - this.__margin.bottom },
             margin: { top: 0, bottom: 0, left: 2, right: 1 },
-            x: function() { return this.context.nodes.resizeHorizontal.right() + this.margin().left },
-            y: function() { return this.context.y() + this.margin().top + this.context.nodes.resize.height() },
+            x: function() { return this.context.nodes.resizeHorizontal.right() + this.__margin.left },
+            y: function() { return this.context.y() + this.__margin.top + this.context.nodes.resize.height() },
           },
           ruler: {
             name: "timeline.ruler",
             width: function() { return this.context.x() + this.context.width() 
               - this.context.nodes.resizeHorizontal.right()
-              - this.margin().left
-              - this.margin().right },
+              - this.__margin.left
+              - this.__margin.right },
             height: function() { return this.context.nodes.form.height() 
               - this.context.nodes.toolbar.height()
-              - this.context.nodes.toolbar.margin().top
-              - this.context.nodes.toolbar.margin().bottom
-              - this.margin().top
-              - this.margin().bottom },
+              - this.context.nodes.toolbar.__margin.top
+              - this.context.nodes.toolbar.__margin.bottom
+              - this.__margin.top
+              - this.__margin.bottom },
             margin: { top: 8, bottom: 0, left: 2, right: 1 },
-            x: function() { return this.context.nodes.resizeHorizontal.right() + this.margin().left },
-            y: function() { return this.context.y() + this.margin().top + this.context.nodes.resize.height() + this.context.nodes.toolbar.height() },
+            x: function() { return this.context.nodes.resizeHorizontal.right() + this.__margin.left },
+            y: function() { return this.context.y() + this.__margin.top + this.context.nodes.resize.height() + this.context.nodes.toolbar.height() },
           },
           channels: {
             name: "timeline.channels",
             margin: { left: 10, right: 0 },
             width: function() { return this.context.nodes.form.width() 
-              - this.margin().left - this.margin().right },
+              - this.__margin.left - this.__margin.right },
             height: function() { return this.context.height() 
               - this.context.nodes.form.height()
-              - this.context.nodes.form.margin().top
-              - this.context.nodes.form.margin().bottom
+              - this.context.nodes.form.__margin.top
+              - this.context.nodes.form.__margin.bottom
               - this.context.nodes.resize.height()
-              - this.context.nodes.resize.margin().top
-              - this.context.nodes.resize.margin().bottom },
-            x: function() { return this.context.x() + this.margin().left },
+              - this.context.nodes.resize.__margin.top
+              - this.context.nodes.resize.__margin.bottom },
+            x: function() { return this.context.x() + this.__margin.left },
             y: function() { return this.context.nodes.form.bottom() },
           },
           events: {
@@ -269,8 +269,8 @@ function VETimeline(_editor) constructor {
               - this.context.nodes.resize.height() - 12 },
             margin: { top: 0, bottom: 0, left: 2, right: 1 },
             x: function() { return this.context.nodes.resizeHorizontal.right() 
-              + this.margin().left},
-            y: function() { return this.context.nodes.form.bottom() + this.margin().top },
+              + this.__margin.left},
+            y: function() { return this.context.nodes.form.bottom() + this.__margin.top },
           }
         }
       }, 
@@ -321,7 +321,7 @@ function VETimeline(_editor) constructor {
 
                 //container.surfaceTick.skip()
                 //container.updateTimer.time = container.updateTimer.duration + random(container.updateTimer.duration / 2.0)
-                container.updateTimer.time = clamp(container.updateTimer.time, container.updateTimer.duration * 0.9500, container.updateTimer.duration * 2.0)
+                container.updateTimer.time = clamp(container.updateTimer.time, container.updateTimer.duration * 0.9000, container.updateTimer.duration * 2.0)
               }
 
               var editorIO = Beans.get(BeanVisuEditorIO)
@@ -391,7 +391,7 @@ function VETimeline(_editor) constructor {
 
                 //container.surfaceTick.skip()
                 //container.updateTimer.time = container.updateTimer.duration + random(container.updateTimer.duration / 2.0)
-                container.updateTimer.time = clamp(container.updateTimer.time, container.updateTimer.duration * 0.9500, container.updateTimer.duration * 2.0)
+                container.updateTimer.time = clamp(container.updateTimer.time, container.updateTimer.duration * 0.9000, container.updateTimer.duration * 2.0)
               }
 
               var editorIO = Beans.get(BeanVisuEditorIO)
@@ -1046,7 +1046,7 @@ function VETimeline(_editor) constructor {
         lastIndex: 0,
         selectedSprite: SpriteUtil.parse({ 
           name: "texture_selected_event",
-          speed: 24,
+          speed: 80,
         }),
         fetchViewHeight: function() {
           return (32 * this.state.get("amount"))

@@ -544,6 +544,18 @@ function VisuController(layerName) constructor {
     },
   })
 
+  ///@private
+  ///@type {DebugTimer}
+  updateDebugTimer = new DebugTimer("updateDebugTimer")
+
+  ///@private
+  ///@type {DebugTimer}
+  renderTimer = new DebugTimer("renderTimer")
+  
+  ///@private
+  ///@type {DebugTimer}
+  renderGUITimer = new DebugTimer("renderGUITimer")
+
   ///@type {UIService}
   uiService = new UIService(this)
 
@@ -1001,6 +1013,10 @@ function VisuController(layerName) constructor {
       }
     }
 
+    if (cursor_sprite == -1 && is_debug_overlay_open() && this.displayService.getCursor() == Cursor.NONE) {
+      displayService.setCursor(Cursor.DEFAULT)
+    }
+
     if (cursor_sprite != -1 && this.displayService.getCursor() != Cursor.NONE) {
       cursor_sprite = -1
     }
@@ -1023,6 +1039,7 @@ function VisuController(layerName) constructor {
 
   ///@return {VisuController}
   update = function() {
+    this.updateDebugTimer.start()
     this.updateUIService()
     this.services.forEach(this.updateService, this)
     this.updateCursor()
@@ -1036,35 +1053,41 @@ function VisuController(layerName) constructor {
     }
     this.visuRenderer.update()
     this.watchdog()
+    updateDebugTimer.finish()
     return this
   }
 
   ///@return {VisuController}
   render = function() {
+    this.renderTimer.start()
     GPU.set.colorWrite(true, true, true, true)
     if (!this.renderEnabled) {
+      this.renderTimer.finish()
       return this
     }
 
-    try {
+    //try {
       //gpu_set_alphatestenable(true) ///@todo investigate
       //this.gridECS.render() ///@description ecs
       this.visuRenderer.render()
-    } catch (exception) {
-      var message = $"'render' fatal error: {exception.message}"
-      Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
-      Logger.error(BeanVisuController, message)
-      GPU.reset.shader()
-      GPU.reset.surface()
-      GPU.reset.blendMode()
-    }
-    
+    //} catch (exception) {
+      //var message = $"'render' fatal error: {exception.message}"
+      //Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
+      //Logger.error(BeanVisuController, message)
+      //GPU.reset.shader()
+      //GPU.reset.surface()
+      //GPU.reset.blendMode()
+    //}
+
+    this.renderTimer.finish()
     return this
   }
 
   ///@return {VisuController}
   renderGUI = function() {
+    this.renderGUITimer.start()
     if (!this.renderGUIEnabled) {
+      this.renderGUITimer.finish()
       return this
     }
 
@@ -1080,6 +1103,7 @@ function VisuController(layerName) constructor {
       GPU.reset.blendMode()
     }
 
+    this.renderGUITimer.finish()
     return this
   }
 
