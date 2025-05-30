@@ -59,9 +59,9 @@ function VisuController(layerName) constructor {
               fsm.context.send(data)
             }
 
-            fsmState.state.set("bkgTimer", new Timer(4.0 + random(12.0), { loop: Infinity }))
-            fsmState.state.set("bkgColorTimer", new Timer(4.0 + random(12.0), { loop: Infinity }))
-            fsmState.state.set("glitchTimer", new Timer(4.0 + random(12.0), { loop: Infinity }))
+            fsmState.state.set("bkgTimer", new Timer(6.0 + random(10.0), { loop: Infinity }))
+            fsmState.state.set("bkgColorTimer", new Timer(6.0 + random(10.0), { loop: Infinity }))
+            fsmState.state.set("glitchTimer", new Timer(6.0 + random(10.0), { loop: Infinity }))
           },
           onFinish: function(fsm, fsmState, data) {
             var controller = Beans.get(BeanVisuController)
@@ -96,29 +96,31 @@ function VisuController(layerName) constructor {
   
           var bkgTimer = this.state.get("bkgTimer")
           if (bkgTimer.update().finished) {
-            bkgTimer.setDuration(3.0 + random(8.0))
-            gridService.init()
+            bkgTimer.setDuration(6.0 + random(10.0))
+            gridService.init(bkgTimer.duration * (0.75 + random(0.75)))
           }
 
           var bkgColorTimer = this.state.get("bkgColorTimer")
           if (bkgColorTimer.update().finished) {
-            bkgColorTimer.setDuration(3.0 + random(9.0))
+            bkgColorTimer.setDuration(6.0 + random(10.0))
             var properties = gridService.properties
             var pump = controller.dispatcher
             var executor = controller.executor
             var color = ColorUtil.parse(GMArray.getRandom([
               "#000000",
               "#160e24",
-              "#6e0d27",
-              "#c21772",
-              "#5d2985", 
+              "#000000",
+              "#300642",
+              "#000000",
+              "#161d21",
+              "#000000",
+              "#463b5c",
+              "#000000",
               "#c4146c",
+              "#000000",
               "#1d6296",
-              "#4550e6",
-              "#d62ce6",
-              "#1082c9",
-              "#1c070a",
-              "#160b24"
+              "#000000",
+              "#4550e6"
             ]))
             Visu.resolveColorTransformerTrackEvent(
               {
@@ -138,12 +140,13 @@ function VisuController(layerName) constructor {
 
           var glitchTimer = this.state.get("glitchTimer")
           if (glitchTimer.update().finished) {
-            glitchTimer.setDuration(4.0 + random(16.0))
-            controller.visuRenderer.hudRenderer.sendGlitchEvent()
+            glitchTimer.setDuration(6.0 + random(10.0))
+            var factor = 0.08 + random(1.0) * 0.08
             effect_track_event.brush_effect_glitch.run({
               "ef-glt_use-config": false,
               "ef-glt_use-fade-out": true,
-              "ef-glt_fade-out": 0.08 + random(1.0) * 0.16,
+              "ef-glt_fade-out": factor,
+              "ef-glt_glitch": choose(GlitchType.GRID, GlitchType.GRID, GlitchType.BACKGROUND),
             })
           }
 
@@ -1091,17 +1094,17 @@ function VisuController(layerName) constructor {
       return this
     }
 
-    try {
+    //try {
       //this.gridECS.renderGUI() ///@description ecs
       this.visuRenderer.renderGUI()
-    } catch (exception) {
-      var message = $"'renderGUI' fatal error: {exception.message}"
-      Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
-      Logger.error(BeanVisuController, message)
-      GPU.reset.shader()
-      GPU.reset.surface()
-      GPU.reset.blendMode()
-    }
+    //} catch (exception) {
+    //  var message = $"'renderGUI' fatal error: {exception.message}"
+    //  Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
+    //  Logger.error(BeanVisuController, message)
+    //  GPU.reset.shader()
+    //  GPU.reset.surface()
+    //  GPU.reset.blendMode()
+    //}
 
     this.renderGUITimer.finish()
     return this

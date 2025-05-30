@@ -905,6 +905,19 @@ function _Visu() constructor {
 
   ///@param {Struct} data
   ///@param {String} useKey
+  ///@param {String} eventName
+  ///@param {any} eventData
+  ///@param {EventPump} pump
+  static resolveExecuteEventTrackEvent = function(data, useKey, eventName, eventData, pump) {
+    if (!Struct.get(data, useKey)) {
+      return
+    }
+
+    pump.execute(new Event(eventName, eventData))
+  }
+
+  ///@param {Struct} data
+  ///@param {String} useKey
   ///@param {String} transformerKey
   ///@param {String} changeKey
   ///@param {String} containerKey
@@ -949,18 +962,7 @@ function _Visu() constructor {
       return
     }
 
-    var colA = Struct.get(container, containerKey)
-    var colB = Struct.get(data, colorKey)
     var duration = Struct.get(data, speedKey) 
-    var length = max(
-      abs(colA.red - colB.red),
-      abs(colA.green - colB.green),
-      abs(colA.blue - colB.blue)
-    )
-
-    var factor = duration > 0.0 && length > 0.0
-      ? (length / (duration * GAME_FPS))
-      : 1.0
     pump.send(new Event("transform-property", {
       key: containerKey,
       container: container,
@@ -968,8 +970,7 @@ function _Visu() constructor {
       transformer: new ColorTransformer({
         value: Struct.get(container, containerKey).toHex(false),
         target: Struct.get(data, colorKey).toHex(false),
-        factor: factor,
-        increase: 0.0,
+        duration: duration,
       })
     }))
   }
@@ -991,6 +992,7 @@ function _Visu() constructor {
   ///@param {Number} [layerDefaultDepth]
   ///@return {Visu}
   static run = function(layerName = "layer_main", layerDefaultDepth = 100) {
+    randomize()
     initBeans()
     initGPU()
     initGMTF()

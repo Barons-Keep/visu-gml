@@ -144,7 +144,7 @@ function VETitleBar(_editor) constructor {
                 transformer: new ColorTransformer({
                   value: item.backgroundColorSelected,
                   target: item.backgroundColorOut,
-                  factor: 0.026,
+                  duration: 0.66,
                 })
               })
               .whenUpdate(function(executor) {
@@ -195,7 +195,7 @@ function VETitleBar(_editor) constructor {
               transformer: new ColorTransformer({
                 value: item.backgroundColorSelected,
                 target: item.backgroundColorOut,
-                factor: 0.026,
+                duration: 0.66,
               })
             })
             .whenUpdate(function(executor) {

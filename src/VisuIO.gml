@@ -48,6 +48,7 @@ function VisuIO() constructor {
       var fullscreen = controller.displayService.getFullscreen()
       Logger.debug("VisuIO", String.join("Set fullscreen to", fullscreen ? "'false'" : "'true'", "."))
       controller.displayService.setFullscreen(!fullscreen)
+      Visu.settings.setValue("visu.fullscreen", !fullscreen).save()
     }
 
     return this

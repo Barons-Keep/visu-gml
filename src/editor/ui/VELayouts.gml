@@ -159,32 +159,20 @@ global.__VELayouts = new Map(String, Callable, {
             - this.context.nodes.image.width()
             - this.context.nodes.image.__margin.left
             - this.context.nodes.image.__margin.right
-            - this.context.nodes.remove.width()
-            - this.context.nodes.remove.__margin.left
-            - this.context.nodes.remove.__margin.right 
-            - this.context.nodes.settings.width()
-            - this.context.nodes.settings.__margin.left
-            - this.context.nodes.settings.__margin.right },
+            - this.context.nodes.select.width()
+            - this.context.nodes.select.__margin.left
+            - this.context.nodes.select.__margin.right },
           height: function() { return 30 },
           x: function() { return this.context.x() + this.context.nodes.image.right() + 2 },
           propagateHidden: Struct.getIfType(Struct.get(config, "label"), "propagateHidden", Boolean, true),
         },
-        remove: {
-          name: "brush-entry.remove",
+        select: {
+          name: "brush-entry.select",
           width: function() { return 34 - this.__margin.left - this.__margin.right },
           height: function() { return 32 - this.__margin.top - this.__margin.bottom },
           margin: { top: 0, left: 2, right: 2, bottom: 2 },
           x: function() { return this.context.x() + this.context.nodes.label.right()
             + this.__margin.right },
-          y: function() { return this.context.y() + this.__margin.top },
-        },
-        settings: {
-          name: "brush-entry.settings",
-          width: function() { return 32 - this.__margin.left - this.__margin.right },
-          height: function() { return 32 - this.__margin.top - this.__margin.bottom },
-          margin: { top: 0, left: 0, right: 2, bottom: 2 },
-          x: function() { return this.context.x() + this.context.nodes.remove.right()
-            + this.__margin.right - 2 },
           y: function() { return this.context.y() + this.__margin.top },
         },
       }

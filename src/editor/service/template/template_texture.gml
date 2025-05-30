@@ -25,7 +25,22 @@ function template_texture(json = null) {
             },
             store: { key: "texture-template" },
             origin: "texture-template",
+            onMousePressedLeft: function(event) {
+              var editorIO = Beans.get(BeanVisuEditorIO)
+              var mouse = editorIO.mouse
+              if (Optional.is(mouse.getClipboard())) {
+                return
+              }
+
+              mouse.setClipboard(this)
+            },
             onMouseOnLeft: function(event) {
+              var editorIO = Beans.get(BeanVisuEditorIO)
+              var mouse = editorIO.mouse
+              if (mouse.getClipboard() != this) {
+                return
+              }
+
               var _x = event.data.x - this.context.area.getX() - this.area.getX() - this.context.offset.x
               var _y = event.data.y - this.context.area.getY() - this.area.getY() - this.context.offset.y
               var areaWidth = this.area.getWidth()

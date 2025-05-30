@@ -334,11 +334,11 @@ function brush_effect_shader(json) {
             w_min: 570,
             store: { key: "ef-shd_merge-cfg" },
             enable: { key: "ef-shd_use-merge-cfg" },
-            hidden: { key: "ef-shd_hide-merge-cfg",},
+            hidden: { key: "ef-shd_hide-merge-cfg" },
             updateCustom: UIItemUtils.textField.getUpdateJSONTextArea(),
           },
         },
-      }
+      },
     ]),
   }
 }

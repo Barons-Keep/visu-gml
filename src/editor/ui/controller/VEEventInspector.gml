@@ -454,7 +454,7 @@ function VEEventInspector(_editor) constructor {
                       transformer: new ColorTransformer({
                         value: VETheme.color.accentLight,
                         target: item.isHoverOver ? item.colorHoverOver : item.colorHoverOut,
-                        factor: 0.016,
+                        duration: 1.0,
                       })
                     })
                     .whenUpdate(function(executor) {
@@ -590,7 +590,7 @@ function VEEventInspector(_editor) constructor {
                       transformer: new ColorTransformer({
                         value: VETheme.color.accentLight,
                         target: item.isHoverOver ? item.colorHoverOver : item.colorHoverOut,
-                        factor: 0.016,
+                        duration: 1.0,
                       })
                     })
                     .whenUpdate(function(executor) {

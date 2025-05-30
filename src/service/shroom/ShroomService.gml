@@ -34,12 +34,6 @@ function ShroomService(_controller, config = {}): Service() constructor {
   ///@type {?Struct}
   subtitlesAreaEvent = null
 
-  ///@type {?Struct}
-  playerBorder = null
-
-  ///@type {?Struct}
-  playerBorderEvent = null
-
   ///@type {?GameMode}
   gameMode = null
 

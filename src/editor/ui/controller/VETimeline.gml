@@ -1019,7 +1019,7 @@ function VETimeline(_editor) constructor {
         }
       },
       //"ve-timeline-toolbar": {
-//
+      //
       //},
       "ve-timeline-events": {
         name: "ve-timeline-events",

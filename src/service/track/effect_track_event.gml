@@ -10,25 +10,17 @@ global.__ShaderPipelineType = new _ShaderPipelineType()
 #macro ShaderPipelineType global.__ShaderPipelineType
 
 
-///@param {String} type
-///@return {ShaderPipelineType}
-function migrateShaderPipelineType(type) {
-  switch (type) {
-    case ShaderPipelineType.BACKGROUND:
-    case "Background": 
-      return ShaderPipelineType.BACKGROUND
-    case ShaderPipelineType.GRID:
-    case "Grid":
-      return ShaderPipelineType.GRID
-    case ShaderPipelineType.COMBINED:
-    case "All":
-      return ShaderPipelineType.COMBINED
-    default: 
-      Logger.warn("migrateShaderPipelineType", $"Found unsupported type: '{type}'. Return default value: '{ShaderPipelineType.COMBINED}'")
-      return ShaderPipelineType.COMBINED
-  }
+///@enum
+function _GlitchType(): Enum() constructor {
+  BACKGROUND = "BACKGROUND"
+  GRID = "GRID"
+  COMBINED = "COMBINED"
 }
+global.__GlitchType = new _GlitchType()
+#macro GlitchType global.__GlitchType
 
+
+///@type {Boolean}
 #macro TRACK_EVENT_DEFAULT_HIDDEN_VALUE false
 
 ///@static
@@ -101,6 +93,7 @@ global.__effect_track_event = {
         "ef-glt_hide-shd": Struct.parse.boolean(data, "ef-glt_hide-shd", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "ef-glt_use-fade-out": Struct.parse.boolean(data, "ef-glt_use-fade-out"),
         "ef-glt_fade-out": Struct.parse.number(data, "ef-glt_fade-out", 0.01, 0.0, 1.0),
+        "ef-glt_glitch": Struct.parse.enumerable(data, "ef-glt_glitch", GlitchType, GlitchType.COMBINED),
         "ef-glt_use-config": Struct.parse.boolean(data, "ef-glt_use-config"),
         "ef-glt_line-spd": Struct.parse.number(data, "ef-glt_line-spd", 0.01, 0.0, 0.5),
         "ef-glt_line-shift": Struct.parse.number(data, "ef-glt_line-shift", 0.004, 0.0, 0.05),
@@ -120,12 +113,26 @@ global.__effect_track_event = {
       }
     },
     run: function(data, channel) {
+      static getGlitch = function(data, key) {
+        var controller = Beans.get(BeanVisuController)
+        var gridRenderer = controller.visuRenderer.gridRenderer
+        var glitch = Struct.get(data, key)
+        switch (glitch) {
+          case GlitchType.BACKGROUND: return gridRenderer.backgroundGlitchService
+          case GlitchType.GRID: return gridRenderer.gridGlitchService
+          case GlitchType.COMBINED: return gridRenderer.combinedGlitchService
+          default: 
+            Logger.warn("Track", $"Found unsupported glitch: {glitch}. Return default: 'combinedGlitchService'")
+            return gridRenderer.combinedGlitchService
+        }
+      }
+
       var controller = Beans.get(BeanVisuController)
       if (!controller.isChannelDifficultyValid(channel)) {
         return
       }
 
-      var pump = controller.visuRenderer.gridRenderer.glitchService.dispatcher
+      var pump = getGlitch(data, "ef-glt_glitch").dispatcher
 
       ///@description feature TODO effect.glitch.config
       if (Struct.get(data, "ef-glt_use-config")) {
@@ -209,7 +216,7 @@ global.__effect_track_event = {
       }
 
       ///@description feature TODO effect.glitch.spawn
-      pump.execute(new Event("spawn", { 
+      pump.execute(new Event("spawn-glitch", { 
         factor: (Struct.get(data, "ef-glt_use-fade-out")  ///@todo NumberTransformer
           ? (Struct.get(data, "ef-glt_fade-out") / 100.0) 
           : 0.0),
@@ -282,6 +289,12 @@ global.__effect_track_event = {
         "ef-cfg_use-render-shd-all": Struct.parse.boolean(data, "ef-cfg_use-render-shd-all"),
         "ef-cfg_render-shd-all": Struct.parse.boolean(data, "ef-cfg_render-shd-all"),
         "ef-cfg_cls-shd-all": Struct.parse.boolean(data, "ef-cfg_cls-shd-all"),
+        "ef-cfg_use-render-bkg-glt": Struct.parse.boolean(data, "ef-cfg_use-render-bkg-glt"),
+        "ef-cfg_render-bkg-glt": Struct.parse.boolean(data, "ef-cfg_render-bkg-glt"),
+        "ef-cfg_cls-bkg-glt": Struct.parse.boolean(data, "ef-cfg_cls-bkg-glt"),
+        "ef-cfg_use-render-gr-glt": Struct.parse.boolean(data, "ef-cfg_use-render-gr-glt"),
+        "ef-cfg_render-gr-glt": Struct.parse.boolean(data, "ef-cfg_render-gr-glt"),
+        "ef-cfg_cls-gr-glt": Struct.parse.boolean(data, "ef-cfg_cls-gr-glt"),
         "ef-cfg_use-render-glt": Struct.parse.boolean(data, "ef-cfg_use-render-glt"),
         "ef-cfg_render-glt": Struct.parse.boolean(data, "ef-cfg_render-glt"),
         "ef-cfg_cls-glt": Struct.parse.boolean(data, "ef-cfg_cls-glt"),
@@ -395,6 +408,48 @@ global.__effect_track_event = {
         "ef-cfg_change-particle-z",
         "particleZ",
         properties.depths, pump, executor)
+
+      ///@description feature TODO effect.glitch.bkg.render
+      Visu.resolveBooleanTrackEvent(data,
+        "ef-cfg_use-render-bkg-glt",
+        "ef-cfg_render-bkg-glt",
+        "renderBackgroundGlitch",
+        properties)
+
+      ///@description feature TODO effect.glitch.bkg.clear
+      Visu.resolveExecuteEventTrackEvent(data,
+        "ef-cfg_cls-bkg-glt",
+        "clear-glitch",
+        null,
+        controller.visuRenderer.gridRenderer.backgroundGlitchService.dispatcher)
+        
+      ///@description feature TODO effect.glitch.grid.render
+      Visu.resolveBooleanTrackEvent(data,
+        "ef-cfg_use-render-gr-glt",
+        "ef-cfg_render-gr-glt",
+        "renderGridGlitch",
+        properties)
+
+      ///@description feature TODO effect.glitch.grid.clear
+      Visu.resolveExecuteEventTrackEvent(data,
+        "ef-cfg_cls-gr-glt",
+        "clear-glitch",
+        null,
+        controller.visuRenderer.gridRenderer.gridGlitchService.dispatcher)
+      
+      ///@description feature TODO effect.glitch.combined.render
+      Visu.resolveBooleanTrackEvent(data,
+        "ef-cfg_use-render-glt",
+        "ef-cfg_render-glt",
+        "renderCombinedGlitch",
+        properties)
+
+      ///@description feature TODO effect.glitch.combined.clear
+      Visu.resolveExecuteEventTrackEvent(data,
+        "ef-cfg_cls-glt",
+        "clear-glitch",
+        null,
+        controller.visuRenderer.gridRenderer.combinedGlitchService.dispatcher)
     },
   },
 }

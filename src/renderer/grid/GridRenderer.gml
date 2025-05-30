@@ -13,10 +13,6 @@ function GridRenderer() constructor {
 
   ///@private
   ///@type {Surface}
-  gameSurface = new Surface({ width: GuiWidth(), height: GuiHeight() })
-
-  ///@private
-  ///@type {Surface}
   backgroundSurface = new Surface({ width: GuiWidth(), height: GuiHeight() })
 
   ///@private
@@ -25,7 +21,11 @@ function GridRenderer() constructor {
 
   ///@private
   ///@type {Surface}
-  //focusGridSurface = new Surface({ width: GuiWidth(), height: GuiHeight() })
+  focusGridSurface = new Surface({ width: GuiWidth(), height: GuiHeight() })
+
+  ///@private
+  ///@type {Surface}
+  gameSurface = new Surface({ width: GuiWidth(), height: GuiHeight() })
 
   ///@private
   ///@type {Surface}
@@ -50,7 +50,15 @@ function GridRenderer() constructor {
 
   ///@private
   ///@type {BKTGlitchService}
-  glitchService = new BKTGlitchService()
+  backgroundGlitchService = new BKTGlitchService()
+
+  ///@private
+  ///@type {BKTGlitchService}
+  gridGlitchService = new BKTGlitchService()
+
+  ///@private
+  ///@type {BKTGlitchService}
+  combinedGlitchService = new BKTGlitchService()
 
   ///@private
   ///@type {Timer}
@@ -338,8 +346,9 @@ function GridRenderer() constructor {
   ///@private
   ///@param {GridService} gridService
   ///@param {ShroomService} shroomService
+  ///@param {UILayout} layout
   ///@return {GridRenderer}
-  editorRenderSpawners = function(gridService, shroomService) {
+  editorRenderSpawners = function(gridService, shroomService, layout) {
     var spawner = shroomService.spawner
     if (Core.isType(spawner, Struct)) {
       spawner.sprite.render(
@@ -366,65 +375,15 @@ function GridRenderer() constructor {
       }
     }
 
-    return null;//
-
-    // Render playerBorder
-    var playerBorder = shroomService.playerBorder
-    if (Core.isType(playerBorder, Struct)) {
-      playerBorder.topLeft.sprite.render(
-        playerBorder.topLeft.x * GRID_SERVICE_PIXEL_WIDTH,
-        playerBorder.topLeft.y * GRID_SERVICE_PIXEL_HEIGHT,
-      )
-      playerBorder.topRight.sprite.render(
-        playerBorder.topRight.x * GRID_SERVICE_PIXEL_WIDTH,
-        playerBorder.topRight.y * GRID_SERVICE_PIXEL_HEIGHT,
-      )
-      playerBorder.bottomLeft.sprite.render(
-        playerBorder.bottomLeft.x * GRID_SERVICE_PIXEL_WIDTH,
-        playerBorder.bottomLeft.y * GRID_SERVICE_PIXEL_HEIGHT,
-      )
-      playerBorder.bottomRight.sprite.render(
-        playerBorder.bottomRight.x * GRID_SERVICE_PIXEL_WIDTH,
-        playerBorder.bottomRight.y * GRID_SERVICE_PIXEL_HEIGHT,
-      )
-
-      shroomService.playerBorder.timeout--
-      if (shroomService.playerBorder.timeout <= 0) {
-        shroomService.playerBorder = null
-      }
-    }
-
-    var playerBorderEvent = shroomService.playerBorderEvent
-    if (Core.isType(playerBorderEvent, Struct)) {
-      playerBorderEvent.topLeft.sprite.render(
-        playerBorderEvent.topLeft.x * GRID_SERVICE_PIXEL_WIDTH,
-        playerBorderEvent.topLeft.y * GRID_SERVICE_PIXEL_HEIGHT,
-      )
-      playerBorderEvent.topRight.sprite.render(
-        playerBorderEvent.topRight.x * GRID_SERVICE_PIXEL_WIDTH,
-        playerBorderEvent.topRight.y * GRID_SERVICE_PIXEL_HEIGHT,
-      )
-      playerBorderEvent.bottomLeft.sprite.render(
-        playerBorderEvent.bottomLeft.x * GRID_SERVICE_PIXEL_WIDTH,
-        playerBorderEvent.bottomLeft.y * GRID_SERVICE_PIXEL_HEIGHT,
-      )
-      playerBorderEvent.bottomRight.sprite.render(
-        playerBorderEvent.bottomRight.x * GRID_SERVICE_PIXEL_WIDTH,
-        playerBorderEvent.bottomRight.y * GRID_SERVICE_PIXEL_HEIGHT,
-      )
-
-      shroomService.playerBorderEvent.timeout--
-      if (shroomService.playerBorderEvent.timeout <= 0) {
-        shroomService.playerBorderEvent = null
-      }
-    }
+    return this
   }
 
   ///@private
   ///@param {GridService} gridService
   ///@param {ShroomService} shroomService
+  ///@param {UILayout} layout
   ///@return {GridRenderer}
-  editorRenderParticleArea = function(gridService, shroomService) {
+  editorRenderParticleArea = function(gridService, shroomService, layout) {
     var lineThickness = 5.0
     var lineAlpha = 0.8
     var backgroundAlpha = 0.6
@@ -525,55 +484,59 @@ function GridRenderer() constructor {
         shroomService.particleAreaEvent = null
       }
     }
+
+    return this
   }
 
   ///@private
-  ///@param {Number} x
-  ///@param {Number} y
-  ///@param {Number} width
-  ///@param {Number} height
+  ///@param {GridService} gridService
   ///@param {ShroomService} shroomService
+  ///@param {UILayout} layout
   ///@return {GridRenderer}
-  editorRenderSubtitlesArea = function(x, y, width, height, shroomService) {
+  editorRenderSubtitlesArea = function(gridService, shroomService, layout) {
+    var _x = layout.x()
+    var _y = layout.y()
+    var width = layout.width()
+    var height = layout.height()
     var subtitlesArea = shroomService.subtitlesArea
     if (Core.isType(subtitlesArea, Struct)) {
       GPU.render.rectangle(
-        x + subtitlesArea.topLeft.x * width, 
-        y + subtitlesArea.topLeft.y * height, 
-        x + subtitlesArea.bottomRight.x * width,
-        y + subtitlesArea.bottomRight.y * height,
+        _x + subtitlesArea.topLeft.x * width, 
+        _y + subtitlesArea.topLeft.y * height, 
+        _x + subtitlesArea.bottomRight.x * width,
+        _y + subtitlesArea.bottomRight.y * height,
         false, c_lime, c_lime, c_lime, c_lime, 0.33
       )
 
       GPU.render.texturedLine(
-        x + subtitlesArea.topLeft.x * width, 
-        y + subtitlesArea.topLeft.y * height, 
-        x + subtitlesArea.topRight.x * width, 
-        y + subtitlesArea.topRight.y * height, 
+        _x + subtitlesArea.topLeft.x * width, 
+        _y + subtitlesArea.topLeft.y * height, 
+        _x + subtitlesArea.topRight.x * width, 
+        _y + subtitlesArea.topRight.y * height, 
         4.0, 0.66, c_lime
       )
 
       GPU.render.texturedLine(
-        x + subtitlesArea.topRight.x * width, 
-        y + subtitlesArea.topRight.y * height, 
-        x + subtitlesArea.bottomRight.x * width,
-        y + subtitlesArea.bottomRight.y * height,
+        _x + subtitlesArea.topRight.x * width, 
+        _y + subtitlesArea.topRight.y * height, 
+        _x + subtitlesArea.bottomRight.x * width,
+        _y + subtitlesArea.bottomRight.y * height,
         4.0, 0.66, c_lime
       )
 
       GPU.render.texturedLine(
-        x + subtitlesArea.bottomRight.x * width,
-        y + subtitlesArea.bottomRight.y * height,
-        x + subtitlesArea.bottomLeft.x * width,
-        y + subtitlesArea.bottomLeft.y * height,
+        _x + subtitlesArea.bottomRight.x * width,
+        _y + subtitlesArea.bottomRight.y * height,
+        _x + subtitlesArea.bottomLeft.x * width,
+        _y + subtitlesArea.bottomLeft.y * height,
         4.0, 0.66, c_lime
       )
 
       GPU.render.texturedLine(
-        x + subtitlesArea.topLeft.x * width, 
-        y + subtitlesArea.topLeft.y * height, 
-        x + subtitlesArea.bottomLeft.x * width,
-        y + subtitlesArea.bottomLeft.y * height,
+        _x + subtitlesArea.topLeft.x * width, 
+        _y + subtitlesArea.topLeft.y * height, 
+        _x + subtitlesArea.bottomLeft.x * width,
+        _y + subtitlesArea.bottomLeft.y * height,
         4.0, 0.66, c_lime
       )
 
@@ -586,42 +549,42 @@ function GridRenderer() constructor {
     var subtitlesAreaEvent = shroomService.subtitlesAreaEvent
     if (Core.isType(subtitlesAreaEvent, Struct)) {
       GPU.render.rectangle(
-        x + subtitlesAreaEvent.topLeft.x * width, 
-        y + subtitlesAreaEvent.topLeft.y * height, 
-        x + subtitlesAreaEvent.bottomRight.x * width,
-        y + subtitlesAreaEvent.bottomRight.y * height,
+        _x + subtitlesAreaEvent.topLeft.x * width, 
+        _y + subtitlesAreaEvent.topLeft.y * height, 
+        _x + subtitlesAreaEvent.bottomRight.x * width,
+        _y + subtitlesAreaEvent.bottomRight.y * height,
         false, c_red, c_red, c_red, c_red, 0.33
       )
 
       GPU.render.texturedLine(
-        x + subtitlesAreaEvent.topLeft.x * width, 
-        y + subtitlesAreaEvent.topLeft.y * height, 
-        x + subtitlesAreaEvent.topRight.x * width, 
-        y + subtitlesAreaEvent.topRight.y * height, 
+        _x + subtitlesAreaEvent.topLeft.x * width, 
+        _y + subtitlesAreaEvent.topLeft.y * height, 
+        _x + subtitlesAreaEvent.topRight.x * width, 
+        _y + subtitlesAreaEvent.topRight.y * height, 
         4.0, 0.66, c_red
       )
 
       GPU.render.texturedLine(
-        x + subtitlesAreaEvent.topRight.x * width, 
-        y + subtitlesAreaEvent.topRight.y * height, 
-        x + subtitlesAreaEvent.bottomRight.x * width,
-        y + subtitlesAreaEvent.bottomRight.y * height,
+        _x + subtitlesAreaEvent.topRight.x * width, 
+        _y + subtitlesAreaEvent.topRight.y * height, 
+        _x + subtitlesAreaEvent.bottomRight.x * width,
+        _y + subtitlesAreaEvent.bottomRight.y * height,
         4.0, 0.66, c_red
       )
 
       GPU.render.texturedLine(
-        x + subtitlesAreaEvent.bottomRight.x * width,
-        y + subtitlesAreaEvent.bottomRight.y * height,
-        x + subtitlesAreaEvent.bottomLeft.x * width,
-        y + subtitlesAreaEvent.bottomLeft.y * height,
+        _x + subtitlesAreaEvent.bottomRight.x * width,
+        _y + subtitlesAreaEvent.bottomRight.y * height,
+        _x + subtitlesAreaEvent.bottomLeft.x * width,
+        _y + subtitlesAreaEvent.bottomLeft.y * height,
         4.0, 0.66, c_red
       )
 
       GPU.render.texturedLine(
-        x + subtitlesAreaEvent.topLeft.x * width, 
-        y + subtitlesAreaEvent.topLeft.y * height, 
-        x + subtitlesAreaEvent.bottomLeft.x * width,
-        y + subtitlesAreaEvent.bottomLeft.y * height,
+        _x + subtitlesAreaEvent.topLeft.x * width, 
+        _y + subtitlesAreaEvent.topLeft.y * height, 
+        _x + subtitlesAreaEvent.bottomLeft.x * width,
+        _y + subtitlesAreaEvent.bottomLeft.y * height,
         4.0, 0.66, c_red
       )
 
@@ -1163,86 +1126,10 @@ function GridRenderer() constructor {
     return this
   }
 
-  ///@private
-  ///@param {GridService} gridService
-  ///@param {UILayout} layout
-  ///@return {GridRenderer}
-  layerRenderBackground = function(gridService, layout) {
-    var properties = gridService.properties
-    if (!properties.renderBackground) {
-      return this
-    }
-
-    this.backgroundSurface.render()
-    var shaderPipeline = Beans.get(BeanVisuController).shaderBackgroundPipeline
-    if (properties.renderBackgroundShaders 
-      && Visu.settings.getValue("visu.graphics.bkg-shaders")
-      && shaderPipeline.executor.tasks.size() > 0) {
-
-      this.shaderBackgroundSurface
-        .renderStretched(layout.width(), layout.height())
-    }
-
-    return this
-  }
-
-  ///@private
-  ///@param {GridService} gridService
-  ///@param {UILayout} layout
-  ///@return {GridRenderer}
-  layerRenderForeground = function(gridService, layout) {
-    var properties = gridService.properties
-    if (!properties.renderForeground) {
-      return this
-    }
-
-    this.overlayRenderer.renderForegrounds(layout.width(), layout.height())
-
-    return this
-  }
-  
-  ///@private
-  ///@param {UILayout} layout
-  ///@return {GridRenderer}
-  renderBackgroundSurface = function(layout) {
-    var controller = Beans.get(BeanVisuController)
-    var gridService = controller.gridService
-    var shroomService = controller.shroomService
-    var particleService = controller.particleService
-    var properties = gridService.properties
+  renderParticles = function(gridService, shroomService, particleService, layout) {
     var width = layout.width()
     var height = layout.height()
-
-    GPU.render.clear(properties.gridClearColor, 0.0)
-
-    switch (properties.renderVideoAfter) {
-      case true:
-        if (properties.renderBackground) {
-          this.overlayRenderer.renderBackgrounds(width, height)
-        }
-        
-        if (properties.renderVideo) {
-          this.overlayRenderer.renderVideo(width, height, properties.videoAlpha,
-            properties.videoBlendColor.toGMColor(), properties.videoBlendConfig)
-        }
-        break
-      case false:
-      default:
-        if (properties.renderVideo) {
-          this.overlayRenderer.renderVideo(width, height, properties.videoAlpha,
-            properties.videoBlendColor.toGMColor(), properties.videoBlendConfig)
-        }
-    
-        if (properties.renderBackground) {
-          this.overlayRenderer.renderBackgrounds(width, height)
-        }
-        break
-    }
-
-    if (!Visu.settings.getValue("visu.graphics.particle")) {
-      return this
-    }
-
+    var properties = gridService.properties
     var depths = properties.depths
     var camera = this.camera
     var gmCamera = camera.get()
@@ -1279,10 +1166,104 @@ function GridRenderer() constructor {
       0, 0, 0, 
       1, 1, 1
     ))
-    this.editorRenderParticleArea(gridService, shroomService)
+    
+    var editor = Beans.get(BeanVisuEditorController)
+    if (Optional.is(editor) && editor.renderUI) {
+      this.editorRenderParticleArea(gridService, shroomService, layout)
+    }
+    
     this.layerRenderParticles(gridService, particleService)
 
     matrix_set(matrix_world, matrix_build_identity())
+
+    return this
+  }
+  
+  ///@private
+  ///@param {UILayout} layout
+  ///@return {GridRenderer}
+  renderBackgroundSurface = function(layout) {
+    static renderParticles = function(context, gridService, shroomService, particleService, properties, layout, width, height) {
+      var depths = properties.depths
+      var camera = context.camera
+      var gmCamera = camera.get()
+      var cameraAngle = camera.angle + (sin(camera.breathTimer2.time) * BREATH_TIMER_FACTOR_2)
+      var cameraPitch = camera.pitch + (sin(camera.breathTimer1.time) * BREATH_TIMER_FACTOR_1)
+      var xto = camera.x + (sin(camera.breathTimer2.time) * GRID_SERVICE_PIXEL_WIDTH * -1.0)
+      var yto = camera.y
+      var zto = camera.z
+      var xfrom = xto + dcos(cameraAngle) * dcos(cameraPitch)
+      var yfrom = yto - dsin(cameraAngle) * dcos(cameraPitch)
+      var zfrom = zto - dsin(cameraPitch)
+      var baseX = GRID_SERVICE_PIXEL_WIDTH + GRID_SERVICE_PIXEL_WIDTH * 0.5
+      var baseY = GRID_SERVICE_PIXEL_HEIGHT + GRID_SERVICE_PIXEL_HEIGHT * 0.5
+      camera.viewMatrix = matrix_build_lookat(
+        xfrom, yfrom, zfrom, 
+        xto, yto, zto, 
+        0, 0, 1
+      )
+
+      ///@todo extract parameters
+      camera.projectionMatrix = matrix_build_projection_perspective_fov(
+        -60, 
+        -1 * (width / height), 
+        1, 
+        32000 
+      ) 
+
+      camera_set_view_mat(gmCamera, camera.viewMatrix)
+      camera_set_proj_mat(gmCamera, camera.projectionMatrix)
+      camera_apply(gmCamera)
+      
+      matrix_set(matrix_world, matrix_build(
+        baseX, baseY, depths.particleZ, 
+        0, 0, 0, 
+        1, 1, 1
+      ))
+      
+      var editor = Beans.get(BeanVisuEditorController)
+      if (Optional.is(editor) && editor.renderUI) {
+        context.editorRenderParticleArea(gridService, shroomService, layout)
+      }
+      
+      context.layerRenderParticles(gridService, particleService)
+
+      matrix_set(matrix_world, matrix_build_identity())
+    }
+
+    var controller = Beans.get(BeanVisuController)
+    var gridService = controller.gridService
+    var shroomService = controller.shroomService
+    var particleService = controller.particleService
+    var properties = gridService.properties
+    var width = layout.width()
+    var height = layout.height()
+
+    GPU.render.clear(properties.gridClearColor, 0.0)
+
+    if (properties.renderVideoAfter) {
+      if (properties.renderBackground) {
+        this.overlayRenderer.renderBackgrounds(width, height)
+      }
+        
+      if (properties.renderVideo) {
+        this.overlayRenderer.renderVideo(width, height, properties.videoAlpha,
+          properties.videoBlendColor.toGMColor(), properties.videoBlendConfig)
+      }
+    } else {
+      if (properties.renderVideo) {
+        this.overlayRenderer.renderVideo(width, height, properties.videoAlpha,
+          properties.videoBlendColor.toGMColor(), properties.videoBlendConfig)
+      }
+    
+      if (properties.renderBackground) {
+        this.overlayRenderer.renderBackgrounds(width, height)
+      }
+    }
+
+    //if (Visu.settings.getValue("visu.graphics.particle")) {
+    //  renderParticles(this, gridService, shroomService, particleService, properties, layout, width, height)
+    //}
 
     return this
   }
@@ -1383,7 +1364,12 @@ function GridRenderer() constructor {
     //    0, 0, 0, 
     //    1, 1, 1
     //  ))
-    //  this.editorRenderParticleArea(gridService, shroomService)
+    //
+    //  var editor = Beans.get(BeanVisuEditorController)
+    //  if (Optional.is(editor) && editor.renderUI) {
+    //    this.editorRenderParticleArea(gridService, shroomService, layout)
+    //  }
+    //
     //  this.layerRenderParticles(gridService, particleService)
     //}
 
@@ -1449,7 +1435,7 @@ function GridRenderer() constructor {
       }, gridService.view)
     }
     
-    this.editorRenderSpawners(gridService, shroomService)
+    this.editorRenderSpawners(gridService, shroomService, layout)
     gpu_set_alphatestenable(false)
 
     matrix_set(matrix_world, matrix_build(
@@ -1487,11 +1473,11 @@ function GridRenderer() constructor {
         : 0)
     )
 
-    if (size <= 0) {
+    GPU.render.clear(properties.gridClearColor, 0.0)
+
+    if (!properties.renderSupportGrid || properties.supportGridTreshold > size) {
       return this
     }
-
-    GPU.render.clear(properties.gridClearColor, 0.0)
 
     this.gridSurface.renderStretched(
       this.focusGridSurface.width,
@@ -1509,100 +1495,58 @@ function GridRenderer() constructor {
   ///@private
   ///@param {UILayout} layout
   ///@return {GridRenderer}
-  __renderShaderBackgroundSurface = function(layout) {
-    static renderBackgroundShader = function(task, index, gridRenderer) {
-      gridRenderer.backgroundSurface.renderStretched(
-        gridRenderer.shaderSurface.width, 
-        gridRenderer.shaderSurface.height, 
-        0, 
-        0,
-        task.state.getDefault("alpha", 1.0)
-      )
-    }
-    
-    var controller = Beans.get(BeanVisuController)
-    var properties = controller.gridService.properties
-    if (!properties.renderBackgroundShaders 
-        || !Visu.settings.getValue("visu.graphics.bkg-shaders")) {
-      return this
-    }
-
-    var width = this.shaderSurface.width
-    var height = this.shaderSurface.height
-    GPU.render.clear(properties.gridClearColor, 0.0)
-
-    controller.shaderBackgroundPipeline
-      .setWidth(width)
-      .setHeight(height)
-      .render(renderBackgroundShader, this)
-
+  renderBackgroundGlitch = function(layout) {
+    this.backgroundSurface.renderStretched(layout.width(), layout.height())
     return this
   }
 
   ///@private
   ///@param {UILayout} layout
   ///@return {GridRenderer}
-  __renderShaderSurface = function(layout) {
-    static renderGridShader = function(task, index, gridRenderer) {
-      gridRenderer.gridSurface.renderStretched(
-        gridRenderer.shaderSurface.width, 
-        gridRenderer.shaderSurface.height, 
-        0, 
-        0,
-        task.state.getDefault("alpha", 1.0)
-      )
-    }
+  renderGridGlitch = function(layout) {
+    this.gridSurface.renderStretched(layout.width(), layout.height())
+    return this
+  }
 
+  ///@private
+  ///@param {UILayout} layout
+  ///@return {GridRenderer}
+  renderCombinedGlitch = function(layout) {
+    this.combinedSurface.renderStretched(layout.width(), layout.height())
+    return this
+  }
+
+
+  ///@private
+  ///@param {UILayout} layout
+  ///@return {GridRenderer}
+  renderGameSurface = function(layout) {
     var controller = Beans.get(BeanVisuController)
-    var properties = controller.gridService.properties
-    if (!properties.renderGridShaders 
-      || !Visu.settings.getValue("visu.graphics.main-shaders")) {
-      
-      return this
-    }
+    var gridService = controller.gridService
+    var properties = gridService.properties
+    var width = layout.width()
+    var height = layout.height()
+    var enableGlitch = Visu.settings.getValue("visu.graphics.bkt-glitch")
 
-    var width = this.shaderSurface.width
-    var height = this.shaderSurface.height
+    GPU.render.clear(properties.gridClearColor)
 
-    if (properties.shaderClearFrame) {
-      var tempAlpha = properties.shaderClearColor.alpha
-      properties.shaderClearColor.alpha = properties.shaderClearFrameAlpha
-      GPU.render.clear(properties.shaderClearColor)
-      properties.shaderClearColor.alpha = tempAlpha
+    if (enableGlitch && properties.renderBackgroundGlitch) {
+      this.backgroundGlitchService.renderOn(this.renderBackgroundGlitch, layout)
     } else {
-      GPU.set.blendMode(BlendMode.SUBTRACT)
-        .render.fillColor(
-          width,
-          height,
-          properties.shaderClearColor.toGMColor(),
-          properties.shaderClearFrameAlpha
-        )
-        .reset.blendMode()
+      this.renderBackgroundGlitch(layout)
     }
 
-    controller.shaderPipeline
-      .setWidth(width)
-      .setHeight(height)
-      .render(renderGridShader, this)
+    if (enableGlitch && properties.renderGridGlitch) {
+      this.gridGlitchService.renderOn(this.renderGridGlitch, layout)
+    } else {
+      this.renderGridGlitch(layout)
+    }
 
-    return this;
-    /* 
-    var size = controller.shaderPipeline
-      .setWidth(width)
-      .setHeight(height)
-      .render(renderGridShader, this).executor.tasks
-      .size()
-
-    ///@description Render focus-grid
-    if (properties.renderSupportGrid 
-        && size >= properties.supportGridTreshold) {
-
-      this.gridSurface.renderStretched(width, height, 0, 0, properties.supportGridAlpha,
-        properties.supportGridBlendColor.toGMColor(), properties.supportGridBlendConfig)
+    if (properties.renderForeground) {
+      this.overlayRenderer.renderForegrounds(layout.width(), layout.height())
     }
 
     return this
-    */
   }
 
   ///@private
@@ -1694,7 +1638,7 @@ function GridRenderer() constructor {
     var width = this.shaderSurface.width
     var height = this.shaderSurface.height
     var shaderPipeline = controller.shaderPipeline
-    
+
     if (properties.shaderClearFrame) {
       var tempAlpha = properties.shaderClearColor.alpha
       properties.shaderClearColor.alpha = properties.shaderClearFrameAlpha
@@ -1724,6 +1668,7 @@ function GridRenderer() constructor {
   ///@return {GridRenderer}
   renderShaderCombinedSurface = function(layout) {
     static renderCombinedShader = function(task, index, gridRenderer) {
+      GPU.set.surface(gridRenderer.shaderCombinedSurface)
       gridRenderer.gameSurface.renderStretched(
         gridRenderer.shaderCombinedSurface.width, 
         gridRenderer.shaderCombinedSurface.height, 
@@ -1731,23 +1676,38 @@ function GridRenderer() constructor {
         0,
         task.state.getDefault("alpha", 1.0)
       )
+      GPU.reset.surface()
+    }
+    
+    static postRenderCombinedShader = function(task, index, gridRenderer) {
+      GPU.set.surface(gridRenderer.gameSurface)
+      gridRenderer.shaderCombinedSurface.renderStretched(
+        gridRenderer.gameSurface.width, 
+        gridRenderer.gameSurface.height, 
+        0, 
+        0,
+        1.0
+      )
+      GPU.reset.surface()
     }
     
     var controller = Beans.get(BeanVisuController)
     var properties = controller.gridService.properties
     if (!properties.renderCombinedShaders
-      || !Visu.settings.getValue("visu.graphics.combined-shaders")) {
+        || !Visu.settings.getValue("visu.graphics.combined-shaders")) {
       return this
     }
 
     var width = this.shaderCombinedSurface.width
     var height = this.shaderCombinedSurface.height
+    var shaderPipeline = controller.shaderCombinedPipeline
+
     GPU.render.clear(properties.shaderClearColor, 0.0)
 
-    controller.shaderCombinedPipeline
+    shaderPipeline
       .setWidth(width)
       .setHeight(height)
-      .render(renderCombinedShader, this)
+      .render(renderCombinedShader, this, null, postRenderCombinedShader)
 
     return this
   }
@@ -1755,69 +1715,27 @@ function GridRenderer() constructor {
   ///@private
   ///@param {UILayout} layout
   ///@return {GridRenderer}
-  renderGameSurface = function(layout) {
-    var gridService = Beans.get(BeanVisuController).gridService
-    GPU.render.clear(gridService.properties.gridClearColor)
-    this.layerRenderBackground(gridService, layout) 
-    this.gridSurface.render()
-    this.shaderSurface.renderStretched(layout.width(), layout.height())
-    this.layerRenderForeground(gridService, layout)
-
-    return this
-  }
-
-  ///@private
-  ///@param {UILayout} layout
-  ///@return {GridRenderer}
-  renderGameplay = function(layout) {
-    var width = layout.width()
-    var height = layout.height()
-    var _x = layout.x()
-    var _y = layout.y()
-    var controller = Beans.get(BeanVisuController)
-    var properties = controller.gridService.properties
-    this.gameSurface.update(width, height).render(_x, _y)
-
-    if (!properties.renderCombinedShaders 
-        || !Visu.settings.getValue("visu.graphics.combined-shaders")
-        || controller.shaderCombinedPipeline.executor.tasks.size() == 0) {
-
-      ///@description Render focus-grid
-      var size = controller.shaderPipeline.executor.tasks.size()
-      if (properties.renderSupportGrid 
-          && size >= properties.supportGridTreshold) {
-  
-        this.gridSurface.renderStretched(width, height, _x, _y, properties.supportGridAlpha, properties.supportGridBlendColor.toGMColor(), properties.supportGridBlendConfig)
-      }
-    
-      ///@description Render subtitles area (editor)
-      var editor = Beans.get(BeanVisuEditorController)
-      if (Optional.is(editor)) {
-        this.editorRenderSubtitlesArea(_x, _y, width, height, controller.shroomService)
-      }
-      
-      return this
-    }
-
-    this.shaderCombinedSurface.renderStretched(width, height, _x, _y)
-
-    ///@description Render focus-grid
-    var size = max(
-      controller.shaderPipeline.executor.tasks.size(), 
-      controller.shaderCombinedPipeline.executor.tasks.size()
+  renderGUIGameSurface = function(layout) {
+    this.gameSurface.renderStretched(
+      layout.width(),
+      layout.height(),
+      layout.x(),
+      layout.y()
     )
-    
-    if (properties.renderSupportGrid 
-        && size >= properties.supportGridTreshold) {
 
-      this.gridSurface.renderStretched(width, height, _x, _y, properties.supportGridAlpha, properties.supportGridBlendColor.toGMColor(), properties.supportGridBlendConfig)
-    }
+    return this
+  }
 
-    ///@description Render subtitles area (editor)
-    var editor = Beans.get(BeanVisuEditorController)
-    if (Optional.is(editor)) {
-      this.editorRenderSubtitlesArea(_x, _y, width, height, controller.shroomService)
-    }
+  ///@private
+  ///@param {UILayout} layout
+  ///@return {GridRenderer}
+  renderGUIFocusGridSurface = function(layout) {
+    this.focusGridSurface.renderStretched(
+      layout.width(),
+      layout.height(),
+      layout.x(),
+      layout.y()
+    )
 
     return this
   }
@@ -1888,7 +1806,12 @@ function GridRenderer() constructor {
     //this.blendModes.update()
     this.camera.update(layout)
     this.overlayRenderer.update()
-    this.glitchService.update(layout.width(), layout.height())
+
+    var width = layout.width()
+    var height = layout.height()
+    this.backgroundGlitchService.update(width, height)
+    this.gridGlitchService.update(width, height)
+    this.combinedGlitchService.update(width, height)
     
     return this
   }
@@ -1944,40 +1867,56 @@ function GridRenderer() constructor {
       context.playerShadowColor.blue = lerp(context.playerShadowColor.blue, 1.0 - (color_get_blue(middleColor) / 255.0), 0.1)
     }
     
-    var width = layout.width()
-    var height = layout.height()
+    static renderParticles = function(context, layout) {
+      var controller = Beans.get(BeanVisuController)
+      if (controller.gridService.properties.renderParticles
+          && Visu.settings.getValue("visu.graphics.particle")) {
+        GPU.set.surface(context.backgroundSurface)
+        context.renderParticles(
+          controller.gridService,
+          controller.shroomService,
+          controller.particleService,
+          layout
+        )
+        GPU.reset.surface()
+      }
+    }
+
     var shaderQuality = Visu.settings.getValue("visu.graphics.shader-quality", 1.0)
+    var width = ceil(layout.width())
+    var height = ceil(layout.height())
+    var shaderWidth = ceil(width * shaderQuality)
+    var shaderHeight = ceil(height * shaderQuality)
+    
     this.backgroundSurface
       .update(width, height)
-      .renderOn(this.renderBackgroundSurface, layout)
+      .renderOn(this.renderBackgroundSurface, layout, true)
     
     this.gridSurface
       .update(width, height)
-      .renderOn(this.renderGridSurface, layout)
+      .renderOn(this.renderGridSurface, layout, true)
 
-    //this.focusGridSurface
-    //  .update(width, height)
-    //  .renderOn(this.renderFocusGridSurface, layout)
+    this.focusGridSurface
+      .update(width, height)
+      .renderOn(this.renderFocusGridSurface, layout, true)
 
     this.shaderBackgroundSurface
-      .update(ceil(width * shaderQuality), ceil(height * shaderQuality))
-      .renderOn(this.__renderShaderBackgroundSurface, layout)
-    //this.shaderBackgroundSurface.update(ceil(width * shaderQuality), ceil(height * shaderQuality))
-    //this.renderShaderBackgroundSurface(layout)
+      .update(shaderWidth, shaderHeight)
+      .renderOn(this.renderShaderBackgroundSurface, layout, false)
     
     this.shaderSurface
-      .update(ceil(width * shaderQuality), ceil(height * shaderQuality))
-      .renderOn(this.__renderShaderSurface, layout)
-    //this.shaderSurface.update(ceil(width * shaderQuality), ceil(height * shaderQuality))
-    //this.renderShaderSurface(layout)
+      .update(shaderWidth, shaderHeight)
+      .renderOn(this.renderShaderSurface, layout, false)
     
+    renderParticles(this, layout)
+
     this.gameSurface
       .update(width, height)
-      .renderOn(this.renderGameSurface, layout)
-    
+      .renderOn(this.renderGameSurface, layout, true)
+
     this.shaderCombinedSurface
-      .update(ceil(width * shaderQuality), ceil(height * shaderQuality))
-      .renderOn(this.renderShaderCombinedSurface, layout)
+      .update(shaderWidth, shaderHeight)
+      .renderOn(this.renderShaderCombinedSurface, layout, false)
 
     updatePlayerShadowColor(this, layout)
 
@@ -1992,21 +1931,32 @@ function GridRenderer() constructor {
       GPU.render.clear(controller.gridService.properties.gridClearColor, 1.0)
       this.backgroundSurface.renderStretched(GuiWidth() / 2.0, GuiHeight() / 2.0, 0.0, 0.0)
       this.gridSurface.renderStretched(GuiWidth() / 2.0, GuiHeight() / 2.0, GuiWidth() / 2.0, 0.0)
-      //this.shaderBackgroundSurface.renderStretched(GuiWidth() / 2.0, GuiHeight() / 2.0, 0.0, GuiHeight() / 2.0)
-      //this.shaderSurface.renderStretched(GuiWidth() / 2.0, GuiHeight() / 2.0, GuiWidth() / 2.0, GuiHeight() / 2.0)
+      this.shaderBackgroundSurface.renderStretched(GuiWidth() / 2.0, GuiHeight() / 2.0, 0.0, GuiHeight() / 2.0)
+      this.shaderSurface.renderStretched(GuiWidth() / 2.0, GuiHeight() / 2.0, GuiWidth() / 2.0, GuiHeight() / 2.0)
       return this
     }
 
-    var playerService = controller.playerService
-    if (Visu.settings.getValue("visu.graphics.bkt-glitch")) {
-      this.glitchService.renderOn(this.renderGameplay, layout)
+    var properties = controller.gridService.properties
+    if (properties.renderCombinedGlitch
+        && Visu.settings.getValue("visu.graphics.bkt-glitch")) {
+      this.combinedGlitchService.renderOn(this.renderGUIGameSurface, layout)
     } else {
-      this.renderGameplay(layout)
+      this.renderGUIGameSurface(layout)
+    }
+
+    if (properties.renderSupportGrid) {
+      this.renderGUIFocusGridSurface(layout)
     }
 
     if (Visu.settings.getValue("visu.interface.player-hint")) {
-      this.renderPlayerHint(playerService, layout)
+      this.renderPlayerHint(controller.playerService, layout)
     }
+
+    var editor = Beans.get(BeanVisuEditorController)
+    if (Optional.is(editor) && editor.renderUI) {
+      this.editorRenderSubtitlesArea(controller.gridService, controller.shroomService, layout)
+    }
+
     return this
   }
 
@@ -2014,7 +1964,7 @@ function GridRenderer() constructor {
   free = function() {
     this.backgroundSurface.free()
     this.gridSurface.free()
-    //this.focusGridSurface.free()
+    this.focusGridSurface.free()
     this.gameSurface.free()
     this.shaderSurface.free()
     this.shaderBackgroundSurface.free()

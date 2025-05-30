@@ -817,32 +817,17 @@ global.__VEComponents = new Map(String, Callable, {
         )
       ),
       UIButton(
-        $"{name}_brush-entry_remove", 
+        $"{name}_brush-entry_select", 
         Struct.appendRecursive(
           Struct.appendRecursive(
             { 
-              layout: layout.nodes.remove,
+              layout: layout.nodes.select,
               updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyCollectionLayout")),
             }, 
-            VEStyles.get("brush-entry").remove,
+            VEStyles.get("brush-entry").select,
             false
           ),
-          Struct.get(config, "remove"),
-          false
-        )
-      ),
-      UIButton(
-        $"{name}_brush-entry_settings", 
-        Struct.appendRecursive(
-          Struct.appendRecursive(
-            { 
-              layout: layout.nodes.settings,
-              updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyCollectionLayout")),
-            }, 
-            VEStyles.get("brush-entry").settings,
-            false
-          ),
-          Struct.get(config, "settings"),
+          Struct.get(config, "select"),
           false
         )
       ),

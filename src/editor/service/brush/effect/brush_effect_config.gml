@@ -54,6 +54,30 @@ function brush_effect_config(json) {
         type: Boolean,
         value: Struct.get(json, "ef-cfg_cls-glt"),
       },
+      "ef-cfg_use-render-gr-glt": {
+        type: Boolean,
+        value: Struct.get(json, "ef-cfg_use-render-gr-glt"),
+      },
+      "ef-cfg_render-gr-glt": {
+        type: Boolean,
+        value: Struct.get(json, "ef-cfg_render-gr-glt"),
+      },
+      "ef-cfg_cls-gr-glt": {
+        type: Boolean,
+        value: Struct.get(json, "ef-cfg_cls-gr-glt"),
+      },
+      "ef-cfg_use-render-bkg-glt": {
+        type: Boolean,
+        value: Struct.get(json, "ef-cfg_use-render-bkg-glt"),
+      },
+      "ef-cfg_render-bkg-glt": {
+        type: Boolean,
+        value: Struct.get(json, "ef-cfg_render-bkg-glt"),
+      },
+      "ef-cfg_cls-bkg-glt": {
+        type: Boolean,
+        value: Struct.get(json, "ef-cfg_cls-bkg-glt"),
+      },
       "ef-cfg_use-render-part": {
         type: Boolean,
         value: Struct.get(json, "ef-cfg_use-render-part"),
@@ -246,7 +270,7 @@ function brush_effect_config(json) {
         config: { 
           layout: { type: UILayoutType.VERTICAL },
           label: { 
-            text: "Glitches",
+            text: "Combined glitches",
             enable: { key: "ef-cfg_use-render-glt" },
             hidden: { key: "ef-cfg_hide-render" },
           },
@@ -261,6 +285,58 @@ function brush_effect_config(json) {
             spriteOff: { name: "visu_texture_checkbox_switch_off" },
             store: { key: "ef-cfg_render-glt" },
             enable: { key: "ef-cfg_use-render-glt" },
+            hidden: { key: "ef-cfg_hide-render" },
+          },
+        },
+      },
+      {
+        name: "ef-cfg_render-gr-glt",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "Grid glitches",
+            enable: { key: "ef-cfg_use-render-gr-glt" },
+            hidden: { key: "ef-cfg_hide-render" },
+          },
+          checkbox: { 
+            spriteOn: { name: "visu_texture_checkbox_on" },
+            spriteOff: { name: "visu_texture_checkbox_off" },
+            store: { key: "ef-cfg_use-render-gr-glt" },
+            hidden: { key: "ef-cfg_hide-render" },
+          },
+          input: { 
+            spriteOn: { name: "visu_texture_checkbox_switch_on" },
+            spriteOff: { name: "visu_texture_checkbox_switch_off" },
+            store: { key: "ef-cfg_render-gr-glt" },
+            enable: { key: "ef-cfg_use-render-gr-glt" },
+            hidden: { key: "ef-cfg_hide-render" },
+          },
+        },
+      },
+      {
+        name: "ef-cfg_render-bkg-glt",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "Background glitches",
+            enable: { key: "ef-cfg_use-render-bkg-glt" },
+            hidden: { key: "ef-cfg_hide-render" },
+          },
+          checkbox: { 
+            spriteOn: { name: "visu_texture_checkbox_on" },
+            spriteOff: { name: "visu_texture_checkbox_off" },
+            store: { key: "ef-cfg_use-render-bkg-glt" },
+            hidden: { key: "ef-cfg_hide-render" },
+          },
+          input: { 
+            spriteOn: { name: "visu_texture_checkbox_switch_on" },
+            spriteOff: { name: "visu_texture_checkbox_switch_off" },
+            store: { key: "ef-cfg_render-bkg-glt" },
+            enable: { key: "ef-cfg_use-render-bkg-glt" },
             hidden: { key: "ef-cfg_hide-render" },
           },
         },
@@ -393,7 +469,7 @@ function brush_effect_config(json) {
         config: { 
           layout: { type: UILayoutType.VERTICAL },
           label: { 
-            text: "Glitches",
+            text: "Combined glitches",
             enable: { key: "ef-cfg_cls-glt" },
             hidden: { key: "ef-cfg_hide-cls" },
           },
@@ -401,6 +477,50 @@ function brush_effect_config(json) {
             spriteOn: { name: "visu_texture_checkbox_on" },
             spriteOff: { name: "visu_texture_checkbox_off" },
             store: { key: "ef-cfg_cls-glt" },
+            hidden: { key: "ef-cfg_hide-cls" },
+          },
+          input: {
+            hidden: { key: "ef-cfg_hide-cls" },
+          },
+        },
+      },
+      {
+        name: "ef-cfg_cls-gr-glt",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "Grid glitches",
+            enable: { key: "ef-cfg_cls-gr-glt" },
+            hidden: { key: "ef-cfg_hide-cls" },
+          },
+          checkbox: { 
+            spriteOn: { name: "visu_texture_checkbox_on" },
+            spriteOff: { name: "visu_texture_checkbox_off" },
+            store: { key: "ef-cfg_cls-gr-glt" },
+            hidden: { key: "ef-cfg_hide-cls" },
+          },
+          input: {
+            hidden: { key: "ef-cfg_hide-cls" },
+          },
+        },
+      },
+      {
+        name: "ef-cfg_cls-bkg-glt",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "Background glitches",
+            enable: { key: "ef-cfg_cls-bkg-glt" },
+            hidden: { key: "ef-cfg_hide-cls" },
+          },
+          checkbox: { 
+            spriteOn: { name: "visu_texture_checkbox_on" },
+            spriteOff: { name: "visu_texture_checkbox_off" },
+            store: { key: "ef-cfg_cls-bkg-glt" },
             hidden: { key: "ef-cfg_hide-cls" },
           },
           input: {
@@ -767,43 +887,43 @@ function brush_effect_config(json) {
               store: { key: "ef-cfg_cls-frame-alpha" },
               enable: { key: "ef-cfg_use-cls-frame-alpha" },
               hidden: {
-              keys: [
-                { key: "ef-cfg_hide-cfg" },
-                { key: "ef-cfg_hide-shd-cls-alpha" }
-              ]
-            },
+                keys: [
+                  { key: "ef-cfg_hide-cfg" },
+                  { key: "ef-cfg_hide-shd-cls-alpha" }
+                ]
+              },
             },
             decrease: { 
               store: { key: "ef-cfg_cls-frame-alpha" },
               enable: { key: "ef-cfg_use-cls-frame-alpha" },
               hidden: {
-              keys: [
-                { key: "ef-cfg_hide-cfg" },
-                { key: "ef-cfg_hide-shd-cls-alpha" }
-              ]
-            },
+                keys: [
+                  { key: "ef-cfg_hide-cfg" },
+                  { key: "ef-cfg_hide-shd-cls-alpha" }
+                ]
+              },
               factor: -0.01,
             },
             increase: { 
               store: { key: "ef-cfg_cls-frame-alpha" },
               enable: { key: "ef-cfg_use-cls-frame-alpha" },
               hidden: {
-              keys: [
-                { key: "ef-cfg_hide-cfg" },
-                { key: "ef-cfg_hide-shd-cls-alpha" }
-              ]
-            },
-              factor: 0.001,
+                keys: [
+                  { key: "ef-cfg_hide-cfg" },
+                  { key: "ef-cfg_hide-shd-cls-alpha" }
+                ]
+              },
+              factor: 0.01,
             },
             stick: {
               store: { key: "ef-cfg_cls-frame-alpha" },
               enable: { key: "ef-cfg_use-cls-frame-alpha" },
               hidden: {
-              keys: [
-                { key: "ef-cfg_hide-cfg" },
-                { key: "ef-cfg_hide-shd-cls-alpha" }
-              ]
-            },
+                keys: [
+                  { key: "ef-cfg_hide-cfg" },
+                  { key: "ef-cfg_hide-shd-cls-alpha" }
+                ]
+              },
               factor: 0.01,
             },
             checkbox: { 
@@ -811,21 +931,21 @@ function brush_effect_config(json) {
               spriteOff: { name: "visu_texture_checkbox_off" },
               store: { key: "ef-cfg_use-cls-frame-alpha" },
               hidden: {
-              keys: [
-                { key: "ef-cfg_hide-cfg" },
-                { key: "ef-cfg_hide-shd-cls-alpha" }
-              ]
-            },
+                keys: [
+                  { key: "ef-cfg_hide-cfg" },
+                  { key: "ef-cfg_hide-shd-cls-alpha" }
+                ]
+              },
             },
             title: { 
               text: "Override",
               enable: { key: "ef-cfg_use-cls-frame-alpha" },
               hidden: {
-              keys: [
-                { key: "ef-cfg_hide-cfg" },
-                { key: "ef-cfg_hide-shd-cls-alpha" }
-              ]
-            },
+                keys: [
+                  { key: "ef-cfg_hide-cfg" },
+                  { key: "ef-cfg_hide-shd-cls-alpha" }
+                ]
+              },
             },
           },
           target: {
@@ -833,75 +953,75 @@ function brush_effect_config(json) {
               text: "Target",
               enable: { key: "ef-cfg_change-cls-frame-alpha" },
               hidden: {
-              keys: [
-                { key: "ef-cfg_hide-cfg" },
-                { key: "ef-cfg_hide-shd-cls-alpha" }
-              ]
-            },
+                keys: [
+                  { key: "ef-cfg_hide-cfg" },
+                  { key: "ef-cfg_hide-shd-cls-alpha" }
+                ]
+              },
             },
             field: {
               store: { key: "ef-cfg_cls-frame-alpha" },
               enable: { key: "ef-cfg_change-cls-frame-alpha" },
               hidden: {
-              keys: [
-                { key: "ef-cfg_hide-cfg" },
-                { key: "ef-cfg_hide-shd-cls-alpha" }
-              ]
-            },
+                keys: [
+                  { key: "ef-cfg_hide-cfg" },
+                  { key: "ef-cfg_hide-shd-cls-alpha" }
+                ]
+              },
             },
             decrease: { 
               store: { key: "ef-cfg_cls-frame-alpha" },
               enable: { key: "ef-cfg_change-cls-frame-alpha"},
               hidden: {
-              keys: [
-                { key: "ef-cfg_hide-cfg" },
-                { key: "ef-cfg_hide-shd-cls-alpha" }
-              ]
-            },
+                keys: [
+                  { key: "ef-cfg_hide-cfg" },
+                  { key: "ef-cfg_hide-shd-cls-alpha" }
+                ]
+              },
               factor: -0.01,
             },
             increase: { 
               store: { key: "ef-cfg_cls-frame-alpha" },
               enable: { key: "ef-cfg_change-cls-frame-alpha" },
               hidden: {
-              keys: [
-                { key: "ef-cfg_hide-cfg" },
-                { key: "ef-cfg_hide-shd-cls-alpha" }
-              ]
-            },
-              factor: 0.001,
+                keys: [
+                  { key: "ef-cfg_hide-cfg" },
+                  { key: "ef-cfg_hide-shd-cls-alpha" }
+                ]
+              },
+              factor: 0.01,
             },
             stick: {
               store: { key: "ef-cfg_cls-frame-alpha" },
               enable: { key: "ef-cfg_change-cls-frame-alpha" },
               hidden: {
-              keys: [
-                { key: "ef-cfg_hide-cfg" },
-                { key: "ef-cfg_hide-shd-cls-alpha" }
-              ]
-            },
+                keys: [
+                  { key: "ef-cfg_hide-cfg" },
+                  { key: "ef-cfg_hide-shd-cls-alpha" }
+                ]
+              },
               factor: 0.01,
             },
             checkbox: { 
               spriteOn: { name: "visu_texture_checkbox_on" },
               spriteOff: { name: "visu_texture_checkbox_off" },
               hidden: {
-              keys: [
-                { key: "ef-cfg_hide-cfg" },
-                { key: "ef-cfg_hide-shd-cls-alpha" }
-              ]
-            },
+                keys: [
+                  { key: "ef-cfg_hide-cfg" },
+                  { key: "ef-cfg_hide-shd-cls-alpha" }
+                ]
+              },
               store: { key: "ef-cfg_change-cls-frame-alpha" },
             },
             title: { 
               text: "Change",
               enable: { key: "ef-cfg_change-cls-frame-alpha" },
               hidden: {
-              keys: [
-                { key: "ef-cfg_hide-cfg" },
-                { key: "ef-cfg_hide-shd-cls-alpha" }
-              ]
-            },
+                keys: [
+                  { key: "ef-cfg_hide-cfg" },
+                  { key: "ef-cfg_hide-shd-cls-alpha" }
+                ]
+              },
             },
           },
           factor: {
@@ -909,53 +1029,53 @@ function brush_effect_config(json) {
               text: "Factor",
               enable: { key: "ef-cfg_change-cls-frame-alpha" },
               hidden: {
-              keys: [
-                { key: "ef-cfg_hide-cfg" },
-                { key: "ef-cfg_hide-shd-cls-alpha" }
-              ]
-            },
+                keys: [
+                  { key: "ef-cfg_hide-cfg" },
+                  { key: "ef-cfg_hide-shd-cls-alpha" }
+                ]
+              },
             },
             field: {
               store: { key: "ef-cfg_cls-frame-alpha" },
               enable: { key: "ef-cfg_change-cls-frame-alpha" },
               hidden: {
-              keys: [
-                { key: "ef-cfg_hide-cfg" },
-                { key: "ef-cfg_hide-shd-cls-alpha" }
-              ]
-            },
+                keys: [
+                  { key: "ef-cfg_hide-cfg" },
+                  { key: "ef-cfg_hide-shd-cls-alpha" }
+                ]
+              },
             },
             decrease: { 
               store: { key: "ef-cfg_cls-frame-alpha" },
               enable: { key: "ef-cfg_change-cls-frame-alpha" },
               hidden: {
-              keys: [
-                { key: "ef-cfg_hide-cfg" },
-                { key: "ef-cfg_hide-shd-cls-alpha" }
-              ]
-            },
+                keys: [
+                  { key: "ef-cfg_hide-cfg" },
+                  { key: "ef-cfg_hide-shd-cls-alpha" }
+                ]
+              },
               factor: -0.01,
             },
             increase: { 
               store: { key: "ef-cfg_cls-frame-alpha" },
               enable: { key: "ef-cfg_change-cls-frame-alpha" },
               hidden: {
-              keys: [
-                { key: "ef-cfg_hide-cfg" },
-                { key: "ef-cfg_hide-shd-cls-alpha" }
-              ]
-            },
+                keys: [
+                  { key: "ef-cfg_hide-cfg" },
+                  { key: "ef-cfg_hide-shd-cls-alpha" }
+                ]
+              },
               factor: 0.001,
             },
             stick: {
               store: { key: "ef-cfg_cls-frame-alpha" },
               enable: { key: "ef-cfg_change-cls-frame-alpha" },
               hidden: {
-              keys: [
-                { key: "ef-cfg_hide-cfg" },
-                { key: "ef-cfg_hide-shd-cls-alpha" }
-              ]
-            },
+                keys: [
+                  { key: "ef-cfg_hide-cfg" },
+                  { key: "ef-cfg_hide-shd-cls-alpha" }
+                ]
+              },
               factor: 0.01,
             },
             checkbox: { 
@@ -968,11 +1088,11 @@ function brush_effect_config(json) {
             },
             title: { 
               hidden: {
-              keys: [
-                { key: "ef-cfg_hide-cfg" },
-                { key: "ef-cfg_hide-shd-cls-alpha" }
-              ]
-            },
+                keys: [
+                  { key: "ef-cfg_hide-cfg" },
+                  { key: "ef-cfg_hide-shd-cls-alpha" }
+                ]
+              },
             },
           },
           increase: {
@@ -980,70 +1100,141 @@ function brush_effect_config(json) {
               text: "Increase",
               enable: { key: "ef-cfg_change-cls-frame-alpha" },
               hidden: {
-              keys: [
-                { key: "ef-cfg_hide-cfg" },
-                { key: "ef-cfg_hide-shd-cls-alpha" }
-              ]
-            },
+                keys: [
+                  { key: "ef-cfg_hide-cfg" },
+                  { key: "ef-cfg_hide-shd-cls-alpha" }
+                ]
+              },
             },
             field: {
               store: { key: "ef-cfg_cls-frame-alpha" },
               enable: { key: "ef-cfg_change-cls-frame-alpha" },
               hidden: {
-              keys: [
-                { key: "ef-cfg_hide-cfg" },
-                { key: "ef-cfg_hide-shd-cls-alpha" }
-              ]
-            },
+                keys: [
+                  { key: "ef-cfg_hide-cfg" },
+                  { key: "ef-cfg_hide-shd-cls-alpha" }
+                ]
+              },
             },
             decrease: { 
               store: { key: "ef-cfg_cls-frame-alpha" },
               enable: { key: "ef-cfg_change-cls-frame-alpha" },
               hidden: {
-              keys: [
-                { key: "ef-cfg_hide-cfg" },
-                { key: "ef-cfg_hide-shd-cls-alpha" }
-              ]
-            },
-              factor: 0.01,
+                keys: [
+                  { key: "ef-cfg_hide-cfg" },
+                  { key: "ef-cfg_hide-shd-cls-alpha" }
+                ]
+              },
+              factor: -0.01,
             },
             increase: { 
               store: { key: "ef-cfg_cls-frame-alpha" },
               enable: { key: "ef-cfg_change-cls-frame-alpha" },
               hidden: {
-              keys: [
-                { key: "ef-cfg_hide-cfg" },
-                { key: "ef-cfg_hide-shd-cls-alpha" }
-              ]
-            },
-              factor: 0.001,
+                keys: [
+                  { key: "ef-cfg_hide-cfg" },
+                  { key: "ef-cfg_hide-shd-cls-alpha" }
+                ]
+              },
+              factor: 0.01,
             },
             stick: {
               store: { key: "ef-cfg_cls-frame-alpha" },
               enable: { key: "ef-cfg_change-cls-frame-alpha" },
               hidden: {
-              keys: [
-                { key: "ef-cfg_hide-cfg" },
-                { key: "ef-cfg_hide-shd-cls-alpha" }
-              ]
-            },
+                keys: [
+                  { key: "ef-cfg_hide-cfg" },
+                  { key: "ef-cfg_hide-shd-cls-alpha" }
+                ]
+              },
               factor: 0.01,
             },
             checkbox: { 
               hidden: {
-              keys: [
-                { key: "ef-cfg_hide-cfg" },
-                { key: "ef-cfg_hide-shd-cls-alpha" }
-              ]
-            },
+                keys: [
+                  { key: "ef-cfg_hide-cfg" },
+                  { key: "ef-cfg_hide-shd-cls-alpha" }
+                ]
+              },
             },
             title: { 
               hidden: {
-              keys: [
-                { key: "ef-cfg_hide-cfg" },
-                { key: "ef-cfg_hide-shd-cls-alpha" }
-              ]
+                keys: [
+                  { key: "ef-cfg_hide-cfg" },
+                  { key: "ef-cfg_hide-shd-cls-alpha" }
+                ]
+              },
             },
+          },
+          duration: {
+            label: {
+              text: "Duration",
+              enable: { key: "ef-cfg_change-cls-frame-alpha" },
+              hidden: {
+                keys: [
+                  { key: "ef-cfg_hide-cfg" },
+                  { key: "ef-cfg_hide-shd-cls-alpha" }
+                ]
+              },
+            },
+            field: {
+              store: { key: "ef-cfg_cls-frame-alpha" },
+              enable: { key: "ef-cfg_change-cls-frame-alpha" },
+              hidden: {
+                keys: [
+                  { key: "ef-cfg_hide-cfg" },
+                  { key: "ef-cfg_hide-shd-cls-alpha" }
+                ]
+              },
+            },
+            decrease: { 
+              store: { key: "ef-cfg_cls-frame-alpha" },
+              enable: { key: "ef-cfg_change-cls-frame-alpha" },
+              hidden: {
+                keys: [
+                  { key: "ef-cfg_hide-cfg" },
+                  { key: "ef-cfg_hide-shd-cls-alpha" }
+                ]
+              },
+              factor: -0.01,
+            },
+            increase: { 
+              store: { key: "ef-cfg_cls-frame-alpha" },
+              enable: { key: "ef-cfg_change-cls-frame-alpha" },
+              hidden: {
+                keys: [
+                  { key: "ef-cfg_hide-cfg" },
+                  { key: "ef-cfg_hide-shd-cls-alpha" }
+                ]
+              },
+              factor: 0.01,
+            },
+            stick: {
+              store: { key: "ef-cfg_cls-frame-alpha" },
+              enable: { key: "ef-cfg_change-cls-frame-alpha" },
+              hidden: {
+                keys: [
+                  { key: "ef-cfg_hide-cfg" },
+                  { key: "ef-cfg_hide-shd-cls-alpha" }
+                ]
+              },
+              factor: 0.01,
+            },
+            checkbox: { 
+              hidden: {
+                keys: [
+                  { key: "ef-cfg_hide-cfg" },
+                  { key: "ef-cfg_hide-shd-cls-alpha" }
+                ]
+              },
+            },
+            title: { 
+              hidden: {
+                keys: [
+                  { key: "ef-cfg_hide-cfg" },
+                  { key: "ef-cfg_hide-shd-cls-alpha" }
+                ]
+              },
             },
           },
         },

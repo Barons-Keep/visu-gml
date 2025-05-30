@@ -421,10 +421,14 @@ function GridService(_config = null) constructor {
     return md5_string_utf8(string(this.uidPointer))
   }
 
+  ///@param {?Number} [duration]
   ///@return {GridService}
-  init = function() {
+  init = function(duration = null) {
     var task = new Task("init-foreground")
-      .setTimeout(3.0)
+      .setTimeout(10.0)
+      .setState({
+        duration: duration,
+      })
       .whenUpdate(function(executor) {
         var controller = Beans.get(BeanVisuController)
 
@@ -434,7 +438,7 @@ function GridService(_config = null) constructor {
         var angle = random(7.5) * choose(1.0, -1.0)
         var lastTask = controller.visuRenderer.gridRenderer.overlayRenderer.foregrounds.getLast()
         if (Core.isType(lastTask, Task) && Core.isType(lastTask.state, Map)) {
-          lastX = lastTask.state.get("x") + (random(GuiWidth() / 4.0) * choose(1.0, 1.0, -1.0))
+          lastX = lastTask.state.get("x") + (random(GuiWidth() / 2.0) * choose(1.0, 1.0, -1.0))
           lastY = lastTask.state.get("y")
           var prev = lastY
           if (sign(lastY) >= 0) {
@@ -447,22 +451,32 @@ function GridService(_config = null) constructor {
         controller.send(new Event("fade-sprite", {
           sprite: SpriteUtil.parse({
             name: "texture_hechan_3_abstract",
-            alpha: 0.5,
-            blend: "#FF00EE",
+            alpha: 0.4,
+            blend: GMArray.getRandom([
+              "#FFFFFF",
+              "#f0e92b",
+              "#31944d",
+              "#FFFFFF",
+              "#b51943",
+              "#3f056b",
+              "#FFFFFF", 
+              "#138774",
+              "#f02b2b"
+            ]),
           }),
           collection: controller.visuRenderer.gridRenderer.overlayRenderer.backgrounds,
           type: WallpaperType.BACKGROUND,
-          fadeInDuration: 1.0 + random(1.0),
-          fadeOutDuration: 3.0 + random(3.0),
+          fadeInDuration: 2.0 + random(2.0),
+          fadeOutDuration: 2.0 + random(2.0),
           angle: 90.0,
-          speed: 3.33 + random(6.66),
+          speed: 1.33 + random(3.66),
           blendModeSource: BlendModeExt.SRC_ALPHA,
           blendModeTarget: BlendModeExt.ONE,
           blendEquation: BlendEquation.SUBTRACT,
           blendEquationAlpha: BlendEquation.ADD,
           executor: executor,
           tiled: true,
-          replace: true,
+          replace: random(1.0) > 0.5,
           x: lastX,
           y: lastY,
           xScale: scale,
@@ -474,12 +488,23 @@ function GridService(_config = null) constructor {
           sprite: SpriteUtil.parse({
             name: "texture_hechan_3_background",
             alpha: 0.9,
-            blend: "#FFFFFF",
+            //blend: "#FFFFFF",
+            blend: GMArray.getRandom([
+              "#FFFFFF",
+              "#2f0080",
+              "#87135d",
+              "#FFFFFF",
+              "#134787",
+              "#138774",
+              "#FFFFFF", 
+              "#138774",
+              "#f02b2b"
+            ]),
           }),
           collection: controller.visuRenderer.gridRenderer.overlayRenderer.backgrounds,
           type: WallpaperType.BACKGROUND,
-          fadeInDuration: 2.0 + random(1.0),
-          fadeOutDuration: 4.0 + random(1.0),
+          fadeInDuration: 2.0 + random(2.0),
+          fadeOutDuration: 2.0 + random(2.0),
           angle: 180.0 + angle,
           speed: 1.25 + (random(1.0) * 0.7),
           blendModeSource: BlendModeExt.SRC_ALPHA,
@@ -498,22 +523,34 @@ function GridService(_config = null) constructor {
         controller.send(new Event("fade-sprite", {
           sprite: SpriteUtil.parse({
             name: "texture_hechan_3",
-            alpha: 1.0,
-            blend: "#FFFFFF",
+            alpha: 0.75 + random(1.0) * 0.25,
+            blend: GMArray.getRandom([
+              "#FFFFFF",
+              "#ed6d9c",
+              "#FFFFFF",
+              "#887aff",
+              "#FFFFFF",
+              "#96facf",
+              "#FFFFFF",
+              "#fff875",
+              "#FFFFFF", 
+              "#edb8ff"
+            ]),
           }),
           collection: controller.visuRenderer.gridRenderer.overlayRenderer.foregrounds,
           type: WallpaperType.FOREGROUND,
-          fadeInDuration: 1.0 + random(1.0),
-          fadeOutDuration: 3.0 + random(1.0),
+          fadeInDuration: 4.0 + random(2.0),
+          fadeOutDuration: 4.0 + random(2.0),
           angle: angle,
-          speed: 0.15 + (random(1.0) * 0.5),
+          speed: 0.13 + random(0.66),
           blendModeSource: BlendModeExt.SRC_ALPHA,
           blendModeTarget: BlendModeExt.ONE,
           blendEquation: BlendEquation.ADD,
           blendEquationAlpha: BlendEquation.ADD,
           executor: executor,
           tiled: true,
-          replace: true,
+          replace: random(1.0) > 0.75,
+          lifespan: Struct.get(this.state, "duration"),
           x: lastX,
           y: lastY,
           xScale: scale,

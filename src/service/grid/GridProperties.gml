@@ -156,9 +156,18 @@ function GridProperties(config = null) constructor {
   renderParticles = Assert.isType(Struct
     .getDefault(config, "properties.renderParticles", true), Boolean)
 
-      ///@type {Boolean}
+  ///@type {Boolean}
   renderSubtitles = Assert.isType(Struct
     .getDefault(config, "properties.renderSubtitles", true), Boolean)
+
+  ///@type {Boolean}
+  renderBackgroundGlitch = Struct.getIfType(config, "properties.renderBackgroundGlitch", Boolean, true)
+
+  ///@type {Boolean}
+  renderGridGlitch = Struct.getIfType(config, "properties.renderGridGlitch", Boolean, true)
+  
+  ///@type {Boolean}
+  renderCombinedGlitch = Struct.getIfType(config, "properties.renderCombinedGlitch", Boolean, true)
   #endregion
 
   #region support-grid
@@ -201,7 +210,7 @@ function GridProperties(config = null) constructor {
 
   ///@type {Color}
   shaderClearColor = Assert.isType(ColorUtil.fromHex(Struct
-    .getDefault(config, "properties.shaderClearColor", "#ffffff00")), Color)
+    .getDefault(config, "properties.shaderClearColor", "#00000000")), Color)
 
   ///@type {Boolean}
   shaderClearFrame = Assert.isType(Struct

@@ -317,7 +317,7 @@ function VisuRenderer() constructor {
         var uniformSize = shader_get_uniform(shader_gaussian_blur, "size")
         shader_set(shader_gaussian_blur)
         shader_set_uniform_f(uniformSize, _layout.width(), _layout.height(), this.blur.value)
-        this.gridRenderer.renderGameplay(_layout)
+        this.gridRenderer.renderGUIGameSurface(_layout)
         shader_reset()
       } else {
         this.gridRenderer.renderGUI(_layout)

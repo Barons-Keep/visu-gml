@@ -422,8 +422,17 @@ function VisuMenu(_config = null) constructor {
             layout: { type: UILayoutType.VERTICAL },
             label: { 
               text: "Main menu",
-              callback: new BindIntent(function() {
+              _callback: new BindIntent(function() {
                 Scene.open("scene_visu")
+              }),
+              callback: new BindIntent(function() {
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+                Beans.get(BeanVisuController).menu.send(Callable
+                  .run(this.callbackData.quit, {
+                    back: this.callbackData.back,
+                    accept: function() { Scene.open("scene_visu") },
+                    decline: this.callbackData.back,
+                  }))
               }),
               callbackData: config,
               onMouseReleasedLeft: function() {

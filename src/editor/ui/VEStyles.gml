@@ -45,7 +45,7 @@ global.__VETheme = {
     entryHover: "primary",
     entryText: "text",
     buttonToggle: "primary",
-    buttonToggleSelected: "primaryAccent",
+    buttonToggleSelected: "primaryLight",
     buttonToggleHover: "primaryLight",
     buttonToggleText: "text",
     controlButton: "primary",
@@ -324,30 +324,14 @@ function generateVEStyles() {
         color: VETheme.color.textShadow,
         offset: { x: 4 },
       },
-      remove: {
+      select: {
         backgroundColor: VETheme.color.primaryDark,
-        colorHoverOver: VETheme.color.deny,
+        colorHoverOver: VETheme.color.primaryShadow,
         colorHoverOut: VETheme.color.primaryDark,
         label: {
           align: { v: VAlign.CENTER, h: HAlign.CENTER },
           font: "font_inter_10_regular",
           color: VETheme.color.textShadow,
-        },
-        sprite: {
-          blend: VETheme.color.textShadow,
-        },
-      },
-      settings: {
-        backgroundColor: VETheme.color.primaryDark,
-        colorHoverOver: VETheme.color.primary,
-        colorHoverOut: VETheme.color.primaryDark,
-        label: {
-          align: { v: VAlign.CENTER, h: HAlign.CENTER },
-          font: "font_inter_10_regular",
-          color: VETheme.color.textShadow,
-        },
-        sprite: {
-          blend: VETheme.color.textShadow,
         },
       },
     },

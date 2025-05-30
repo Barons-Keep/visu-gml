@@ -19,6 +19,12 @@ function brush_effect_glitch(json = null) {
         value: Struct.get(json, "ef-glt_fade-out"),
         passthrough: UIUtil.passthrough.getNormalizedStringNumber(),
       },
+      "ef-glt_glitch": {
+        type: String,
+        value: Struct.get(json, "ef-glt_glitch"),
+        passthrough: UIUtil.passthrough.getArrayValue(),
+        data: GlitchType.keys(),
+      },
       "ef-glt_use-config": {
         type: Boolean,
         value: Struct.get(json, "ef-glt_use-config"),
@@ -138,7 +144,7 @@ function brush_effect_glitch(json = null) {
         config: { 
           layout: { type: UILayoutType.VERTICAL },
           label: { 
-            text: "Fade out",
+            text: "Properties",
             //color: VETheme.color.textShadow,
             enable: { key: "ef-glt_use-fade-out" },
             //backgroundColor: VETheme.color.side,
@@ -173,7 +179,7 @@ function brush_effect_glitch(json = null) {
           },
           field: { 
             enable: { key: "ef-glt_use-fade-out" },
-            store: { key: "ef-glt_line-spd" },
+            store: { key: "ef-glt_fade-out" },
             hidden: { key: "ef-glt_hide" },
           },
           slider: { 
@@ -194,6 +200,34 @@ function brush_effect_glitch(json = null) {
             factor: 0.001,
             store: { key: "ef-glt_fade-out" },
             enable: { key: "ef-glt_use-fade-out" },
+            hidden: { key: "ef-glt_hide" },
+          },
+        },
+      },
+            {
+        name: "ef-glt_glitch",
+        template: VEComponents.get("spin-select"),
+        layout: VELayouts.get("spin-select"),
+        config: { 
+          layout: {
+            type: UILayoutType.VERTICAL,
+            height: function() { return 32 },
+            margin: { top: 4, bottom: 4 },
+          },
+          label: {
+            text: "Glitch",
+            hidden: { key: "ef-glt_hide" },
+          },
+          previous: {
+            store: { key: "ef-glt_glitch" },
+            hidden: { key: "ef-glt_hide" },
+          },
+          preview: Struct.appendRecursive({ 
+            store: { key: "ef-glt_glitch" },
+            hidden: { key: "ef-glt_hide" },
+          }, Struct.get(VEStyles.get("spin-select-label"), "preview"), false),
+          next: {
+            store: { key: "ef-glt_glitch" },
             hidden: { key: "ef-glt_hide" },
           },
         },

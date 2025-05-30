@@ -242,7 +242,8 @@ function brush_entity_shroom(json) {
           stick: {
             store: { key: "en-shr_lifespan" },
             enable: { key: "en-shr_use-lifespan" },
-            factor: 0.01,
+            factor: 0.1,
+            step: 10.0,
             hidden: { key: "en-shr_hide" },
           },
           checkbox: {
@@ -289,7 +290,8 @@ function brush_entity_shroom(json) {
           stick: {
             store: { key: "en-shr_hp" },
             enable: { key: "en-shr_use-hp" },
-            factor: 0.01,
+            factor: 0.1,
+            step: 10.0,
             hidden: { key: "en-shr_hide" },
           },
           checkbox: {
@@ -489,7 +491,22 @@ function brush_entity_shroom(json) {
             store: { key: "en-shr_spawn-map" },
             hidden: { key: "en-shr_hide-spawn" },
             origin: "en-shr_spawn-map",
+            onMousePressedLeft: function(event) {
+              var editorIO = Beans.get(BeanVisuEditorIO)
+              var mouse = editorIO.mouse
+              if (Optional.is(mouse.getClipboard())) {
+                return
+              }
+
+              mouse.setClipboard(this)
+            },
             onMouseOnLeft: function(event) {
+              var editorIO = Beans.get(BeanVisuEditorIO)
+              var mouse = editorIO.mouse
+              if (mouse.getClipboard() != this) {
+                return
+              }
+
               var _x = event.data.x - this.context.area.getX() - this.area.getX() - this.context.offset.x
               var _y = event.data.y - this.context.area.getY() - this.area.getY() - this.context.offset.y
               var areaWidth = this.area.getWidth()
@@ -681,7 +698,8 @@ function brush_entity_shroom(json) {
             hidden: { key: "en-shr_hide-spawn" },
           },
           stick: {
-            factor: 0.001,
+            factor: 0.25,
+            step: 10,
             store: { key: "en-shr_x" },
             hidden: { key: "en-shr_hide-spawn" },
           },
@@ -730,7 +748,8 @@ function brush_entity_shroom(json) {
             hidden: { key: "en-shr_hide-spawn" },
           },
           stick: {
-            factor: 0.001,
+            factor: 0.25,
+            step: 10.0,
             store: { key: "en-shr_rng-x" },
             enable: { key: "en-shr_use-rng-x" },
             hidden: { key: "en-shr_hide-spawn" },
@@ -816,7 +835,8 @@ function brush_entity_shroom(json) {
             hidden: { key: "en-shr_hide-spawn" },
           },
           stick: {
-            factor: 0.001,
+            factor: 0.25,
+            step: 10.0,
             store: { key: "en-shr_y" },
             hidden: { key: "en-shr_hide-spawn" },
           },
@@ -865,7 +885,8 @@ function brush_entity_shroom(json) {
             hidden: { key: "en-shr_hide-spawn" },
           },
           stick: {
-            factor: 0.001,
+            factor: 0.25,
+            step: 10.0,
             store: { key: "en-shr_rng-y" },
             enable: { key: "en-shr_use-rng-y" },
             hidden: { key: "en-shr_hide-spawn" },
@@ -945,7 +966,8 @@ function brush_entity_shroom(json) {
             factor: 0.1,
           },
           stick: {
-            factor: 0.001,
+            factor: 0.1,
+            //step: 10.0,
             store: { key: "en-shr_dir" },
             hidden: { key: "en-shr_hide-spawn" },
           },
@@ -1036,19 +1058,20 @@ function brush_entity_shroom(json) {
             store: { key: "en-shr_dir-rng" },
             enable: { key: "en-shr_use-dir-rng" },
             hidden: { key: "en-shr_hide-spawn" },
-            factor: -0.25,
+            factor: -0.1,
           },
           increase: {
             store: { key: "en-shr_dir-rng" },
             enable: { key: "en-shr_use-dir-rng" },
             hidden: { key: "en-shr_hide-spawn" },
-            factor: 0.25,
+            factor: 0.1,
           },
           stick: {
             store: { key: "en-shr_dir-rng" },
             enable: { key: "en-shr_use-dir-rng" },
             hidden: { key: "en-shr_hide-spawn" },
-            factor: 0.001,
+            factor: 0.1,
+            //step: 10.0,
           },
           checkbox: { 
             spriteOn: { name: "visu_texture_checkbox_on" },
@@ -1125,7 +1148,8 @@ function brush_entity_shroom(json) {
             factor: 0.1,
           },
           stick: {
-            factor: 0.001,
+            factor: 0.1,
+            //step: 10.0,
             store: { key: "en-shr_spd" },
             hidden: { key: "en-shr_hide-spawn" },
           },
@@ -1165,16 +1189,17 @@ function brush_entity_shroom(json) {
             store: { key: "en-shr_spd-rng" },
             enable: { key: "en-shr_use-spd-rng" },
             hidden: { key: "en-shr_hide-spawn" },
-            factor: -0.25,
+            factor: -0.1,
           },
           increase: {
             store: { key: "en-shr_spd-rng" },
             enable: { key: "en-shr_use-spd-rng" },
             hidden: { key: "en-shr_hide-spawn" },
-            factor: 0.25,
+            factor: 0.1,
           },
           stick: {
-            factor: 0.001,
+            factor: 0.1,
+            //step: 10.0,
             store: { key: "en-shr_spd-rng" },
             enable: { key: "en-shr_use-spd-rng" },
             hidden: { key: "en-shr_hide-spawn" },

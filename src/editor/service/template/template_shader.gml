@@ -3,6 +3,26 @@
 ///@static
 ///@type {Map<String, Callable>}
 global.__ve_shader_configs = new Map(String, Struct, {
+  "shader_arc_runner": {
+    //"u_tint": "COLOR",
+    //"u_offset": "VECTOR2",
+    //"u_angle": "FLOAT",
+    "u_time": {
+      "store": {
+        "value": 0.0,
+        "target": 999.9,
+        "duration": 999.9,
+        "ease": "LINEAR"
+      },
+      "components": { }
+    },
+    //"u_jumpiness": "FLOAT",
+    //"u_distortion": "FLOAT",
+    //"u_scale": "FLOAT",
+    //"u_curves": "FLOAT",
+    //"u_brightness": "FLOAT",
+    //"u_wiggle": "FLOAT"
+  },
   "shader_art_wasm": {
     "iTime": { __type: "FLOAT" },
     "iResolution": { __type: "VECTOR2" },
@@ -296,7 +316,12 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
 
     Struct.set(store, $"{uniform.name}", {
       type: ColorTransformer,
-      value: new ColorTransformer(Struct.get(json, $"{uniform.name}")),
+      value: new ColorTransformer(Struct.getIfType(json, uniform.name, Struct, !Optional.is(config) ? {
+        value: "#ffffff",
+        target: "#ffffff",
+        duration: 0.0,
+        ease: EaseType.IN_OUT_QUINT,
+      } : storeConfig)),
     })
     
     Struct.set(store, $"{uniform.name}_hide", {
@@ -726,6 +751,8 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
   })
   .set(ShaderUniformType.findKey(ShaderUniformType.FLOAT), function(uniform, json, config = null) {
     var store = {}
+    var storeConfig = Struct.get(config, "store")
+    var componentsConfig = Struct.get(config, "components")
     Struct.set(store, $"{uniform.name}_hide", {
       type: Boolean,
       value: Struct.parse.boolean(json, $"{uniform.name}_hide"),
@@ -733,14 +760,12 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
 
     Struct.set(store, uniform.name, {
       type: NumberTransformer,
-      value: new NumberTransformer(Struct.getIfType(json, uniform.name, Struct, {
+      value: new NumberTransformer(Struct.getIfType(json, uniform.name, Struct, !Optional.is(storeConfig) ? {
         value: 0.0,
         target: 0.0,
-        factor: 0.0,
-        increase: 0.0,
         duration: 0.0,
-        ease: EaseType.LEGACY,
-      }))
+        ease: EaseType.IN_OUT_QUINT,
+      } : storeConfig)),
     })
 
     return {
@@ -779,19 +804,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.01,
               },
@@ -802,19 +827,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.01,
               },
@@ -825,19 +850,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.001,
               },
@@ -848,19 +873,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.0001,
               },
@@ -871,19 +896,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.01,
               },
@@ -894,19 +919,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               previous: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               preview: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               next: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
             },
-          }, config, false),
+          }, componentsConfig, false),
         },
         {
           name: $"shader-uniform_{uniform.name}-line-h",
@@ -922,7 +947,8 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
   })
   .set(ShaderUniformType.findKey(ShaderUniformType.VECTOR2), function(uniform, json, config = null) {
     var store = {}
-
+    var storeConfig = Struct.get(config, "store")
+    var componentsConfig = Struct.get(config, "components")
     Struct.set(store, $"{uniform.name}_hide", {
       type: Boolean,
       value: Struct.parse.boolean(json, $"{uniform.name}_hide"),
@@ -930,24 +956,20 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
 
     Struct.set(store, uniform.name, {
       type: Vector2Transformer,
-      value: new Vector2Transformer(Struct.getIfType(json, uniform.name, Struct, { 
+      value: new Vector2Transformer(Struct.getIfType(json, uniform.name, Struct, !Optional.is(storeConfig) ? {
         x: {
           value: 0.0,
           target: 0.0,
-          factor: 0.0,
-          increase: 0.0,
           duration: 0.0,
-          ease: EaseType.LEGACY,
+          ease: EaseType.IN_OUT_QUINT,
         }, 
         y: {
           value: 0.0,
           target: 0.0,
-          factor: 0.0,
-          increase: 0.0,
           duration: 0.0,
-          ease: EaseType.LEGACY,
+          ease: EaseType.IN_OUT_QUINT,
         },
-      })),
+      } : storeConfig)),
     })
 
     return {
@@ -988,19 +1010,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: { 
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.01,
               },
@@ -1011,19 +1033,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: { 
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.01,
               },
@@ -1034,19 +1056,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: { 
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.001,
               },
@@ -1057,19 +1079,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: { 
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.0001,
               },
@@ -1080,19 +1102,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.01,
               },
@@ -1103,19 +1125,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               previous: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               preview: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               next: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
             },
-          }, Struct.get(config, "vec2x"), false),
+          }, Struct.get(componentsConfig, "vec2x"), false),
         },
         {
           name: $"shader-uniform_{uniform.name}-x-line-h",
@@ -1140,19 +1162,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: { 
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.01,
               },
@@ -1163,19 +1185,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: { 
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.01,
               },
@@ -1186,19 +1208,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: { 
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.001,
               },
@@ -1209,19 +1231,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: { 
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.0001,
               },
@@ -1232,19 +1254,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.01,
               },
@@ -1255,19 +1277,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               previous: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               preview: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               next: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
             },
-          }, Struct.get(config, "vec2y"), false),
+          }, Struct.get(componentsConfig, "vec2y"), false),
         },
         {
           name: $"shader-uniform_{uniform.name}-y-line-h",
@@ -1283,7 +1305,8 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
   })
   .set(ShaderUniformType.findKey(ShaderUniformType.VECTOR3), function(uniform, json, config = null) {
     var store = {}
-
+    var storeConfig = Struct.get(config, "store")
+    var componentsConfig = Struct.get(config, "components")
     Struct.set(store, $"{uniform.name}_hide", {
       type: Boolean,
       value: Struct.parse.boolean(json, $"{uniform.name}_hide"),
@@ -1291,32 +1314,26 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
 
     Struct.set(store, uniform.name, {
       type: Vector3Transformer,
-      value: new Vector3Transformer(Struct.getIfType(json, uniform.name, Struct, { 
+      value: new Vector3Transformer(Struct.getIfType(json, uniform.name, Struct, !Optional.is(storeConfig) ? {
         x: {
           value: 0.0,
           target: 0.0,
-          factor: 0.0,
-          increase: 0.0,
           duration: 0.0,
-          ease: EaseType.LEGACY,
+          ease: EaseType.IN_OUT_QUINT,
         }, 
         y: {
           value: 0.0,
           target: 0.0,
-          factor: 0.0,
-          increase: 0.0,
           duration: 0.0,
-          ease: EaseType.LEGACY,
+          ease: EaseType.IN_OUT_QUINT,
         },
         z: {
           value: 0.0,
           target: 0.0,
-          factor: 0.0,
-          increase: 0.0,
           duration: 0.0,
-          ease: EaseType.LEGACY,
+          ease: EaseType.IN_OUT_QUINT,
         },
-      })),
+      } : storeConfig)),
     })
 
     return {
@@ -1357,19 +1374,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.01,
               },
@@ -1380,19 +1397,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.01,
               },
@@ -1403,19 +1420,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.001,
               },
@@ -1426,19 +1443,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.0001,
               },
@@ -1449,19 +1466,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.01,
               },
@@ -1472,19 +1489,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               previous: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               preview: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               next: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
             },
-          }, Struct.get(config, "vec3x"), false),
+          }, Struct.get(componentsConfig, "vec3x"), false),
         },
         {
           name: $"shader-uniform_{uniform.name}-x-line-h",
@@ -1509,19 +1526,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.01,
               },
@@ -1532,19 +1549,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.01,
               },
@@ -1555,19 +1572,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.001,
               },
@@ -1578,19 +1595,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.0001,
               },
@@ -1601,19 +1618,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.01,
               },
@@ -1624,19 +1641,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               previous: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               preview: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               next: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
             },
-          }, Struct.get(config, "vec3y"), false),
+          }, Struct.get(componentsConfig, "vec3y"), false),
         },
         {
           name: $"shader-uniform_{uniform.name}-y-line-h",
@@ -1661,19 +1678,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.01,
               },
@@ -1684,19 +1701,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.01,
               },
@@ -1707,19 +1724,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.001,
               },
@@ -1730,19 +1747,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.0001,
               },
@@ -1753,19 +1770,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.01,
               },
@@ -1776,19 +1793,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               previous: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               preview: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               next: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
             },
-          }, Struct.get(config, "vec3z"), false),
+          }, Struct.get(componentsConfig, "vec3z"), false),
         },
         {
           name: $"shader-uniform_{uniform.name}-z-line-h",
@@ -1804,7 +1821,8 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
   })
   .set(ShaderUniformType.findKey(ShaderUniformType.VECTOR4), function(uniform, json, config = null) {
     var store = {}
-
+    var storeConfig = Struct.get(config, "store")
+    var componentsConfig = Struct.get(config, "components")
     Struct.set(store, $"{uniform.name}_hide", {
       type: Boolean,
       value: Struct.parse.boolean(json, $"{uniform.name}_hide"),
@@ -1812,40 +1830,32 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
 
     Struct.set(store, uniform.name, {
       type: Vector4Transformer,
-      value: new Vector4Transformer(Struct.getIfType(json, uniform.name, Struct, { 
+      value: new Vector4Transformer(Struct.getIfType(json, uniform.name, Struct, !Optional.is(storeConfig) ? {
         x: {
           value: 0.0,
           target: 0.0,
-          factor: 0.0,
-          increase: 0.0,
           duration: 0.0,
-          ease: EaseType.LEGACY,
+          ease: EaseType.IN_OUT_QUINT,
         }, 
         y: {
           value: 0.0,
           target: 0.0,
-          factor: 0.0,
-          increase: 0.0,
           duration: 0.0,
-          ease: EaseType.LEGACY,
+          ease: EaseType.IN_OUT_QUINT,
         },
         z: {
           value: 0.0,
           target: 0.0,
-          factor: 0.0,
-          increase: 0.0,
           duration: 0.0,
-          ease: EaseType.LEGACY,
-        }, 
+          ease: EaseType.IN_OUT_QUINT,
+        },
         a: {
           value: 0.0,
           target: 0.0,
-          factor: 0.0,
-          increase: 0.0,
           duration: 0.0,
-          ease: EaseType.LEGACY,
+          ease: EaseType.IN_OUT_QUINT,
         },
-      })),
+      } : storeConfig)),
     })
 
     return {
@@ -1886,19 +1896,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.01,
               },
@@ -1909,19 +1919,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.01,
               },
@@ -1932,19 +1942,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.001,
               },
@@ -1955,19 +1965,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.0001,
               },
@@ -1978,19 +1988,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.01,
               },
@@ -2001,19 +2011,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               previous: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               preview: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               next: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
             },
-          }, Struct.get(config, "vec4x"), false),
+          }, Struct.get(componentsConfig, "vec4x"), false),
         },
         {
           name: $"shader-uniform_{uniform.name}-x-line-h",
@@ -2038,19 +2048,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.01,
               },
@@ -2061,19 +2071,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.01,
               },
@@ -2084,19 +2094,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.001,
               },
@@ -2107,19 +2117,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.0001,
               },
@@ -2130,19 +2140,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.01,
               },
@@ -2153,19 +2163,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               previous: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               preview: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               next: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
             },
-          }, Struct.get(config, "vec4y"), false),
+          }, Struct.get(componentsConfig, "vec4y"), false),
         },
         {
           name: $"shader-uniform_{uniform.name}-y-line-h",
@@ -2190,19 +2200,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.01,
               },
@@ -2213,19 +2223,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.01,
               },
@@ -2236,19 +2246,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.001,
               },
@@ -2259,19 +2269,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.0001,
               },
@@ -2282,19 +2292,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.01,
               },
@@ -2305,19 +2315,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               previous: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               preview: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               next: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
             },
-          }, Struct.get(config, "vec4z"), false),
+          }, Struct.get(componentsConfig, "vec4z"), false),
         },
         {
           name: $"shader-uniform_{uniform.name}-z-line-h",
@@ -2342,19 +2352,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.01,
               },
@@ -2365,19 +2375,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.01,
               },
@@ -2388,19 +2398,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.001,
               },
@@ -2411,19 +2421,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.0001,
               },
@@ -2434,19 +2444,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               field: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               increase: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               decrease: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               slider: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
                 factor: 0.01,
               },
@@ -2457,19 +2467,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
                 hidden: { key: $"{uniform.name}_hide" },
               },
               previous: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               preview: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
               next: {
-                store: { key: uniform.name },
+                store: { key: $"{uniform.name}" },
                 hidden: { key: $"{uniform.name}_hide" },
               },
             },
-          }, Struct.get(config, "vec4a"), false),
+          }, Struct.get(componentsConfig, "vec4a"), false),
         },
         {
           name: $"shader-uniform_{uniform.name}-a-line-h",
@@ -2485,10 +2495,15 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
   })
   .set(ShaderUniformType.findKey(ShaderUniformType.RESOLUTION), function(uniform, json, config = null) {
     var store = {}
+    var storeConfig = Struct.get(config, "store")
+    var componentsConfig = Struct.get(config, "components")
     Struct.set(store, uniform.name, {
       type: ResolutionTransformer,
-      value: new ResolutionTransformer(),
+      value: new ResolutionTransformer(Struct.getIfType(json, uniform.name, Struct, !Optional.is(storeConfig) ? {
+        
+      } : storeConfig)),
     })
+
     return {
       store: store,
     }
