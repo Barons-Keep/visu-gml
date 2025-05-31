@@ -14,6 +14,42 @@ function VisuRenderer() constructor {
   ///@type {DialogueRenderer}
   dialogueRenderer = new DialogueRenderer()
 
+  ///@type {FSM}
+  fsm = new FSM(this, {
+    displayName: "VisuRenderer",
+    initialState: { name: "splashscreen" },
+    states: {
+      "splashscreen": {
+        actions: {
+          onStart: function(fsm, fsmState, data) {
+
+          },
+        },
+        update: function(fsm) {
+          fsm.dispatcher.send(new Event("transition", { name: "idle" }))
+        },
+        transitions: {
+          "splashscreen": null,
+          "idle": null,
+        },
+      },
+      "idle": {
+        actions: {
+          onStart: function(fsm, fsmState, data) {
+
+          },
+        },
+        update: function(fsm) {
+
+        },
+        transitions: {
+          "splashscreen": null,
+          "idle": null,
+        },
+      }
+    }
+  })
+
   ///@type {TaskExecutor}
   executor = new TaskExecutor(this)
 
@@ -39,13 +75,13 @@ function VisuRenderer() constructor {
   ///@private
   ///@type {Number}
   spinnerFactor = 0
-
+  
   ///@private
   ///@type {Timer}
-  initTimer = new Timer(3.0)
+  initTimer = new Timer(1.5)
 
   ///@type {Timer}
-  fadeTimer = new Timer(0.33)
+  fadeTimer = new Timer(0.25)
 
   ///@private
   ///@type {NumberTransformer}
@@ -65,6 +101,14 @@ function VisuRenderer() constructor {
   renderEditorMode = Core.getProperty("visu.editor.renderEditorMode", false)
 
   ///@private
+  ///@type {Number}
+  debugFPSLowCooldown = 0.0
+
+  ///@private
+  ///@type {Number}
+  debugMinFPS = GAME_FPS
+
+  ///@private
   ///@return {VisuRenderer}
   init = function() {
     return this
@@ -80,51 +124,49 @@ function VisuRenderer() constructor {
       var color = c_black
       this.spinnerFactor = lerp(this.spinnerFactor, 100.0, 0.08)
 
-      var alpha = clamp((this.spinnerFactor / 100) * 0.5, 0.0, 1.0)
+      var alpha = clamp((this.spinnerFactor / 100) * 0.85, 0.0, 1.0)
       if (alpha > 0) {
         GPU.render.rectangle(
           0, 0, 
           GuiWidth(), GuiHeight(), 
           false, 
           color, color, color, color, 
-          alpha
+          alpha * 0.5
         )
       }
 
       this.spinner
         .setAngle(30.0 * (this.spinnerFactor / 100))
-        .setAlpha(0.85 * alpha)
+        .setAlpha(alpha)
         .render(GuiWidth() / 2.0, (GuiHeight() * 0.75) - this.spinnerFactor)
     } else if (this.spinnerFactor > 0) {
       var color = c_black
       this.spinnerFactor = lerp(this.spinnerFactor, 0.0, 0.08)
 
-      var alpha = clamp((this.spinnerFactor / 100) * 0.5, 0.0, 1.0)
+      var alpha = clamp((this.spinnerFactor / 100) * 0.85, 0.0, 1.0)
       if (alpha > 0) {
         GPU.render.rectangle(
           0, 0, 
           GuiWidth(), GuiHeight(), 
           false, 
           color, color, color, color, 
-          alpha
+          alpha * 0.5
         )
       }
 
       this.spinner
         .setAngle(-30.0 * (this.spinnerFactor / 100.0))
-        .setAlpha(0.85 * alpha)
+        .setAlpha(alpha)
         .render(GuiWidth() / 2.0, (GuiHeight() * 0.75) - this.spinnerFactor)
     }
 
     return this
   }
 
-  debugFPSLowCooldown = 0.0
-  debugMinFPS = GAME_FPS
-
   ///@private
+  ///@param {UILayout} layout
   ///@return {VisuRenderer}
-  renderDebugGUI = function() {
+  renderDebugGUI = function(layout) {
     /*
     var editor = Beans.get(BeanVisuEditorController)
     if (Optional.is(editor)) {
@@ -236,8 +278,9 @@ function VisuRenderer() constructor {
   }
 
   ///@private
+  ///@param {UILayout} layout
   ///@return {VisuRenderer}
-  renderUI = function() {
+  renderUI = function(layout) {
     var editor = Beans.get(BeanVisuEditorController)
     if (Core.isType(editor, VisuEditorController) && editor.renderUI) {
       editor.uiService.render()
@@ -248,24 +291,120 @@ function VisuRenderer() constructor {
     return this
   }
 
+  ///@private
+  ///@param {Task} task
+  ///@param {Number|String} iterator
+  ///@param {UILayout} layout
+  renderSplashscreen = function(task, iterator, layout) {
+    if (task.name == "splashscreen") {
+      task.state.render(task, layout)
+    }
+  }
+
+  ///@private
+  ///@param {UILayout} layout
+  ///@return {VisuRenderer}
+  renderMenu = function(layout) {
+    var controller = Beans.get(BeanVisuController)
+    var editor = Beans.get(BeanVisuEditorController)
+
+    if (controller.menu.containers.size() != 0) {
+      return this
+    }
+
+    if (this.blur.target != 0.0) {
+      this.blur.target = 0.0
+      this.blur.startValue = this.blur.value
+      this.blur.reset()
+    }
+    
+    this.gridRenderer.renderGUI(layout)
+    this.subtitleRenderer.renderGUI(layout)  
+    if (Visu.settings.getValue("visu.interface.render-hud")) {
+      this.hudRenderer.renderGUI(layout)
+    }
+
+    if (this.renderEditorMode && editor != null && !editor.renderUI) {
+      var _x = layout.x()
+      var _y = layout.y()
+      var _width = layout.width()
+      var _height = layout.height()
+      var xStart = _width * (1.0 - 0.061)
+      var yStart = _height * (1.0 - 0.08)
+      var text = "SHOW EDITOR [F5]"
+      GPU.render.text(
+        _x + xStart,
+        _y + yStart,
+        text,
+        1.0,
+        0.0,
+        0.6,
+        c_white,
+        this.font,
+        HAlign.RIGHT,
+        VAlign.BOTTOM,
+        c_lime,
+        8.0
+      ) 
+    }
+
+    this.dialogueRenderer.render(layout)
+    return this
+  }
+
+  ///@private
+  ///@param {UILayout} layout
+  ///@return {VisuRenderer}
+  renderGame = function(layout) {
+    var controller = Beans.get(BeanVisuController)
+    var editor = Beans.get(BeanVisuEditorController)
+    if (controller.menu.containers.size() == 0) {
+      return this
+    }
+
+    this.blur.update()
+    if (shader_is_compiled(shader_gaussian_blur)) {
+      var uniformSize = shader_get_uniform(shader_gaussian_blur, "size")
+      shader_set(shader_gaussian_blur)
+      shader_set_uniform_f(uniformSize, layout.width(), layout.height(), this.blur.value)
+      this.gridRenderer.renderGUIGameSurface(layout)
+      shader_reset()
+    } else {
+      this.gridRenderer.renderGUI(layout)
+    }
+
+    return this
+  }
+
   ///@return {VisuRenderer}
   update = function() {
-    this.initTimer.update()
-    this.fadeTimer.update()
-
+    var controller = Beans.get(BeanVisuController)
     var editor = Beans.get(BeanVisuEditorController)
     var _layout = editor == null ? this.layout : editor.layout.nodes.preview
-    this.gridRenderer.update(_layout)
-    this.hudRenderer.update(_layout)
-    this.dialogueRenderer.update()
+    var stateName = controller.fsm.getStateName()
+    if (stateName != "splashscreen") {
+      this.initTimer.update()
+      this.fadeTimer.update()
+
+      this.gridRenderer.update(_layout)
+      this.hudRenderer.update(_layout)
+      this.dialogueRenderer.update()
+    }
+
+    this.executor.update()
     return this
   }
   
   ///@return {VisuRenderer}
   render = function() {
+    var controller = Beans.get(BeanVisuController)
     var editor = Beans.get(BeanVisuEditorController)
     var _layout = editor == null ? this.layout : editor.layout.nodes.preview
-    this.gridRenderer.render(_layout)
+    var stateName = controller.fsm.getStateName()
+    if (stateName != "splashscreen") {
+      this.gridRenderer.render(_layout)
+    }
+
     return this
   }
 
@@ -274,86 +413,42 @@ function VisuRenderer() constructor {
     var controller = Beans.get(BeanVisuController)
     var editor = Beans.get(BeanVisuEditorController)
     var _layout = editor == null ? this.layout : editor.layout.nodes.preview
-
-    if (controller.menu.containers.size() == 0) {
-      this.blur.reset()
-      this.gridRenderer.renderGUI(_layout)
-      this.subtitleRenderer.renderGUI(_layout)  
-      if (Visu.settings.getValue("visu.interface.render-hud")) {
-        this.hudRenderer.renderGUI(_layout)
-      }
-
-      if (this.renderEditorMode && editor != null && !editor.renderUI) {
-        var _x = _layout.x()
-        var _y = _layout.y()
-        var _width = _layout.width()
-        var _height = _layout.height()
-        var xStart = _width * (1.0 - 0.061)
-        var yStart = _height * (1.0 - 0.08)
-        var text = "SHOW EDITOR [F5]"
-        GPU.render.text(
-          _x + xStart,
-          _y + yStart,
-          text,
-          1.0,
-          0.0,
-          0.6,
-          c_white,
-          this.font,
-          HAlign.RIGHT,
-          VAlign.BOTTOM,
-          c_lime,
-          8.0
-        ) 
-      }
-      this.dialogueRenderer.render()
+    var stateName = controller.fsm.getStateName()
+    if (stateName == "splashscreen") {
+      this.executor.tasks.forEach(this.renderSplashscreen, _layout)
     } else {
-      //if (!Optional.is(controller.track)) {
-      //  controller.gridService.properties.update(controller.gridService)
-      //}
-      
-      this.blur.update()
-      if (shader_is_compiled(shader_gaussian_blur)) {
-        var uniformSize = shader_get_uniform(shader_gaussian_blur, "size")
-        shader_set(shader_gaussian_blur)
-        shader_set_uniform_f(uniformSize, _layout.width(), _layout.height(), this.blur.value)
-        this.gridRenderer.renderGUIGameSurface(_layout)
-        shader_reset()
-      } else {
-        this.gridRenderer.renderGUI(_layout)
+      this.renderMenu(_layout)
+      this.renderGame(_layout)
+      this.renderUI(_layout)
+      this.renderSpinner(_layout)
+      this.renderDebugGUI(_layout)
+
+      if (!this.initTimer.finished) {
+        var alpha = clamp(this.initTimer.duration - this.initTimer.time, 0.0, 1.0)
+        if (alpha > 0) {
+          GPU.render.rectangle(
+            0, 0, 
+            GuiWidth(), GuiHeight(), 
+            false, 
+            c_black, c_black, c_black, c_black, 
+            alpha
+          )
+        }
+      }
+
+      if (!this.fadeTimer.finished) {
+        var alpha = clamp(this.fadeTimer.duration - this.fadeTimer.time, 0.0, 1.0)
+        if (alpha > 0) {
+          GPU.render.rectangle(
+            0, 0, 
+            GuiWidth(), GuiHeight(), 
+            false, 
+            c_black, c_black, c_black, c_black, 
+            alpha
+          )
+        }
       }
     }
-    this.renderUI()
-    this.renderSpinner(_layout)
-    this.renderDebugGUI()
-
-    if (!this.initTimer.finished) {
-      var alpha = clamp(this.initTimer.duration - this.initTimer.time, 0.0, 1.0)
-      if (alpha > 0) {
-        GPU.render.rectangle(
-          0, 0, 
-          GuiWidth(), GuiHeight(), 
-          false, 
-          c_black, c_black, c_black, c_black, 
-          alpha
-        )
-      }
-    }
-
-    if (!this.fadeTimer.finished) {
-      var alpha = clamp(this.fadeTimer.duration - this.fadeTimer.time, 0.0, 1.0)
-      if (alpha > 0) {
-        GPU.render.rectangle(
-          0, 0, 
-          GuiWidth(), GuiHeight(), 
-          false, 
-          c_black, c_black, c_black, c_black, 
-          alpha
-        )
-      }
-    }
-
-    this.executor.update()
 
     return this
   }
@@ -363,6 +458,6 @@ function VisuRenderer() constructor {
     this.gridRenderer.free()
     return this
   }
-
+  
   this.init()
 }

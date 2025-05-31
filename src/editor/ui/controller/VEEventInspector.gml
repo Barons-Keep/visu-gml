@@ -87,7 +87,7 @@ function VEEventInspector(_editor) constructor {
             align: { v: VAlign.CENTER, h: HAlign.LEFT },
             offset: { x: 4 },
             margin: { top: 1 },
-            backgroundColor: VETheme.color.sideDark,
+            backgroundColor: VETheme.color.accentDark,
             clipboard: {
               name: "label_ve-event-inspector-title",
               drag: function() {
@@ -160,7 +160,8 @@ function VEEventInspector(_editor) constructor {
               var eventInspectorMinHeight = editor.accordion.eventInspector.layout.nodes.title.height()
                 + editor.accordion.eventInspector.layout.nodes.control.height()
                 //+ 16.0 + 32.0 + 28.0
-              var templateToolbarMinHeight = Struct.get(editor.accordion.templateToolbar.layout.nodes, "type").height()
+              var templateToolbarMinHeight = Struct.get(editor.accordion.templateToolbar.layout.nodes, "bar").height()
+                + Struct.get(editor.accordion.templateToolbar.layout.nodes, "type").height()
                 + Struct.get(editor.accordion.templateToolbar.layout.nodes, "add").height()
                 + Struct.get(editor.accordion.templateToolbar.layout.nodes, "title").height()
                 + Struct.get(editor.accordion.templateToolbar.layout.nodes, "inspector-bar").height()

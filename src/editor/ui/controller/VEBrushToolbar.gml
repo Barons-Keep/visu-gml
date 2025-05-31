@@ -268,6 +268,36 @@ global.__VisuBrushContainers = new Map(String, Callable, {
       },
     }
   },
+  "bar": function(name, brushToolbar, layout) {
+    return {
+      name: name,
+      state: new Map(String, any, {
+        "background-color": ColorUtil.fromHex(VETheme.color.accentShadow).toGMColor(),
+        "background-alpha": 1.0,
+      }),
+      updateTimer: new Timer(FRAME_MS * 2, { loop: Infinity, shuffle: true }),
+      brushToolbar: brushToolbar,
+      layout: layout,
+      updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
+      render: Callable.run(UIUtil.renderTemplates.get("renderDefault")),
+      items: {
+        "label_bar-title": Struct.appendRecursiveUnique(
+          {
+            type: UIText,
+            text: "Brush toolbar",
+            update: Callable.run(UIUtil.updateAreaTemplates.get("applyMargin")),
+            font: "font_inter_8_bold",
+            color: VETheme.color.textShadow,
+            align: { v: VAlign.CENTER, h: HAlign.LEFT },
+            offset: { x: 4 },
+            backgroundColor: VETheme.color.accentDark,
+          },
+          VEStyles.get("bar-title"),
+          false
+        ),
+      }
+    }
+  },
   "type": function(name, brushToolbar, layout) {
     return {
       name: name,
@@ -1012,12 +1042,15 @@ global.__VisuBrushContainers = new Map(String, Callable, {
                   var uiService = Beans.get(BeanVisuEditorController).uiService
                   var titleBar = uiService.find("ve-title-bar")
                   var statusBar = uiService.find("ve-status-bar")
+                  var barNode = Struct.get(this.context.layout.context.nodes, "bar")
                   var brushNode = Struct.get(this.context.layout.context.nodes, "brush-view")
                   var toolNode = Struct.get(this.context.layout.context.nodes, "inspector-tool")
                   var inspectorNode = Struct.get(this.context.layout.context.nodes, "inspector-view")
                   var typeNode = Struct.get(this.context.layout.context.nodes, "type")
                   var controlNode = Struct.get(this.context.layout.context.nodes, "control")
-                  var top = titleBar.layout.height() + typeNode.height() + typeNode.__margin.top + typeNode.__margin.bottom
+                  var top = titleBar.layout.height()
+                    + barNode.height() + barNode.__margin.top + barNode.__margin.bottom
+                    + typeNode.height() + typeNode.__margin.top + typeNode.__margin.bottom
                   var bottom = GuiHeight() - statusBar.layout.height() - (controlNode.height() + controlNode.__margin.top + controlNode.__margin.bottom) - (toolNode.height() + toolNode.__margin.top + toolNode.__margin.bottom)
                   var length = bottom - top
                   var before = inspectorNode.percentageHeight
@@ -1035,12 +1068,15 @@ global.__VisuBrushContainers = new Map(String, Callable, {
               var uiService = Beans.get(BeanVisuEditorController).uiService
               var titleBar = uiService.find("ve-title-bar")
               var statusBar = uiService.find("ve-status-bar")
+              var barNode = Struct.get(this.context.layout.context.nodes, "bar")
               var brushNode = Struct.get(this.context.layout.context.nodes, "brush-view")
               var inspectorNode = Struct.get(this.context.layout.context.nodes, "inspector-view")
               var toolNode = Struct.get(this.context.layout.context.nodes, "inspector-tool")
               var typeNode = Struct.get(this.context.layout.context.nodes, "type")
               var controlNode = Struct.get(this.context.layout.context.nodes, "control")
-              var top = titleBar.layout.height() + typeNode.height() + typeNode.__margin.top + typeNode.__margin.bottom
+              var top = titleBar.layout.height()
+                + barNode.height() + barNode.__margin.top + barNode.__margin.bottom
+                + typeNode.height() + typeNode.__margin.top + typeNode.__margin.bottom
               var bottom = GuiHeight() - statusBar.layout.height() - (controlNode.height() + controlNode.__margin.top + controlNode.__margin.bottom) - (toolNode.height() + toolNode.__margin.top + toolNode.__margin.bottom)
               var length = bottom - top
               var position = clamp(_position - top, 4.0, length - 4.0)
@@ -1913,12 +1949,13 @@ function VEBrushToolbar(_editor) constructor {
       {
         name: "brush-toolbar",
         staticHeight: new BindIntent(function() {
+          var bar = Struct.get(this.nodes, "bar")
           var type = Struct.get(this.nodes, "type")
           var brushBar = Struct.get(this.nodes, "brush-bar")
           var inspectorBar = Struct.get(this.nodes, "inspector-bar")
           var inspectorTool = Struct.get(this.nodes, "inspector-tool")
           var control = Struct.get(this.nodes, "control")
-          return type.height() + brushBar.height() + inspectorBar.height() + control.height() + inspectorTool.height()
+          return bar.height() + type.height() + brushBar.height() + inspectorBar.height() + control.height() + inspectorTool.height()
         }),
         nodes: {
           "accordion": {
@@ -1930,9 +1967,18 @@ function VEBrushToolbar(_editor) constructor {
             width: function() { return 20 },
             height: function() { return 420 },
           },
+          "bar": {
+            name: "brush-toolbar.bar",
+            x: function() { return this.context.x()
+              + this.context.nodes.resize.width() },
+            width: function() { return this.context.width() 
+              - this.context.nodes.resize.width() },
+            height: function() { return 16 },
+          },
           "type": {
             name: "brush-toolbar.type",
             height: function() { return 40 },
+            y: function() { return this.context.nodes.bar.bottom() },
             x: function() { return this.context.x()
               + this.context.nodes.resize.width() },
             width: function() { return this.context.width() 

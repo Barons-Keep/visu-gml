@@ -420,7 +420,6 @@ global.__VisuComponents = new Map(String, Callable, {
     ///@param {?Struct} [config]
     ///@return {Array<UIItem>}
     static factorySpinSelect = function(name, layout, config) {
-      //var _layout = Struct.set(layout, "nodes", Struct.get(Callable.run(VELayouts.get("spin-select"), config), "nodes"))
       return new UIComponent({
         name: name,
         template: VEComponents.get("spin-select"),

@@ -7,6 +7,32 @@
 ///@static
 ///@type {Map<String, Callable>}
 global.__VisuTemplateContainers = new Map(String, Callable, {
+  "bar": function(name, templateToolbar, layout) {
+    return {
+      name: name,
+      state: new Map(String, any, {
+        "background-alpha": 1.0,
+        "background-color": ColorUtil.fromHex(VETheme.color.accentShadow).toGMColor(),
+      }),
+      updateTimer: new Timer(FRAME_MS * 2, { loop: Infinity, shuffle: true }),
+      templateToolbar: templateToolbar,
+      layout: layout,
+      updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
+      render: Callable.run(UIUtil.renderTemplates.get("renderDefault")),
+      items: {
+        "label_bar-title": {
+          type: UIText,
+          text: "Template toolbar",
+          update: Callable.run(UIUtil.updateAreaTemplates.get("applyMargin")),
+          font: "font_inter_8_bold",
+          color: VETheme.color.textShadow,
+          align: { v: VAlign.CENTER, h: HAlign.LEFT },
+          offset: { x: 4 },
+          backgroundColor: VETheme.color.accentDark,
+        }, 
+      }
+    }
+  },
   "type": function(name, templateToolbar, layout) {
     return {
       name: name,
@@ -2230,6 +2256,7 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                   var titleBar = uiService.find("ve-title-bar")
                   var statusBar = uiService.find("ve-status-bar")
 
+                  var barNode = Struct.get(this.context.layout.context.nodes, "bar")
                   var typeNode = Struct.get(this.context.layout.context.nodes, "type")
                   var addNode = Struct.get(this.context.layout.context.nodes, "add")
                   var titleNode = Struct.get(this.context.layout.context.nodes, "title")
@@ -2241,6 +2268,7 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                   var timelineNode = editor.layout.nodes.timeline
                   
                   var top = titleBar.layout.height() + titleBar.margin.top + titleBar.margin.bottom
+                    + barNode.height() + barNode.__margin.top + barNode.__margin.bottom
                     + typeNode.height() + typeNode.__margin.top + typeNode.__margin.bottom
                     + addNode.height() + addNode.__margin.top + addNode.__margin.bottom
                     + titleNode.height() + titleNode.__margin.top + titleNode.__margin.bottom
@@ -2262,6 +2290,7 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
               var titleBar = uiService.find("ve-title-bar")
               var statusBar = uiService.find("ve-status-bar")
 
+              var barNode = Struct.get(this.context.layout.context.nodes, "bar")
               var typeNode = Struct.get(this.context.layout.context.nodes, "type")
               var addNode = Struct.get(this.context.layout.context.nodes, "add")
               var titleNode = Struct.get(this.context.layout.context.nodes, "title")
@@ -2274,6 +2303,7 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
               var timelineNode = editor.layout.nodes.timeline
               
               var top = titleBar.layout.height() + titleBar.margin.top + titleBar.margin.bottom
+                + barNode.height() + barNode.__margin.top + barNode.__margin.bottom
                 + typeNode.height() + typeNode.__margin.top + typeNode.__margin.bottom
                 + addNode.height() + addNode.__margin.top + addNode.__margin.bottom
                 + titleNode.height() + titleNode.__margin.top + titleNode.__margin.bottom
@@ -2674,6 +2704,7 @@ function VETemplateToolbar(_editor) constructor {
       {
         name: "template-toolbar",
         staticHeight: new BindIntent(function() {
+          var bar = Struct.get(this.nodes, "bar")
           var type = Struct.get(this.nodes, "type")
           var add = Struct.get(this.nodes, "add")
           var title = Struct.get(this.nodes, "title")
@@ -2681,20 +2712,25 @@ function VETemplateToolbar(_editor) constructor {
           var control = Struct.get(this.nodes, "control")
           var templateView = Struct.get(this.nodes, "template-view")
           var inspectorView = Struct.get(this.nodes, "inspector-view")
-          return type.height() 
-              + add.height() + add.__margin.top
-              + title.height() + title.__margin.top
-              + inspectorBar.height() + inspectorBar.__margin.top
-              + control.height()
-              + templateView.__margin.top
-              + templateView.__margin.bottom
-              + inspectorView.__margin.top
-              + inspectorView.__margin.bottom
+          return bar.height() + bar.__margin.top + bar.__margin.bottom
+              + type.height() + type.__margin.top + type.__margin.bottom
+              + add.height() + add.__margin.top + add.__margin.bottom
+              + title.height() + title.__margin.top + title.__margin.bottom
+              + inspectorBar.height() + inspectorBar.__margin.top + inspectorBar.__margin.bottom
+              + control.height() + control.__margin.top + control.__margin.bottom
+              + templateView.__margin.top + templateView.__margin.bottom
+              + inspectorView.__margin.top + inspectorView.__margin.bottom
         }),
         nodes: {
+          "bar": {
+            name: "template-toolbar.bar",
+            y: function() { return this.context.y() + this.__margin.top },
+            height: function() { return 16 },
+            margin: { left: 1, right: 1, top: 0 },
+          },
           "type": {
             name: "template-toolbar.type",
-            y: function() { return this.context.y() },
+            y: function() { return this.context.nodes.bar.bottom() + this.__margin.top },
             height: function() { return 40 },
             margin: { left: 1, right: 1 },
           },

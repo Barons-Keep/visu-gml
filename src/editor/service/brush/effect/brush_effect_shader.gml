@@ -339,6 +339,22 @@ function brush_effect_shader(json) {
           },
         },
       },
+      {
+        name: "ef-shd_merge-cfg-line-h",
+        template: VEComponents.get("line-h"),
+        layout: VELayouts.get("line-h"),
+        config: {
+          layout: {
+            type: UILayoutType.VERTICAL,
+            margin: { top: 0, bottom: 0 },
+            height: function() { return 0 },
+          },
+          image: { 
+            hidden: { key: "ef-shd_hide-merge-cfg" },
+            backgroundAlpha: 0.0,
+          },
+        },
+      },
     ]),
   }
 }

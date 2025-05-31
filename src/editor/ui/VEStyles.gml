@@ -218,10 +218,10 @@ function generateVEStyles() {
       spriteOff: { name: "visu_texture_checkbox_off" },
     },
     "category-button": {
-      backgroundColorSelected: VETheme.color.accentShadow,
-      backgroundColor: VETheme.color.primaryDark,
+      backgroundColorSelected: VETheme.color.accent,
+      backgroundColor: VETheme.color.primaryShadow,
       backgroundColorHover: ColorUtil.fromHex(VETheme.color.primary).toGMColor(),
-      backgroundColorOn: ColorUtil.fromHex(VETheme.color.accentShadow).toGMColor(),
+      backgroundColorOn: ColorUtil.fromHex(VETheme.color.accent).toGMColor(),
       backgroundColorOff: ColorUtil.fromHex(VETheme.color.primaryShadow).toGMColor(),
       colorHoverOver: VETheme.color.primaryShadow,
       colorHoverOut: VETheme.color.primaryDark,

@@ -51,7 +51,7 @@ function VEAccordion(_editor, config = null) constructor {
         nodes: {
           "view_template-toolbar": {
             name: "ve-accordion.view_template-toolbar",
-            margin: { top: 0, bottom: 0, right: 0, left: 0 },
+            margin: { top: 1, bottom: 0, right: 0, left: 0 },
             y: function() { return this.context.y() + this.__margin.top },
             width: function() { return this.context.width() 
               - this.context.nodes.resize.width()

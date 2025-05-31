@@ -620,6 +620,22 @@ function brush_entity_player(json = null) {
           },
         },
       },
+      {
+        name: "en-pl_bullethell-line-h",
+        template: VEComponents.get("line-h"),
+        layout: VELayouts.get("line-h"),
+        config: {
+          layout: {
+            type: UILayoutType.VERTICAL,
+            margin: { top: 0, bottom: 0 },
+            height: function() { return 0 },
+          },
+          image: { 
+            hidden: { key: "en-pl_hide-cfg" },
+            backgroundAlpha: 0.0,
+          },
+        },
+      },
       /* 
       {
         name: "grid-player_mode_platformer",

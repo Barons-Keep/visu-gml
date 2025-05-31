@@ -579,7 +579,7 @@ global.__VEComponents = new Map(String, Callable, {
             layout: layout.nodes.image,
             updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
           }, 
-          Struct.appendRecursive(
+          Struct.appendRecursiveUnique(
             Struct.get(config, "image"),
             VEStyles.get("line-h").image,
             false

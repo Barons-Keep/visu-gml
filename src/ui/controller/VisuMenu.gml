@@ -422,15 +422,18 @@ function VisuMenu(_config = null) constructor {
             layout: { type: UILayoutType.VERTICAL },
             label: { 
               text: "Main menu",
-              _callback: new BindIntent(function() {
-                Scene.open("scene_visu")
-              }),
               callback: new BindIntent(function() {
                 Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
                 Beans.get(BeanVisuController).menu.send(Callable
                   .run(this.callbackData.quit, {
                     back: this.callbackData.back,
-                    accept: function() { Scene.open("scene_visu") },
+                    accept: function() {
+                      Scene.open("scene_visu", {
+                        VisuController: {
+                          initialState: { name: "idle" },
+                        },
+                      })
+                    },
                     decline: this.callbackData.back,
                   }))
               }),
@@ -503,7 +506,11 @@ function VisuMenu(_config = null) constructor {
             label: { 
               text: "Main menu",
               callback: new BindIntent(function() {
-                Scene.open("scene_visu")
+                Scene.open("scene_visu", {
+                  VisuController: {
+                    initialState: { name: "idle" },
+                  },
+                })
               }),
               callbackData: config,
               onMouseReleasedLeft: function() {
@@ -2333,7 +2340,11 @@ function VisuMenu(_config = null) constructor {
             label: { 
               text: "Restart game",
               callback: new BindIntent(function() {
-                Scene.open("scene_visu")
+                Scene.open("scene_visu", {
+                  VisuController: {
+                    initialState: { name: "splashscreen" },
+                  },
+                })
               }),
               callbackData: config,
               onMouseReleasedLeft: function() {
@@ -2937,12 +2948,12 @@ function VisuMenu(_config = null) constructor {
                   var version = Visu.version()
                   this.label.text = version == serverVersion 
                     ? $"v{version} | Baron's Keep 2025 (c)\n\ngithub.com/Alkapivo/visu-project\n"
-                    : $"v{version} (itch.io version: v{serverVersion}) | Baron's Keep 2025 (c)\n\ngithub.com/Alkapivo/visu-project\n"
+                    : $"v{version} (itch.io version: v{serverVersion}) | Baron's Keep 2025 (c)\n\ngithub.com/Barons-Keep/visu-project\n"
 
                 },
                 font: "font_kodeo_mono_12_bold",
                 onMouseReleasedLeft: function() {
-                  url_open("https://github.com/Alkapivo/visu-project")
+                  url_open("https://github.com/Barons-Keep/visu-project")
                 }
               },
             },
@@ -2973,8 +2984,8 @@ function VisuMenu(_config = null) constructor {
       this.backData = Struct.getDefault(event.data, "backData", null)
 
       var blur = Beans.get(BeanVisuController).visuRenderer.blur
-      blur.startValue = 0
-      blur.target = 24
+      blur.target = 24.0
+      blur.startValue = blur.value
       blur.reset()
       
       this.containers.forEach(function(container, key, uiService) {
@@ -2987,15 +2998,14 @@ function VisuMenu(_config = null) constructor {
     "close": function(event) {
       if (Struct.getDefault(event.data, "fade", false)) {
         var blur = Beans.get(BeanVisuController).visuRenderer.blur
+        blur.target = 0.0
         blur.startValue = blur.value
-        blur.target = 0
         blur.reset()
+
         this.containers.forEach(function (container) {
           Struct.set(container, "updateCustom", method(container, function() {
             this.state.set("uiAlphaFactor", -0.05)
             var blur = Beans.get(BeanVisuController).visuRenderer.blur
-            //var blurFactor = Beans.get(BeanVisuController).trackService.isTrackLoaded() ? 0.16 : 0.5
-            //blur.value = Math.transformNumber(blur.value, 0.0, DeltaTime.apply(blurFactor))
             if (blur.value == 0.0) {
               this.controller.send(new Event("close"))
             }

@@ -377,7 +377,7 @@ global.__VELayouts = new Map(String, Callable, {
     return {
       name: "line-h",
       type: Assert.isEnum(Struct.getDefault(config, "type", UILayoutType.NONE), UILayoutType),
-      height: function() { return 1 },
+      height: Struct.getIfType(config, "height", Callable, function() { return 1 }),
       margin: Struct.getIfType(config, "margin", Struct, { top: 4, bottom: 4 }),
       propagateHidden: Struct.getIfType(config, "propagateHidden", Boolean, false),
       nodes: {
@@ -395,10 +395,10 @@ global.__VELayouts = new Map(String, Callable, {
   ///@return {Struct}
   "line-w": function(config = null) {
     return {
-      name: "line-h",
+      name: "line-w",
       type: Assert.isEnum(Struct.getDefault(config, "type", UILayoutType.NONE), UILayoutType),
-      width: function() { return 1 },
-      margin: { left: 4, right: 3 },
+      width: Struct.getIfType(config, "width", Callable, function() { return 1 }),
+      margin: Struct.getIfType(config, "margin", Struct, { left: 4, right: 3 }),
       propagateHidden: Struct.getIfType(config, "propagateHidden", Boolean, false),
       nodes: {
         image: {
