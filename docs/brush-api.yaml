@@ -94,6 +94,36 @@ brushes:
         - en-shr_texture
         - en-shr_use-mask
         - en-shr_mask
+        - en-shr_use-inherit
+        - en-shr_inherit
+        - en-shr_use-em
+        - en-shr_em-amount
+        - en-shr_em-arrays
+        - en-shr_em-angle
+        - en-shr_em-use-angle
+        - en-shr_em-change-angle
+        - en-shr_em-angle-rng
+        - en-shr_em-use-angle-rng
+        - en-shr_em-angle-step
+        - en-shr_em-per-array
+        - en-shr_em-per-array-dir
+        - en-shr_em-use-per-array-dir
+        - en-shr_em-change-per-array-dir
+        - en-shr_em-use-per-array-rng
+        - en-shr_em-per-array-rng
+        - en-shr_em-per-array-step
+        - en-shr_em-spd
+        - en-shr_em-use-spd
+        - en-shr_em-change-spd
+        - en-shr_em-use-spd-rng
+        - en-shr_em-spd-rng
+        - en-shr_em-interval
+        - en-shr_em-offset-x
+        - en-shr_em-use-offset-x
+        - en-shr_em-change-offset-x
+        - en-shr_em-offset-y
+        - en-shr_em-use-offset-y
+        - en-shr_em-change-offset-y
     Coin:
       name: brush_entity_coin
       properties:
