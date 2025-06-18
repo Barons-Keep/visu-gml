@@ -294,16 +294,10 @@ function VEEventInspector(_editor) constructor {
               name: container.name,
               overrideSubscriber: true,
               callback: function(selectedEvent, data) { 
-                data.executor.tasks.forEach(function(task, iterator, name) {
-                  if (task.name == name) {
-                    task.fullfill()
-                  }
-                }, "init-ui-components")
-
                 if (!Optional.is(selectedEvent)) {
                   data.items.forEach(function(item) { item.free() }).clear() ///@todo replace with remove lambda
                   data.collection.components.clear() ///@todo replace with remove lambda
-                  data.items.clear() ///@todo replace with remove lambda
+                  data.eventInspector.store.get("event").set(null)
                   data.state
                     .set("selectedEvent", null)
                     .set("event", null)
@@ -321,81 +315,102 @@ function VEEventInspector(_editor) constructor {
                   "type": trackEvent.callableName,
                   "properties": Struct.remove(JSON.clone(trackEvent.data), "icon")
                 })
-                data.items.forEach(function(item) { item.free() }).clear() ///@todo replace with remove lambda
-                data.collection.components.clear() ///@todo replace with remove lambda
-                data.items.clear() ///@todo replace with remove lambda
+
+                var oldEvent = data.state.get("event")
                 data.eventInspector.store.get("event").set(event)
                 data.state
                   .set("selectedEvent", selectedEvent)
                   .set("event", event)
                   .set("store", event.store)
 
-               
-                var task = new Task("init-ui-components")
-                  .setTimeout(60)
-                  .setState({
-                    stage: "load-components",
-                    context: data,
-                    components: event.components,
-                    componentsQueue: new Queue(String, GMArray
-                      .map(event.components.container, function(component, index) { 
-                        return index 
-                      })),
-                    componentsConfig: {
-                      context: data,
-                      layout: new UILayout({
-                        area: data.area,
-                        width: function() { return this.area.getWidth() },
-                      }),
-                      textField: null,
+                if (Struct.get(oldEvent, "type") == trackEvent.callableName) {
+                  data.items.forEach(function(item) { item.updateStore() })
+                  event.store.container.forEach(function(item, name, subscribersConfig) {
+                    item.addSubscriber(subscribersConfig)
+                  }, {
+                    name: data.name,
+                    data: data,
+                    overrideSubscriber: true,
+                    callback: function(value, data) { 
+                      data.state.set("updateTrackEvent", true)
                     },
-                    subscribers: event.store.container,
-                    subscribersQueue: new Queue(String, event.store.container
-                      .keys()
-                      .map(function(key) { return key }).container),
-                    subscribersConfig: {
-                      name: data.name,
-                      overrideSubscriber: true,
-                      callback: function(value, data) { 
-                        data.state.set("updateTrackEvent", true)
-                      },
-                      data: data,
-                    },
-                    "load-components": function(task) {
-                      repeat (EVENT_INSPECTOR_ENTRY_STEP) {
-                        var index = task.state.componentsQueue.pop()
-                        if (!Optional.is(index)) {
-                          task.state.stage = "set-subscribers"
-                          task.state.context.finishUpdateTimer()
-                          break
-                        }
-      
-                        var component = new UIComponent(task.state.components.get(index))
-                        task.state.context.addUIComponent(component, index, task.state.componentsConfig)
-                      }
-                    },
-                    "set-subscribers": function(task) {
-                      var key = task.state.subscribersQueue.pop()
-                      if (Optional.is(key)) {
-                        var item = task.state.subscribers.get(key)
-                        item.addSubscriber(task.state.subscribersConfig)
-                        return
-                      }
+                  })
+                } else {
+                  data.items.forEach(function(item) { item.free() }).clear() ///@todo replace with remove lambda
+                  data.collection.components.clear() ///@todo replace with remove lambda
 
-                      if (Optional.is(task.state.context.updateTimer)) {
-                        task.state.context.updateTimer.time = task.state.context.updateTimer.duration + random(task.state.context.updateTimer.duration / 2.0)
-                      }
-
+                  data.executor.tasks.forEach(function(task, iterator, name) {
+                    if (task.name == name) {
                       task.fullfill()
                     }
-                  })
-                  .whenUpdate(function() {
-                    var stage = Struct.get(this.state, this.state.stage)
-                    stage(this)
-                    return this
-                  })
-                
-                data.executor.add(task)
+                  }, "init-ui-components")
+
+                  var task = new Task("init-ui-components")
+                    .setTimeout(60)
+                    .setState({
+                      stage: "load-components",
+                      context: data,
+                      components: event.components,
+                      componentsQueue: new Queue(String, GMArray
+                        .map(event.components.container, function(component, index) { 
+                          return index 
+                        })),
+                      componentsConfig: {
+                        context: data,
+                        layout: new UILayout({
+                          area: data.area,
+                          width: function() { return this.area.getWidth() },
+                        }),
+                        textField: null,
+                      },
+                      subscribers: event.store.container,
+                      subscribersQueue: new Queue(String, event.store.container
+                        .keys()
+                        .map(function(key) { return key }).container),
+                      subscribersConfig: {
+                        name: data.name,
+                        overrideSubscriber: true,
+                        callback: function(value, data) { 
+                          data.state.set("updateTrackEvent", true)
+                        },
+                        data: data,
+                      },
+                      "load-components": function(task) {
+                        repeat (EVENT_INSPECTOR_ENTRY_STEP) {
+                          var index = task.state.componentsQueue.pop()
+                          if (!Optional.is(index)) {
+                            task.state.stage = "set-subscribers"
+                            task.state.context.finishUpdateTimer()
+                            break
+                          }
+        
+                          var component = new UIComponent(task.state.components.get(index))
+                          task.state.context.addUIComponent(component, index, task.state.componentsConfig)
+                        }
+                      },
+                      "set-subscribers": function(task) {
+                        var key = task.state.subscribersQueue.pop()
+                        if (Optional.is(key)) {
+                          var item = task.state.subscribers.get(key)
+                          item.addSubscriber(task.state.subscribersConfig)
+                          return
+                        }
+
+                        if (Optional.is(task.state.context.updateTimer)) {
+                          task.state.context.updateTimer.time = task.state.context.updateTimer.duration + random(task.state.context.updateTimer.duration / 2.0)
+                        }
+
+                        task.fullfill()
+                      }
+                    })
+                    .whenUpdate(function() {
+                      var stage = Struct.get(this.state, this.state.stage)
+                      stage(this)
+                      return this
+                    })
+                    
+                  data.executor.add(task)
+                }
               },
               data: container,
             })

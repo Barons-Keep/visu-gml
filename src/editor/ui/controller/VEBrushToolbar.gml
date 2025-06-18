@@ -1511,12 +1511,6 @@ global.__VisuBrushContainers = new Map(String, Callable, {
           name: this.name,
           overrideSubscriber: true,
           callback: function(template, data) {
-            data.executor.tasks.forEach(function(task, iterator, name) {
-              if (task.name == name) {
-                task.fullfill()
-              }
-            }, "init-ui-components")
-            
             if (!Optional.is(template)) {
               data.items.forEach(function(item) { item.free() }).clear() ///@todo replace with remove lambda
               data.collection.components.clear() ///@todo replace with remove lambda
@@ -1528,54 +1522,74 @@ global.__VisuBrushContainers = new Map(String, Callable, {
             }
 
             var brush = new VEBrush(template)
-            data.items.forEach(function(item) { item.free() }).clear() ///@todo replace with remove lambda
-            data.collection.components.clear() ///@todo replace with remove lambda
+
+            var oldBrush = data.state.get("brush")
             data.brushToolbar.store.get("brush").set(brush)
             data.state
               .set("template", template)
               .set("brush", brush)
               .set("store", brush.store)
 
-            var task = new Task("init-ui-components")
-              .setTimeout(60)
-              .setState({
-                context: data,
-                template: template,
-                stage: "load-components",
-                components: brush.components,
-                componentsQueue: new Queue(String, GMArray
-                  .map(brush.components.container, function(component, index) { 
-                    return index 
-                  })),
-                componentsConfig: {
+            if (Struct.get(oldBrush, "type") == brush.type) {
+              data.items.forEach(function(item) { item.updateStore() })
+              brush.store.container.forEach(function(item, name, subscribersConfig) {
+                item.addSubscriber(subscribersConfig)
+              }, {
+                name: data.name,
+                overrideSubscriber: true,
+                callback: Lambda.passthrough,
+              })
+            } else {
+              data.items.forEach(function(item) { item.free() }).clear()
+              data.collection.components.clear()
+
+              data.executor.tasks.forEach(function(task, iterator, name) {
+                if (task.name == name) {
+                  task.fullfill()
+                }
+              }, "init-ui-components")
+
+              var task = new Task("init-ui-components")
+                .setTimeout(60)
+                .setState({
                   context: data,
-                  layout: new UILayout({
-                    area: data.area,
-                    width: function() { return this.area.getWidth() },
-                  }),
-                  textField: null,
-                },
-                "load-components": function(task) {
-                  repeat (BRUSH_TOOLBAR_ENTRY_STEP) {
-                    var index = task.state.componentsQueue.pop()
-                    if (!Optional.is(index)) {
-                      task.fullfill()
-                      task.state.context.finishUpdateTimer()
-                      break
+                  template: template,
+                  stage: "load-components",
+                  components: brush.components,
+                  componentsQueue: new Queue(String, GMArray
+                    .map(brush.components.container, function(component, index) { 
+                      return index 
+                    })),
+                  componentsConfig: {
+                    context: data,
+                    layout: new UILayout({
+                      area: data.area,
+                      width: function() { return this.area.getWidth() },
+                    }),
+                    textField: null,
+                  },
+                  "load-components": function(task) {
+                    repeat (BRUSH_TOOLBAR_ENTRY_STEP) {
+                      var index = task.state.componentsQueue.pop()
+                      if (!Optional.is(index)) {
+                        task.fullfill()
+                        task.state.context.finishUpdateTimer()
+                        break
+                      }
+    
+                      var component = new UIComponent(task.state.components.get(index))
+                      task.state.context.addUIComponent(component, index, task.state.componentsConfig)
                     }
-  
-                    var component = new UIComponent(task.state.components.get(index))
-                    task.state.context.addUIComponent(component, index, task.state.componentsConfig)
-                  }
-                },
-              })
-              .whenUpdate(function() {
-                var stage = Struct.get(this.state, this.state.stage)
-                stage(this)
-                return this
-              })
-            
-            data.executor.add(task)
+                  },
+                })
+                .whenUpdate(function() {
+                  var stage = Struct.get(this.state, this.state.stage)
+                  stage(this)
+                  return this
+                })
+              
+              data.executor.add(task)
+            }
           },
           data: container
         })

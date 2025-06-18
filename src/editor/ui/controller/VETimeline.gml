@@ -1313,7 +1313,6 @@ function VETimeline(_editor) constructor {
             16 + this.offset.y + eventY,
           )
         }),
-        renderItem: Callable.run(UIUtil.renderTemplates.get("renderItemDefaultScrollable")),
         renderSurface: function() {
           var trackEvent = Beans.get(BeanVisuEditorIO).mouse.getClipboard()
 
@@ -1796,19 +1795,16 @@ function VETimeline(_editor) constructor {
 
         onMousePressedLeft: function(event) {
           //Core.print("ve-timeline-events", "onMousePressedLeft", "finishUpdateTimer", irandom(100))
-          this.finishUpdateTimer()
+          //this.finishUpdateTimer()
         },
 
         onMousePressedRight: function(event) {
           //Core.print("ve-timeline-events", "onMousePressedRight", "finishUpdateTimer", irandom(100))
-          this.finishUpdateTimer()
+          //this.finishUpdateTimer()
         },
         
         onMouseReleasedLeft: function(event) {
-          try {
-            //Core.print("ve-timeline-events", "onMouseReleasedLeft", "finishUpdateTimer", irandom(100))
-            this.finishUpdateTimer()
-            
+          try {            
             var initialized = this.controller.containers
               .get("ve-timeline-events").state
               .get("initialized")
@@ -1816,12 +1812,14 @@ function VETimeline(_editor) constructor {
               return false
             }
             
+            var dispatched = false
             var store = Beans.get(BeanVisuEditorController).store
             var tool = store.getValue("tool")
             switch (tool) {
               case ToolType.SELECT:
                 ///@description deselect
                 this.deselect()
+                dispatched = true
                 break
               case ToolType.BRUSH:
                 var brush = Beans.get(BeanVisuEditorController).brushToolbar.store
@@ -1848,7 +1846,7 @@ function VETimeline(_editor) constructor {
                   //Core.print("ve-timeline-events", "onMouseReleasedLeft.BRUSH", "finishUpdateTimer", irandom(100))
                   inspector.finishUpdateTimer()
                 }
-                
+                dispatched = true
                 break
               case ToolType.CLONE:
                 var selectedEvent = store.getValue("selected-event")
@@ -1997,8 +1995,13 @@ function VETimeline(_editor) constructor {
                   //Core.print("ve-timeline-events", "onMouseReleasedLeft.CLONE", "finishUpdateTimer", irandom(100))
                   inspector.finishUpdateTimer()
                 }
-            
+                dispatched = true
                 break
+            }
+
+            if (dispatched) {
+              //Core.print("ve-timeline-events", "onMouseReleasedLeft", "finishUpdateTimer", irandom(100))
+              this.finishUpdateTimer()
             }
           } catch (exception) {
             var message = $"onMouseReleasedLeft exception: {exception.message}"
@@ -2008,9 +2011,6 @@ function VETimeline(_editor) constructor {
         },
 
         onMouseReleasedRight: function(event) {
-          //Core.print("ve-timeline-events", "onMouseReleaseRight", "finishUpdateTimer", irandom(100))
-          this.finishUpdateTimer()
-          
           var initialized = this.controller.containers
             .get("ve-timeline-events").state
             .get("initialized")
@@ -2028,6 +2028,8 @@ function VETimeline(_editor) constructor {
               ///@description deselect
               if (!keyboard_check(vk_control)) {
                 this.deselect() 
+                //Core.print("ve-timeline-events", "onMouseReleaseRight", "finishUpdateTimer", irandom(100))
+                this.finishUpdateTimer()
               }
               break
           }

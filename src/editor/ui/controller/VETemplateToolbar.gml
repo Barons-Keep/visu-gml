@@ -2408,84 +2408,106 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
           name: container.name,
           overrideSubscriber: true,
           callback: function(template, data) {
-            data.executor.tasks.forEach(function(task, iterator, name) {
-              if (task.name == name) {
-                task.fullfill()
-              }
-            }, "init-ui-components")
-
-            data.items.forEach(function(item) { item.free() }).clear() ///@todo replace with remove lambda
-            data.collection.components.clear() ///@todo replace with remove lambda
-            if (!Core.isType(template, VETemplate)) {  
+            if (!Core.isType(template, VETemplate)) {
+              data.items.forEach(function(item) { item.free() }).clear() 
+              data.collection.components.clear()
               data.state
                 .set("template", null)
                 .set("store", null)
               return
             }
-
+            
+            var oldTemplate = data.state.get("template")
             data.state
               .set("template", template)
               .set("store", template.store)
 
-            var task = new Task("init-ui-components")
-              .setTimeout(60)
-              .setState({
-                context: data,
-                stage: "load-components",
-                cooldownTimer: new Timer(0.128, { loop: true }),
-                components: template.components,
-                componentsQueue: new Queue(String, GMArray
-                  .map(template.components.container, function(component, index) { 
-                    return index 
-                  })),
-                componentsConfig: {
-                  context: data,
-                  layout: new UILayout({
-                    area: data.area,
-                    width: function() { return this.area.getWidth() },
-                  }),
-                  textField: null,
-                },
-                previousOffset: {
-                  x: data.offset.x,
-                  y: data.offset.y,
-                  xMax: data.offsetMax.x,
-                  yMax: data.offsetMax.y,
-                },
-                "load-components": function(task) {
-                  repeat (TEMPLATE_TOOLBAR_ENTRY_STEP) {
-                    var index = task.state.componentsQueue.pop()
-                    if (!Optional.is(index)) {
-                      task.fullfill()
-                      task.state.context.state.set("previousOffset", task.state.previousOffset)
-                      task.state.context.finishUpdateTimer()
-
-                      break
-                    }
-  
-                    var time = get_timer()
-                    var component = new UIComponent(task.state.components.get(index))
-                    task.state.context.addUIComponent(component, index, task.state.componentsConfig)
-                    time = (get_timer() - time) / 1000.0
-                    if (time > 16.0) {
-                      //task.state.stage = "cooldown"
-                    }
-                  }
-                },
-                "cooldown": function(task) {
-                  if (task.state.cooldownTimer.update().finished) {
-                    task.state.stage = "load-components"
-                  }
-                },
-              })
-              .whenUpdate(function() {
-                var stage = Struct.get(this.state, this.state.stage)
-                stage(this)
-                return this
-              })
+            var shaderResult = true
+            if (template.type == VETemplateType.SHADER && oldTemplate != null) {
+              var oldShader = oldTemplate.store.getValue("template-shader-asset") 
+              var newShader = template.store.getValue("template-shader-asset")
+              shaderResult = oldShader == newShader
+            }
             
-            data.state.set("previousOffset", task.state.previousOffset)
-            data.executor.add(task)
+            if (Struct.get(oldTemplate, "type") == template.type && shaderResult) {
+              data.items.forEach(function(item) { item.updateStore() })
+              template.store.container.forEach(function(item, name, subscribersConfig) {
+                item.addSubscriber(subscribersConfig)
+              }, {
+                name: data.name,
+                overrideSubscriber: true,
+                callback: Lambda.passthrough,
+              })
+            } else {
+              data.items.forEach(function(item) { item.free() }).clear()
+              data.collection.components.clear()
+
+              data.executor.tasks.forEach(function(task, iterator, name) {
+                if (task.name == name) {
+                  task.fullfill()
+                }
+              }, "init-ui-components")
+              
+              var task = new Task("init-ui-components")
+                .setTimeout(60)
+                .setState({
+                  context: data,
+                  stage: "load-components",
+                  cooldownTimer: new Timer(0.128, { loop: true }),
+                  components: template.components,
+                  componentsQueue: new Queue(String, GMArray
+                    .map(template.components.container, function(component, index) { 
+                      return index 
+                    })),
+                  componentsConfig: {
+                    context: data,
+                    layout: new UILayout({
+                      area: data.area,
+                      width: function() { return this.area.getWidth() },
+                    }),
+                    textField: null,
+                  },
+                  previousOffset: {
+                    x: data.offset.x,
+                    y: data.offset.y,
+                    xMax: data.offsetMax.x,
+                    yMax: data.offsetMax.y,
+                  },
+                  "load-components": function(task) {
+                    repeat (TEMPLATE_TOOLBAR_ENTRY_STEP) {
+                      var index = task.state.componentsQueue.pop()
+                      if (!Optional.is(index)) {
+                        task.fullfill()
+                        task.state.context.state.set("previousOffset", task.state.previousOffset)
+                        task.state.context.finishUpdateTimer()
+
+                        break
+                      }
+    
+                      var time = get_timer()
+                      var component = new UIComponent(task.state.components.get(index))
+                      task.state.context.addUIComponent(component, index, task.state.componentsConfig)
+                      time = (get_timer() - time) / 1000.0
+                      if (time > 16.0) {
+                        //task.state.stage = "cooldown"
+                      }
+                    }
+                  },
+                  "cooldown": function(task) {
+                    if (task.state.cooldownTimer.update().finished) {
+                      task.state.stage = "load-components"
+                    }
+                  },
+                })
+                .whenUpdate(function() {
+                  var stage = Struct.get(this.state, this.state.stage)
+                  stage(this)
+                  return this
+                })
+              
+              data.state.set("previousOffset", task.state.previousOffset)
+              data.executor.add(task)
+            }
           },
           data: container
         })

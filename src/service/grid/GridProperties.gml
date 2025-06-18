@@ -231,6 +231,9 @@ function GridProperties(config = null) constructor {
   ///@type {BlendConfig}
   videoBlendConfig = new BlendConfig(Struct.getIfType(config, "properties.videoBlendConfig", Struct))
 
+  ///@type {Boolean}
+  playerShadowEnable = Struct.getIfType(config, "properties.playerShadowEnable", Boolean, true)
+
   ///@type {Struct}
   depths = {
     gridZ: 2045,

@@ -1267,11 +1267,18 @@ function VisuController(layerName) constructor {
         .whenUpdate(function() {
           var controller = Beans.get(BeanVisuController)
           var stateName = controller.fsm.getStateName()
-          if (stateName != "splashscreen"
-              && this.state.cooldown.update().finished) {
-            Beans.get(BeanVisuController).send(this.state.event)
-            this.fullfill()
+          if (stateName == "splashscreen") {
+            return
           }
+
+          if (!this.state.cooldown.update().finished) {
+            return
+          }
+
+          if (stateName == "idle") {
+            controller.menu.send(this.state.event)
+          }
+          this.fullfill()
         })
       
       this.executor.add(task)
@@ -1286,11 +1293,18 @@ function VisuController(layerName) constructor {
         .whenUpdate(function() {
           var controller = Beans.get(BeanVisuController)
           var stateName = controller.fsm.getStateName()
-          if (stateName != "splashscreen"
-              && this.state.cooldown.update().finished) {
-            controller.menu.send(this.state.event)
-            this.fullfill()
+          if (stateName == "splashscreen") {
+            return
           }
+
+          if (!this.state.cooldown.update().finished) {
+            return
+          }
+
+          if (stateName == "idle") {
+            controller.menu.send(this.state.event)
+          }
+          this.fullfill()
         })
       
       this.executor.add(task)

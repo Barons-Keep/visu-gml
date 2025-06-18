@@ -1035,7 +1035,7 @@ function GridRenderer() constructor {
       var _scaleX = ((player.sprite.getWidth() * player.sprite.getScaleX()) / sprite_get_width(texture_player_shadow)) * (3.0 + (1.5 * focusFactor)) * (scaleFactor + _swing)
       var _scaleY = ((player.sprite.getHeight() * player.sprite.getScaleY()) / sprite_get_height(texture_player_shadow)) * (3.0 + (1.5 * focusFactor)) * (scaleFactor + _swing)
       var _alpha = alpha * player.fadeIn * 0.75
-      if (_alpha > 0 && player.sprite.texture.asset != texture_empty) {
+      if (gridService.properties.playerShadowEnable && _alpha > 0 && player.sprite.texture.asset != texture_empty) {
         draw_sprite_ext(texture_player_shadow, 0, _x, _y, _scaleX, _scaleY, 0.0, this.playerShadowColor.toGMColor(), _alpha)
       }
       
@@ -1251,7 +1251,8 @@ function GridRenderer() constructor {
     var width = layout.width()
     var height = layout.height()
 
-    GPU.render.clear(properties.gridClearColor, 0.0)
+    //GPU.render.clear(properties.gridClearColor.toGMColor(), 0.0)
+    GPU.render.clear(properties.gridClearColor.toGMColor(), properties.gridClearFrameAlpha)
 
     if (properties.renderVideoAfter) {
       if (properties.renderBackground) {
@@ -1309,10 +1310,7 @@ function GridRenderer() constructor {
     var particleService = controller.particleService
 
     if (properties.gridClearFrame) {
-      var tempAlpha = properties.gridClearColor.alpha
-      properties.gridClearColor.alpha = properties.gridClearFrameAlpha
-      GPU.render.clear(properties.gridClearColor)
-      properties.gridClearColor.alpha = tempAlpha
+      GPU.render.clear(properties.gridClearColor.toGMColor(), properties.gridClearFrameAlpha)
     } else {
       GPU.set.blendMode(BlendMode.SUBTRACT)
         .render.fillColor(
@@ -1500,7 +1498,8 @@ function GridRenderer() constructor {
         : 0)
     )
 
-    GPU.render.clear(properties.gridClearColor, 0.0)
+    GPU.render.clear(properties.gridClearColor.toGMColor(), 0.0)
+    //GPU.render.clear(properties.gridClearColor.toGMColor(), properties.gridClearFrameAlpha)
 
     if (!properties.renderSupportGrid || properties.supportGridTreshold > size) {
       return this
@@ -1531,7 +1530,8 @@ function GridRenderer() constructor {
   ///@param {UILayout} layout
   ///@return {GridRenderer}
   renderGridGlitch = function(layout) {
-    this.gridSurface.renderStretched(layout.width(), layout.height())
+    var blendConfig = Beans.get(BeanVisuController).gridService.properties.gridBlendConfig
+    this.gridSurface.renderStretched(layout.width(), layout.height(), 0.0, 0.0, 1.0, c_white, blendConfig)
     return this
   }
 
@@ -1555,7 +1555,8 @@ function GridRenderer() constructor {
     var height = layout.height()
     var enableGlitch = Visu.settings.getValue("visu.graphics.bkt-glitch")
 
-    GPU.render.clear(properties.gridClearColor)
+    GPU.render.clear(properties.gridClearColor.toGMColor(), 0.0)
+    //GPU.render.clear(properties.gridClearColor.toGMColor(), properties.gridClearFrameAlpha)
 
     if (enableGlitch && properties.renderBackgroundGlitch) {
       this.backgroundGlitchService.renderOn(this.renderBackgroundGlitch, layout)
@@ -1616,7 +1617,8 @@ function GridRenderer() constructor {
     var shaderPipeline = controller.shaderBackgroundPipeline
 
     GPU.set.surface(this.shaderBackgroundSurface)
-    GPU.render.clear(properties.gridClearColor, 0.0)
+    //GPU.render.clear(properties.shaderClearColor.toGMColor(), 0.0)
+    GPU.render.clear(properties.shaderClearColor.toGMColor(), properties.shaderClearFrameAlpha)
     GPU.reset.surface()
 
     shaderPipeline
@@ -1666,11 +1668,9 @@ function GridRenderer() constructor {
     var height = this.shaderSurface.height
     var shaderPipeline = controller.shaderPipeline
 
+    GPU.set.surface(this.shaderSurface)
     if (properties.shaderClearFrame) {
-      var tempAlpha = properties.shaderClearColor.alpha
-      properties.shaderClearColor.alpha = properties.shaderClearFrameAlpha
-      GPU.render.clear(properties.shaderClearColor)
-      properties.shaderClearColor.alpha = tempAlpha
+      GPU.render.clear(properties.shaderClearColor.toGMColor(), properties.shaderClearFrameAlpha)
     } else {
       GPU.set.blendMode(BlendMode.SUBTRACT)
       GPU.render.fillColor(
@@ -1681,6 +1681,7 @@ function GridRenderer() constructor {
       )
       GPU.reset.blendMode()
     }
+    GPU.reset.surface()
 
     shaderPipeline
       .setWidth(width)
@@ -1729,7 +1730,10 @@ function GridRenderer() constructor {
     var height = this.shaderCombinedSurface.height
     var shaderPipeline = controller.shaderCombinedPipeline
 
-    GPU.render.clear(properties.shaderClearColor, 0.0)
+    GPU.set.surface(this.shaderCombinedSurface)
+    //GPU.render.clear(properties.shaderClearColor.toGMColor(), 0.0)
+    GPU.render.clear(properties.shaderClearColor.toGMColor(), properties.shaderClearFrameAlpha)
+    GPU.reset.surface()
 
     shaderPipeline
       .setWidth(width)

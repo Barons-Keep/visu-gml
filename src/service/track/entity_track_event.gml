@@ -318,6 +318,7 @@ global.__entity_track_event = {
         "en-pl_use-mask": Struct.parse.boolean(data, "en-pl_use-mask"),
         "en-pl_mask": Struct.parse.rectangle(data, "en-pl_mask"),
         "en-pl_reset-pos": Struct.parse.boolean(data, "en-pl_reset-pos"),
+        "en-pl_shadow": Struct.parse.boolean(data, "en-pl_shadow"),
         "en-pl_use-stats": Struct.parse.boolean(data, "en-pl_use-stats"),
         "en-pl_stats": Struct.getIfType(data, "en-pl_stats", Struct, {
           force: { value: 0 },
@@ -394,6 +395,9 @@ global.__entity_track_event = {
           ? Struct.get(data, "en-pl_racing")
           : null,
       }))
+
+      ///@description feature TODO grid.player.shadow
+      Struct.set(controller.gridService.properties, "playerShadowEnable", Struct.get(data, "en-pl_shadow"))
     },
   },
   "brush_entity_config": {
