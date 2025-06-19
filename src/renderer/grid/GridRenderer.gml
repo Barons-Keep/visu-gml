@@ -61,6 +61,101 @@ function GridRenderer() constructor {
   combinedGlitchService = new BKTGlitchService()
 
   ///@private
+  ///@return {VisuHUDRenderer}
+  setGlitchServiceConfig = function(glitchService, factor = 0.0, useConfig = true) {
+    var config = {
+      lineSpeed: {
+        defValue: 0.01,
+        minValue: 0.0,
+        maxValue: 0.5,
+      },
+      lineShift: {
+        defValue: 0.0,
+        minValue: 0.0,
+        maxValue: 0.05,
+      },
+      lineResolution: {
+        defValue: 0.0,
+        minValue: 0.0,
+        maxValue: 3.0,
+      },
+      lineVertShift: {
+        defValue: 0.0,
+        minValue: 0.0,
+        maxValue: 1.0,
+      },
+      lineDrift: {
+        defValue: 0.0,
+        minValue: 0.0,
+        maxValue: 1.0,
+      },
+      jumbleSpeed: {
+        defValue: 4.5,
+        minValue: 0.0,
+        maxValue: 25.0,
+      },
+      jumbleShift: {
+        defValue: 0.059999999999999998,
+        minValue: 0.0,
+        maxValue: 1.0,
+      },
+      jumbleResolution: {
+        defValue: 0.25,
+        minValue: 0.0,
+        maxValue: 1.0,
+      },
+      jumbleness: {
+        defValue: 0.10000000000000001,
+        minValue: 0.0,
+        maxValue: 1.0,
+      },
+      dispersion: {
+        defValue: 0.002,
+        minValue: 0.0,
+        maxValue: 0.5,
+      },
+      channelShift: {
+        defValue: 0.00050000000000000001,
+        minValue: 0.0,
+        maxValue: 0.05,
+      },
+      noiseLevel: {
+        defValue: 0.10000000000000001,
+        minValue: 0.0,
+        maxValue: 1.0,
+      },
+      shakiness: {
+        defValue: 0.5,
+        minValue: 0.0,
+        maxValue: 10.0,
+      },
+      rngSeed: {
+        defValue: 0.66600000000000004,
+        minValue: 0.0,
+        maxValue: 1.0,
+      },
+      intensity: {
+        defValue: 0.40000000000000002,
+        minValue: 0.0,
+        maxValue: 5.0,
+      },
+    }
+
+    if (useConfig) {
+      glitchService.dispatcher
+        .execute(new Event("load-config", config))
+    }
+
+    glitchService.dispatcher
+      .execute(new Event("spawn-glitch", { 
+        factor: factor, 
+        rng: !useConfig
+      }))
+    
+      return this
+  }
+
+  ///@private
   ///@type {Timer}
   ///@description Z demo
   playerZTimer = new Timer(pi * 2, { loop: Infinity }) 
@@ -181,6 +276,12 @@ function GridRenderer() constructor {
     //gpu_set_alphatestref(0)
     gpu_set_cullmode(cull_counterclockwise)
 
+    this.setGlitchServiceConfig(this.backgroundGlitchService)
+    this.setGlitchServiceConfig(this.gridGlitchService)
+    this.setGlitchServiceConfig(this.combinedGlitchService)
+
+    GPU.reset.blendMode()
+    GPU.reset.blendEquation()
     return this
   }
 
@@ -1600,7 +1701,7 @@ function GridRenderer() constructor {
         gridRenderer.backgroundSurface.height, 
         0, 
         0,
-        1.0
+        task.state.getDefault("alpha", 1.0)
       )
       GPU.reset.surface()
     }
@@ -1652,7 +1753,7 @@ function GridRenderer() constructor {
         gridRenderer.gridSurface.height, 
         0, 
         0,
-        1.0
+        task.state.getDefault("alpha", 1.0)
       )
       GPU.reset.surface()
     }
@@ -1714,7 +1815,7 @@ function GridRenderer() constructor {
         gridRenderer.gameSurface.height, 
         0, 
         0,
-        1.0
+        task.state.getDefault("alpha", 1.0)
       )
       GPU.reset.surface()
     }
@@ -1828,6 +1929,7 @@ function GridRenderer() constructor {
     this.camera.free()
     this.camera = new GridCamera()
     this.overlayRenderer.clear()
+    this.init()
     return this
   }
 

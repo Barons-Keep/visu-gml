@@ -60,8 +60,8 @@ function VisuTrackLoader(_controller): Service() constructor {
             fsmState.state.set("clearQueue", new Queue(Callable, [
               function() { Beans.get(BeanVisuController).displayService.setCaption(game_display_name) },
               function() { Beans.get(BeanVisuController).brushService.clearTemplates() },
-              function() { Beans.get(BeanVisuController).visuRenderer.gridRenderer.clear() },
               function() { Beans.get(BeanVisuController).visuRenderer.executor.tasks.forEach(TaskUtil.fullfill).clear() },
+              function() { Beans.get(BeanVisuController).visuRenderer.gridRenderer.clear() },
               function() {
                 var editor = Beans.get(BeanVisuEditorController)
                 if (Core.isType(editor, VisuEditorController)) {
@@ -70,9 +70,9 @@ function VisuTrackLoader(_controller): Service() constructor {
                 }
               },
               function() { Beans.get(BeanVisuController).trackService.dispatcher.execute(new Event("close-track")) },
-              function() { Beans.get(BeanVisuController).videoService.dispatcher.execute(new Event("close-video")) },
-              function() { Beans.get(BeanVisuController).gridService.dispatcher.execute(new Event("clear-grid")) },
+              function() { Beans.get(BeanVisuController).videoService.dispatcher.execute(new Event("close-video")) },              
               function() { Beans.get(BeanVisuController).gridService.executor.tasks.forEach(TaskUtil.fullfill).clear() },
+              function() { Beans.get(BeanVisuController).gridService.dispatcher.execute(new Event("clear-grid")) },
               function() { Beans.get(BeanVisuController).gridService.loadingScreen() },
               function() { Beans.get(BeanVisuController).playerService.dispatcher.execute(new Event("clear-player")) },
               function() { Beans.get(BeanVisuController).shroomService.dispatcher.execute(new Event("clear-shrooms")).execute(new Event("reset-templates")) },
