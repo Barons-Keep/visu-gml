@@ -1280,9 +1280,11 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                     inspector: data.templateToolbar.containers.get("ve-template-toolbar_inspector-view"),
                     collection: data.collection,
                     templates: Beans.get(BeanVisuController).shaderPipeline.templates,
-                    templateNames: new Queue(String, GMArray.sort(Beans.get(BeanVisuController).shaderPipeline.templates.keys().getContainer())),
+                    templateNames: new Queue(String, GMArray.sort(Beans.get(BeanVisuController).shaderPipeline.templates
+                      .keys().getContainer())),
                     assets: Visu.assets().shaderTemplates,
-                    assetNames: new Queue(String, GMArray.sort(Visu.assets().shaderTemplates.keys().getContainer())),
+                    assetNames: new Queue(String, GMArray.sort(Visu.assets().shaderTemplates
+                      .keys().getContainer())),
                     stage: "parseTemplate",
                     context: data,
                     parseTemplate: function(task) {
@@ -1410,9 +1412,11 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                     inspector: data.templateToolbar.containers.get("ve-template-toolbar_inspector-view"),
                     collection: data.collection,
                     templates: Beans.get(BeanVisuController).shroomService.templates,
-                    templateNames: new Queue(String, GMArray.sort(Beans.get(BeanVisuController).shroomService.templates.keys().getContainer())),
+                    templateNames: new Queue(String, GMArray.sort(Beans.get(BeanVisuController).shroomService.templates
+                      .keys().getContainer())),
                     assets: Visu.assets().shroomTemplates,
-                    assetNames: new Queue(String, GMArray.sort(Visu.assets().shroomTemplates.keys().getContainer())),
+                    assetNames: new Queue(String, GMArray.sort(Visu.assets().shroomTemplates
+                      .keys().getContainer())),
                     stage: "parseTemplate",
                     context: data,
                     parseTemplate: function(task) {
@@ -1539,9 +1543,11 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                     inspector: data.templateToolbar.containers.get("ve-template-toolbar_inspector-view"),
                     collection: data.collection,
                     templates: Beans.get(BeanVisuController).bulletService.templates,
-                    templateNames: new Queue(String, GMArray.sort(Beans.get(BeanVisuController).bulletService.templates.keys().getContainer())),
+                    templateNames: new Queue(String, GMArray.sort(Beans.get(BeanVisuController).bulletService.templates
+                      .keys().getContainer())),
                     assets: Visu.assets().bulletTemplates,
-                    assetNames: new Queue(String, GMArray.sort(Visu.assets().bulletTemplates.keys().getContainer())),
+                    assetNames: new Queue(String, GMArray.sort(Visu.assets().bulletTemplates
+                      .keys().getContainer())),
                     stage: "parseTemplate",
                     context: data,
                     parseTemplate: function(task) {
@@ -1668,9 +1674,11 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                     inspector: data.templateToolbar.containers.get("ve-template-toolbar_inspector-view"),
                     collection: data.collection,
                     templates: Beans.get(BeanVisuController).coinService.templates,
-                    templateNames: new Queue(String, GMArray.sort(Beans.get(BeanVisuController).coinService.templates.keys().getContainer())),
+                    templateNames: new Queue(String, GMArray.sort(Beans.get(BeanVisuController).coinService.templates
+                      .keys().getContainer())),
                     assets: Visu.assets().coinTemplates,
-                    assetNames: new Queue(String, GMArray.sort(Visu.assets().coinTemplates.keys().getContainer())),
+                    assetNames: new Queue(String, GMArray.sort(Visu.assets().coinTemplates
+                      .keys().getContainer())),
                     stage: "parseTemplate",
                     context: data,
                     parseTemplate: function(task) {
@@ -1797,9 +1805,11 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                     inspector: data.templateToolbar.containers.get("ve-template-toolbar_inspector-view"),
                     collection: data.collection,
                     templates: Beans.get(BeanVisuController).subtitleService.templates,
-                    templateNames: new Queue(String, GMArray.sort(Beans.get(BeanVisuController).subtitleService.templates.keys().getContainer())),
+                    templateNames: new Queue(String, GMArray.sort(Beans.get(BeanVisuController).subtitleService.templates
+                      .keys().getContainer())),
                     assets: Visu.assets().subtitleTemplates,
-                    assetNames: new Queue(String, GMArray.sort(Visu.assets().subtitleTemplates.keys().getContainer())),
+                    assetNames: new Queue(String, GMArray.sort(Visu.assets().subtitleTemplates
+                      .keys().getContainer())),
                     stage: "parseTemplate",
                     context: data,
                     parseTemplate: function(task) {
@@ -1926,9 +1936,11 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                     inspector: data.templateToolbar.containers.get("ve-template-toolbar_inspector-view"),
                     collection: data.collection,
                     templates: Beans.get(BeanVisuController).particleService.templates,
-                    templateNames: new Queue(String, GMArray.sort(Beans.get(BeanVisuController).particleService.templates.keys().getContainer())),
+                    templateNames: new Queue(String, GMArray.sort(Beans.get(BeanVisuController).particleService.templates
+                      .keys().getContainer())),
                     assets: Visu.assets().particleTemplates,
-                    assetNames: new Queue(String, GMArray.sort(Visu.assets().particleTemplates.keys().getContainer())),
+                    assetNames: new Queue(String, GMArray.sort(Visu.assets().particleTemplates
+                      .keys().getContainer())),
                     stage: "parseTemplate",
                     context: data,
                     parseTemplate: function(task) {
@@ -2055,9 +2067,11 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                     inspector: data.templateToolbar.containers.get("ve-template-toolbar_inspector-view"),
                     collection: data.collection,
                     templates: Beans.get(BeanTextureService).templates,
-                    templateNames: new Queue(String, GMArray.sort(Beans.get(BeanTextureService).templates.keys().getContainer())),
+                    templateNames: new Queue(String, GMArray.sort(Beans.get(BeanTextureService).templates
+                      .keys().getContainer())),
                     assets: Visu.assets().textures,
-                    assetNames: new Queue(String, GMArray.sort(Visu.assets().textures.keys().getContainer())),
+                    assetNames: new Queue(String, GMArray.sort(Visu.assets().textures
+                      .keys().getContainer())),
                     stage: "parseTemplate",
                     parseTemplate: function(task) {
                       repeat (TEMPLATE_ENTRY_STEP) {
@@ -2384,7 +2398,9 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
         }
 
         var surfaceAlpha = this.state.getIfType("surface-alpha", Number, 1.0)
-        if (surfaceAlpha < 1.0) {
+        if (this.executor.tasks.size() > 0) {
+          this.state.set("surface-alpha", clamp(surfaceAlpha - DeltaTime.apply(0.066), 0.5, 1.0))
+        } else if (surfaceAlpha < 1.0) {
           this.state.set("surface-alpha", clamp(surfaceAlpha + DeltaTime.apply(0.066), 0.0, 1.0))
         }
 
@@ -2429,24 +2445,71 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
               shaderResult = oldShader == newShader
             }
             
-            if (Struct.get(oldTemplate, "type") == template.type && shaderResult) {
-              data.items.forEach(function(item) { item.updateStore() })
-              template.store.container.forEach(function(item, name, subscribersConfig) {
-                item.addSubscriber(subscribersConfig)
-              }, {
-                name: data.name,
-                overrideSubscriber: true,
-                callback: Lambda.passthrough,
-              })
+            if (1 == 2 && Struct.get(oldTemplate, "type") == template.type && shaderResult) {
+              data.executor.tasks
+                .forEach(TaskUtil.fullfillByName, "sync-ui-store")
+                .forEach(TaskUtil.fullfillByName, "init-ui-components")
+
+              var task = new Task("sync-ui-store")
+                .setTimeout(60.0)
+                .setState({
+                  context: data,
+                  template: template,
+                  itemKeys: new Queue(String, data.items.keys().getContainer()),
+                  templateKeys: new Queue(String, template.store.container.keys().getContainer()),
+                  subscribersConfig: {
+                    name: data.name,
+                    overrideSubscriber: true,
+                    callback: Lambda.passthrough,
+                  },
+                  stage: "update-store",
+                  stages: {
+                    "update-store": function(task) {
+                      if (task.state.itemKeys.size() == 0) {
+                        task.state.stage = "add-subscriber"
+                        return
+                      }
+
+                      var key = task.state.itemKeys.pop()
+                      var item = task.state.context.items.get(key)
+                      if (item != null) {
+                        item.updateStore()
+                      }
+                    },
+                    "add-subscriber": function(task) {
+                      if (task.state.templateKeys.size() == 0) {
+                        task.fullfill()
+                        return
+                      }
+
+                      var key = task.state.templateKeys.pop()
+                      var item = task.state.template.store.get(key)
+                      if (item != null) {
+                        item.addSubscriber(task.state.subscribersConfig)
+                      }
+                    },
+                  }
+                })
+                .whenUpdate(function() {
+                  repeat (SYNC_UI_STORE_STEP) {
+                    var stage = Struct.get(this.state.stages, this.state.stage)
+                    stage(this)
+
+                    if (this.status == TaskStatus.FULLFILLED) {
+                      break
+                    }
+                  }
+                  return this
+                })
+                
+              data.executor.add(task)
             } else {
               data.items.forEach(function(item) { item.free() }).clear()
               data.collection.components.clear()
 
-              data.executor.tasks.forEach(function(task, iterator, name) {
-                if (task.name == name) {
-                  task.fullfill()
-                }
-              }, "init-ui-components")
+              data.executor.tasks
+                .forEach(TaskUtil.fullfillByName, "sync-ui-store")
+                .forEach(TaskUtil.fullfillByName, "init-ui-components")
               
               var task = new Task("init-ui-components")
                 .setTimeout(60)
@@ -2456,7 +2519,7 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                   cooldownTimer: new Timer(0.128, { loop: true }),
                   components: template.components,
                   componentsQueue: new Queue(String, GMArray
-                    .map(template.components.container, function(component, index) { 
+                    .map(template.components.getContainer(), function(component, index) { 
                       return index 
                     })),
                   componentsConfig: {

@@ -1490,7 +1490,9 @@ global.__VisuBrushContainers = new Map(String, Callable, {
         }
 
         var surfaceAlpha = this.state.getIfType("surface-alpha", Number, 1.0)
-        if (surfaceAlpha < 1.0) {
+        if (this.executor.tasks.size() > 0) {
+          this.state.set("surface-alpha", clamp(surfaceAlpha - DeltaTime.apply(0.066), 0.5, 1.0))
+        } else if (surfaceAlpha < 1.0) {
           this.state.set("surface-alpha", clamp(surfaceAlpha + DeltaTime.apply(0.066), 0.0, 1.0))
         }
 
@@ -1530,24 +1532,73 @@ global.__VisuBrushContainers = new Map(String, Callable, {
               .set("brush", brush)
               .set("store", brush.store)
 
-            if (Struct.get(oldBrush, "type") == brush.type) {
-              data.items.forEach(function(item) { item.updateStore() })
-              brush.store.container.forEach(function(item, name, subscribersConfig) {
-                item.addSubscriber(subscribersConfig)
-              }, {
-                name: data.name,
-                overrideSubscriber: true,
-                callback: Lambda.passthrough,
-              })
+            if (1 == 2 && Struct.get(oldBrush, "type") == brush.type) {
+              data.executor.tasks
+                .forEach(TaskUtil.fullfillByName, "sync-ui-store")
+                .forEach(TaskUtil.fullfillByName, "init-ui-components")
+
+              var task = new Task("sync-ui-store")
+                .setTimeout(60.0)
+                .setState({
+                  context: data,
+                  brush: brush,
+                  itemKeys: new Queue(String, data.items.keys()
+                    .map(Lambda.passthrough).getContainer()),
+                  brushKeys: new Queue(String, brush.store.container.keys()
+                    .map(Lambda.passthrough).getContainer()),
+                  subscribersConfig:{
+                    name: data.name,
+                    overrideSubscriber: true,
+                    callback: Lambda.passthrough,
+                  },
+                  stage: "update-store",
+                  stages: {
+                    "update-store": function(task) {
+                      if (task.state.itemKeys.size() == 0) {
+                        task.state.stage = "add-subscriber"
+                        return
+                      }
+
+                      var key = task.state.itemKeys.pop()
+                      var item = task.state.context.items.get(key)
+                      if (item != null) {
+                        item.updateStore()
+                      }
+                    },
+                    "add-subscriber": function(task) {
+                      if (task.state.brushKeys.size() == 0) {
+                        task.fullfill()
+                        return
+                      }
+
+                      var key = task.state.brushKeys.pop()
+                      var item = task.state.brush.store.get(key)
+                      if (item != null) {
+                        item.addSubscriber(task.state.subscribersConfig)
+                      }
+                    },
+                  }
+                })
+                .whenUpdate(function() {
+                  repeat (SYNC_UI_STORE_STEP) {
+                    var stage = Struct.get(this.state.stages, this.state.stage)
+                    stage(this)
+
+                    if (this.status == TaskStatus.FULLFILLED) {
+                      break
+                    }
+                  }
+                  return this
+                })
+                
+              data.executor.add(task)
             } else {
               data.items.forEach(function(item) { item.free() }).clear()
               data.collection.components.clear()
 
-              data.executor.tasks.forEach(function(task, iterator, name) {
-                if (task.name == name) {
-                  task.fullfill()
-                }
-              }, "init-ui-components")
+              data.executor.tasks
+                .forEach(TaskUtil.fullfillByName, "sync-ui-store")
+                .forEach(TaskUtil.fullfillByName, "init-ui-components")
 
               var task = new Task("init-ui-components")
                 .setTimeout(60)

@@ -210,6 +210,7 @@ function VEEventInspector(_editor) constructor {
       "ve-event-inspector-properties": {
         name: "ve-event-inspector-properties",
         state: new Map(String, any, {
+          "background-alpha": 1.0,
           "background-color": ColorUtil.fromHex(VETheme.color.side).toGMColor(),
           "empty-label": new UILabel({
             text: "Click on\ntimeline\nevent",
@@ -219,6 +220,7 @@ function VEEventInspector(_editor) constructor {
           }),
           "inspectorType": VEEventInspector,
           "updateTrackEvent": false,
+          "surface-alpha": 1.0,
         }),
         updateTimer: new Timer(FRAME_MS * Core.getProperty("visu.editor.ui.event-inspector.properties.updateTimer", 60), { loop: Infinity, shuffle: true }),
         eventInspector: eventInspector,
@@ -259,13 +261,21 @@ function VEEventInspector(_editor) constructor {
         }),
         updateArea: Callable.run(UIUtil.updateAreaTemplates.get("scrollableY")),
         renderItem: Callable.run(UIUtil.renderTemplates.get("renderItemDefaultScrollable")),
-        renderDefaultScrollable: new BindIntent(Callable.run(UIUtil.renderTemplates.get("renderDefaultScrollable"))),
+        renderDefaultScrollable: new BindIntent(Callable.run(UIUtil.renderTemplates.get("renderDefaultScrollableAlpha"))),
         render: function() {
           if (this.executor != null) {
             this.executor.update()
           }
 
           this._updateTrackEvent()
+
+          var surfaceAlpha = this.state.getIfType("surface-alpha", Number, 1.0)
+          if (this.executor.tasks.size() > 0) {
+            this.state.set("surface-alpha", clamp(surfaceAlpha - DeltaTime.apply(0.066), 0.5, 1.0))
+          } else if (surfaceAlpha < 1.0) {
+            this.state.set("surface-alpha", clamp(surfaceAlpha + DeltaTime.apply(0.066), 0.0, 1.0))
+          }
+
           this.renderDefaultScrollable()
           if (!Optional.is(this.state.get("selectedEvent"))) {
             this.state.get("empty-label").render(
@@ -275,6 +285,8 @@ function VEEventInspector(_editor) constructor {
               this.area.getHeight()
             )
           }
+
+          return this
         },
         executor: null,
         scrollbarY: { align: HAlign.LEFT },
@@ -294,7 +306,8 @@ function VEEventInspector(_editor) constructor {
               name: container.name,
               overrideSubscriber: true,
               callback: function(selectedEvent, data) { 
-                if (!Optional.is(selectedEvent)) {
+                var track = Beans.get(BeanVisuController).trackService.track
+                if (!Optional.is(selectedEvent) || !track.channels.contains(Struct.get(selectedEvent, "channel"))) {
                   data.items.forEach(function(item) { item.free() }).clear() ///@todo replace with remove lambda
                   data.collection.components.clear() ///@todo replace with remove lambda
                   data.eventInspector.store.get("event").set(null)
@@ -323,27 +336,74 @@ function VEEventInspector(_editor) constructor {
                   .set("event", event)
                   .set("store", event.store)
 
-                if (Struct.get(oldEvent, "type") == trackEvent.callableName) {
-                  data.items.forEach(function(item) { item.updateStore() })
-                  event.store.container.forEach(function(item, name, subscribersConfig) {
-                    item.addSubscriber(subscribersConfig)
-                  }, {
-                    name: data.name,
-                    data: data,
-                    overrideSubscriber: true,
-                    callback: function(value, data) { 
-                      data.state.set("updateTrackEvent", true)
-                    },
-                  })
-                } else {
-                  data.items.forEach(function(item) { item.free() }).clear() ///@todo replace with remove lambda
-                  data.collection.components.clear() ///@todo replace with remove lambda
+                if (1 == 2 && Struct.get(oldEvent, "type") == trackEvent.callableName) {
+                  data.executor.tasks
+                    .forEach(TaskUtil.fullfillByName, "sync-ui-store")
+                    .forEach(TaskUtil.fullfillByName, "init-ui-components")
 
-                  data.executor.tasks.forEach(function(task, iterator, name) {
-                    if (task.name == name) {
-                      task.fullfill()
-                    }
-                  }, "init-ui-components")
+                  var task = new Task("sync-ui-store")
+                    .setTimeout(60.0)
+                    .setState({
+                      context: data,
+                      event: event,
+                      itemKeys: new Queue(String, data.items.keys().getContainer()),
+                      storeKeys: new Queue(String, event.store.container.keys().getContainer()),
+                      subscribersConfig: {
+                        name: data.name,
+                        data: data,
+                        overrideSubscriber: true,
+                        callback: function(value, data) { 
+                          data.state.set("updateTrackEvent", true)
+                        },
+                      },
+                      stage: "update-store",
+                      stages: {
+                        "update-store": function(task) {
+                          if (task.state.itemKeys.size() == 0) {
+                            task.state.stage = "add-subscriber"
+                            return
+                          }
+
+                          var key = task.state.itemKeys.pop()
+                          var item = task.state.context.items.get(key)
+                          if (item != null) {
+                            item.updateStore()
+                          }
+                        },
+                        "add-subscriber": function(task) {
+                          if (task.state.storeKeys.size() == 0) {
+                            task.fullfill()
+                            return
+                          }
+
+                          var key = task.state.storeKeys.pop()
+                          var item = task.state.event.store.get(key)
+                          if (item != null) {
+                            item.addSubscriber(task.state.subscribersConfig)
+                          }
+                        },
+                      }
+                    })
+                    .whenUpdate(function() {
+                      repeat (SYNC_UI_STORE_STEP) {
+                        var stage = Struct.get(this.state.stages, this.state.stage)
+                        stage(this)
+
+                        if (this.status == TaskStatus.FULLFILLED) {
+                          break
+                        }
+                      }
+                      return this
+                    })
+                    
+                  data.executor.add(task)
+                } else {
+                  data.items.forEach(function(item) { item.free() }).clear()
+                  data.collection.components.clear()
+
+                  data.executor.tasks
+                    .forEach(TaskUtil.fullfillByName, "sync-ui-store")
+                    .forEach(TaskUtil.fullfillByName, "init-ui-components")
 
                   var task = new Task("init-ui-components")
                     .setTimeout(60)
@@ -366,7 +426,7 @@ function VEEventInspector(_editor) constructor {
                       subscribers: event.store.container,
                       subscribersQueue: new Queue(String, event.store.container
                         .keys()
-                        .map(function(key) { return key }).container),
+                        .map(Lambda.passthrough).getContainer()),
                       subscribersConfig: {
                         name: data.name,
                         overrideSubscriber: true,
