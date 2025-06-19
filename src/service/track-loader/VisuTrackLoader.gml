@@ -37,8 +37,8 @@ function VisuTrackLoader(_controller): Service() constructor {
       "idle": {
         actions: {
           onStart: function(fsm, fsmState, data) {
-            var editor = Beans.get(BeanVisuEditorController)
-            if (Core.isType(editor, VisuEditorController)) {
+            var editor = Beans.get(Visu.modules().editor.controller)
+            if (Optional.is(editor)) {
               editor.send(new Event("open"))
             }
             
@@ -63,8 +63,8 @@ function VisuTrackLoader(_controller): Service() constructor {
               function() { Beans.get(BeanVisuController).visuRenderer.executor.tasks.forEach(TaskUtil.fullfill).clear() },
               function() { Beans.get(BeanVisuController).visuRenderer.gridRenderer.clear() },
               function() {
-                var editor = Beans.get(BeanVisuEditorController)
-                if (Core.isType(editor, VisuEditorController)) {
+                var editor = Beans.get(Visu.modules().editor.controller)
+                if (Optional.is(editor)) {
                   editor.popupQueue.dispatcher.execute(new Event("clear"))
                   editor.dispatcher.execute(new Event("close"))
                 }
@@ -115,7 +115,7 @@ function VisuTrackLoader(_controller): Service() constructor {
         actions: {
           onStart: function(fsm, fsmState, path) {
             var controller = Beans.get(BeanVisuController)
-            var editor = Beans.get(BeanVisuEditorController)
+            var editor = Beans.get(Visu.modules().editor.controller)
             fsmState.state.set("promise", Beans.get(BeanFileService).send(
               new Event("fetch-file")
                 .setData({ path: path })
@@ -132,8 +132,8 @@ function VisuTrackLoader(_controller): Service() constructor {
                       },
                     }).update()
                     
-                    var editor = Beans.get(BeanVisuEditorController)
-                    if (Core.isType(editor, VisuEditorController)) {
+                    var editor = Beans.get(Visu.modules().editor.controller)
+                    if (Optional.is(editor)) {
                       var item = editor.store.get("bpm")
                       item.set(this.response.bpm)
   
@@ -1046,7 +1046,7 @@ function VisuTrackLoader(_controller): Service() constructor {
               fsm.dispatcher.send(new Event("transition", { name: "loaded" }))
 
               var controller = Beans.get(BeanVisuController)
-              var editor = Beans.get(BeanVisuEditorController)
+              var editor = Beans.get(Visu.modules().editor.controller)
               if (Optional.is(editor)) {
                 editor.renderUI = !editor.renderUI
                 var fsmState = controller.fsm.currentState
@@ -1074,8 +1074,8 @@ function VisuTrackLoader(_controller): Service() constructor {
             controller.displayService.setCaption($"{game_display_name} | {fsm.context.controller.trackService.track.name} | {fsm.context.controller.track.path}")
             controller.gridService.avgTime.reset()
 
-            var editor = Beans.get(BeanVisuEditorController)
-            if (Core.isType(editor, VisuEditorController)) {
+            var editor = Beans.get(Visu.modules().editor.controller)
+            if (Optional.is(editor)) {
               editor.send(new Event("open"))
             }
 

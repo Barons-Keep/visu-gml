@@ -275,7 +275,7 @@ function VisuMenu(_config = null) constructor {
                 onMouseReleasedLeft: function() {
                   this.callback()
                 },
-                colorHoverOut: VETheme.color.deny,
+                colorHoverOut: VisuTheme.color.deny,
               },
             }
           }
@@ -541,7 +541,7 @@ function VisuMenu(_config = null) constructor {
             onMouseReleasedLeft: function() {
               this.callback()
             },
-            colorHoverOut: VETheme.color.deny,
+            colorHoverOut: VisuTheme.color.deny,
           },
         }
       })
@@ -764,7 +764,7 @@ function VisuMenu(_config = null) constructor {
               onMouseReleasedLeft: function() {
                 this.callback()
               },
-              colorHoverOut: VETheme.color.deny,
+              colorHoverOut: VisuTheme.color.deny,
             },
           }
         }
@@ -899,7 +899,7 @@ function VisuMenu(_config = null) constructor {
               onMouseReleasedLeft: function() {
                 this.callback()
               },
-              colorHoverOut: VETheme.color.deny,
+              colorHoverOut: VisuTheme.color.deny,
             },
           }
         }
@@ -1406,7 +1406,7 @@ function VisuMenu(_config = null) constructor {
               onMouseReleasedLeft: function() {
                 this.callback()
               },
-              colorHoverOut: VETheme.color.deny,
+              colorHoverOut: VisuTheme.color.deny,
             },
           }
         }
@@ -1552,7 +1552,7 @@ function VisuMenu(_config = null) constructor {
               onMouseReleasedLeft: function() {
                 this.callback()
               },
-              colorHoverOut: VETheme.color.deny,
+              colorHoverOut: VisuTheme.color.deny,
             },
           }
         }
@@ -1761,7 +1761,7 @@ function VisuMenu(_config = null) constructor {
               onMouseReleasedLeft: function() {
                 this.callback()
               },
-              colorHoverOut: VETheme.color.deny,
+              colorHoverOut: VisuTheme.color.deny,
             },
           }
         }
@@ -1853,7 +1853,7 @@ function VisuMenu(_config = null) constructor {
               onMouseReleasedLeft: function() {
                 this.callback()
               },
-              colorHoverOut: VETheme.color.deny,
+              colorHoverOut: VisuTheme.color.deny,
             },
           }
         }
@@ -2155,14 +2155,14 @@ function VisuMenu(_config = null) constructor {
                   value = true
                 }
 
-                if (Optional.is(Beans.get(BeanVisuEditorController))) {
-                  Beans.kill(BeanVisuEditorController)
+                if (Optional.is(Beans.get(Visu.modules().editor.controller))) {
+                  Beans.kill(Visu.modules().editor.controller)
                   value = false
                 } else {
-                  Beans.add(Beans.factory(BeanVisuEditorController, GMServiceInstance, 
+                  Beans.add(Beans.factory(Visu.modules().editor.controller, GMServiceInstance, 
                     Beans.get(BeanVisuController).layerId, new VisuEditorController()))
                   value = true
-                  var editor = Beans.get(BeanVisuEditorController)
+                  var editor = Beans.get(Visu.modules().editor.controller)
                   if (Optional.is(editor)) {
                     editor.send(new Event("open"))
                   }
@@ -2177,30 +2177,34 @@ function VisuMenu(_config = null) constructor {
             input: {
               label: { text: "" },
               updateCustom: function() {
-                this.label.text = Optional.is(Beans.get(BeanVisuEditorController)) ? "Enabled" : "Disabled"
+                this.label.text = Optional.is(Beans.get(Visu.modules().editor.controller)) ? "Enabled" : "Disabled"
                 this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
               },
               callback: function() {
                 Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
                 var value = false
 
-                if (Optional.is(Beans.get(BeanVisuEditorIO))) {
-                  Beans.kill(BeanVisuEditorIO)
-                  value = false
-                } else {
-                  Beans.add(Beans.factory(BeanVisuEditorIO, GMServiceInstance, 
-                    Beans.get(BeanVisuController).layerId, new VisuEditorIO()))
-                  value = true
+                var editorIOConstructor = Core.getConstructor("VisuEditorIO")
+                if (Optional.is(editorIOConstructor)) {
+                  if (Optional.is(Beans.get(Visu.modules().editor.io))) {
+                    Beans.kill(Visu.modules().editor.io)
+                    value = false
+                  } else {
+                    Beans.add(Beans.factory(Visu.modules().editor.io, GMServiceInstance, 
+                      Beans.get(BeanVisuController).layerId, new editorIOConstructor()))
+                    value = true
+                  }
                 }
 
-                if (Optional.is(Beans.get(BeanVisuEditorController))) {
-                  Beans.kill(BeanVisuEditorController)
+                var editorConstructor = Core.getConstructor("VisuEditorController")
+                if (Optional.is(Beans.get(Visu.modules().editor.controller))) {
+                  Beans.kill(Visu.modules().editor.controller)
                   value = false
                 } else {
-                  Beans.add(Beans.factory(BeanVisuEditorController, GMServiceInstance, 
-                    Beans.get(BeanVisuController).layerId, new VisuEditorController()))
+                  Beans.add(Beans.factory(Visu.modules().editor.controller, GMServiceInstance, 
+                    Beans.get(BeanVisuController).layerId, new editorConstructor()))
                   value = true
-                  var editor = Beans.get(BeanVisuEditorController)
+                  var editor = Beans.get(Visu.modules().editor.controller)
                   if (Optional.is(editor)) {
                     editor.send(new Event("open"))
                   }
@@ -2369,7 +2373,7 @@ function VisuMenu(_config = null) constructor {
               onMouseReleasedLeft: function() {
                 this.callback()
               },
-              colorHoverOut: VETheme.color.deny,
+              colorHoverOut: VisuTheme.color.deny,
             },
           }
         }
@@ -2448,7 +2452,7 @@ function VisuMenu(_config = null) constructor {
         layout: layout,
         state: new Map(String, any, {
           "background-alpha": 0.5,
-          "background-color": ColorUtil.fromHex(VETheme.color.sideDark).toGMColor(),
+          "background-color": ColorUtil.fromHex(VisuTheme.color.sideDark).toGMColor(),
           "title": title,
           "uiAlpha": 0.0,
           "uiAlphaFactor": 0.05,
@@ -2516,7 +2520,7 @@ function VisuMenu(_config = null) constructor {
         previousIndex: 0,
         state: new Map(String, any, {
           "background-alpha": 0.33,
-          "background-color": ColorUtil.fromHex(VETheme.color.accentShadow).toGMColor(),
+          "background-color": ColorUtil.fromHex(VisuTheme.color.accentShadow).toGMColor(),
           "content": content,
           "isKeyboardEvent": true,
           "initPress": false,
@@ -2967,7 +2971,7 @@ function VisuMenu(_config = null) constructor {
   ///@type {EventPump}
   dispatcher = new EventPump(this, new Map(String, Callable, {
     "open": function(event) {
-      var editor = Beans.get(BeanVisuEditorController)
+      var editor = Beans.get(Visu.modules().editor.controller)
       if (Optional.is(editor) && editor.renderUI) {
         return
       }

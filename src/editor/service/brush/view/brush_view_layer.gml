@@ -1,27 +1,5 @@
 ///@package io.alkapivo.visu.editor.service.brush.view
 
-///@enum
-function _WallpaperType(): Enum() constructor {
-  BACKGROUND = "BACKGROUND"
-  FOREGROUND = "FOREGROUND"
-}
-global.__WallpaperType = new _WallpaperType()
-#macro WallpaperType global.__WallpaperType
-
-///@param {String} type
-///@return {ShaderPipelineType}
-function migrateWallpaperType(type) {
-  switch (type) {
-    case WallpaperType.BACKGROUND:
-    case "Background": return WallpaperType.BACKGROUND
-    case WallpaperType.FOREGROUND:
-    case "Foreground": return WallpaperType.FOREGROUND
-    default: 
-      Logger.warn("migrateWallpaperType", $"Found unsupported type: '{type}'. Return default value: '{WallpaperType.BACKGROUND}'")
-      return ShaderPipelineType.COMBINED
-  }
-}
-
 ///@param {?Struct} [json]
 ///@return {Struct}
 function brush_view_layer(json = null) {

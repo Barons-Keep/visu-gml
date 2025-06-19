@@ -1,5 +1,14 @@
 ///@package io.alkapivo.visu.editor
 
+///@return {Struct}
+function VisuEditorModule() {
+  return {
+    controller: BeanVisuEditorController,
+    io: BeanVisuEditorIO,
+  }
+}
+
+
 #macro BeanVisuEditorController "VisuEditorController"
 function VisuEditorController() constructor {
 
@@ -483,6 +492,14 @@ function VisuEditorController() constructor {
   ///@private
   ///@return {VisuEditorController}
   init = function() {
+    if (Core.getProperty("visu.editor.edit-theme")) {
+      Struct.forEach(this.settings.getValue("visu.editor.theme"), function(hex, name) {
+        Struct.set(VETheme, name, hex)
+      })
+
+      VEStyles = generateVEStyles()
+    }
+
     this.store.get("bpm").addSubscriber(Visu.generateSettingsSubscriber("visu.editor.bpm"))
     this.store.get("bpm-count").addSubscriber(Visu.generateSettingsSubscriber("visu.editor.bpm-count"))
     this.store.get("bpm-sub").addSubscriber(Visu.generateSettingsSubscriber("visu.editor.bpm-sub"))

@@ -30,6 +30,10 @@ function _Visu() constructor {
   _assets = null
 
   ///@private
+  ///@type {?Struct}
+  _modules = null
+
+  ///@private
   ///@type {?String}
   _version = null
 
@@ -749,6 +753,20 @@ function _Visu() constructor {
     },
   } 
 
+  static modules = function() {
+    if (this._modules == null) {
+      var editor = Callable.run("VisuEditorModule")
+      this._modules = {
+        editor: Core.isType(editor, Struct) ? editor : {
+          controller: "VisuEditorController",
+          io: "VisuEditorIO",
+        },
+      }
+    }
+    
+    return this._modules
+  }
+
   ///@return {Struct}
   static assets = function() {
     if (this._assets == null) {
@@ -1113,13 +1131,6 @@ function _Visu() constructor {
     display_reset(this.settings.getValue("visu.graphics.aa"), this.settings.getValue("visu.graphics.vsync"))
     
     Language.load(this.settings.getValue("visu.language", LanguageType.en_EN))
-    if (Core.getProperty("visu.editor.edit-theme")) {
-      Struct.forEach(this.settings.getValue("visu.editor.theme"), function(hex, name) {
-        Struct.set(VETheme, name, hex)
-      })
-
-      VEStyles = generateVEStyles()
-    }
 
     var layerId = Scene.fetchLayer(layerName, layerDefaultDepth)
 
@@ -1189,14 +1200,20 @@ function _Visu() constructor {
     }
 
     var enableEditor = this.settings.getValue("visu.editor.enable", false)
-    if (!Beans.exists(BeanVisuEditorIO) && enableEditor) {
-      Beans.add(Beans.factory(BeanVisuEditorIO, GMServiceInstance, layerId,
-        new VisuEditorIO()))
+    var editorIOConstructor = Core.getConstructor("VisuEditorIO")
+    if (Optional.is(editorIOConstructor)) {
+      if (!Beans.exists(Visu.modules().editor.io) && enableEditor) {
+        Beans.add(Beans.factory(Visu.modules().editor.io, GMServiceInstance, layerId,
+          new editorIOConstructor()))
+      }
     }
 
-    if (!Beans.exists(BeanVisuEditorController) && enableEditor) {
-      Beans.add(Beans.factory(BeanVisuEditorController, GMServiceInstance, layerId,
-        new VisuEditorController()))
+    var editorConstructor = Core.getConstructor("VisuEditorController")
+    if (Optional.is(editorConstructor)) {
+      if (!Beans.exists(Visu.modules().editor.controller) && enableEditor) {
+        Beans.add(Beans.factory(Visu.modules().editor.controller, GMServiceInstance, layerId,
+          new editorConstructor()))
+      }
     }
 
     if (!Beans.exists(BeanVisuIO)) {

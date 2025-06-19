@@ -1,5 +1,55 @@
 ///@package io.alkapivo.visu.renderer
 
+///@enum
+function _WallpaperType(): Enum() constructor {
+  BACKGROUND = "BACKGROUND"
+  FOREGROUND = "FOREGROUND"
+}
+global.__WallpaperType = new _WallpaperType()
+#macro WallpaperType global.__WallpaperType
+
+
+///@type {String[]}
+global.__VISU_FONT = [
+  "font_kodeo_mono_10_regular",
+  "font_kodeo_mono_12_regular",
+  "font_kodeo_mono_18_regular",
+  "font_kodeo_mono_28_regular",
+  "font_kodeo_mono_48_regular",
+
+  "font_kodeo_mono_10_bold",
+  "font_kodeo_mono_12_bold",
+  "font_kodeo_mono_18_bold",
+  "font_kodeo_mono_28_bold",
+  "font_kodeo_mono_48_bold",
+
+  "font_inter_8_regular",
+  "font_inter_10_regular",
+  "font_inter_12_regular",
+  "font_inter_18_regular",
+  "font_inter_24_regular",
+  "font_inter_28_regular",
+
+  "font_inter_8_bold",
+  "font_inter_10_bold",
+  "font_inter_12_bold",
+  "font_inter_18_bold",
+  "font_inter_24_bold",
+  "font_inter_28_bold",
+
+  "font_consolas_10_regular",
+  "font_consolas_12_regular",
+  "font_consolas_18_regular",
+  "font_consolas_28_regular",
+
+  "font_consolas_10_bold",
+  "font_consolas_12_bold",
+  "font_consolas_18_bold",
+  "font_consolas_28_bold"
+]
+#macro VISU_FONT global.__VISU_FONT
+
+
 function VisuRenderer() constructor {
 
   ///@type {GridRenderer}
@@ -168,7 +218,7 @@ function VisuRenderer() constructor {
   ///@return {VisuRenderer}
   renderDebugGUI = function(layout) {
     /*
-    var editor = Beans.get(BeanVisuEditorController)
+    var editor = Beans.get(Visu.modules().editor.controller)
     if (Optional.is(editor)) {
       editor.uiService.containers.forEach(function(container, index) {
         GPU.render.text(
@@ -189,7 +239,7 @@ function VisuRenderer() constructor {
     }
     */
     
-    var editor = Beans.get(BeanVisuEditorController)
+    var editor = Beans.get(Visu.modules().editor.controller)
     var controller = Beans.get(BeanVisuController)
     var gridService = controller.gridService
     var enableEditor = Optional.is(editor) && editor.renderUI
@@ -281,7 +331,7 @@ function VisuRenderer() constructor {
   ///@param {UILayout} layout
   ///@return {VisuRenderer}
   renderUI = function(layout) {
-    var editor = Beans.get(BeanVisuEditorController)
+    var editor = Beans.get(Visu.modules().editor.controller)
     if (Core.isType(editor, VisuEditorController) && editor.renderUI) {
       editor.uiService.render()
     }
@@ -306,7 +356,7 @@ function VisuRenderer() constructor {
   ///@return {VisuRenderer}
   renderMenu = function(layout) {
     var controller = Beans.get(BeanVisuController)
-    var editor = Beans.get(BeanVisuEditorController)
+    var editor = Beans.get(Visu.modules().editor.controller)
 
     if (controller.menu.containers.size() != 0) {
       return this
@@ -357,7 +407,7 @@ function VisuRenderer() constructor {
   ///@return {VisuRenderer}
   renderGame = function(layout) {
     var controller = Beans.get(BeanVisuController)
-    var editor = Beans.get(BeanVisuEditorController)
+    var editor = Beans.get(Visu.modules().editor.controller)
     if (controller.menu.containers.size() == 0) {
       return this
     }
@@ -379,7 +429,7 @@ function VisuRenderer() constructor {
   ///@return {VisuRenderer}
   update = function() {
     var controller = Beans.get(BeanVisuController)
-    var editor = Beans.get(BeanVisuEditorController)
+    var editor = Beans.get(Visu.modules().editor.controller)
     var _layout = editor == null ? this.layout : editor.layout.nodes.preview
     var stateName = controller.fsm.getStateName()
     if (stateName != "splashscreen") {
@@ -398,7 +448,7 @@ function VisuRenderer() constructor {
   ///@return {VisuRenderer}
   render = function() {
     var controller = Beans.get(BeanVisuController)
-    var editor = Beans.get(BeanVisuEditorController)
+    var editor = Beans.get(Visu.modules().editor.controller)
     var _layout = editor == null ? this.layout : editor.layout.nodes.preview
     var stateName = controller.fsm.getStateName()
     if (stateName != "splashscreen") {
@@ -411,7 +461,7 @@ function VisuRenderer() constructor {
   ///@return {VisuRenderer}
   renderGUI = function() {
     var controller = Beans.get(BeanVisuController)
-    var editor = Beans.get(BeanVisuEditorController)
+    var editor = Beans.get(Visu.modules().editor.controller)
     var _layout = editor == null ? this.layout : editor.layout.nodes.preview
     var stateName = controller.fsm.getStateName()
     if (stateName == "splashscreen") {

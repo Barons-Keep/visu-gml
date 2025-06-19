@@ -1280,7 +1280,7 @@ function GridRenderer() constructor {
       1, 1, 1
     ))
     
-    var editor = Beans.get(BeanVisuEditorController)
+    var editor = Beans.get(Visu.modules().editor.controller)
     if (Optional.is(editor) && editor.renderUI) {
       this.editorRenderParticleArea(gridService, shroomService, layout)
     }
@@ -1334,7 +1334,7 @@ function GridRenderer() constructor {
         1, 1, 1
       ))
       
-      var editor = Beans.get(BeanVisuEditorController)
+      var editor = Beans.get(Visu.modules().editor.controller)
       if (Optional.is(editor) && editor.renderUI) {
         context.editorRenderParticleArea(gridService, shroomService, layout)
       }
@@ -1490,7 +1490,7 @@ function GridRenderer() constructor {
     //    1, 1, 1
     //  ))
     //
-    //  var editor = Beans.get(BeanVisuEditorController)
+    //  var editor = Beans.get(Visu.modules().editor.controller)
     //  if (Optional.is(editor) && editor.renderUI) {
     //    this.editorRenderParticleArea(gridService, shroomService, layout)
     //  }
@@ -2089,7 +2089,7 @@ function GridRenderer() constructor {
       this.renderPlayerHint(controller.playerService, layout)
     }
 
-    var editor = Beans.get(BeanVisuEditorController)
+    var editor = Beans.get(Visu.modules().editor.controller)
     if (Optional.is(editor) && editor.renderUI) {
       this.editorRenderSubtitlesArea(controller.gridService, controller.shroomService, layout)
     }

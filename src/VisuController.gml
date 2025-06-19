@@ -890,8 +890,8 @@ function VisuController(layerName) constructor {
       this.fsm.dispatcher.send(new Event("transition", { name: "quit" }))
     },
     "spawn-popup": function(event) {
-      var _editor = Beans.get(BeanVisuEditorController)
-      if (Core.isType(_editor, VisuEditorController)) {
+      var _editor = Beans.get(Visu.modules().editor.controller)
+      if (Optional.is(_editor)) {
         _editor.popupQueue.send(new Event("push", event.data))
       }
     },
@@ -1061,17 +1061,23 @@ function VisuController(layerName) constructor {
     var stateName = this.trackService.isTrackLoaded() ? "pause" : "idle"
     this.fsm.dispatcher.send(new Event("transition", { name: stateName }))
 
-    if (!Beans.exists(BeanVisuEditorIO)) {
-      Beans.add(Beans.factory(BeanVisuEditorIO, GMServiceInstance, layerId,
-        new VisuEditorIO()))
+    var editorIOConstructor = Core.getConstructor("VisuEditorIO")
+    if (Optional.is(editorIOConstructor)) {
+      if (!Beans.exists(Visu.modules().editor.io)) {
+        Beans.add(Beans.factory(Visu.modules().editor.io, GMServiceInstance, layerId,
+          new editorIOConstructor()))
+      }
     }
 
-    if (!Beans.exists(BeanVisuEditorController)) {
-      Beans.add(Beans.factory(BeanVisuEditorController, GMServiceInstance, layerId,
-        new VisuEditorController()))
+    var editorConstructor = Core.getConstructor("VisuEditorController")
+    if (Optional.is(editorConstructor)) {
+      if (!Beans.exists(Visu.modules().editor.controller)) {
+        Beans.add(Beans.factory(Visu.modules().editor.controller, GMServiceInstance, layerId,
+          new editorConstructor()))
+      }
     }
     
-    var editor = Beans.get(BeanVisuEditorController)
+    var editor = Beans.get(Visu.modules().editor.controller)
     if (Optional.is(editor)) {
       editor.renderUI = true
       editor.updateServices = false
@@ -1122,7 +1128,7 @@ function VisuController(layerName) constructor {
   updateCursor = function() {
     var cursor = this.displayService.getCursor()
     var size = this.menu.containers.size()
-    var editor = Beans.get(BeanVisuEditorController)
+    var editor = Beans.get(Visu.modules().editor.controller)
     if (Optional.is(editor)) {
       if (editor.renderUI && cursor == Cursor.NONE && cursor_sprite == -1) {
         displayService.setCursor(Cursor.DEFAULT)
@@ -1183,7 +1189,7 @@ function VisuController(layerName) constructor {
     
     this.updateCursor()
 
-    var editor = Beans.get(BeanVisuEditorController)
+    var editor = Beans.get(Visu.modules().editor.controller)
     if ((this.menu.containers.size() == 0) 
         && (state != "splashscreen")
         && (state != "game-over")

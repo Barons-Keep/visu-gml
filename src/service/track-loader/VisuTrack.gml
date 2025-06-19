@@ -7,7 +7,7 @@ function VisuTrack(_path, json) constructor {
   ///@type {String}
   path = Assert.isType(FileUtil.getDirectoryFromPath(_path), String)
 
-  var _editor = Beans.get(BeanVisuEditorController)
+  var _editor = Beans.get(Visu.modules().editor.controller)
 
   ///@type {Number}
   bpm = Assert.isType(Struct.getDefault(json, "bpm", _editor == null ? 120 : _editor.store.getValue("bpm")), Number)
