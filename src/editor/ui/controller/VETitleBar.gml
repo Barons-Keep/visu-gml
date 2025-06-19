@@ -243,6 +243,102 @@ function VETitleBar(_editor) constructor {
             text: "New",
             layout: layout.nodes.file,
             options: new Array(),
+            _callback: function() {
+              var root = this.area
+              var anchor = {
+                x: this.layout.left(),
+                y: this.layout.bottom(),
+              }
+
+              var contextMenu = new UI({
+                name: "test-context-menu",
+                layout: new UILayout({
+                  type: UILayoutType.VERTICAL,
+                  anchor: anchor,
+                  x: function() { return this.anchor.x },
+                  y: function() { return this.anchor.y },
+                  width: function() { return 200 },
+                  height: function() { return 28 * 3 },
+                }),
+                state: new Map(String, any, {
+                  "background-color": ColorUtil.fromHex(VETheme.color.accentLight).toGMColor(),
+                  "components": new Array(Struct, [
+                    {
+                      name: "option1",
+                      template: VEComponents.get("collection-button"),
+                      layout: VELayouts.get("vertical-item"),
+                      config: {
+                        label: { text: "option 1" },
+                        backgroundMargin: { top: 1, bottom: 1, left: 1, right: 2 },
+                      }
+                    },
+                    {
+                      name: "option2",
+                      template: VEComponents.get("collection-button"),
+                      layout: VELayouts.get("vertical-item"),
+                      config: {
+                        label: { text: "option 2" },
+                        backgroundMargin: { top: 1, bottom: 1, left: 1, right: 2 },
+                      }
+                    },
+                    {
+                      name: "option3",
+                      template: VEComponents.get("collection-button"),
+                      layout: VELayouts.get("vertical-item"),
+                      config: {
+                        label: { text: "option 3" },
+                        backgroundMargin: { top: 1, bottom: 2, left: 1, right: 2 },
+                      }
+                    }
+                  ]),
+                  "timer": new Timer(0.125),
+                  "root": root,
+                }),
+                propagate: false,
+                scrollbarY: { align: HAlign.RIGHT },
+                updateArea: Callable.run(UIUtil.updateAreaTemplates.get("scrollableY")),
+                updateCustom: function() {
+                  this.enableScrollbarY = this.offsetMax.y > 0 
+                  var mouseX = MouseUtil.getMouseX()
+                  var mouseY = MouseUtil.getMouseY()
+                  var colide = this.area.collide(mouseX, mouseY)
+                      || this.state.get("root").collide(mouseX, mouseY)
+                  if (!colide) {
+                    if (this.state.get("timer").update().finished) {
+                      var uiService = Beans.get(BeanVisuEditorController).uiService
+                      uiService.send(new Event("remove", { 
+                        name: this.name, 
+                        quiet: true,
+                      }))
+                    }
+                  } else {
+                    this.state.get("timer").reset()
+                  }
+                },
+                renderItem: Callable.run(UIUtil.renderTemplates.get("renderItemDefaultScrollable")),
+                renderDefaultScrollable: new BindIntent(Callable.run(UIUtil.renderTemplates.get("renderDefaultScrollableAlpha"))),
+                render: function() {
+                  this.renderDefaultScrollable()
+                  return this
+                },
+                onMouseWheelUp: Callable.run(UIUtil.mouseEventTemplates.get("scrollableOnMouseWheelUpY")),
+                onMouseWheelDown: Callable.run(UIUtil.mouseEventTemplates.get("scrollableOnMouseWheelDownY")),
+                onInit: function() {
+                  var container = this
+                  this.collection = new UICollection(this, { layout: this.layout })
+                  this.items.forEach(function(item) { item.free() }).clear()
+                  this.updateArea()
+                  this.state.get("components").forEach(function(component, index, collection) {
+                    collection.add(new UIComponent(component))
+                  }, this.collection)
+                },
+              })
+              var uiService = Beans.get(BeanVisuEditorController).uiService
+              uiService.send(new Event("add", {
+                container: contextMenu,
+                replace: true,
+              }))
+            },
             callback: function() {
               if (Core.getRuntimeType() == RuntimeType.GXGAMES) {
                 Beans.get(BeanVisuController).send(new Event("spawn-popup", 
