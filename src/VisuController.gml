@@ -94,7 +94,7 @@ function VisuController(layerName) constructor {
 
                 if (!task.state.sfxPlayed && task.state.fadeIn.finished) {
                   task.state.sfxPlayed = true
-                  controller.sfxService.play("player-force-level-up")
+                  controller.sfxService.play("menu-splashscreen")
                 }
 
                 if (shader_is_compiled(shader_dissolve)) {
@@ -1020,6 +1020,7 @@ function VisuController(layerName) constructor {
       .set("menu-move-cursor", new SFX("sound_sfx_player_collect_point_or_force"), 1)
       .set("menu-select-entry", new SFX("sound_sfx_player_shoot"), 1)
       .set("menu-use-entry", new SFX("sound_sfx_shroom_damage"), 1)
+      .set("menu-splashscreen", new SFX("sound_sfx_intro"), 1)
     
 
     if (Visu.settings.getValue("visu.server.enable", false)) {
@@ -1276,7 +1277,7 @@ function VisuController(layerName) constructor {
           }
 
           if (stateName == "idle") {
-            controller.menu.send(this.state.event)
+            controller.send(this.state.event)
           }
           this.fullfill()
         })

@@ -160,7 +160,7 @@ function VisuEditorIO() constructor {
       || this.keyboard.keys.numZoomIn.pressed) {
 
       var item = editor.store.get("timeline-zoom")
-      item.set(clamp(item.get() - 1, 5, 30))
+      item.set(clamp(item.get() + 1, 5, 30))
 
       var ruler = editor.uiService.find("ve-timeline-ruler")
       if (Optional.is(ruler)) {
@@ -177,7 +177,7 @@ function VisuEditorIO() constructor {
       || this.keyboard.keys.numZoomOut.pressed) {
 
       var item = editor.store.get("timeline-zoom")
-      item.set(clamp(item.get() + 1, 5, 30))
+      item.set(clamp(item.get() - 1, 5, 30))
 
       var ruler = editor.uiService.find("ve-timeline-ruler")
       if (Optional.is(ruler)) {
@@ -566,7 +566,7 @@ function VisuEditorIO() constructor {
     if (this.keyboard.keys.controlLeft.on 
         && this.keyboard.keys.undo.pressed) {
       
-      editor.store.get("selected-event").set(null)
+      editor.store.get("selected-event").set(null, true)
       editor.store.getValue("selected-events").clear()
       
       var transactionService = editor.timeline.transactionService

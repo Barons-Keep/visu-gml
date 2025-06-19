@@ -164,6 +164,10 @@ function VisuEditorController() constructor {
         return clamp(value, 5, 30)
       },
     },
+    "timeline-follow": {
+      type: Boolean,
+      value: Assert.isType(Visu.settings.getValue("visu.editor.timeline-follow", false), Boolean),
+    },
   })
 
   ///@type {Struct}
@@ -492,8 +496,9 @@ function VisuEditorController() constructor {
     
     this.layout = this.factoryLayout()
 
-    if (this.renderUI) {
-      this.renderUI = Beans.get(BeanVisuController).menu.containers.size() == 0
+    var controller = Beans.get(BeanVisuController)
+    if (this.renderUI && controller != null) {
+      this.renderUI = controller.menu.containers.size() == 0
     }
     
     return this
@@ -845,6 +850,8 @@ function VisuEditorController() constructor {
     this.updateUIService()
     this.services.forEach(this.updateService, this)
     this.updateLayout()
+
+    this.store.get("selected-event").resolveLazyNotify()
     this.updateDebugTimer.finish()
     return this
   }

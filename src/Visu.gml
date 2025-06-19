@@ -1,8 +1,12 @@
 ///@package io.alkapivo.visu
 
 ///@type {Number}
-global.__MAGIC_NUMBER_TASK = 10
+global.__MAGIC_NUMBER_TASK = 12
 #macro MAGIC_NUMBER_TASK global.__MAGIC_NUMBER_TASK
+
+///@type {Number}
+global.__SYNC_UI_STORE_STEP = 12
+#macro SYNC_UI_STORE_STEP global.__SYNC_UI_STORE_STEP
 
 
 ///@enum
@@ -1059,6 +1063,7 @@ function _Visu() constructor {
       .set(new SettingEntry({ name: "visu.editor.accordion.render-event-inspector", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.editor.accordion.render-template-toolbar", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.editor.timeline-zoom", type: SettingTypes.NUMBER, defaultValue: 10 }))
+      .set(new SettingEntry({ name: "visu.editor.timeline-follow", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.keyboard.player.up", type: SettingTypes.NUMBER, defaultValue: KeyboardKeyType.ARROW_UP }))
       .set(new SettingEntry({ name: "visu.keyboard.player.down", type: SettingTypes.NUMBER, defaultValue: KeyboardKeyType.ARROW_DOWN }))
       .set(new SettingEntry({ name: "visu.keyboard.player.left", type: SettingTypes.NUMBER, defaultValue: KeyboardKeyType.ARROW_LEFT }))

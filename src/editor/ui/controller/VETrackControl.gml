@@ -166,12 +166,25 @@ function VETrackControl(_editor) constructor {
               - this.__margin.bottom 
               - this.height() },
           },
-          redo: {
-            name: "track-control.redo",
-            width: function() { return 20 },
+          follow: {
+            name: "track-control.follow",
+            width: function() { return 24 },
+            height: function() { return 24 },
+            margin: { top: 1, bottom: 1, left: 0, right: 0 },
+            x: function() { return this.context.nodes.follow_label.left() 
+              - this.__margin.right
+              - this.width() },
+            y: function() { return this.context.height()
+              - this.__margin.bottom 
+              - this.height() + 4
+            },
+          },
+          follow_label: {
+            name: "track-control.follow_label",
+            width: function() { return 48 },
             height: function() { return 20 },
             margin: { top: 1, bottom: 1, left: 0, right: 0 },
-            x: function() { return this.context.nodes.zoom.left() 
+            x: function() { return this.context.nodes.undo.left() 
               - this.__margin.right
               - this.width() },
             y: function() { return this.context.height()
@@ -192,17 +205,57 @@ function VETrackControl(_editor) constructor {
               - this.height()
             },
           },
+          redo: {
+            name: "track-control.redo",
+            width: function() { return 20 },
+            height: function() { return 20 },
+            margin: { top: 1, bottom: 1, left: 0, right: 0 },
+            x: function() { return this.context.nodes.zoom_out.left() 
+              - this.__margin.right
+              - this.width() },
+            y: function() { return this.context.height()
+              - this.__margin.bottom 
+              - this.height()
+            },
+          },
+          zoom_out: {
+            name: "track-control.zoom_out",
+            width: function() { return 20 },
+            height: function() { return 20 },
+            margin: { top: 1, bottom: 1, left: 10, right: 1 },
+            x: function() { return this.context.nodes.zoom.left() 
+              - this.__margin.right
+              - this.width() },
+            y: function() { return this.context.height()
+              - this.__margin.bottom 
+              - this.height()
+            },
+          },
           zoom: {
             name: "track-control.zoom",
             width: function() { return 84 },
             height: function() { return 24 },
-            margin: { top: 1, bottom: 1, left: 15, right: 35 },
+            margin: { top: 1, bottom: 1, left: 10, right: 10 },
+            x: function() { return this.context.nodes.zoom_in.left() 
+              - this.__margin.right
+              - this.width() },
+            y: function() { return this.context.height()
+              - this.__margin.bottom 
+              - this.height()
+            },
+          },
+          zoom_in: {
+            name: "track-control.zoom_in",
+            width: function() { return 20 },
+            height: function() { return 20 },
+            margin: { top: 1, bottom: 1, left: 1, right: 20 },
             x: function() { return this.context.width() 
               - this.__margin.right
               - this.width() },
             y: function() { return this.context.height()
               - this.__margin.bottom 
-              - this.height() },
+              - this.height()
+            },
           },
         }
       }, 
@@ -769,6 +822,47 @@ function VETrackControl(_editor) constructor {
               Beans.get(BeanVisuController).particleService.send(new Event("clear-particles"))
             },
           }),
+          "checkbox_ve-track-control_follow": {
+            type: UICheckbox,
+            layout: layout.nodes.follow,
+            updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
+            store: { key: "timeline-follow" },
+            spriteOn: { name: "visu_texture_checkbox_on" },
+            spriteOff: { name: "visu_texture_checkbox_off" },
+          },
+          "text_ve-track-control_follow_label": {
+            type: UIText,
+            layout: layout.nodes.follow_label,
+            text: "Follow",
+            font: "font_inter_8_bold",
+            color: VETheme.color.textFocus,
+            align: { v: VAlign.CENTER, h: HAlign.LEFT },
+            outline: false,
+            //outlineColor: VETheme.color.sideDark,
+            store: { key: "timeline-follow" },
+            updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
+            preRender: function() {
+              var value = this.store.getValue()
+              if (!Optional.is(value)) {
+                return
+              }
+
+              var alpha = this.label.alpha
+              this.label.alpha = value ? alpha : alpha * 0.5
+              Struct.set(this, "_alpha", alpha)
+            },
+            postRender: function() {
+              this.label.alpha = this._alpha
+            },
+            onMouseReleasedLeft: function(event) {
+              var item = this.store.get()
+              if (!Optional.is(item)) {
+                return
+              }
+              
+              item.set(!item.get())
+            }
+          },
           "button-ve-track-control_redo": Struct.appendRecursiveUnique(
             {
               type: UIButton,
@@ -791,9 +885,11 @@ function VETrackControl(_editor) constructor {
                 if (Struct.get(this.enable, "value") == false) {
                   return
                 }
+                
+                Beans.get(BeanVisuEditorIO).keyboard.keys.controlLeft.on = true ///@hack
 
                 var editor = Beans.get(BeanVisuEditorController)
-                editor.store.get("selected-event").set(null)
+                editor.store.get("selected-event").set(null, true)
                 editor.store.getValue("selected-events").clear()
                 editor.timeline.transactionService.redo()
               },
@@ -889,8 +985,10 @@ function VETrackControl(_editor) constructor {
                   return
                 }
 
+                Beans.get(BeanVisuEditorIO).keyboard.keys.controlLeft.on = true ///@hack
+                
                 var editor = Beans.get(BeanVisuEditorController)
-                editor.store.get("selected-event").set(null)
+                editor.store.get("selected-event").set(null, true)
                 editor.store.getValue("selected-events").clear()
                 editor.timeline.transactionService.undo()
               },
@@ -918,6 +1016,99 @@ function VETrackControl(_editor) constructor {
                 }
                 backgroundAlpha = this.enable.value ? 1.0 : 0.5
 
+                if (Optional.is(this.preRender)) {
+                  this.preRender()
+                }
+                this.renderBackgroundColor()
+          
+                if (this.sprite != null) {
+                  var alpha = this.sprite.getAlpha()
+                  this.sprite
+                    .setAlpha(alpha * (Struct.get(this.enable, "value") == false ? 0.5 : 1.0))
+                    .scaleToFillStretched(this.area.getWidth(), this.area.getHeight())
+                    .render(
+                      this.context.area.getX() + this.area.getX(),
+                      this.context.area.getY() + this.area.getY())
+                    .setAlpha(alpha)
+                }
+          
+                if (this.label != null) {
+                  this.label.alpha = this.backgroundAlpha
+                  this.label.render(
+                    // todo VALIGN HALIGN
+                    this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2),
+                    this.context.area.getY() + this.area.getY() + (this.area.getHeight() / 2),
+                    this.area.getWidth(), 
+                    this.area.getHeight()
+                  )
+                }
+    
+                if (this.isHoverOver && this.enable.value) {
+                  var text = this.label.text
+                  this.label.text = this.description
+                  this.label.render(
+                    // todo VALIGN HALIGN
+                    this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2),
+                    this.context.area.getY() + this.area.getY() - 4.0,// + (this.area.getHeight() / 2)
+                    this.area.getWidth(),
+                    this.area.getHeight()
+                  )
+                  this.label.text = text
+                }
+                return this
+              },
+            },
+            null,//VEStyles.get("ve-track-control").button,
+            false
+          ),
+          "button-ve-track-control_zoom_out": Struct.appendRecursiveUnique(
+            {
+              type: UIButton,
+              label: { 
+                text: "-",
+                color: VETheme.color.textShadow,
+                align: { v: VAlign.CENTER, h: HAlign.CENTER },
+                useScale: false,
+                outline: true,
+                outlineColor: VETheme.color.sideDark,
+                font: "font_inter_8_bold",
+              },
+              layout: layout.nodes.zoom_out,
+              updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
+              store: {
+                key: "timeline-zoom",
+                set: Lambda.passthrough,
+                callback: Lambda.passthrough,
+              },
+              callback: function(vvv) {
+                if (!Core.isType(this.store, UIStore)) {
+                  return
+                }
+
+                var item = this.store.get()
+                if (!Core.isType(item, StoreItem)) {
+                  return
+                }
+
+                var value = item.get()
+                if (!Core.isType(value, Number)) {
+                  return
+                }
+
+                item.set(clamp(value - 1, 5, 30))
+              },
+              backgroundMargin: { top: 1, bottom: 1, left: 0, right: 1 },
+              backgroundColor: VETheme.color.button,
+              backgroundColorSelected: VETheme.color.primaryLight,
+              backgroundColorOut: VETheme.color.button,
+              onMouseHoverOver: function(event) {
+                this.backgroundColor = ColorUtil.fromHex(this.backgroundColorSelected).toGMColor()
+              },
+              onMouseHoverOut: function(event) {
+                this.backgroundColor = ColorUtil.fromHex(this.backgroundColorOut).toGMColor()
+              },
+              description: "Zoom out ( - )",
+              render: function() {
                 if (Optional.is(this.preRender)) {
                   this.preRender()
                 }
@@ -996,7 +1187,7 @@ function VETrackControl(_editor) constructor {
               var label = Struct.get(this, "label")
               if (!Optional.is(label)) {
                 label = new UILabel({
-                  text: "Zoom In/Out\n( + / - )",
+                  text: "Zoom out / in\n( - / + )",
                   color: VETheme.color.textShadow,
                   align: { v: VAlign.BOTTOM, h: HAlign.CENTER },
                   useScale: false,
@@ -1017,6 +1208,99 @@ function VETrackControl(_editor) constructor {
               )
             }
           }, VEStyles.get("slider-horizontal-2"), false),
+          "button-ve-track-control_zoom_in": Struct.appendRecursiveUnique(
+            {
+              type: UIButton,
+              label: { 
+                text: "+",
+                color: VETheme.color.textShadow,
+                align: { v: VAlign.CENTER, h: HAlign.CENTER },
+                useScale: false,
+                outline: true,
+                outlineColor: VETheme.color.sideDark,
+                font: "font_inter_8_bold",
+              },
+              layout: layout.nodes.zoom_in,
+              updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
+              store: {
+                key: "timeline-zoom",
+                set: Lambda.passthrough,
+                callback: Lambda.passthrough,
+              },
+              callback: function(vvv) {
+                if (!Core.isType(this.store, UIStore)) {
+                  return
+                }
+
+                var item = this.store.get()
+                if (!Core.isType(item, StoreItem)) {
+                  return
+                }
+
+                var value = item.get()
+                if (!Core.isType(value, Number)) {
+                  return
+                }
+
+                item.set(clamp(value + 1, 5, 30))
+              },
+              backgroundMargin: { top: 1, bottom: 1, left: 0, right: 1 },
+              backgroundColor: VETheme.color.button,
+              backgroundColorSelected: VETheme.color.primaryLight,
+              backgroundColorOut: VETheme.color.button,
+              onMouseHoverOver: function(event) {
+                this.backgroundColor = ColorUtil.fromHex(this.backgroundColorSelected).toGMColor()
+              },
+              onMouseHoverOut: function(event) {
+                this.backgroundColor = ColorUtil.fromHex(this.backgroundColorOut).toGMColor()
+              },
+              description: "Zoom in ( + )",
+              render: function() {
+                if (Optional.is(this.preRender)) {
+                  this.preRender()
+                }
+                this.renderBackgroundColor()
+          
+                if (this.sprite != null) {
+                  var alpha = this.sprite.getAlpha()
+                  this.sprite
+                    .setAlpha(alpha * (Struct.get(this.enable, "value") == false ? 0.5 : 1.0))
+                    .scaleToFillStretched(this.area.getWidth(), this.area.getHeight())
+                    .render(
+                      this.context.area.getX() + this.area.getX(),
+                      this.context.area.getY() + this.area.getY())
+                    .setAlpha(alpha)
+                }
+          
+                if (this.label != null) {
+                  this.label.alpha = this.backgroundAlpha
+                  this.label.render(
+                    // todo VALIGN HALIGN
+                    this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2),
+                    this.context.area.getY() + this.area.getY() + (this.area.getHeight() / 2),
+                    this.area.getWidth(), 
+                    this.area.getHeight()
+                  )
+                }
+    
+                if (this.isHoverOver && this.enable.value) {
+                  var text = this.label.text
+                  this.label.text = this.description
+                  this.label.render(
+                    // todo VALIGN HALIGN
+                    this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2),
+                    this.context.area.getY() + this.area.getY() - 4.0,// + (this.area.getHeight() / 2)
+                    this.area.getWidth(),
+                    this.area.getHeight()
+                  )
+                  this.label.text = text
+                }
+                return this
+              },
+            },
+            null,//VEStyles.get("ve-track-control").button,
+            false
+          ),
         },
       })
     })
