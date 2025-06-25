@@ -1026,6 +1026,12 @@ function _Visu() constructor {
     Struct.set(container, containerKey, Struct.get(data, valueKey))
   }
 
+  ///@return {Visu}
+  static initShaders = function() {
+    ShaderWavySpectrum.install(SHADERS, VE_SHADER_CONFIGS)
+    return this
+  }
+  
   ///@param {String} [layerName]
   ///@param {Number} [layerDefaultDepth]
   ///@return {Visu}
@@ -1034,6 +1040,7 @@ function _Visu() constructor {
     initBeans()
     initGPU()
     initGMTF()
+    this.initShaders()
     
     Core.loadProperties(FileUtil.get($"{working_directory}core-properties.json"))
     Core.loadProperties(FileUtil.get($"{working_directory}visu-properties.json"))
