@@ -51,6 +51,13 @@ function VisuEditorIO() constructor {
     renderTemplateToolbar: KeyboardKeyType.F7,
     cameraKeyboardLook: KeyboardKeyType.F8,
     cameraMouseLook: KeyboardKeyType.F9,
+
+    clearGridShaders:  "1", // + ctrl
+    clearBackgroundShaders:  "2", // + ctrl
+    clearCombinedShaders:  "3", // + ctrl
+    clearBackgroundTextures:  "4", // + ctrl
+    clearForegroundTextures:  "5", // + ctrl
+    clearShrooms: "6", // + ctrl
   })
 
   ///@type {Mouse}
@@ -378,12 +385,11 @@ function VisuEditorIO() constructor {
   ///@param {VisuEditorController} editor
   ///@return {VisuEditorIO}
   titleBarKeyboardEvent = function(controller, editor) {
-    if (GMTFContext.isFocused() || !editor.renderUI) {
+    if (GMTFContext.isFocused() || !editor.renderUI || !this.keyboard.keys.controlLeft.on) {
       return this
     }
 
-    if (this.keyboard.keys.controlLeft.on 
-      && this.keyboard.keys.saveProject.pressed) {
+    if (this.keyboard.keys.saveProject.pressed) {
       try {
         if (Core.getRuntimeType() == RuntimeType.GXGAMES) {
           editor.send(new Event("spawn-popup", 
@@ -415,6 +421,30 @@ function VisuEditorIO() constructor {
         controller.send(new Event("spawn-popup", { message: message }))
         Logger.error("VETitleBar", message)
       }
+    }
+
+    if (this.keyboard.keys.clearGridShaders.pressed) {
+      controller.shaderPipeline.send(new Event("clear-shaders"))
+    }
+
+    if (this.keyboard.keys.clearBackgroundShaders.pressed) {
+      controller.shaderBackgroundPipeline.send(new Event("clear-shaders"))
+    }
+
+    if (this.keyboard.keys.clearCombinedShaders.pressed) {
+      controller.shaderCombinedPipeline.send(new Event("clear-shaders"))
+    }
+
+    if (this.keyboard.keys.clearBackgroundTextures.pressed) {
+      controller.visuRenderer.gridRenderer.overlayRenderer.backgrounds.clear()
+    }
+
+    if (this.keyboard.keys.clearForegroundTextures.pressed) {
+      controller.visuRenderer.gridRenderer.overlayRenderer.foregrounds.clear()
+    }
+
+    if (this.keyboard.keys.clearShrooms.pressed) {
+      controller.shroomService.send(new Event("clear-shrooms"))
     }
 
     return this

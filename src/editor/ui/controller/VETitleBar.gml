@@ -847,10 +847,60 @@ function VETitleBar(_editor) constructor {
                     },
                   },
                   {
+                    name: "clear_gr-shd",
+                    config: {
+                      label: { text: "Clear grid shaders" },
+                      shortcut: { text: "CTRL + 1" },
+                      callback: function() { 
+                        Beans.get(BeanVisuController).shaderPipeline.send(new Event("clear-shaders"))
+                      },
+                    },
+                  },
+                  {
+                    name: "clear_bkg-shd",
+                    config: {
+                      label: { text: "Clear background shaders" },
+                      shortcut: { text: "CTRL + 2" },
+                      callback: function() { 
+                        Beans.get(BeanVisuController).shaderBackgroundPipeline.send(new Event("clear-shaders"))
+                      },
+                    },
+                  },
+                  {
+                    name: "clear_combined-shd",
+                    config: {
+                      label: { text: "Clear combined shaders" },
+                      shortcut: { text: "CTRL + 3" },
+                      callback: function() { 
+                        Beans.get(BeanVisuController).shaderCombinedPipeline.send(new Event("clear-shaders"))
+                      },
+                    },
+                  },
+                  {
+                    name: "clear_bkg-l",
+                    config: {
+                      label: { text: "Clear background layers" },
+                      shortcut: { text: "CTRL + 4" },
+                      callback: function() { 
+                        Beans.get(BeanVisuController).visuRenderer.gridRenderer.overlayRenderer.backgrounds.clear()
+                      },
+                    },
+                  },
+                  {
+                    name: "clear_frg-l",
+                    config: {
+                      label: { text: "Clear foreground layers" },
+                      shortcut: { text: "CTRL + 5" },
+                      callback: function() { 
+                        Beans.get(BeanVisuController).visuRenderer.gridRenderer.overlayRenderer.foregrounds.clear()
+                      },
+                    },
+                  },
+                  {
                     name: "clear_shrooms",
                     config: {
                       label: { text: "Clear shrooms" },
-                      shortcut: { text: "" },
+                      shortcut: { text: "CTRL + 6" },
                       callback: function() { 
                         Beans.get(BeanVisuController).shroomService.send(new Event("clear-shrooms"))
                       },
@@ -933,56 +983,6 @@ function VETitleBar(_editor) constructor {
                       callback: function() {
                         Beans.get(BeanVisuController).visuRenderer.gridRenderer.combinedGlitchService.dispatcher.send(new Event("clear-glitch"))
                       }
-                    },
-                  },
-                  {
-                    name: "clear_gr-shd",
-                    config: {
-                      label: { text: "Clear grid shaders" },
-                      shortcut: { text: "" },
-                      callback: function() { 
-                        Beans.get(BeanVisuController).shaderPipeline.send(new Event("clear-shaders"))
-                      },
-                    },
-                  },
-                  {
-                    name: "clear_bkg-shd",
-                    config: {
-                      label: { text: "Clear background shaders" },
-                      shortcut: { text: "" },
-                      callback: function() { 
-                        Beans.get(BeanVisuController).shaderBackgroundPipeline.send(new Event("clear-shaders"))
-                      },
-                    },
-                  },
-                  {
-                    name: "clear_combined-shd",
-                    config: {
-                      label: { text: "Clear combined shaders" },
-                      shortcut: { text: "" },
-                      callback: function() { 
-                        Beans.get(BeanVisuController).shaderCombinedPipeline.send(new Event("clear-shaders"))
-                      },
-                    },
-                  },
-                  {
-                    name: "clear_bkg-l",
-                    config: {
-                      label: { text: "Clear background layers" },
-                      shortcut: { text: "" },
-                      callback: function() { 
-                        Beans.get(BeanVisuController).visuRenderer.gridRenderer.overlayRenderer.backgrounds.clear()
-                      },
-                    },
-                  },
-                  {
-                    name: "clear_frg-l",
-                    config: {
-                      label: { text: "Clear foreground layers" },
-                      shortcut: { text: "" },
-                      callback: function() { 
-                        Beans.get(BeanVisuController).visuRenderer.gridRenderer.overlayRenderer.foregrounds.clear()
-                      },
                     },
                   }
                 ],
