@@ -28,6 +28,8 @@ global.__entity_track_event = {
         "en-shr_hide-em-spd": Struct.parse.boolean(data, "en-shr_hide-em-spd", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-shr_hide-em-offset-x": Struct.parse.boolean(data, "en-shr_hide-em-offset-x", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-shr_hide-em-offset-y": Struct.parse.boolean(data, "en-shr_hide-em-offset-y", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "en-shr_hide-em-wiggle-freq": Struct.parse.boolean(data, "en-shr_hide-em-wiggle-freq", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "en-shr_hide-em-wiggle-amp": Struct.parse.boolean(data, "en-shr_hide-em-wiggle-amp", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-shr_preview": Struct.parse.boolean(data, "en-shr_preview"),
         "en-shr_template": Struct.parse.text(data, "en-shr_template", "shroom-default"),
         "en-shr_use-lifespan": Struct.parse.boolean(data, "en-shr_use-lifespan", false),
@@ -106,6 +108,18 @@ global.__entity_track_event = {
         }),
         "en-shr_em-use-offset-y": Struct.parse.boolean(data, "en-shr_em-use-offset-y"),
         "en-shr_em-change-offset-y": Struct.parse.boolean(data, "en-shr_em-change-offset-y"),
+        "en-shr_em-wiggle-freq": Struct.parse.numberTransformer(data, "en-shr_em-wiggle-freq", {
+          clampValue: { from: -99999.9, to: 99999.9 },
+          clampTarget: { from: -99999.9, to: 99999.9 },
+        }),
+        "en-shr_em-use-wiggle-freq": Struct.parse.boolean(data, "en-shr_em-use-wiggle-freq"),
+        "en-shr_em-change-wiggle-freq": Struct.parse.boolean(data, "en-shr_em-change-wiggle-freq"),
+        "en-shr_em-wiggle-amp": Struct.parse.numberTransformer(data, "en-shr_em-wiggle-amp", {
+          clampValue: { from: -99999.9, to: 99999.9 },
+          clampTarget: { from: -99999.9, to: 99999.9 },
+        }),
+        "en-shr_em-use-wiggle-amp": Struct.parse.boolean(data, "en-shr_em-use-wiggle-amp"),
+        "en-shr_em-change-wiggle-amp": Struct.parse.boolean(data, "en-shr_em-change-wiggle-amp"),
       }
     },
     run: function(data, channel) {
@@ -201,6 +215,16 @@ global.__entity_track_event = {
             ? (Struct.get(data, "en-shr_em-change-offset-y")
               ? Struct.get(data, "en-shr_em-offset-y").serialize()
               : Struct.get(Struct.get(data, "en-shr_em-offset-y").serialize(), "value"))
+            : 0.0,
+          wiggleFrequency: Struct.get(data, "en-shr_em-use-wiggle-freq")
+            ? (Struct.get(data, "en-shr_em-change-wiggle-freq")
+              ? Struct.get(data, "en-shr_em-wiggle-freq").serialize()
+              : Struct.get(Struct.get(data, "en-shr_em-wiggle-freq").serialize(), "value"))
+            : 0.0,
+          wiggleAmplitude: Struct.get(data, "en-shr_em-use-wiggle-amp")
+            ? (Struct.get(data, "en-shr_em-change-wiggle-amp")
+              ? Struct.get(data, "en-shr_em-wiggle-amp").serialize()
+              : Struct.get(Struct.get(data, "en-shr_em-wiggle-amp").serialize(), "value"))
             : 0.0,
         })
       } else {

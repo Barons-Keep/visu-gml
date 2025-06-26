@@ -184,6 +184,25 @@ function GridItemEmitter(json = null) constructor {
   ///@type {Number}
   time = this.interval
 
+  ///@type {Number}
+  timeSum = 0.0
+
+  ///@type {NumberTransformer}
+  wiggleFrequency = new NumberTransformer(Struct.getDefault(json, "wiggleFrequency", {
+    value: 1.0,
+    target: 1.0,
+    duration: 0.0,
+    ease: EaseType.LINEAR,
+  }))
+
+  ///@type {NumberTransformer}
+  wiggleAmplitude = new NumberTransformer(Struct.getDefault(json, "wiggleAmplitude", {
+    value: 0.0,
+    target: 0.0,
+    duration: 0.0,
+    ease: EaseType.LINEAR,
+  }))
+
   ///@param {GridItem} item
   ///@param {VisuController} controller
   ///@return {GridItemEmitter}
@@ -197,11 +216,14 @@ function GridItemEmitter(json = null) constructor {
     this.speed.update()
     this.angle.update()
     this.anglePerArray.update()
+    this.wiggleFrequency.update()
+    this.wiggleAmplitude.update()
 
     this.time += DeltaTime.apply(FRAME_MS)
     if (this.time < this.interval) {
       return this
     }
+    this.timeSum += this.time
     this.time = this.time - (floor(this.time / this.interval) * this.interval)
 
     var pixelWidth = SHROOM_SPAWN_CHANNEL_AMOUNT
@@ -210,7 +232,7 @@ function GridItemEmitter(json = null) constructor {
     var offsetAngle = Math.fetchPointsAngle(0.0, 0.0, this.offsetX.value / pixelWidth, this.offsetY.value / pixelHeight)
     var posX = this.x + Math.fetchCircleX(offsetLength, offsetAngle)
     var posY = this.y + Math.fetchCircleY(offsetLength, offsetAngle)
-    var angle = this.angle.value + item.angle
+    var startAngle = this.angle.value + item.angle
     var spd = this.speed.value + item.speed
 
     if (this.preCallback != null) {
@@ -218,8 +240,9 @@ function GridItemEmitter(json = null) constructor {
     }
     
     if (this.callback != null) {
+      var wiggle = sin(this.wiggleFrequency.value * this.timeSum) * this.wiggleAmplitude.value
       for (var idx = 0; idx < this.arrays; idx++) {
-        angle += (idx * this.angleStep) + random(this.angleRng)
+        var angle = startAngle + (idx * this.angleStep) + random(this.angleRng) + wiggle
         for (var arrIdx = 0; arrIdx < this.perArray; arrIdx++) {
           this.callback(
             item, controller, this, idx, arrIdx, posX, posY,

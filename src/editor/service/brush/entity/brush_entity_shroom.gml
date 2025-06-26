@@ -337,6 +337,42 @@ function brush_entity_shroom(json) {
         type: Boolean,
         value: Struct.get(json, "en-shr_em-change-offset-y"),
       },
+      "en-shr_hide-em-wiggle-freq": {
+        type: Boolean,
+        value: Struct.get(json, "en-shr_hide-em-wiggle-freq"),
+      },
+      "en-shr_em-wiggle-freq": {
+        type: NumberTransformer,
+        value: Struct.get(json, "en-shr_em-wiggle-freq"),
+        passthrough: UIUtil.passthrough.getClampedNumberTransformer(),
+        data: new Vector2(-99999.9, 99999.9),
+      },
+      "en-shr_em-use-wiggle-freq": {
+        type: Boolean,
+        value: Struct.get(json, "en-shr_em-use-wiggle-freq"),
+      },
+      "en-shr_em-change-wiggle-freq": {
+        type: Boolean,
+        value: Struct.get(json, "en-shr_em-change-wiggle-freq"),
+      },
+      "en-shr_hide-em-wiggle-amp": {
+        type: Boolean,
+        value: Struct.get(json, "en-shr_hide-em-wiggle-amp"),
+      },
+      "en-shr_em-wiggle-amp": {
+        type: NumberTransformer,
+        value: Struct.get(json, "en-shr_em-wiggle-amp"),
+        passthrough: UIUtil.passthrough.getClampedNumberTransformer(),
+        data: new Vector2(-99999.9, 99999.9),
+      },
+      "en-shr_em-use-wiggle-amp": {
+        type: Boolean,
+        value: Struct.get(json, "en-shr_em-use-wiggle-amp"),
+      },
+      "en-shr_em-change-wiggle-amp": {
+        type: Boolean,
+        value: Struct.get(json, "en-shr_em-change-wiggle-amp"),
+      },
     }),
     components: new Array(Struct, [
       {
@@ -4471,6 +4507,862 @@ function brush_entity_shroom(json) {
           },
           image: { 
             hidden: { key: "en-shr_hide-em" },
+            backgroundAlpha: 0.0,
+          },
+        },
+      },
+      {
+        name: "en-shr_em-offest-wiggle-freq-title",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "Wiggle frequency",
+            hidden: { key: "en-shr_hide-em" },
+            enable: { key: "en-shr_use-em" },
+          },
+          input: {
+            hidden: { key: "en-shr_hide-em" },
+          },
+          checkbox: {
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            hidden: { key: "en-shr_hide-em" },
+            store: { key: "en-shr_hide-em-wiggle-freq" },
+          },
+        },
+      },
+      {
+        name: "en-shr_em-wiggle-freq",
+        template: VEComponents.get("number-transformer-increase-checkbox"),
+        layout: VELayouts.get("number-transformer-increase-checkbox"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          value: {
+            label: {
+              text: "Value",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-wiggle-freq" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-freq" }
+                ],
+              },
+            },
+            field: {
+              store: { key: "en-shr_em-wiggle-freq" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-wiggle-freq" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-freq" }
+                ],
+              },
+            },
+            decrease: {
+              store: { key: "en-shr_em-wiggle-freq" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-wiggle-freq" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-freq" }
+                ],
+              },
+              factor: -0.01,
+            },
+            increase: {
+              store: { key: "en-shr_em-wiggle-freq" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-wiggle-freq" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-freq" }
+                ],
+              },
+              factor: 0.01,
+            },
+            stick: {
+              store: { key: "en-shr_em-wiggle-freq" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-wiggle-freq" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-freq" }
+                ],
+              },
+              factor: 0.01,
+            },
+            checkbox: { 
+              spriteOn: { name: "visu_texture_checkbox_on" },
+              spriteOff: { name: "visu_texture_checkbox_off" },
+              store: { key: "en-shr_em-use-wiggle-freq" },
+              enable: { key: "en-shr_use-em" },
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-freq" }
+                ],
+              },
+            },
+            title: { 
+              text: "Use",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-wiggle-freq" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-freq" }
+                ],
+              },
+            },
+          },
+          target: {
+            label: {
+              text: "Target",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-wiggle-freq" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-freq" }
+                ],
+              },
+            },
+            field: {
+              store: { key: "en-shr_em-wiggle-freq" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-wiggle-freq" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-freq" }
+                ],
+              },
+            },
+            decrease: {
+              store: { key: "en-shr_em-wiggle-freq" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-wiggle-freq" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-freq" }
+                ],
+              },
+              factor: -0.01,
+            },
+            increase: {
+              store: { key: "en-shr_em-wiggle-freq" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-wiggle-freq" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-freq" }
+                ],
+              },
+              factor: 0.01,
+            },
+            stick: {
+              store: { key: "en-shr_em-wiggle-freq" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-wiggle-freq" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-freq" }
+                ],
+              },
+              factor: 0.01,
+            },
+            checkbox: { 
+              spriteOn: { name: "visu_texture_checkbox_on" },
+              spriteOff: { name: "visu_texture_checkbox_off" },
+              store: { key: "en-shr_em-change-wiggle-freq" },
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-freq" }
+                ],
+              },
+              enable: { key: "en-shr_use-em" },
+            },
+            title: { 
+              text: "Change",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-wiggle-freq" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-freq" }
+                ],
+              },
+            },
+          },
+          duration: {
+            label: {
+              text: "Duration",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-wiggle-freq" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-freq" }
+                ],
+              },
+            },
+            field: {
+              store: { key: "en-shr_em-wiggle-freq" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-wiggle-freq" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-freq" }
+                ],
+              },
+            },
+            decrease: {
+              store: { key: "en-shr_em-wiggle-freq" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-wiggle-freq" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-freq" }
+                ],
+              },
+              factor: -0.01,
+            },
+            increase: {
+              store: { key: "en-shr_em-wiggle-freq" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-wiggle-freq" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-freq" }
+                ],
+              },
+              factor: 0.01,
+            },
+            stick: {
+              store: { key: "en-shr_em-wiggle-freq" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-wiggle-freq" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-freq" }
+                ],
+              },
+              factor: 0.01,
+            },
+          },
+          ease: {
+            label: {
+              text: "Ease",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-wiggle-freq" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-freq" }
+                ],
+              },
+            },
+            previous: {
+              store: { key: "en-shr_em-wiggle-freq" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-wiggle-freq" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-freq" }
+                ],
+              },
+            },
+            preview: {
+              store: { key: "en-shr_em-wiggle-freq" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-wiggle-freq" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-freq" }
+                ],
+              },
+            },
+            next: {
+              store: { key: "en-shr_em-wiggle-freq" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-wiggle-freq" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-freq" }
+                ],
+              },
+            },
+          },
+        },
+      },
+      {
+        name: "en-shr_em-wiggle-freq-line-h",
+        template: VEComponents.get("line-h"),
+        layout: VELayouts.get("line-h"),
+        config: {
+          layout: {
+            type: UILayoutType.VERTICAL,
+            margin: { top: 0, bottom: 0 },
+            height: function() { return 0 },
+          },
+          image: { 
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-wiggle-freq" }
+              ]
+            },
+            backgroundAlpha: 0.0,
+          },
+        },
+      },
+      {
+        name: "en-shr_em-wiggle-amp-title",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "Wiggle amplitude",
+            hidden: { key: "en-shr_hide-em" },
+            enable: { key: "en-shr_use-em" },
+          },
+          input: {
+            hidden: { key: "en-shr_hide-em" },
+          },
+          checkbox: {
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            hidden: { key: "en-shr_hide-em" },
+            store: { key: "en-shr_hide-em-wiggle-amp" },
+          },
+        },
+      },
+      {
+        name: "en-shr_em-wiggle-amp",
+        template: VEComponents.get("number-transformer-increase-checkbox"),
+        layout: VELayouts.get("number-transformer-increase-checkbox"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          value: {
+            label: {
+              text: "Value",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-wiggle-amp" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-amp" }
+                ],
+              },
+            },
+            field: {
+              store: { key: "en-shr_em-wiggle-amp" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-wiggle-amp" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-amp" }
+                ],
+              },
+            },
+            decrease: {
+              store: { key: "en-shr_em-wiggle-amp" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-wiggle-amp" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-amp" }
+                ],
+              },
+              factor: -0.01,
+            },
+            increase: {
+              store: { key: "en-shr_em-wiggle-amp" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-wiggle-amp" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-amp" }
+                ],
+              },
+              factor: 0.01,
+            },
+            stick: {
+              store: { key: "en-shr_em-wiggle-amp" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-wiggle-amp" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-amp" }
+                ],
+              },
+              factor: 0.01,
+            },
+            checkbox: { 
+              spriteOn: { name: "visu_texture_checkbox_on" },
+              spriteOff: { name: "visu_texture_checkbox_off" },
+              store: { key: "en-shr_em-use-wiggle-amp" },
+              enable: { key: "en-shr_use-em" },
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-amp" }
+                ],
+              },
+            },
+            title: { 
+              text: "Use",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-wiggle-amp" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-amp" }
+                ],
+              },
+            },
+          },
+          target: {
+            label: {
+              text: "Target",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-wiggle-amp" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-amp" }
+                ],
+              },
+            },
+            field: {
+              store: { key: "en-shr_em-wiggle-amp" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-wiggle-amp" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-amp" }
+                ],
+              },
+            },
+            decrease: {
+              store: { key: "en-shr_em-wiggle-amp" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-wiggle-amp" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-amp" }
+                ],
+              },
+              factor: -0.01,
+            },
+            increase: {
+              store: { key: "en-shr_em-wiggle-amp" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-wiggle-amp" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-amp" }
+                ],
+              },
+              factor: 0.01,
+            },
+            stick: {
+              store: { key: "en-shr_em-wiggle-amp" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-wiggle-amp" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-amp" }
+                ],
+              },
+              factor: 0.01,
+            },
+            checkbox: { 
+              spriteOn: { name: "visu_texture_checkbox_on" },
+              spriteOff: { name: "visu_texture_checkbox_off" },
+              store: { key: "en-shr_em-change-wiggle-amp" },
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-amp" }
+                ],
+              },
+              enable: { key: "en-shr_use-em" },
+            },
+            title: { 
+              text: "Change",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-wiggle-amp" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-amp" }
+                ],
+              },
+            },
+          },
+          duration: {
+            label: {
+              text: "Duration",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-wiggle-amp" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-amp" }
+                ],
+              },
+            },
+            field: {
+              store: { key: "en-shr_em-wiggle-amp" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-wiggle-amp" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-amp" }
+                ],
+              },
+            },
+            decrease: {
+              store: { key: "en-shr_em-wiggle-amp" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-wiggle-amp" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-amp" }
+                ],
+              },
+              factor: -0.01,
+            },
+            increase: {
+              store: { key: "en-shr_em-wiggle-amp" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-wiggle-amp" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-amp" }
+                ],
+              },
+              factor: 0.01,
+            },
+            stick: {
+              store: { key: "en-shr_em-wiggle-amp" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-wiggle-amp" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-amp" }
+                ],
+              },
+              factor: 0.01,
+            },
+          },
+          ease: {
+            label: {
+              text: "Ease",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-wiggle-amp" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-amp" }
+                ],
+              },
+            },
+            previous: {
+              store: { key: "en-shr_em-wiggle-amp" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-wiggle-amp" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-amp" }
+                ],
+              },
+            },
+            preview: {
+              store: { key: "en-shr_em-wiggle-amp" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-wiggle-amp" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-amp" }
+                ],
+              },
+            },
+            next: {
+              store: { key: "en-shr_em-wiggle-amp" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-wiggle-amp" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-wiggle-amp" }
+                ],
+              },
+            },
+          },
+        },
+      },
+      {
+        name: "en-shr_em-wiggle-amp-line-h",
+        template: VEComponents.get("line-h"),
+        layout: VELayouts.get("line-h"),
+        config: {
+          layout: {
+            type: UILayoutType.VERTICAL,
+            margin: { top: 0, bottom: 0 },
+            height: function() { return 0 },
+          },
+          image: { 
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-wiggle-amp" }
+              ]
+            },
             backgroundAlpha: 0.0,
           },
         },
