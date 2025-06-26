@@ -2,6 +2,7 @@
 
 #macro BRUSH_ENTRY_STEP 1
 #macro BRUSH_TOOLBAR_ENTRY_STEP 1
+#macro FLIP_VALUE 1
 
 
 function VEBrushGetTemplateName(templates, prefix, attempt) {
@@ -1567,9 +1568,10 @@ global.__VisuBrushContainers = new Map(String, Callable, {
         }
 
         var surfaceAlpha = this.state.getIfType("surface-alpha", Number, 1.0)
-        if (this.executor.tasks.size() > 0) {
-          this.state.set("surface-alpha", clamp(surfaceAlpha - DeltaTime.apply(0.066), 0.5, 1.0))
-        } else if (surfaceAlpha < 1.0) {
+        //if (this.executor.tasks.size() > 0) {
+        //  //this.state.set("surface-alpha", clamp(surfaceAlpha - DeltaTime.apply(0.066), 0.5, 1.0))
+        //} else
+        if (surfaceAlpha < 1.0) {
           this.state.set("surface-alpha", clamp(surfaceAlpha + DeltaTime.apply(0.066), 0.0, 1.0))
         }
 
@@ -1683,7 +1685,7 @@ global.__VisuBrushContainers = new Map(String, Callable, {
                   context: data,
                   template: template,
                   stage: "load-components",
-                  flip: 2,
+                  flip: FLIP_VALUE,
                   components: brush.components,
                   componentsQueue: new Queue(String, GMArray
                     .map(brush.components.container, function(component, index) { 
@@ -1696,7 +1698,7 @@ global.__VisuBrushContainers = new Map(String, Callable, {
                       width: function() { return this.area.getWidth() },
                     }),
                     textField: null,
-                    updateArea: false,
+                    updateArea: true,
                   },
                   "load-components": function(task) {
                     repeat (BRUSH_TOOLBAR_ENTRY_STEP) {
@@ -1704,7 +1706,7 @@ global.__VisuBrushContainers = new Map(String, Callable, {
                         task.state.flip -= 1
                         break
                       } else {
-                        task.state.flip = 2
+                        task.state.flip = FLIP_VALUE
                       }
 
                       var index = task.state.componentsQueue.pop()

@@ -2398,9 +2398,10 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
         }
 
         var surfaceAlpha = this.state.getIfType("surface-alpha", Number, 1.0)
-        if (this.executor.tasks.size() > 0) {
-          this.state.set("surface-alpha", clamp(surfaceAlpha - DeltaTime.apply(0.066), 0.5, 1.0))
-        } else if (surfaceAlpha < 1.0) {
+        //if (this.executor.tasks.size() > 0) {
+        //  //this.state.set("surface-alpha", clamp(surfaceAlpha - DeltaTime.apply(0.066), 0.5, 1.0))
+        //} else 
+        if (surfaceAlpha < 1.0) {
           this.state.set("surface-alpha", clamp(surfaceAlpha + DeltaTime.apply(0.066), 0.0, 1.0))
         }
 
@@ -2516,7 +2517,7 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                 .setState({
                   context: data,
                   stage: "load-components",
-                  flip: 2,
+                  flip: FLIP_VALUE,
                   cooldownTimer: new Timer(0.128, { loop: true }),
                   components: template.components,
                   componentsQueue: new Queue(String, GMArray
@@ -2530,7 +2531,7 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                       width: function() { return this.area.getWidth() },
                     }),
                     textField: null,
-                    updateArea: false,
+                    updateArea: true,
                   },
                   previousOffset: {
                     x: data.offset.x,
@@ -2544,7 +2545,7 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                         task.state.flip -= 1
                         break
                       } else {
-                        task.state.flip = 2
+                        task.state.flip = FLIP_VALUE
                       }
 
                       var index = task.state.componentsQueue.pop()

@@ -270,9 +270,10 @@ function VEEventInspector(_editor) constructor {
           this._updateTrackEvent()
 
           var surfaceAlpha = this.state.getIfType("surface-alpha", Number, 1.0)
-          if (this.executor.tasks.size() > 0) {
-            this.state.set("surface-alpha", clamp(surfaceAlpha - DeltaTime.apply(0.066), 0.5, 1.0))
-          } else if (surfaceAlpha < 1.0) {
+          //if (this.executor.tasks.size() > 0) {
+          //  //this.state.set("surface-alpha", clamp(surfaceAlpha - DeltaTime.apply(0.066), 0.5, 1.0))
+          //} else 
+          if (surfaceAlpha < 1.0) {
             this.state.set("surface-alpha", clamp(surfaceAlpha + DeltaTime.apply(0.066), 0.0, 1.0))
           }
 
@@ -373,6 +374,8 @@ function VEEventInspector(_editor) constructor {
                         "add-subscriber": function(task) {
                           if (task.state.storeKeys.size() == 0) {
                             task.fullfill()
+                            task.state.context.finishUpdateTimer()
+                            task.state.context.areaWatchdog.signal()
                             return
                           }
 
@@ -409,7 +412,7 @@ function VEEventInspector(_editor) constructor {
                     .setTimeout(60)
                     .setState({
                       stage: "load-components",
-                      flip: 2,
+                      flip: FLIP_VALUE,
                       context: data,
                       components: event.components,
                       componentsQueue: new Queue(String, GMArray
@@ -423,7 +426,7 @@ function VEEventInspector(_editor) constructor {
                           width: function() { return this.area.getWidth() },
                         }),
                         textField: null,
-                        updateArea: false,
+                        updateArea: true,
                       },
                       subscribers: event.store.container,
                       subscribersQueue: new Queue(String, event.store.container
@@ -443,14 +446,12 @@ function VEEventInspector(_editor) constructor {
                             task.state.flip -= 1
                             break
                           } else {
-                            task.state.flip = 2
+                            task.state.flip = FLIP_VALUE
                           }
                           
                           var index = task.state.componentsQueue.pop()
                           if (!Optional.is(index)) {
                             task.state.stage = "set-subscribers"
-                            task.state.context.finishUpdateTimer()
-                            task.state.context.areaWatchdog.signal()
                             break
                           }
         
@@ -466,11 +467,9 @@ function VEEventInspector(_editor) constructor {
                           return
                         }
 
-                        if (Optional.is(task.state.context.updateTimer)) {
-                          task.state.context.updateTimer.time = task.state.context.updateTimer.duration + random(task.state.context.updateTimer.duration / 2.0)
-                        }
-
                         task.fullfill()
+                        task.state.context.finishUpdateTimer()
+                        task.state.context.areaWatchdog.signal()
                       }
                     })
                     .whenUpdate(function() {

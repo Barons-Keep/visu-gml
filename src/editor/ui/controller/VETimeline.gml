@@ -1148,6 +1148,7 @@ function VETimeline(_editor) constructor {
               }, { channel: channel, container: container })
               
               this.finishUpdateTimer()
+              this.areaWatchdog.signal()
               return
             }
             
@@ -1165,6 +1166,7 @@ function VETimeline(_editor) constructor {
           }
         },
         update: function() {
+          this.subscribersPipeline.update(this)
           if (this.enableScrollbarY && Struct.get(this.scrollbarY, "isDragEvent")) {
             if (mouse_check_button(mb_left) ///@todo button should be a parameter
               && Optional.is(Struct.get(this, "onMousePressedLeft"))) {
