@@ -3905,6 +3905,10 @@ global.__VEComponents = new Map(String, Callable, {
           return
         }
 
+        if (!Optional.is(this.store)) {
+          return
+        }
+
         var mask = this.store.getStore().getValue(this.mask)
         if (!Optional.is(mask)) {
           return

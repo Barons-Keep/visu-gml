@@ -705,6 +705,10 @@ function brush_entity_shroom(json) {
               mouse.setClipboard(this)
             },
             onMouseOnLeft: function(event) {
+              if (!Optional.is(this.store)) {
+                return
+              }
+
               var editorIO = Beans.get(BeanVisuEditorIO)
               var mouse = editorIO.mouse
               if (mouse.getClipboard() != this) {
@@ -748,6 +752,10 @@ function brush_entity_shroom(json) {
               return this
             },
             preRender: function() {
+              if (!Optional.is(this.store)) {
+                return
+              }
+
               var store = this.store.getStore()
               if (!Optional.is(store)) {
                 return
@@ -772,7 +780,11 @@ function brush_entity_shroom(json) {
                 }))
               }
             },
-            postRender: function() {
+            postRender: function() {              
+              if (!Optional.is(this.store)) {
+                return
+              }
+
               var store = this.store.getStore()
               if (!Optional.is(this.origin) || !Optional.is(store)) {
                 return

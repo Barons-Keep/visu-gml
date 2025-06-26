@@ -1683,6 +1683,7 @@ global.__VisuBrushContainers = new Map(String, Callable, {
                   context: data,
                   template: template,
                   stage: "load-components",
+                  flip: 2,
                   components: brush.components,
                   componentsQueue: new Queue(String, GMArray
                     .map(brush.components.container, function(component, index) { 
@@ -1699,6 +1700,13 @@ global.__VisuBrushContainers = new Map(String, Callable, {
                   },
                   "load-components": function(task) {
                     repeat (BRUSH_TOOLBAR_ENTRY_STEP) {
+                      if (task.state.flip > 0) {
+                        task.state.flip -= 1
+                        break
+                      } else {
+                        task.state.flip = 2
+                      }
+
                       var index = task.state.componentsQueue.pop()
                       if (!Optional.is(index)) {
                         task.fullfill()

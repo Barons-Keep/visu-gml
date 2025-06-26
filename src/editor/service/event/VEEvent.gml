@@ -138,6 +138,10 @@ function VEEvent(_context, json = null) constructor {
               return
             }
 
+            if (!Optional.is(this.store)) {
+              return
+            }
+            
             var store = this.store.getStore()
             if (!Optional.is(store)) {
               return

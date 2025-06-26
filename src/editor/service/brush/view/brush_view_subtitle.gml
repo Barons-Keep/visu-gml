@@ -1093,7 +1093,11 @@ function brush_view_subtitle(json = null) {
                 },
                 set: function(value) { return },
               },
-              render: function() {
+              render: function() {  
+                if (!Optional.is(this.store)) {
+                  return
+                }
+
                 var sprite = Struct.get(this, "sprite")
                 if (!Core.isType(sprite, Sprite)) {
                   sprite = SpriteUtil.parse({ name: "visu_texture_ui_angle_arrow" })

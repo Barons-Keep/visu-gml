@@ -409,6 +409,7 @@ function VEEventInspector(_editor) constructor {
                     .setTimeout(60)
                     .setState({
                       stage: "load-components",
+                      flip: 2,
                       context: data,
                       components: event.components,
                       componentsQueue: new Queue(String, GMArray
@@ -438,6 +439,13 @@ function VEEventInspector(_editor) constructor {
                       },
                       "load-components": function(task) {
                         repeat (EVENT_INSPECTOR_ENTRY_STEP) {
+                          if (task.state.flip > 0) {
+                            task.state.flip -= 1
+                            break
+                          } else {
+                            task.state.flip = 2
+                          }
+                          
                           var index = task.state.componentsQueue.pop()
                           if (!Optional.is(index)) {
                             task.state.stage = "set-subscribers"

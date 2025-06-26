@@ -2516,6 +2516,7 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                 .setState({
                   context: data,
                   stage: "load-components",
+                  flip: 2,
                   cooldownTimer: new Timer(0.128, { loop: true }),
                   components: template.components,
                   componentsQueue: new Queue(String, GMArray
@@ -2539,23 +2540,24 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                   },
                   "load-components": function(task) {
                     repeat (TEMPLATE_TOOLBAR_ENTRY_STEP) {
+                      if (task.state.flip > 0) {
+                        task.state.flip -= 1
+                        break
+                      } else {
+                        task.state.flip = 2
+                      }
+
                       var index = task.state.componentsQueue.pop()
                       if (!Optional.is(index)) {
                         task.fullfill()
                         task.state.context.state.set("previousOffset", task.state.previousOffset)
                         task.state.context.finishUpdateTimer()
                         task.state.context.areaWatchdog.signal()
-
                         break
                       }
     
-                      var time = get_timer()
                       var component = new UIComponent(task.state.components.get(index))
                       task.state.context.addUIComponent(component, index, task.state.componentsConfig)
-                      time = (get_timer() - time) / 1000.0
-                      if (time > 16.0) {
-                        //task.state.stage = "cooldown"
-                      }
                     }
                   },
                   "cooldown": function(task) {

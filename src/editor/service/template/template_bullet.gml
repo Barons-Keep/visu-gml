@@ -1331,6 +1331,10 @@ function template_bullet(json = null) {
               }
               this.renderBackgroundColor()
 
+              if (!Optional.is(this.store)) {
+                return
+              }
+
               var store = this.store.getStore()
               var amount = store.getValue("bullet_on-death-amount")
               var angle = store.getValue("bullet_on-death-angle")

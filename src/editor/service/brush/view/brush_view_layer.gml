@@ -2207,6 +2207,10 @@ function brush_view_layer(json = null) {
                 ],
               },
               render: function() {
+                if (!Optional.is(this.store)) {
+                  return
+                }
+
                 var sprite = Struct.get(this, "sprite")
                 if (!Core.isType(sprite, Sprite)) {
                   sprite = SpriteUtil.parse({ name: "visu_texture_ui_angle_arrow" })
