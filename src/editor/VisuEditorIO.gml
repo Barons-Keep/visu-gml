@@ -391,17 +391,19 @@ function VisuEditorIO() constructor {
           return this
         }
 
-        var path = FileUtil.getPathToSaveWithDialog({ 
-          description: "Visu track file",
-          filename: "manifest", 
-          extension: "visu",
-        })
-
-        if (!Core.isType(path, String) || String.isEmpty(path)) {
+        if (!controller.trackService.isTrackLoaded()) {
           return this
         }
 
-        if (!Beans.get(BeanVisuController).trackService.isTrackLoaded()) {
+        var path = this.keyboard.keys.shiftLeft.on
+          ? FileUtil.getPathToSaveWithDialog({ 
+            description: "Visu track file",
+            filename: "manifest", 
+            extension: "visu",
+          })
+          :  $"{controller.track.path}manifest.visu"
+
+        if (!Core.isType(path, String) || String.isEmpty(path)) {
           return this
         }
 

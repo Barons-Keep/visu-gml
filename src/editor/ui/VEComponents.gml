@@ -515,6 +515,92 @@ global.__VEComponents = new Map(String, Callable, {
   ///@param {UILayout} layout
   ///@param {?Struct} [config]
   ///@return {Array<UIItem>}
+  "context-menu-button": function(name, layout, config = null) {
+    return new Array(UIItem, [
+      UIButton(
+        $"{name}_type-button", 
+        Struct.appendRecursive(
+          Struct.appendRecursive(
+            { 
+              layout: layout,
+              updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyCollectionLayout")),
+              onMouseHoverOver: Callable.run(UIUtil.mouseEventTemplates.get("onMouseHoverOverBackground")),
+              onMouseHoverOut: Callable.run(UIUtil.mouseEventTemplates.get("onMouseHoverOutBackground")),
+              shortcut: null,
+              //render: Callable.run(UIUtil.renderTemplates.get("renderContextMenuButton")),
+              render: function() {
+                if (Optional.is(this.preRender)) {
+                  this.preRender()
+                }
+
+                if (Optional.is(Struct.get(this, "shortcut")) && !Core.isType(this.shortcut, UILabel)) {
+                  this.shortcut = new UILabel(this.shortcut)
+                }
+
+                var enableFactor = (Struct.get(this.enable, "value") == false ? 0.5 : 1.0)
+                var _backgroundAlpha = this.backgroundAlpha
+                this.backgroundAlpha *= enableFactor
+                this.renderBackgroundColor()
+                this.backgroundAlpha = _backgroundAlpha
+
+                if (this.sprite != null) {
+                  var spriteAlpha = this.sprite.getAlpha()
+                  this.sprite
+                    .setAlpha(spriteAlpha * enableFactor)
+                    .scaleToFillStretched(this.area.getWidth(), this.area.getHeight())
+                    .render(
+                      this.context.area.getX() + this.area.getX(),
+                      this.context.area.getY() + this.area.getY())
+                    .setAlpha(spriteAlpha)
+                }
+
+                if (this.label != null) {
+                  var labelAlpha = this.label.alpha
+                  this.label.alpha *= enableFactor
+                  this.label.render(
+                    // todo VALIGN HALIGN
+                    this.context.area.getX() + this.area.getX() + 14,
+                    this.context.area.getY() + this.area.getY() + (this.area.getHeight() / 2),
+                    this.area.getWidth(),
+                    this.area.getHeight()
+                  )
+                  this.label.alpha = labelAlpha
+                }
+
+                if (this.shortcut != null) {
+                  var shortcutAlpha = this.shortcut.alpha
+                  this.shortcut.alpha *= enableFactor
+                  this.shortcut.render(
+                    // todo VALIGN HALIGN
+                    this.context.area.getX() + this.area.getX() + this.area.getWidth() - 14,
+                    this.context.area.getY() + this.area.getY() + (this.area.getHeight() / 2),
+                    this.area.getWidth(),
+                    this.area.getHeight()
+                  )
+                  this.shortcut.alpha = shortcutAlpha
+                }
+
+                if (this.postRender != null) {
+                  this.postRender()
+                }
+                
+                return this
+              },
+            }, 
+            VEStyles.get("context-menu-button"),
+            true
+          ),
+          config,
+          true
+        )
+      ),
+    ])
+  },
+
+  ///@param {String} name
+  ///@param {UILayout} layout
+  ///@param {?Struct} [config]
+  ///@return {Array<UIItem>}
   "texture-field-intent": function(name, layout, config = null) {
     var items = new Array(UIItem, [
       UIImage(

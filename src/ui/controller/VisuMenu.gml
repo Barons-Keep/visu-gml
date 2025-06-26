@@ -2145,13 +2145,18 @@ function VisuMenu(_config = null) constructor {
               callback: function() {
                 Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
                 var value = false
+                var editorIOConstructor = Core.getConstructor(Visu.modules().editor.io)
+                var editorControllerConstructor = Core.getConstructor(Visu.modules().editor.controller)
+                if (!Optional.is(editorIOConstructor) || !Optional.is(editorControllerConstructor)) {
+                  return
+                }
                 
-                if (Optional.is(Beans.get(BeanVisuEditorIO))) {
-                  Beans.kill(BeanVisuEditorIO)
+                if (Optional.is(Beans.get(Visu.modules().editor.io))) {
+                  Beans.kill(Visu.modules().editor.io)
                   value = false
                 } else {
-                  Beans.add(Beans.factory(BeanVisuEditorIO, GMServiceInstance, 
-                    Beans.get(BeanVisuController).layerId, new VisuEditorIO()))
+                  Beans.add(Beans.factory(Visu.modules().editor.io, GMServiceInstance, 
+                    Beans.get(BeanVisuController).layerId, new editorIOConstructor()))
                   value = true
                 }
 
@@ -2160,7 +2165,7 @@ function VisuMenu(_config = null) constructor {
                   value = false
                 } else {
                   Beans.add(Beans.factory(Visu.modules().editor.controller, GMServiceInstance, 
-                    Beans.get(BeanVisuController).layerId, new VisuEditorController()))
+                    Beans.get(BeanVisuController).layerId, new editorControllerConstructor()))
                   value = true
                   var editor = Beans.get(Visu.modules().editor.controller)
                   if (Optional.is(editor)) {

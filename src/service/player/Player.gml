@@ -551,11 +551,14 @@ function PlayerStats(_player, json) constructor {
       return this
     },
     onMinValueExceed: function() { 
-      if (Visu.settings.getValue("visu.god-mode")) {
+
+      var editor = Beans.get(Visu.modules().editor.controller)
+      if (Visu.settings.getValue("visu.god-mode")
+          || (Optional.is(editor) && editor.renderUI)) {
         this.value = 3
         Beans.get(BeanVisuController)
           .send(new Event("spawn-popup", { 
-            message: "God-mode is active, respawning player"
+            message: "GOD-MODE: respawning player"
           }))
       } else {
         var controller = Beans.get(BeanVisuController)

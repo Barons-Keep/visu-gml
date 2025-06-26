@@ -267,6 +267,22 @@ function generateVEStyles() {
         align: { v: VAlign.CENTER, h: HAlign.CENTER },
       },
     },
+    "context-menu-button": {
+      backgroundColor: VETheme.color.primaryDark,
+      backgroundMargin: { top: 1, bottom: 1, left: 1, right: 1 },
+      colorHoverOver: VETheme.color.primaryShadow,
+      colorHoverOut: VETheme.color.primaryDark,
+      label: {
+        font: "font_inter_10_bold",
+        color: VETheme.color.textFocus,
+        align: { v: VAlign.CENTER, h: HAlign.LEFT },
+      },
+      shortcut: {
+        font: "font_inter_10_bold",
+        color: VETheme.color.textShadow,
+        align: { v: VAlign.CENTER, h: HAlign.RIGHT },
+      },
+    },
     "channel-entry": {
       label: {
         backgroundColor: VETheme.color.primaryDark,

@@ -1061,7 +1061,7 @@ function VisuController(layerName) constructor {
     var stateName = this.trackService.isTrackLoaded() ? "pause" : "idle"
     this.fsm.dispatcher.send(new Event("transition", { name: stateName }))
 
-    var editorIOConstructor = Core.getConstructor("VisuEditorIO")
+    var editorIOConstructor = Core.getConstructor(Visu.modules().editor.io)
     if (Optional.is(editorIOConstructor)) {
       if (!Beans.exists(Visu.modules().editor.io)) {
         Beans.add(Beans.factory(Visu.modules().editor.io, GMServiceInstance, layerId,
@@ -1069,7 +1069,7 @@ function VisuController(layerName) constructor {
       }
     }
 
-    var editorConstructor = Core.getConstructor("VisuEditorController")
+    var editorConstructor = Core.getConstructor(Visu.modules().editor.controller)
     if (Optional.is(editorConstructor)) {
       if (!Beans.exists(Visu.modules().editor.controller)) {
         Beans.add(Beans.factory(Visu.modules().editor.controller, GMServiceInstance, layerId,
