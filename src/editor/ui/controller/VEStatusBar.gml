@@ -276,6 +276,7 @@ function VEStatusBar(_editor) constructor {
               layout: VELayouts.get("line-w"),
               config: { layout: { type: UILayoutType.HORIZONTAL } },
             },
+            /*
             {
               name: "ve-status-bar_bpm-label",
               template: VEComponents.get("label"),
@@ -555,6 +556,7 @@ function VEStatusBar(_editor) constructor {
               layout: VELayouts.get("line-w"),
               config: { layout: { type: UILayoutType.HORIZONTAL } },
             },
+            */
           ]),
         }),
         controller: controller,

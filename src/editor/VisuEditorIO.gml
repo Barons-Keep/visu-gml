@@ -28,7 +28,7 @@ function VisuEditorIO() constructor {
     eraseTool: "E",
     brushTool: "B",
     cloneTool: "C",
-    snapToGrid: "Q", // + shift
+    snapToGrid: "Q",
     zoomIn: KeyboardKeyType.PLUS,
     zoomOut: KeyboardKeyType.MINUS,
     numZoomIn: KeyboardKeyType.NUM_PLUS,
@@ -197,8 +197,7 @@ function VisuEditorIO() constructor {
       }
     }
 
-    if (this.keyboard.keys.shiftLeft.on
-        && this.keyboard.keys.snapToGrid.pressed) {
+    if (this.keyboard.keys.snapToGrid.pressed) {
       var item = editor.store.get("snap")
       item.set(!item.get())
     }

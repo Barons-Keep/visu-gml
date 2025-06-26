@@ -845,7 +845,7 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
         value: 0.0,
         target: 0.0,
         duration: 0.0,
-        ease: EaseType.IN_OUT_QUINT,
+        ease: EaseType.LINEAR,
       } : storeConfig)),
     })
 

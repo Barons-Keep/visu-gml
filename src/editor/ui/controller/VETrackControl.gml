@@ -34,15 +34,84 @@ function VETrackControl(_editor) constructor {
               return 28
             },
           },
+
           timestamp: {
             name: "track-control.timestamp",
             width: function() { return 64 },
-            height: function() { return 20 },
-            margin: { top: 8, right: 8 },
-            x: function() { return this.__margin.right },
-            y: function() { return this.context.nodes.timeline.bottom()
-              + this.__margin.top },
+            height: function() { return 32 },
+            margin: { top: 4, bottom: 4, left: 24, right: 8 },
+            x: function() { return this.__margin.left },
+            y: function() { return this.context.height()
+              - this.__margin.bottom 
+              - this.height() },
           },
+          bpm_label: {
+            name: "track-control.bpm_label",
+            width: function() { return 34 },
+            height: function() { return 32 },
+            margin: { top: 4, bottom: 4, left: 4, right: 0 },
+            x: function() { return this.context.nodes.timestamp.right() 
+              + this.__margin.left },
+            y: function() { return this.context.height()
+              - this.__margin.bottom 
+              - this.height() },
+          },
+          bpm_field: {
+            name: "track-control.bpm_field",
+            width: function() { return 32 },
+            height: function() { return 24 },
+            margin: { top: 10, bottom: 10, left: 0, right: 4 },
+            x: function() { return this.context.nodes.bpm_label.right() 
+              + this.__margin.left },
+            y: function() { return this.context.height()
+              - this.__margin.bottom 
+              - this.height() },
+          },
+          meter_label: {
+            name: "track-control.meter_label",
+            width: function() { return 42 },
+            height: function() { return 32 },
+            margin: { top: 4, bottom: 4, left: 4, right: 0 },
+            x: function() { return this.context.nodes.bpm_field.right() 
+              + this.__margin.left },
+            y: function() { return this.context.height()
+              - this.__margin.bottom 
+              - this.height() },
+          },
+          meter_field: {
+            name: "track-control.meter_field",
+            width: function() { return 36 },
+            height: function() { return 24 },
+            margin: { top: 10, bottom: 10, left: 0, right: 4 },
+            x: function() { return this.context.nodes.meter_label.right() 
+              + this.__margin.left },
+            y: function() { return this.context.height()
+              - this.__margin.bottom 
+              - this.height() },
+          },
+          sub_label: {
+            name: "track-control.sub_label",
+            width: function() { return 28 },
+            height: function() { return 32 },
+            margin: { top: 4, bottom: 4, left: 4, right: 0 },
+            x: function() { return this.context.nodes.meter_field.right() 
+              + this.__margin.left },
+            y: function() { return this.context.height()
+              - this.__margin.bottom 
+              - this.height() },
+          },
+          sub_field: {
+            name: "track-control.sub_field",
+            width: function() { return 36 },
+            height: function() { return 24 },
+            margin: { top: 10, bottom: 10, left: 0, right: 4 },
+            x: function() { return this.context.nodes.sub_label.right() 
+              + this.__margin.left },
+            y: function() { return this.context.height()
+              - this.__margin.bottom 
+              - this.height() },
+          },
+
           backward: {
             name: "track-control.backward",
             width: function() { return 32 },
@@ -79,111 +148,38 @@ function VETrackControl(_editor) constructor {
             y: function() { return this.context.nodes.timeline.bottom()
               + this.__margin.top },
           },
-          clearShaderBkg: {
-            name: "track-control.clearShaderBkg",
-            width: function() { return 20 },
-            height: function() { return 20 },
-            margin: { top: 1, bottom: 1, left: 20, right: 0 },
-            x: function() { return this.__margin.left },
-            y: function() { return this.context.height()
-              - this.__margin.bottom 
-              - this.height() },
-          },
-          clearShaderGrid: {
-            name: "track-control.clearShaderGrid",
-            width: function() { return 20 },
-            height: function() { return 20 },
-            margin: { top: 1, bottom: 1, left: 0, right: 0 },
-            x: function() { return this.context.nodes.clearShaderBkg.right() 
-              + this.__margin.left },
-            y: function() { return this.context.height()
-              - this.__margin.bottom 
-              - this.height() },
-          },
-          clearShaderCombined: {
-            name: "track-control.clearShaderCombined",
-            width: function() { return 20 },
-            height: function() { return 20 },
-            margin: { top: 1, bottom: 1, left: 0, right: 0 },
-            x: function() { return this.context.nodes.clearShaderGrid.right() 
-              + this.__margin.left },
-            y: function() { return this.context.height()
-              - this.__margin.bottom 
-              - this.height() },
-          },
-          clearBkg: {
-            name: "track-control.clearBkg",
-            width: function() { return 20 },
-            height: function() { return 20 },
-            margin: { top: 1, bottom: 1, left: 0, right: 0 },
-            x: function() { return this.context.nodes.clearShaderCombined.right() 
-              + this.__margin.left },
-            y: function() { return this.context.height()
-              - this.__margin.bottom 
-              - this.height() },
-          },
-          clearFrg: {
-            name: "track-control.clearFrg",
-            width: function() { return 20 },
-            height: function() { return 20 },
-            margin: { top: 1, bottom: 1, left: 0, right: 0 },
-            x: function() { return this.context.nodes.clearBkg.right() 
-              + this.__margin.left },
-            y: function() { return this.context.height()
-              - this.__margin.bottom 
-              - this.height() },
-          },
-          clearShroom: {
-            name: "track-control.clearShroom",
-            width: function() { return 20 },
-            height: function() { return 20 },
-            margin: { top: 1, bottom: 1, left: 0, right: 0 },
-            x: function() { return this.context.nodes.clearFrg.right() 
-              + this.__margin.left },
-            y: function() { return this.context.height()
-              - this.__margin.bottom 
-              - this.height() },
-          },
-          clearBullet: {
-            name: "track-control.clearBullet",
-            width: function() { return 20 },
-            height: function() { return 20 },
-            margin: { top: 1, bottom: 1, left: 0, right: 0 },
-            x: function() { return this.context.nodes.clearShroom.right() 
-              + this.__margin.left },
-            y: function() { return this.context.height()
-              - this.__margin.bottom 
-              - this.height() },
-          },
-          clearParticle: {
-            name: "track-control.clearParticle",
-            width: function() { return 20 },
-            height: function() { return 20 },
-            margin: { top: 1, bottom: 1, left: 0, right: 1 },
-            x: function() { return this.context.nodes.clearBullet.right() 
-              + this.__margin.left },
-            y: function() { return this.context.height()
-              - this.__margin.bottom 
-              - this.height() },
-          },
-          follow: {
-            name: "track-control.follow",
-            width: function() { return 24 },
-            height: function() { return 24 },
-            margin: { top: 1, bottom: 1, left: 0, right: 0 },
-            x: function() { return this.context.nodes.follow_label.left() 
+          
+          autosave: {
+            name: "track-control.autosave",
+            width: function() { return 32 },
+            height: function() { return 32 },
+            margin: { top: 4, bottom: 4, left: 1, right: 4 },
+            x: function() { return this.context.nodes.follow.left() 
               - this.__margin.right
               - this.width() },
             y: function() { return this.context.height()
               - this.__margin.bottom 
-              - this.height() + 4
+              - this.height()
             },
           },
-          follow_label: {
-            name: "track-control.follow_label",
-            width: function() { return 48 },
-            height: function() { return 20 },
-            margin: { top: 1, bottom: 1, left: 0, right: 0 },
+          follow: {
+            name: "track-control.follow",
+            width: function() { return 32 },
+            height: function() { return 32 },
+            margin: { top: 4, bottom: 4, left: 1, right: 4 },
+            x: function() { return this.context.nodes.update.left() 
+              - this.__margin.right
+              - this.width() },
+            y: function() { return this.context.height()
+              - this.__margin.bottom 
+              - this.height()
+            },
+          },
+          update: {
+            name: "track-control.update",
+            width: function() { return 32 },
+            height: function() { return 32 },
+            margin: { top: 4, bottom: 4, left: 1, right: 4 },
             x: function() { return this.context.nodes.undo.left() 
               - this.__margin.right
               - this.width() },
@@ -194,9 +190,9 @@ function VETrackControl(_editor) constructor {
           },
           undo: {
             name: "track-control.undo",
-            width: function() { return 20 },
-            height: function() { return 20 },
-            margin: { top: 1, bottom: 1, left: 1, right: 1 },
+            width: function() { return 32 },
+            height: function() { return 32 },
+            margin: { top: 4, bottom: 4, left: 1, right: 4 },
             x: function() { return this.context.nodes.redo.left() 
               - this.__margin.right
               - this.width() },
@@ -207,9 +203,9 @@ function VETrackControl(_editor) constructor {
           },
           redo: {
             name: "track-control.redo",
-            width: function() { return 20 },
-            height: function() { return 20 },
-            margin: { top: 1, bottom: 1, left: 0, right: 0 },
+            width: function() { return 32 },
+            height: function() { return 32 },
+            margin: { top: 4, bottom: 4, left: 1, right: 4 },
             x: function() { return this.context.nodes.zoom_out.left() 
               - this.__margin.right
               - this.width() },
@@ -220,9 +216,9 @@ function VETrackControl(_editor) constructor {
           },
           zoom_out: {
             name: "track-control.zoom_out",
-            width: function() { return 20 },
-            height: function() { return 20 },
-            margin: { top: 1, bottom: 1, left: 10, right: 1 },
+            width: function() { return 16 },
+            height: function() { return 32 },
+            margin: { top: 4, bottom: 4, left: 4, right: 1 },
             x: function() { return this.context.nodes.zoom.left() 
               - this.__margin.right
               - this.width() },
@@ -233,9 +229,9 @@ function VETrackControl(_editor) constructor {
           },
           zoom: {
             name: "track-control.zoom",
-            width: function() { return 84 },
-            height: function() { return 24 },
-            margin: { top: 1, bottom: 1, left: 10, right: 10 },
+            width: function() { return 64 },
+            height: function() { return 32 },
+            margin: { top: 4, bottom: 4, left: 10, right: 10 },
             x: function() { return this.context.nodes.zoom_in.left() 
               - this.__margin.right
               - this.width() },
@@ -246,9 +242,9 @@ function VETrackControl(_editor) constructor {
           },
           zoom_in: {
             name: "track-control.zoom_in",
-            width: function() { return 20 },
-            height: function() { return 20 },
-            margin: { top: 1, bottom: 1, left: 1, right: 20 },
+            width: function() { return 16 },
+            height: function() { return 32 },
+            margin: { top: 4, bottom: 4, left: 1, right: 24 },
             x: function() { return this.context.width() 
               - this.__margin.right
               - this.width() },
@@ -431,7 +427,7 @@ function VETrackControl(_editor) constructor {
           callback: json.callback,
           label: {
             text: "",
-            align: { v: VAlign.TOP, h: HAlign.CENTER },
+            align: { v: VAlign.BOTTOM, h: HAlign.CENTER },
             color: VETheme.color.textShadow,
             useScale: false,
             outline: true,
@@ -482,83 +478,6 @@ function VETrackControl(_editor) constructor {
         false
       )
     }
-
-    static factoryClearButton = function(json) {
-      return Struct.appendRecursive({
-        type: UIButton,
-        label: { 
-          text: "",
-          align: { v: VAlign.CENTER, h: HAlign.CENTER },
-          color: VETheme.color.textShadow,
-          outline: true,
-          outlineColor: VETheme.color.sideDark,
-          font: "font_inter_8_bold"
-        },
-        description: "",
-        layout: json.layout,
-        hAlign: HAlign.CENTER,
-        updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
-        backgroundMargin: { top: 1, bottom: 1, left: 1, right: 1 },
-        backgroundAlpha: 0.75,
-        backgroundColor: VETheme.color.button,
-        backgroundColorSelected: VETheme.color.primaryLight,
-        backgroundColorOut: VETheme.color.button,
-        onMouseHoverOver: function(event) {
-          this.backgroundColor = ColorUtil.fromHex(this.backgroundColorSelected).toGMColor()
-        },
-        onMouseHoverOut: function(event) {
-          this.backgroundColor = ColorUtil.fromHex(this.backgroundColorOut).toGMColor()
-        },
-        render: function() {
-          if (Optional.is(this.preRender)) {
-            this.preRender()
-          }
-          this.renderBackgroundColor()
-    
-          if (this.sprite != null) {
-            var alpha = this.sprite.getAlpha()
-            this.sprite
-              .setAlpha(alpha * (Struct.get(this.enable, "value") == false ? 0.5 : 1.0))
-              .scaleToFillStretched(this.area.getWidth(), this.area.getHeight())
-              .render(
-                this.context.area.getX() + this.area.getX(),
-                this.context.area.getY() + this.area.getY())
-              .setAlpha(alpha)
-          }
-    
-          if (this.label != null) {
-            this.label.render(
-              // todo VALIGN HALIGN
-              this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2),
-              this.context.area.getY() + this.area.getY() + (this.area.getHeight() / 2),
-              this.area.getWidth() - 4.0,
-              this.area.getHeight()
-            )
-          }
-
-          if (this.isHoverOver) {
-            var text = this.label.text
-            this.label.text = this.description
-            var useScale = this.label.useScale
-            this.label.useScale = false
-            var alignH = this.label.align.h
-            this.label.align.h = this.hAlign
-            this.label.render(
-              // todo VALIGN HALIGN
-              this.context.area.getX() + this.area.getX(),
-              this.context.area.getY() + this.area.getY() - (28 - this.area.getHeight()),
-              this.area.getWidth(),
-              this.area.getHeight()
-            )
-            this.label.align.h = alignH
-            this.label.useScale = useScale
-            this.label.text = text
-          }
-
-          return this
-        },
-      }, json, false)
-    }
     
     var controller = this
     var layout = this.factoryLayout(parent)
@@ -566,9 +485,9 @@ function VETrackControl(_editor) constructor {
       "ve-track-control": new UI({
         name: "ve-track-control",
         state: new Map(String, any, {
-          "background-color": ColorUtil.fromHex(VETheme.color.primary).toGMColor(),
+          "background-color": ColorUtil.fromHex(VETheme.color.primaryShadow).toGMColor(),
           "background-color2": ColorUtil.fromHex(VETheme.color.sideDark).toGMColor(),
-          "background-alpha": 0.7,
+          "background-alpha": 0.85,
           "store": Beans.get(BeanVisuEditorController).store,
         }),
         controller: controller,
@@ -637,11 +556,11 @@ function VETrackControl(_editor) constructor {
               }
               
               var text = this.label.text
-              this.label.text = "Rewind 5sec\n(CTRL + <)"
+              this.label.text = "Rewind 5sec (CTRL + <)"
               this.label.render(
                 // todo VALIGN HALIGN
                 this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2),
-                this.context.area.getY() + this.area.getY() + (this.area.getHeight() / 1),
+                this.context.area.getY() + this.area.getY(),
                 this.area.getWidth(),
                 this.area.getHeight()
               )
@@ -663,11 +582,11 @@ function VETrackControl(_editor) constructor {
               }
               
               var text = this.label.text
-              this.label.text = "Play\n(SPACE)"
+              this.label.text = "Play (SPACE)"
               this.label.render(
                 // todo VALIGN HALIGN
                 this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2),
-                this.context.area.getY() + this.area.getY() + (this.area.getHeight() / 1),
+                this.context.area.getY() + this.area.getY(),
                 this.area.getWidth(),
                 this.area.getHeight()
               )
@@ -689,11 +608,11 @@ function VETrackControl(_editor) constructor {
               }
               
               var text = this.label.text
-              this.label.text = "Pause\n(SPACE)"
+              this.label.text = "Pause (SPACE)"
               this.label.render(
                 // todo VALIGN HALIGN
                 this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2),
-                this.context.area.getY() + this.area.getY() + (this.area.getHeight() / 1),
+                this.context.area.getY() + this.area.getY(),
                 this.area.getWidth(),
                 this.area.getHeight()
               )
@@ -722,11 +641,11 @@ function VETrackControl(_editor) constructor {
               }
               
               var text = this.label.text
-              this.label.text = "Forward 5sec\n(CTRL + >)"
+              this.label.text = "Forward 5sec (CTRL + >)"
               this.label.render(
                 // todo VALIGN HALIGN
                 this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2),
-                this.context.area.getY() + this.area.getY() + (this.area.getHeight() / 1) + 1,
+                this.context.area.getY() + this.area.getY(),
                 this.area.getWidth(),
                 this.area.getHeight()
               )
@@ -746,7 +665,7 @@ function VETrackControl(_editor) constructor {
                   || Math.isNaN(value) 
                   || Math.isNaN(trackService.duration)) {
 
-                this.label.text = ""
+                this.label.text = "00:00.00"
                 return
               }
               
@@ -755,113 +674,407 @@ function VETrackControl(_editor) constructor {
                 .parse(trackService.duration * value, 0.0))
             },
           }),
-          "button-ve-track-control_clear-shader-bkg": factoryClearButton({
-            label: { text: "ShB" },
-            description: "Clear shaders BKG",
-            hAlign: HAlign.LEFT,
-            layout: layout.nodes.clearShaderBkg,
-            callback: function() { 
-              Beans.get(BeanVisuController).shaderBackgroundPipeline.send(new Event("clear-shaders"))
-            },
-          }),          
-          "button-ve-track-control_clear-shader-grid": factoryClearButton({
-            label: { text: "ShG" },
-            description: "Clear shaders GRID",
-            hAlign: HAlign.LEFT,
-            layout: layout.nodes.clearShaderGrid,
-            callback: function() { 
-              Beans.get(BeanVisuController).shaderPipeline.send(new Event("clear-shaders"))
-            },
-          }),          
-          "button-ve-track-control_clear-shader-combined": factoryClearButton({
-            label: { text: "ShC" },
-            description: "Clear shaders COMBINED",
-            hAlign: HAlign.LEFT,
-            layout: layout.nodes.clearShaderCombined,
-            callback: function() { 
-              Beans.get(BeanVisuController).shaderCombinedPipeline.send(new Event("clear-shaders"))
-            },
+          "text_ve-track-control_bpm_label": factoryLabel({
+            layout: layout.nodes.bpm_label,
+            text: "BPM",
+            font: "font_inter_10_regular",
+            offset: { y: 1 },
+            color: VETheme.color.textShadow,
+            align: { v: VAlign.CENTER, h: HAlign.LEFT },
           }),
-          "button-ve-track-control_clear-bkg": factoryClearButton({
-            label: { text: "BKG" },
-            description: "Clear layers BKG",
-            layout: layout.nodes.clearBkg,
-            callback: function() { 
-              Beans.get(BeanVisuController).visuRenderer.gridRenderer.overlayRenderer.backgrounds.clear()
+          "text-field_ve-track-control_bpm_field": {
+            type: UITextField,
+            layout: layout.nodes.bpm_field,
+            updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayoutTextField")),
+            text: "10",
+            font: "font_inter_10_regular",
+            colorBackgroundUnfocused: VETheme.color.side,
+            colorBackgroundFocused: VETheme.color.primaryShadow,
+            colorOutlineUnfocused: VETheme.color.primaryShadow,
+            colorOutlineFocused: VETheme.color.primary,
+            colorTextUnfocused: VETheme.color.textShadow,
+            colorTextFocused: VETheme.color.textFocus,
+            colorSelection: VETheme.color.textSelected,
+            lh: 20.0000,
+            padding: { top: 2, bottom: 0, left: 4, right: 4 },
+            GMTF_DECIMAL: 0,
+            store: {
+              key: "bpm",
+              callback: function(value, data) { 
+                var item = data.store.get("bpm")
+                if (item == null) {
+                  return 
+                }
+    
+                var bpm = item.get()
+                if (!Core.isType(bpm, Number)) {
+                  return 
+                }
+
+                data.textField.setText(bpm)
+              },
+              set: function(value) {
+                var item = this.get()
+                if (item == null) {
+                  return 
+                }
+    
+                var parsedValue = NumberUtil.parse(value, null)
+                if (parsedValue == null) {
+                  return
+                }
+
+                item.set(parsedValue)
+                Struct.set(Beans.get(BeanVisuController).track, "bpm", parsedValue)
+              },
             },
+          },
+          "text_ve-track-control_meter_label": factoryLabel({
+            layout: layout.nodes.meter_label,
+            text: "Meter",
+            font: "font_inter_10_regular",
+            offset: { y: 1 },
+            color: VETheme.color.textShadow,
+            align: { v: VAlign.CENTER, h: HAlign.LEFT },
           }),
-          "button-ve-track-control_clear-frg": factoryClearButton({
-            label: { text: "FRG" },
-            description: "Clear layers FRG",
-            layout: layout.nodes.clearFrg,
-            callback: function() { 
-              Beans.get(BeanVisuController).visuRenderer.gridRenderer.overlayRenderer.foregrounds.clear()
+          "text-field_ve-track-control_meter_field": {
+            type: UITextField,
+            layout: layout.nodes.meter_field,
+            updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayoutTextField")),
+            text: "10",
+            font: "font_inter_10_regular",
+            colorBackgroundUnfocused: VETheme.color.side,
+            colorBackgroundFocused: VETheme.color.primaryShadow,
+            colorOutlineUnfocused: VETheme.color.primaryShadow,
+            colorOutlineFocused: VETheme.color.primary,
+            colorTextUnfocused: VETheme.color.textShadow,
+            colorTextFocused: VETheme.color.textFocus,
+            colorSelection: VETheme.color.textSelected,
+            lh: 20.0000,
+            padding: { top: 2, bottom: 0, left: 4, right: 4 },
+            config: { key: "bpm-count" },
+            store: {
+              key: "bpm-count",
+              callback: function(value, data) { 
+                var item = data.store.get("bpm-count")
+                if (item == null) {
+                  return 
+                }
+    
+                var bpm = item.get()
+                if (!Core.isType(bpm, Number)) {
+                  return 
+                }
+                data.textField.setText(string(bpm))
+              },
+              set: function(value) {
+                var item = this.get()
+                if (item == null) {
+                  return 
+                }
+    
+                var parsedValue = NumberUtil.parse(value, null)
+                if (parsedValue == null) {
+                  return
+                }
+                item.set(parsedValue)
+    
+                Struct.set(Beans.get(BeanVisuController).track, "bpmCount", parsedValue)
+              },
             },
+            margin: { left: 2, right: 2 },
+          },
+          "text_ve-track-control_sub_label": factoryLabel({
+            layout: layout.nodes.sub_label,
+            text: "Sub",
+            font: "font_inter_10_regular",
+            offset: { y: 1 },
+            color: VETheme.color.textShadow,
+            align: { v: VAlign.CENTER, h: HAlign.LEFT },
           }),
-          "button-ve-track-control_clear-shroom": factoryClearButton({
-            label: { text: "SHR" },
-            description: "Clear shrooms",
-            layout: layout.nodes.clearShroom,
-            callback: function() { 
-              Beans.get(BeanVisuController).shroomService.send(new Event("clear-shrooms"))
+          "text-field_ve-track-control_sub_field": {
+            type: UITextField,
+            layout: layout.nodes.sub_field,
+            updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayoutTextField")),
+            text: "10",
+            font: "font_inter_10_regular",
+            colorBackgroundUnfocused: VETheme.color.side,
+            colorBackgroundFocused: VETheme.color.primaryShadow,
+            colorOutlineUnfocused: VETheme.color.primaryShadow,
+            colorOutlineFocused: VETheme.color.primary,
+            colorTextUnfocused: VETheme.color.textShadow,
+            colorTextFocused: VETheme.color.textFocus,
+            colorSelection: VETheme.color.textSelected,
+            lh: 20.0000,
+            padding: { top: 2, bottom: 0, left: 4, right: 4 },
+            config: { key: "bpmSub" },
+            store: {
+              key: "bpm-sub",
+              callback: function(value, data) { 
+                var item = data.store.get("bpm-sub")
+                if (item == null) {
+                  return 
+                }
+    
+                var bpm = item.get()
+                if (!Core.isType(bpm, Number)) {
+                  return 
+                }
+                data.textField.setText(string(bpm))
+              },
+              set: function(value) {
+                var item = this.get()
+                if (item == null) {
+                  return 
+                }
+    
+                var parsedValue = NumberUtil.parse(value, null)
+                if (parsedValue == null) {
+                  return
+                }
+                item.set(parsedValue)
+    
+                Struct.set(Beans.get(BeanVisuController).track, "bpmSub", parsedValue)
+              },
             },
-          }),
-          "button-ve-track-control_clear-bullet": factoryClearButton({
-            label: { text: "BLT" },
-            description: "Clear bullets",
-            layout: layout.nodes.clearBullet,
-            callback: function() { 
-              Beans.get(BeanVisuController).bulletService.send(new Event("clear-bullets"))
+            margin: { left: 2, right: 2 },
+          },
+          "checkbox_ve-track-control_autosave": {
+            type: UICheckbox,
+            layout: layout.nodes.autosave,
+            value: Beans.get(BeanVisuEditorController).autosave.value,
+            updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
+            callback: function() {
+              var editor = Beans.get(BeanVisuEditorController)
+              editor.autosave.value = this.value
+              Visu.settings.setValue("visu.editor.autosave", this.value).save()
+              if (!editor.autosave.value) {
+                editor.autosave.timer.time = 0
+              }
             },
-          }),
-          "button-ve-track-control_clear-particle": factoryClearButton({
-            label: { text: "PRT" },
-            description: "Clear particles",
-            layout: layout.nodes.clearParticle,
-            callback: function() { 
-              Beans.get(BeanVisuController).particleService.send(new Event("clear-particles"))
+            spriteOn: {
+              name: "texture_ve_brush_toolbar_icon_save",
+              blend: "#FFFFFF",
+              alpha: 1.0,
             },
-          }),
+            spriteOff: {
+              name: "texture_ve_brush_toolbar_icon_save",
+              blend: "#FFFFFF",
+              alpha: 0.5,
+            },
+            backgroundMargin: { top: 1, bottom: 1, left: 0, right: 1 },
+            backgroundColor: VETheme.color.sideDark,
+            backgroundColorSelected: VETheme.color.primaryLight,
+            backgroundColorOut: VETheme.color.sideDark,
+            onMouseHoverOver: function(event) {
+              this.backgroundColor = ColorUtil.fromHex(this.backgroundColorSelected).toGMColor()
+            },
+            onMouseHoverOut: function(event) {
+              this.backgroundColor = ColorUtil.fromHex(this.backgroundColorOut).toGMColor()
+            },
+            description: "Autosave",
+            render: function() {
+              if (Optional.is(this.preRender)) {
+                this.preRender()
+              }
+              this.renderBackgroundColor()
+
+              var sprite = this.value ? this.spriteOn : this.spriteOff
+              if (sprite != null) {
+                var alpha = sprite.getAlpha()
+                if (this.scaleToFillStretched) {
+                  sprite.scaleToFillStretched(this.area.getWidth() - this.margin.left - this.margin.right, this.area.getHeight() - this.margin.top - this.margin.bottom)
+                }
+                sprite
+                  .setAlpha(alpha * (Struct.get(this.enable, "value") == false ? 0.5 : 1.0))
+                  .render(
+                    this.context.area.getX() + this.area.getX() + this.margin.left,
+                    this.context.area.getY() + this.area.getY() + this.margin.top
+                  )
+                  .setAlpha(alpha)
+              }
+
+              var label = Struct.get(this, "label")
+              if (label == null) {
+                label = new UILabel({ 
+                  text: this.description,
+                  color: VETheme.color.textShadow,
+                  align: { v: VAlign.BOTTOM, h: HAlign.CENTER },
+                  useScale: false,
+                  outline: true,
+                  outlineColor: VETheme.color.sideDark,
+                  font: "font_inter_8_bold",
+                })
+                Struct.set(this, "label", label)
+              }
+  
+              if (this.isHoverOver && this.enable.value) {
+                this.label.text = this.description
+                this.label.alpha = this.backgroundAlpha
+                this.label.render(
+                  // todo VALIGN HALIGN
+                  this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2),
+                  this.context.area.getY() + this.area.getY(),// + (this.area.getHeight() / 2)
+                  this.area.getWidth(),
+                  this.area.getHeight()
+                )
+              }
+              return this
+            },
+          },
+          "checkbox_ve-track-control_update": {
+            type: UICheckbox,
+            layout: layout.nodes.update,
+            value: Beans.get(BeanVisuEditorController).updateServices,
+            updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
+            callback: function() {
+              var editor = Beans.get(BeanVisuEditorController)
+              editor.updateServices = !editor.updateServices
+            },
+            spriteOn: {
+              name: "texture_ve_brush_toolbar_icon_update",
+              blend: "#FFFFFF",
+              alpha: 1.0,
+            },
+            spriteOff: {
+              name: "texture_ve_brush_toolbar_icon_update",
+              blend: "#FFFFFF",
+              alpha: 0.5,
+            },
+            backgroundMargin: { top: 1, bottom: 1, left: 0, right: 1 },
+            backgroundColor: VETheme.color.sideDark,
+            backgroundColorSelected: VETheme.color.primaryLight,
+            backgroundColorOut: VETheme.color.sideDark,
+            onMouseHoverOver: function(event) {
+              this.backgroundColor = ColorUtil.fromHex(this.backgroundColorSelected).toGMColor()
+            },
+            onMouseHoverOut: function(event) {
+              this.backgroundColor = ColorUtil.fromHex(this.backgroundColorOut).toGMColor()
+            },
+            description: "Update",
+            render: function() {
+              if (Optional.is(this.preRender)) {
+                this.preRender()
+              }
+              this.renderBackgroundColor()
+
+              var sprite = this.value ? this.spriteOn : this.spriteOff
+              if (sprite != null) {
+                var alpha = sprite.getAlpha()
+                if (this.scaleToFillStretched) {
+                  sprite.scaleToFillStretched(this.area.getWidth() - this.margin.left - this.margin.right, this.area.getHeight() - this.margin.top - this.margin.bottom)
+                }
+                sprite
+                  .setAlpha(alpha * (Struct.get(this.enable, "value") == false ? 0.5 : 1.0))
+                  .render(
+                    this.context.area.getX() + this.area.getX() + this.margin.left,
+                    this.context.area.getY() + this.area.getY() + this.margin.top
+                  )
+                  .setAlpha(alpha)
+              }
+
+              var label = Struct.get(this, "label")
+              if (label == null) {
+                label = new UILabel({ 
+                  text: this.description,
+                  color: VETheme.color.textShadow,
+                  align: { v: VAlign.BOTTOM, h: HAlign.CENTER },
+                  useScale: false,
+                  outline: true,
+                  outlineColor: VETheme.color.sideDark,
+                  font: "font_inter_8_bold",
+                })
+                Struct.set(this, "label", label)
+              }
+  
+              if (this.isHoverOver && this.enable.value) {
+                this.label.text = this.description
+                this.label.alpha = this.backgroundAlpha
+                this.label.render(
+                  // todo VALIGN HALIGN
+                  this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2),
+                  this.context.area.getY() + this.area.getY(),// + (this.area.getHeight() / 2)
+                  this.area.getWidth(),
+                  this.area.getHeight()
+                )
+              }
+              return this
+            },
+          },
           "checkbox_ve-track-control_follow": {
             type: UICheckbox,
             layout: layout.nodes.follow,
             updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
             store: { key: "timeline-follow" },
-            spriteOn: { name: "visu_texture_checkbox_on" },
-            spriteOff: { name: "visu_texture_checkbox_off" },
-          },
-          "text_ve-track-control_follow_label": {
-            type: UIText,
-            layout: layout.nodes.follow_label,
-            text: "Follow",
-            font: "font_inter_8_bold",
-            color: VETheme.color.textFocus,
-            align: { v: VAlign.CENTER, h: HAlign.LEFT },
-            outline: false,
-            //outlineColor: VETheme.color.sideDark,
-            store: { key: "timeline-follow" },
-            updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
-            preRender: function() {
-              var value = this.store.getValue()
-              if (!Optional.is(value)) {
-                return
+            spriteOn: {
+              name: "texture_ve_brush_toolbar_icon_follow",
+              blend: "#FFFFFF",
+              alpha: 1.0,
+            },
+            spriteOff: {
+              name: "texture_ve_brush_toolbar_icon_follow",
+              blend: "#FFFFFF",
+              alpha: 0.5,
+            },
+            backgroundMargin: { top: 1, bottom: 1, left: 0, right: 1 },
+            backgroundColor: VETheme.color.sideDark,
+            backgroundColorSelected: VETheme.color.primaryLight,
+            backgroundColorOut: VETheme.color.sideDark,
+            onMouseHoverOver: function(event) {
+              this.backgroundColor = ColorUtil.fromHex(this.backgroundColorSelected).toGMColor()
+            },
+            onMouseHoverOut: function(event) {
+              this.backgroundColor = ColorUtil.fromHex(this.backgroundColorOut).toGMColor()
+            },
+            description: "Follow",
+            render: function() {
+              if (Optional.is(this.preRender)) {
+                this.preRender()
+              }
+              this.renderBackgroundColor()
+
+              var sprite = this.value ? this.spriteOn : this.spriteOff
+              if (sprite != null) {
+                var alpha = sprite.getAlpha()
+                if (this.scaleToFillStretched) {
+                  sprite.scaleToFillStretched(this.area.getWidth() - this.margin.left - this.margin.right, this.area.getHeight() - this.margin.top - this.margin.bottom)
+                }
+                sprite
+                  .setAlpha(alpha * (Struct.get(this.enable, "value") == false ? 0.5 : 1.0))
+                  .render(
+                    this.context.area.getX() + this.area.getX() + this.margin.left,
+                    this.context.area.getY() + this.area.getY() + this.margin.top
+                  )
+                  .setAlpha(alpha)
               }
 
-              var alpha = this.label.alpha
-              this.label.alpha = value ? alpha : alpha * 0.5
-              Struct.set(this, "_alpha", alpha)
-            },
-            postRender: function() {
-              this.label.alpha = this._alpha
-            },
-            onMouseReleasedLeft: function(event) {
-              var item = this.store.get()
-              if (!Optional.is(item)) {
-                return
+              var label = Struct.get(this, "label")
+              if (label == null) {
+                label = new UILabel({ 
+                  text: this.description,
+                  color: VETheme.color.textShadow,
+                  align: { v: VAlign.BOTTOM, h: HAlign.CENTER },
+                  useScale: false,
+                  outline: true,
+                  outlineColor: VETheme.color.sideDark,
+                  font: "font_inter_8_bold",
+                })
+                Struct.set(this, "label", label)
               }
-              
-              item.set(!item.get())
-            }
+  
+              if (this.isHoverOver && this.enable.value) {
+                this.label.text = this.description
+                this.label.alpha = this.backgroundAlpha
+                this.label.render(
+                  // todo VALIGN HALIGN
+                  this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2),
+                  this.context.area.getY() + this.area.getY(),// + (this.area.getHeight() / 2)
+                  this.area.getWidth(),
+                  this.area.getHeight()
+                )
+              }
+              return this
+            },
           },
           "button-ve-track-control_redo": Struct.appendRecursiveUnique(
             {
@@ -876,8 +1089,8 @@ function VETrackControl(_editor) constructor {
                 font: "font_inter_8_bold",
               },
               sprite: {
-                name: "texture_ve_trackcontrol_button_redo",
-                alpha: 0.9,
+                name: "texture_ve_brush_toolbar_icon_redo",
+                alpha: 1.0,
               },
               layout: layout.nodes.redo,
               updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
@@ -894,9 +1107,9 @@ function VETrackControl(_editor) constructor {
                 editor.timeline.transactionService.redo()
               },
               backgroundMargin: { top: 1, bottom: 1, left: 0, right: 1 },
-              backgroundColor: VETheme.color.button,
+              backgroundColor: VETheme.color.sideDark,
               backgroundColorSelected: VETheme.color.primaryLight,
-              backgroundColorOut: VETheme.color.button,
+              backgroundColorOut: VETheme.color.sideDark,
               onMouseHoverOver: function(event) {
                 if (Struct.get(this.enable, "value") == false) {
                   this.backgroundColor = ColorUtil.fromHex(this.backgroundColorOut).toGMColor()
@@ -950,7 +1163,7 @@ function VETrackControl(_editor) constructor {
                   this.label.render(
                     // todo VALIGN HALIGN
                     this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2),
-                    this.context.area.getY() + this.area.getY() - 4.0,// + (this.area.getHeight() / 2)
+                    this.context.area.getY() + this.area.getY(),
                     this.area.getWidth(),
                     this.area.getHeight()
                   )
@@ -975,8 +1188,8 @@ function VETrackControl(_editor) constructor {
                 font: "font_inter_8_bold",
               },
               sprite: {
-                name: "texture_ve_trackcontrol_button_undo",
-                alpha: 0.9,
+                name: "texture_ve_brush_toolbar_icon_undo",
+                alpha: 1.0,
               },
               layout: layout.nodes.undo,
               updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
@@ -993,9 +1206,9 @@ function VETrackControl(_editor) constructor {
                 editor.timeline.transactionService.undo()
               },
               backgroundMargin: { top: 1, bottom: 1, left: 0, right: 1 },
-              backgroundColor: VETheme.color.button,
+              backgroundColor: VETheme.color.sideDark,
               backgroundColorSelected: VETheme.color.primaryLight,
-              backgroundColorOut: VETheme.color.button,
+              backgroundColorOut: VETheme.color.sideDark,
               onMouseHoverOver: function(event) {
                 if (Struct.get(this.enable, "value") == false) {
                   this.backgroundColor = ColorUtil.fromHex(this.backgroundColorOut).toGMColor()
@@ -1049,7 +1262,7 @@ function VETrackControl(_editor) constructor {
                   this.label.render(
                     // todo VALIGN HALIGN
                     this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2),
-                    this.context.area.getY() + this.area.getY() - 4.0,// + (this.area.getHeight() / 2)
+                    this.context.area.getY() + this.area.getY(),
                     this.area.getWidth(),
                     this.area.getHeight()
                   )
@@ -1098,9 +1311,9 @@ function VETrackControl(_editor) constructor {
                 item.set(clamp(value - 1, 5, 30))
               },
               backgroundMargin: { top: 1, bottom: 1, left: 0, right: 1 },
-              backgroundColor: VETheme.color.button,
+              backgroundColor: VETheme.color.sideDark,
               backgroundColorSelected: VETheme.color.primaryLight,
-              backgroundColorOut: VETheme.color.button,
+              backgroundColorOut: VETheme.color.sideDark,
               onMouseHoverOver: function(event) {
                 this.backgroundColor = ColorUtil.fromHex(this.backgroundColorSelected).toGMColor()
               },
@@ -1138,14 +1351,17 @@ function VETrackControl(_editor) constructor {
     
                 if (this.isHoverOver && this.enable.value) {
                   var text = this.label.text
+                  var alignV = this.label.align.v
                   this.label.text = this.description
+                  this.label.align.v = VAlign.BOTTOM
                   this.label.render(
                     // todo VALIGN HALIGN
                     this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2),
-                    this.context.area.getY() + this.area.getY() - 4.0,// + (this.area.getHeight() / 2)
+                    this.context.area.getY() + this.area.getY(),// + (this.area.getHeight() / 2)
                     this.area.getWidth(),
                     this.area.getHeight()
                   )
+                  this.label.align.v = alignV
                   this.label.text = text
                 }
                 return this
@@ -1154,60 +1370,64 @@ function VETrackControl(_editor) constructor {
             null,//VEStyles.get("ve-track-control").button,
             false
           ),
-          "slider-ve-track-control_zoom": Struct.appendRecursive({ 
-            type: UISliderHorizontal,
-            layout: layout.nodes.zoom,
-            updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
-            getClipboard: Beans.get(BeanVisuEditorIO).mouse.getClipboard,
-            setClipboard: Beans.get(BeanVisuEditorIO).mouse.setClipboard,
-            minValue: 5.0,
-            maxValue: 30.0,
-            //snapValue: 1.0 / 15.0,
-            store: { key: "timeline-zoom" },
-            onMouseHoverOver: function(event) { },
-            onMouseHoverOut: function(event) { },
-            updatePosition: function(mouseX, mouseY) {
-              var controller = Beans.get(BeanVisuController)
-              var editor = Beans.get(BeanVisuEditorController)
-              var ruler = editor.uiService.find("ve-timeline-ruler")
-              if (Optional.is(ruler)) {
-                ruler.finishUpdateTimer()
-              }
-  
-              var events = editor.uiService.find("ve-timeline-events")
-              if (Optional.is(events)) {
-                events.finishUpdateTimer()
+          "slider-ve-track-control_zoom": Struct.appendRecursive(
+            { 
+              type: UISliderHorizontal,
+              layout: layout.nodes.zoom,
+              updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
+              getClipboard: Beans.get(BeanVisuEditorIO).mouse.getClipboard,
+              setClipboard: Beans.get(BeanVisuEditorIO).mouse.setClipboard,
+              minValue: 5.0,
+              maxValue: 30.0,
+              //snapValue: 1.0 / 15.0,
+              store: { key: "timeline-zoom" },
+              onMouseHoverOver: function(event) { },
+              onMouseHoverOut: function(event) { },
+              updatePosition: function(mouseX, mouseY) {
+                var controller = Beans.get(BeanVisuController)
+                var editor = Beans.get(BeanVisuEditorController)
+                var ruler = editor.uiService.find("ve-timeline-ruler")
+                if (Optional.is(ruler)) {
+                  ruler.finishUpdateTimer()
+                }
+    
+                var events = editor.uiService.find("ve-timeline-events")
+                if (Optional.is(events)) {
+                  events.finishUpdateTimer()
+                }
+              },
+              postRender: function() {
+                if (!this.isHoverOver) {
+                  return
+                }
+
+                var label = Struct.get(this, "label")
+                if (!Optional.is(label)) {
+                  label = new UILabel({
+                    text: "", // "Zoom out / in\n( - / + )",
+                    color: VETheme.color.textShadow,
+                    align: { v: VAlign.BOTTOM, h: HAlign.CENTER },
+                    useScale: false,
+                    outline: true,
+                    outlineColor: VETheme.color.sideDark,
+                    font: "font_inter_8_bold",
+                  })
+
+                  Struct.set(this, "label", label)
+                }
+
+                this.label.render(
+                  // todo VALIGN HALIGN
+                  this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2),
+                  this.context.area.getY() + this.area.getY(),// + (this.area.getHeight() / 2)
+                  this.area.getWidth(),
+                  this.area.getHeight()
+                )
               }
             },
-            postRender: function() {
-              if (!this.isHoverOver) {
-                return
-              }
-
-              var label = Struct.get(this, "label")
-              if (!Optional.is(label)) {
-                label = new UILabel({
-                  text: "Zoom out / in\n( - / + )",
-                  color: VETheme.color.textShadow,
-                  align: { v: VAlign.BOTTOM, h: HAlign.CENTER },
-                  useScale: false,
-                  outline: true,
-                  outlineColor: VETheme.color.sideDark,
-                  font: "font_inter_8_bold",
-                })
-
-                Struct.set(this, "label", label)
-              }
-
-              this.label.render(
-                // todo VALIGN HALIGN
-                this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2),
-                this.context.area.getY() + this.area.getY(),// + (this.area.getHeight() / 2)
-                this.area.getWidth(),
-                this.area.getHeight()
-              )
-            }
-          }, VEStyles.get("slider-horizontal-2"), false),
+            VEStyles.get("slider-horizontal-2"),
+            false
+          ),
           "button-ve-track-control_zoom_in": Struct.appendRecursiveUnique(
             {
               type: UIButton,
@@ -1245,9 +1465,9 @@ function VETrackControl(_editor) constructor {
                 item.set(clamp(value + 1, 5, 30))
               },
               backgroundMargin: { top: 1, bottom: 1, left: 0, right: 1 },
-              backgroundColor: VETheme.color.button,
+              backgroundColor: VETheme.color.sideDark,
               backgroundColorSelected: VETheme.color.primaryLight,
-              backgroundColorOut: VETheme.color.button,
+              backgroundColorOut: VETheme.color.sideDark,
               onMouseHoverOver: function(event) {
                 this.backgroundColor = ColorUtil.fromHex(this.backgroundColorSelected).toGMColor()
               },
@@ -1285,14 +1505,17 @@ function VETrackControl(_editor) constructor {
     
                 if (this.isHoverOver && this.enable.value) {
                   var text = this.label.text
+                  var alignV = this.label.align.v
                   this.label.text = this.description
+                  this.label.align.v = VAlign.BOTTOM
                   this.label.render(
                     // todo VALIGN HALIGN
                     this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2),
-                    this.context.area.getY() + this.area.getY() - 4.0,// + (this.area.getHeight() / 2)
+                    this.context.area.getY() + this.area.getY(),// + (this.area.getHeight() / 2)
                     this.area.getWidth(),
                     this.area.getHeight()
                   )
+                  this.label.align.v = alignV
                   this.label.text = text
                 }
                 return this

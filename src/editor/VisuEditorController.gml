@@ -571,7 +571,7 @@ function VisuEditorController() constructor {
           name: "visu-editor.track-control",
           percentageHeight: 1.0,
           width: function() { return Struct.get(this.context.nodes, "preview").width() },
-          height: function() { return round(90 * this.percentageHeight) },
+          height: function() { return round(68 * this.percentageHeight) },
           x: function() { return this.context.nodes.preview.x() },
           y: function() {
             return min(
@@ -744,8 +744,8 @@ function VisuEditorController() constructor {
     var renderTrackControl = this.store.getValue("render-trackControl")
     var trackControlNode = Struct.get(this.layout.nodes, "track-control")
     trackControlNode.percentageHeight = clamp(renderTrackControl
-      ? lerp(trackControlNode.percentageHeight, 1.0, lerpFactor * 1.0)
-      : lerp(trackControlNode.percentageHeight, 0.0, lerpFactor * 1.0), 0, 1.0)
+      ? lerp(trackControlNode.percentageHeight, 1.0, lerpFactor * 2.0)
+      : lerp(trackControlNode.percentageHeight, 0.0, lerpFactor * 2.0), 0, 1.0)
     if (!renderTrackControl && trackControlNode.percentageHeight < 0.1) {
       trackControlNode.percentageHeight = 0.0
     }

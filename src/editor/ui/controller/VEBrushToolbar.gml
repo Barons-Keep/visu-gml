@@ -1420,9 +1420,85 @@ global.__VisuBrushContainers = new Map(String, Callable, {
           layout: layout.nodes.snapCheckbox,
           updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
           store: { key: "snap" },
-          spriteOn: { name: "visu_texture_checkbox_on" },
-          spriteOff: { name: "visu_texture_checkbox_off" },
+          spriteOn: {
+            name: "texture_ve_brush_toolbar_icon_snap",
+            blend: "#FFFFFF",
+            alpha: 1.0,
+          },
+          spriteOff: {
+            name: "texture_ve_brush_toolbar_icon_snap",
+            blend: "#FFFFFF",
+            alpha: 0.5,
+          },
+          //backgroundMargin: { top: 1, bottom: 1, left: 0, right: 1 },
+          backgroundColor: VETheme.color.sideDark,
+          backgroundColorSelected: VETheme.color.primaryLight,
+          backgroundColorOut: VETheme.color.sideDark,
+          onMouseHoverOver: function(event) {
+            this.backgroundColor = ColorUtil.fromHex(this.backgroundColorSelected).toGMColor()
+          },
+          onMouseHoverOut: function(event) {
+            this.backgroundColor = ColorUtil.fromHex(this.backgroundColorOut).toGMColor()
+          },
+          description: "Snap\n\n[Q]",
+          render: function() {
+            //var store = Struct.get(this.context)
+            //if (Optional.is(store)) {
+            //  var value = this.context.store.getValue("snap")
+            //  if (this.value != value) {
+            //    this.updateValue(value)
+            //  }
+            //}
+
+            if (Optional.is(this.preRender)) {
+              this.preRender()
+            }
+            this.renderBackgroundColor()
+
+            var sprite = this.value ? this.spriteOn : this.spriteOff
+            if (sprite != null) {
+              var alpha = sprite.getAlpha()
+              if (this.scaleToFillStretched) {
+                sprite.scaleToFillStretched(this.area.getWidth() - this.margin.left - this.margin.right, this.area.getHeight() - this.margin.top - this.margin.bottom)
+              }
+              sprite
+                .setAlpha(alpha * (Struct.get(this.enable, "value") == false ? 0.5 : 1.0))
+                .render(
+                  this.context.area.getX() + this.area.getX() + this.margin.left,
+                  this.context.area.getY() + this.area.getY() + this.margin.top
+                )
+                .setAlpha(alpha)
+            }
+
+            var label = Struct.get(this, "label")
+            if (label == null) {
+              label = new UILabel({ 
+                text: this.description,
+                color: VETheme.color.textFocus,
+                align: { v: VAlign.CENTER, h: HAlign.CENTER },
+                useScale: false,
+                outline: true,
+                outlineColor: VETheme.color.sideDark,
+                font: "font_inter_8_bold",
+              })
+              Struct.set(this, "label", label)
+            }
+
+            if (this.isHoverOver && this.enable.value) {
+              this.label.text = this.description
+              this.label.alpha = this.backgroundAlpha
+              this.label.render(
+                // todo VALIGN HALIGN
+                this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2),
+                this.context.area.getY() + this.area.getY() + (this.area.getHeight() / 2),
+                this.area.getWidth(),
+                this.area.getHeight()
+              )
+            }
+            return this
+          },
         },
+        /*
         "text_ve-brush-toolbar_snap": {
           type: UIText,
           layout: layout.nodes.snapLabel,
@@ -1456,6 +1532,7 @@ global.__VisuBrushContainers = new Map(String, Callable, {
             item.set(!item.get())
           }
         },
+        */
       },
       onInit: function() {
         var container = this
@@ -1618,6 +1695,7 @@ global.__VisuBrushContainers = new Map(String, Callable, {
                       width: function() { return this.area.getWidth() },
                     }),
                     textField: null,
+                    updateArea: false,
                   },
                   "load-components": function(task) {
                     repeat (BRUSH_TOOLBAR_ENTRY_STEP) {
@@ -1625,6 +1703,7 @@ global.__VisuBrushContainers = new Map(String, Callable, {
                       if (!Optional.is(index)) {
                         task.fullfill()
                         task.state.context.finishUpdateTimer()
+                        task.state.context.areaWatchdog.signal()
                         break
                       }
     
@@ -2109,8 +2188,8 @@ function VEBrushToolbar(_editor) constructor {
               },
               snapCheckbox: {
                 name: "brush-toolbar.inspector-tool.snapCheckbox",
-                width: function() { return 28 },
-                height: function() { return 28 },
+                width: function() { return 32 },
+                height: function() { return 32 },
                 x: function() { return this.context.nodes.toolbar.right() + 2.0 },
                 y: function() { return round((this.context.height() - this.height()) / 2.0) },
               },

@@ -310,8 +310,18 @@ function GridService(_config = null) constructor {
   ///@type {Struct}
   movement = {
     enable: false,
-    angle: new NumberTransformer({ value: 90.0, target: 1.0, factor: 0.01, increase: 0.0 }),
-    speed: new NumberTransformer({ value: 0.0, target: 1.0, factor: 0.01, increase: 0.0 }),
+    angle: new NumberTransformer({
+      value: 90.0,
+      target: 1.0,
+      duration: 148.333333,
+      ease: EaseType.LINEAR,
+    }),
+    speed: new NumberTransformer({
+      value: 0.0,
+      target: 1.0,
+      duration: 1.666667,
+      ease: EaseType.LINEAR,
+    }),
   }
   
   avgCircular = {

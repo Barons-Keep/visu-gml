@@ -988,8 +988,8 @@ function VisuTrackLoader(_controller): Service() constructor {
               transformer: new NumberTransformer({
                 value: properties.channelsPrimaryAlpha,
                 target: 0.0,
-                factor: 0.01,
-                increase: 0.0,
+                duration: 2.0,
+                ease: EaseType.LINEAR,
               })
             }))
             
@@ -1000,8 +1000,8 @@ function VisuTrackLoader(_controller): Service() constructor {
               transformer: new NumberTransformer({
                 value: properties.channelsSecondaryAlpha,
                 target: 0.0,
-                factor: 0.01,
-                increase: 0.0,
+                duration: 2.0,
+                ease: EaseType.LINEAR,
               })
             }))
             
@@ -1012,8 +1012,8 @@ function VisuTrackLoader(_controller): Service() constructor {
               transformer: new NumberTransformer({
                 value: properties.separatorsPrimaryAlpha,
                 target: 0.0,
-                factor: 0.01,
-                increase: 0.0,
+                duration: 2.0,
+                ease: EaseType.LINEAR,
               })
             }))
             
@@ -1024,8 +1024,8 @@ function VisuTrackLoader(_controller): Service() constructor {
               transformer: new NumberTransformer({
                 value: properties.separatorsSecondaryAlpha,
                 target: 0.0,
-                factor: 0.01,
-                increase: 0.0,
+                duration: 2.0,
+                ease: EaseType.LINEAR,
               })
             }))
           },

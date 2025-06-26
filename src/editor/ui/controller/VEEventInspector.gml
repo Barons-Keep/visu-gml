@@ -422,6 +422,7 @@ function VEEventInspector(_editor) constructor {
                           width: function() { return this.area.getWidth() },
                         }),
                         textField: null,
+                        updateArea: false,
                       },
                       subscribers: event.store.container,
                       subscribersQueue: new Queue(String, event.store.container
@@ -441,6 +442,7 @@ function VEEventInspector(_editor) constructor {
                           if (!Optional.is(index)) {
                             task.state.stage = "set-subscribers"
                             task.state.context.finishUpdateTimer()
+                            task.state.context.areaWatchdog.signal()
                             break
                           }
         

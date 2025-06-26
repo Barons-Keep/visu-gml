@@ -2529,6 +2529,7 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                       width: function() { return this.area.getWidth() },
                     }),
                     textField: null,
+                    updateArea: false,
                   },
                   previousOffset: {
                     x: data.offset.x,
@@ -2543,6 +2544,7 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                         task.fullfill()
                         task.state.context.state.set("previousOffset", task.state.previousOffset)
                         task.state.context.finishUpdateTimer()
+                        task.state.context.areaWatchdog.signal()
 
                         break
                       }
