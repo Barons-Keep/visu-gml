@@ -686,7 +686,8 @@ function VETrackControl(_editor) constructor {
             type: UITextField,
             layout: layout.nodes.bpm_field,
             updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayoutTextField")),
-            text: "10",
+            text: "90",
+            value: "90",
             font: "font_inter_10_regular",
             colorBackgroundUnfocused: VETheme.color.side,
             colorBackgroundFocused: VETheme.color.primaryShadow,
@@ -698,6 +699,7 @@ function VETrackControl(_editor) constructor {
             lh: 20.0000,
             padding: { top: 2, bottom: 0, left: 4, right: 4 },
             GMTF_DECIMAL: 0,
+            config: { key: "bpm" },
             store: {
               key: "bpm",
               callback: function(value, data) { 
@@ -711,7 +713,7 @@ function VETrackControl(_editor) constructor {
                   return 
                 }
 
-                data.textField.setText(bpm)
+                data.textField.setText(string(bpm))
               },
               set: function(value) {
                 var item = this.get()
@@ -741,7 +743,8 @@ function VETrackControl(_editor) constructor {
             type: UITextField,
             layout: layout.nodes.meter_field,
             updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayoutTextField")),
-            text: "10",
+            text: "16",
+            value: "16",
             font: "font_inter_10_regular",
             colorBackgroundUnfocused: VETheme.color.side,
             colorBackgroundFocused: VETheme.color.primaryShadow,
@@ -765,9 +768,11 @@ function VETrackControl(_editor) constructor {
                 if (!Core.isType(bpm, Number)) {
                   return 
                 }
+
                 data.textField.setText(string(bpm))
               },
               set: function(value) {
+                Core.print("set bpm-count", value)
                 var item = this.get()
                 if (item == null) {
                   return 
@@ -796,7 +801,8 @@ function VETrackControl(_editor) constructor {
             type: UITextField,
             layout: layout.nodes.sub_field,
             updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayoutTextField")),
-            text: "10",
+            text: "2",
+            value: "2",
             font: "font_inter_10_regular",
             colorBackgroundUnfocused: VETheme.color.side,
             colorBackgroundFocused: VETheme.color.primaryShadow,

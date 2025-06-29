@@ -148,7 +148,7 @@ function GridItemEmitter(json = null) constructor {
   duration = Struct.getIfType(json, "duration", Number, 0)
 
   ///@type {Number}
-  interval = this.amount < 1 ? this.duration : (this.duration / (this.amount - 1))
+  interval = this.amount <= 1 ? this.duration : (this.duration / (this.amount - 1))
 
   ///@type {NumberTransformer}
   offsetX = new NumberTransformer(Struct.getDefault(json, "offsetX", {
@@ -160,6 +160,22 @@ function GridItemEmitter(json = null) constructor {
 
   ///@type {NumberTransformer}
   offsetY = new NumberTransformer(Struct.getDefault(json, "offsetY", {
+    value: 0.0,
+    target: 0.0,
+    duration: 0.0,
+    ease: EaseType.LINEAR,
+  }))
+
+  ///@type {NumberTransformer}
+  wiggleFrequency = new NumberTransformer(Struct.getDefault(json, "wiggleFrequency", {
+    value: 1.0,
+    target: 1.0,
+    duration: 0.0,
+    ease: EaseType.LINEAR,
+  }))
+
+  ///@type {NumberTransformer}
+  wiggleAmplitude = new NumberTransformer(Struct.getDefault(json, "wiggleAmplitude", {
     value: 0.0,
     target: 0.0,
     duration: 0.0,
@@ -186,22 +202,6 @@ function GridItemEmitter(json = null) constructor {
 
   ///@type {Number}
   timeSum = 0.0
-
-  ///@type {NumberTransformer}
-  wiggleFrequency = new NumberTransformer(Struct.getDefault(json, "wiggleFrequency", {
-    value: 1.0,
-    target: 1.0,
-    duration: 0.0,
-    ease: EaseType.LINEAR,
-  }))
-
-  ///@type {NumberTransformer}
-  wiggleAmplitude = new NumberTransformer(Struct.getDefault(json, "wiggleAmplitude", {
-    value: 0.0,
-    target: 0.0,
-    duration: 0.0,
-    ease: EaseType.LINEAR,
-  }))
 
   ///@param {GridItem} item
   ///@param {VisuController} controller

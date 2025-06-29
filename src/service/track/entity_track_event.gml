@@ -15,13 +15,130 @@
 global.__entity_track_event = {
   "brush_entity_shroom": {
     parse: function(data) {
-      return {
+      var emitterConfig = Struct.getIfType(data, "en-shr_em-cfg", Struct)
+      if (emitterConfig == null) {
+        emitterConfig = {
+          amount: 1,
+          duration: 0,
+          arrays: 1,
+          perArray: 1,
+          angle: {
+            value: 0,
+            target: 0,
+            duration: 0,
+            ease: "LINEAR",
+          },
+          angleRng: 0,
+          angleStep: 0,
+          anglePerArray: {
+            value: 0,
+            target: 0,
+            duration: 0,
+            ease: "LINEAR",
+          },
+          anglePerArrayRng: 0,
+          anglePerArrayStep: 0,
+          speed: {
+            value: 0,
+            target: 0,
+            duration: 0,
+            ease: "LINEAR",
+          },
+          speedRng: 0,
+          offsetX: {
+            value: 0,
+            target: 0,
+            duration: 0,
+            ease: "LINEAR",
+          },
+          offsetY: {
+            value: 0,
+            target: 0,
+            duration: 0,
+            ease: "LINEAR",
+          },
+          wiggleFrequency: {
+            value: 0,
+            target: 0,
+            duration: 0,
+            ease: "LINEAR",
+          },
+          wiggleAmplitude: {
+            value: 0,
+            target: 0,
+            duration: 0,
+            ease: "LINEAR",
+          },
+        }
+      }
+
+      var oldEmitter = null
+      if (Struct.get(data, "en-shr_em-use-cfg") == false) {
+        oldEmitter = {
+          "en-shr_em-amount": Struct.parse.number(data, "en-shr_em-amount", 1.0),
+          "en-shr_em-arrays": Struct.parse.number(data, "en-shr_em-arrays", 1.0),
+          "en-shr_em-angle": Struct.parse.numberTransformer(data, "en-shr_em-angle", {
+            clampValue: { from: -99999.9, to: 99999.9 },
+            clampTarget: { from: -99999.9, to: 99999.9 },
+          }),
+          "en-shr_em-use-angle": Struct.parse.boolean(data, "en-shr_em-use-angle"),
+          "en-shr_em-change-angle": Struct.parse.boolean(data, "en-shr_em-change-angle"),
+          "en-shr_em-angle-rng": Struct.parse.number(data, "en-shr_em-angle-rng"),
+          "en-shr_em-use-angle-rng": Struct.parse.boolean(data, "en-shr_em-use-angle-rng"),
+          "en-shr_em-angle-step": Struct.parse.number(data, "en-shr_em-angle-step"),
+          "en-shr_em-per-array": Struct.parse.number(data, "en-shr_em-per-array", 1.0),
+          "en-shr_em-per-array-dir": Struct.parse.numberTransformer(data, "en-shr_em-per-array-dir", {
+            clampValue: { from: -99999.9, to: 99999.9 },
+            clampTarget: { from: -99999.9, to: 99999.9 },
+          }),
+          "en-shr_em-use-per-array-dir": Struct.parse.boolean(data, "en-shr_em-use-per-array-dir"),
+          "en-shr_em-change-per-array-dir": Struct.parse.boolean(data, "en-shr_em-change-per-array-dir"),
+          "en-shr_em-use-per-array-rng": Struct.parse.boolean(data, "en-shr_em-use-per-array-rng"),
+          "en-shr_em-per-array-rng": Struct.parse.number(data, "en-shr_em-per-array-rng"),
+          "en-shr_em-per-array-step": Struct.parse.number(data, "en-shr_em-per-array-step"),
+          "en-shr_em-spd": Struct.parse.numberTransformer(data, "en-shr_em-spd", {
+            clampValue: { from: 0, to: 99.9 },
+            clampTarget: { from: 0, to: 99.9 },
+          }),
+          "en-shr_em-use-spd": Struct.parse.boolean(data, "en-shr_em-use-spd"),
+          "en-shr_em-change-spd": Struct.parse.boolean(data, "en-shr_em-change-spd"),
+          "en-shr_em-use-spd-rng": Struct.parse.boolean(data, "en-shr_em-use-spd-rng"),
+          "en-shr_em-spd-rng": Struct.parse.number(data, "en-shr_em-spd-rng", 0.0),
+          "en-shr_em-duration": Struct.parse.number(data, "en-shr_em-duration", 0.0),
+          "en-shr_em-offset-x": Struct.parse.numberTransformer(data, "en-shr_em-offset-x", {
+            clampValue: { from: -99999.9, to: 99999.9 },
+            clampTarget: { from: -99999.9, to: 99999.9 },
+          }),
+          "en-shr_em-use-offset-x": Struct.parse.boolean(data, "en-shr_em-use-offset-x"),
+          "en-shr_em-change-offset-x": Struct.parse.boolean(data, "en-shr_em-change-offset-x"),
+          "en-shr_em-offset-y": Struct.parse.numberTransformer(data, "en-shr_em-offset-y", {
+            clampValue: { from: -99999.9, to: 99999.9 },
+            clampTarget: { from: -99999.9, to: 99999.9 },
+          }),
+          "en-shr_em-use-offset-y": Struct.parse.boolean(data, "en-shr_em-use-offset-y"),
+          "en-shr_em-change-offset-y": Struct.parse.boolean(data, "en-shr_em-change-offset-y"),
+          "en-shr_em-wiggle-freq": Struct.parse.numberTransformer(data, "en-shr_em-wiggle-freq", {
+            clampValue: { from: -99999.9, to: 99999.9 },
+            clampTarget: { from: -99999.9, to: 99999.9 },
+          }),
+          "en-shr_em-use-wiggle-freq": Struct.parse.boolean(data, "en-shr_em-use-wiggle-freq"),
+          "en-shr_em-change-wiggle-freq": Struct.parse.boolean(data, "en-shr_em-change-wiggle-freq"),
+          "en-shr_em-wiggle-amp": Struct.parse.numberTransformer(data, "en-shr_em-wiggle-amp", {
+            clampValue: { from: -99999.9, to: 99999.9 },
+            clampTarget: { from: -99999.9, to: 99999.9 },
+          }),
+          "en-shr_em-use-wiggle-amp": Struct.parse.boolean(data, "en-shr_em-use-wiggle-amp"),
+          "en-shr_em-change-wiggle-amp": Struct.parse.boolean(data, "en-shr_em-change-wiggle-amp"),
+        }
+      }
+
+      return Struct.append({
         "icon": Struct.parse.sprite(data, "icon"),
         "en-shr_hide": Struct.parse.boolean(data, "en-shr_hide", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-shr_hide-spawn": Struct.parse.boolean(data, "en-shr_hide-spawn", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-shr_hide-inherit": Struct.parse.boolean(data, "en-shr_hide-inherit", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
-        "en-shr_hide-emitter": Struct.parse.boolean(data, "en-shr_hide-emitter", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-shr_hide-em": Struct.parse.boolean(data, "en-shr_hide-em", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+
         "en-shr_hide-em-cfg": Struct.parse.boolean(data, "en-shr_hide-em-cfg", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-shr_hide-em-angle": Struct.parse.boolean(data, "en-shr_hide-em-angle", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-shr_hide-em-per-array": Struct.parse.boolean(data, "en-shr_hide-em-per-array", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
@@ -30,6 +147,7 @@ global.__entity_track_event = {
         "en-shr_hide-em-offset-y": Struct.parse.boolean(data, "en-shr_hide-em-offset-y", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-shr_hide-em-wiggle-freq": Struct.parse.boolean(data, "en-shr_hide-em-wiggle-freq", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-shr_hide-em-wiggle-amp": Struct.parse.boolean(data, "en-shr_hide-em-wiggle-amp", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+
         "en-shr_preview": Struct.parse.boolean(data, "en-shr_preview"),
         "en-shr_template": Struct.parse.text(data, "en-shr_template", "shroom-default"),
         "en-shr_use-lifespan": Struct.parse.boolean(data, "en-shr_use-lifespan", false),
@@ -66,61 +184,9 @@ global.__entity_track_event = {
         "en-shr_use-mask": Struct.parse.boolean(data, "en-shr_use-mask"),
         "en-shr_mask": Struct.parse.rectangle(data, "en-shr_mask"),
         "en-shr_use-em": Struct.parse.boolean(data, "en-shr_use-em"),
-        "en-shr_em-amount": Struct.parse.number(data, "en-shr_em-amount", 1.0),
-        "en-shr_em-arrays": Struct.parse.number(data, "en-shr_em-arrays", 1.0),
-        "en-shr_em-angle": Struct.parse.numberTransformer(data, "en-shr_em-angle", {
-          clampValue: { from: -99999.9, to: 99999.9 },
-          clampTarget: { from: -99999.9, to: 99999.9 },
-        }),
-        "en-shr_em-use-angle": Struct.parse.boolean(data, "en-shr_em-use-angle"),
-        "en-shr_em-change-angle": Struct.parse.boolean(data, "en-shr_em-change-angle"),
-        "en-shr_em-angle-rng": Struct.parse.number(data, "en-shr_em-angle-rng"),
-        "en-shr_em-use-angle-rng": Struct.parse.boolean(data, "en-shr_em-use-angle-rng"),
-        "en-shr_em-angle-step": Struct.parse.number(data, "en-shr_em-angle-step"),
-        "en-shr_em-per-array": Struct.parse.number(data, "en-shr_em-per-array"),
-        "en-shr_em-per-array-dir": Struct.parse.numberTransformer(data, "en-shr_em-per-array-dir", {
-          clampValue: { from: -99999.9, to: 99999.9 },
-          clampTarget: { from: -99999.9, to: 99999.9 },
-        }),
-        "en-shr_em-use-per-array-dir": Struct.parse.boolean(data, "en-shr_em-use-per-array-dir"),
-        "en-shr_em-change-per-array-dir": Struct.parse.boolean(data, "en-shr_em-change-per-array-dir"),
-        "en-shr_em-use-per-array-rng": Struct.parse.boolean(data, "en-shr_em-use-per-array-rng"),
-        "en-shr_em-per-array-rng": Struct.parse.number(data, "en-shr_em-per-array-rng"),
-        "en-shr_em-per-array-step": Struct.parse.number(data, "en-shr_em-per-array-step"),
-        "en-shr_em-spd": Struct.parse.numberTransformer(data, "en-shr_em-spd", {
-          clampValue: { from: 0, to: 99.9 },
-          clampTarget: { from: 0, to: 99.9 },
-        }),
-        "en-shr_em-use-spd": Struct.parse.boolean(data, "en-shr_em-use-spd"),
-        "en-shr_em-change-spd": Struct.parse.boolean(data, "en-shr_em-change-spd"),
-        "en-shr_em-use-spd-rng": Struct.parse.boolean(data, "en-shr_em-use-spd-rng"),
-        "en-shr_em-spd-rng": Struct.parse.number(data, "en-shr_em-spd-rng", 0.0),
-        "en-shr_em-duration": Struct.parse.number(data, "en-shr_em-duration", 0.0),
-        "en-shr_em-offset-x": Struct.parse.numberTransformer(data, "en-shr_em-offset-x", {
-          clampValue: { from: -99999.9, to: 99999.9 },
-          clampTarget: { from: -99999.9, to: 99999.9 },
-        }),
-        "en-shr_em-use-offset-x": Struct.parse.boolean(data, "en-shr_em-use-offset-x"),
-        "en-shr_em-change-offset-x": Struct.parse.boolean(data, "en-shr_em-change-offset-x"),
-        "en-shr_em-offset-y": Struct.parse.numberTransformer(data, "en-shr_em-offset-y", {
-          clampValue: { from: -99999.9, to: 99999.9 },
-          clampTarget: { from: -99999.9, to: 99999.9 },
-        }),
-        "en-shr_em-use-offset-y": Struct.parse.boolean(data, "en-shr_em-use-offset-y"),
-        "en-shr_em-change-offset-y": Struct.parse.boolean(data, "en-shr_em-change-offset-y"),
-        "en-shr_em-wiggle-freq": Struct.parse.numberTransformer(data, "en-shr_em-wiggle-freq", {
-          clampValue: { from: -99999.9, to: 99999.9 },
-          clampTarget: { from: -99999.9, to: 99999.9 },
-        }),
-        "en-shr_em-use-wiggle-freq": Struct.parse.boolean(data, "en-shr_em-use-wiggle-freq"),
-        "en-shr_em-change-wiggle-freq": Struct.parse.boolean(data, "en-shr_em-change-wiggle-freq"),
-        "en-shr_em-wiggle-amp": Struct.parse.numberTransformer(data, "en-shr_em-wiggle-amp", {
-          clampValue: { from: -99999.9, to: 99999.9 },
-          clampTarget: { from: -99999.9, to: 99999.9 },
-        }),
-        "en-shr_em-use-wiggle-amp": Struct.parse.boolean(data, "en-shr_em-use-wiggle-amp"),
-        "en-shr_em-change-wiggle-amp": Struct.parse.boolean(data, "en-shr_em-change-wiggle-amp"),
-      }
+        "en-shr_em-cfg": emitterConfig,
+        "en-shr_em-use-cfg": Struct.parse.boolean(data, "en-shr_em-use-cfg", true),
+      }, oldEmitter, false)
     },
     run: function(data, channel) {
       var controller = Beans.get(BeanVisuController)
@@ -164,6 +230,60 @@ global.__entity_track_event = {
       var inherit = Struct.get(data, "en-shr_use-inherit") ? Struct.get(data, "en-shr_inherit") : null
       var template = Struct.get(data, "en-shr_template")
       if (Struct.get(data, "en-shr_use-em")) {
+        var emitterConfig = (Struct.get(data, "en-shr_em-use-cfg") == false)
+          ? {
+            amount: Struct.get(data, "en-shr_em-amount"),
+            arrays: Struct.get(data, "en-shr_em-arrays"),
+            angle: Struct.get(data, "en-shr_em-use-angle")
+              ? (Struct.get(data, "en-shr_em-change-angle")
+                ? Struct.get(data, "en-shr_em-angle").serialize()
+                : Struct.get(Struct.get(data, "en-shr_em-angle").serialize(), "value"))
+              : 0.0,
+            angleRng: Struct.get(data, "en-shr_em-use-angle-rng")
+              ? Struct.get(data, "en-shr_em-angle-rng")
+              : 0.0,
+            angleStep: Struct.get(data, "en-shr_em-angle-step"),
+            perArray: Struct.get(data, "en-shr_em-per-array"),
+            anglePerArray: Struct.get(data, "en-shr_em-use-per-array-dir")
+              ? (Struct.get(data, "en-shr_em-change-per-array-dir")
+                ? Struct.get(data, "en-shr_em-per-array-dir").serialize()
+                : Struct.get(Struct.get(data, "en-shr_em-per-array-dir").serialize(), "value"))
+              : 0.0,
+            anglePerArrayRng: Struct.get(data, "en-shr_em-use-per-array-rng")
+              ? Struct.get(data, "en-shr_em-per-array-rng")
+              : 0.0,
+            anglePerArrayStep: Struct.get(data, "en-shr_em-per-array-step"),
+            speed: Struct.get(data, "en-shr_em-use-spd")
+              ? (Struct.get(data, "en-shr_em-change-spd")
+                ? Struct.get(data, "en-shr_em-spd").serialize()
+                : Struct.get(Struct.get(data, "en-shr_em-spd").serialize(), "value"))
+              : 0.0,
+            speedRng: Struct.get(data, "en-shr_em-use-spd-rng")
+              ? Struct.get(data, "en-shr_em-spd-rng")
+              : 0.0,
+            duration: Struct.get(data, "en-shr_em-duration"),
+            offsetX: Struct.get(data, "en-shr_em-use-offset-x")
+              ? (Struct.get(data, "en-shr_em-change-offset-x")
+                ? Struct.get(data, "en-shr_em-offset-x").serialize()
+                : Struct.get(Struct.get(data, "en-shr_em-offset-x").serialize(), "value"))
+              : 0.0,
+            offsetY: Struct.get(data, "en-shr_em-use-offset-y")
+              ? (Struct.get(data, "en-shr_em-change-offset-y")
+                ? Struct.get(data, "en-shr_em-offset-y").serialize()
+                : Struct.get(Struct.get(data, "en-shr_em-offset-y").serialize(), "value"))
+              : 0.0,
+            wiggleFrequency: Struct.get(data, "en-shr_em-use-wiggle-freq")
+              ? (Struct.get(data, "en-shr_em-change-wiggle-freq")
+                ? Struct.get(data, "en-shr_em-wiggle-freq").serialize()
+                : Struct.get(Struct.get(data, "en-shr_em-wiggle-freq").serialize(), "value"))
+              : 0.0,
+            wiggleAmplitude: Struct.get(data, "en-shr_em-use-wiggle-amp")
+              ? (Struct.get(data, "en-shr_em-change-wiggle-amp")
+                ? Struct.get(data, "en-shr_em-wiggle-amp").serialize()
+                : Struct.get(Struct.get(data, "en-shr_em-wiggle-amp").serialize(), "value"))
+              : 0.0,
+          } : Struct.get(data, "en-shr_em-cfg")
+
         controller.shroomService.spawnShroomEmitter({
           name: template,
           spawnX: spawnX,
@@ -175,58 +295,7 @@ global.__entity_track_event = {
           lifespan: lifespan,
           hp: hp,
           inherit: inherit
-        }, {
-          amount: Struct.get(data, "en-shr_em-amount"),
-          arrays: Struct.get(data, "en-shr_em-arrays"),
-          angle: Struct.get(data, "en-shr_em-use-angle")
-            ? (Struct.get(data, "en-shr_em-change-angle")
-              ? Struct.get(data, "en-shr_em-angle").serialize()
-              : Struct.get(Struct.get(data, "en-shr_em-angle").serialize(), "value"))
-            : 0.0,
-          angleRng: Struct.get(data, "en-shr_em-use-angle-rng")
-            ? Struct.get(data, "en-shr_em-angle-rng")
-            : 0.0,
-          angleStep: Struct.get(data, "en-shr_em-angle-step"),
-          perArray: Struct.get(data, "en-shr_em-per-array"),
-          anglePerArray: Struct.get(data, "en-shr_em-use-per-array-dir")
-            ? (Struct.get(data, "en-shr_em-change-per-array-dir")
-              ? Struct.get(data, "en-shr_em-per-array-dir").serialize()
-              : Struct.get(Struct.get(data, "en-shr_em-per-array-dir").serialize(), "value"))
-            : 0.0,
-          anglePerArrayRng: Struct.get(data, "en-shr_em-use-per-array-rng")
-            ? Struct.get(data, "en-shr_em-per-array-rng")
-            : 0.0,
-          anglePerArrayStep: Struct.get(data, "en-shr_em-per-array-step"),
-          speed: Struct.get(data, "en-shr_em-use-spd")
-            ? (Struct.get(data, "en-shr_em-change-spd")
-              ? Struct.get(data, "en-shr_em-spd").serialize()
-              : Struct.get(Struct.get(data, "en-shr_em-spd").serialize(), "value"))
-            : 0.0,
-          speedRng: Struct.get(data, "en-shr_em-use-spd-rng")
-            ? Struct.get(data, "en-shr_em-spd-rng")
-            : 0.0,
-          duration: Struct.get(data, "en-shr_em-duration"),
-          offsetX: Struct.get(data, "en-shr_em-use-offset-x")
-            ? (Struct.get(data, "en-shr_em-change-offset-x")
-              ? Struct.get(data, "en-shr_em-offset-x").serialize()
-              : Struct.get(Struct.get(data, "en-shr_em-offset-x").serialize(), "value"))
-            : 0.0,
-          offsetY: Struct.get(data, "en-shr_em-use-offset-y")
-            ? (Struct.get(data, "en-shr_em-change-offset-y")
-              ? Struct.get(data, "en-shr_em-offset-y").serialize()
-              : Struct.get(Struct.get(data, "en-shr_em-offset-y").serialize(), "value"))
-            : 0.0,
-          wiggleFrequency: Struct.get(data, "en-shr_em-use-wiggle-freq")
-            ? (Struct.get(data, "en-shr_em-change-wiggle-freq")
-              ? Struct.get(data, "en-shr_em-wiggle-freq").serialize()
-              : Struct.get(Struct.get(data, "en-shr_em-wiggle-freq").serialize(), "value"))
-            : 0.0,
-          wiggleAmplitude: Struct.get(data, "en-shr_em-use-wiggle-amp")
-            ? (Struct.get(data, "en-shr_em-change-wiggle-amp")
-              ? Struct.get(data, "en-shr_em-wiggle-amp").serialize()
-              : Struct.get(Struct.get(data, "en-shr_em-wiggle-amp").serialize(), "value"))
-            : 0.0,
-        })
+        }, emitterConfig)
       } else {
         controller.shroomService.spawnShroom(
           template,

@@ -2517,10 +2517,7 @@ function VETimeline(_editor) constructor {
           this.remove(name)
           
           uiItem = this.factoryEventUIItem(channelName, event, name)
-          this.add(uiItem, uiItem.name)
-          //if (Optional.is(uiItem.updateArea)) {
-          //  uiItem.updateArea()
-          //}
+          this.add(uiItem, true)
           return uiItem
         }),
 

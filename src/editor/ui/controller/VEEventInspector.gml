@@ -225,6 +225,7 @@ function VEEventInspector(_editor) constructor {
         updateTimer: new Timer(FRAME_MS * Core.getProperty("visu.editor.ui.event-inspector.properties.updateTimer", 60), { loop: Infinity, shuffle: true }),
         eventInspector: eventInspector,
         layout: layout.nodes.view,
+        instantSubscribe: false,
         _updateTrackEvent: new BindIntent(function() {
           if (!this.state.get("updateTrackEvent")) {
             return

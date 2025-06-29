@@ -9,7 +9,7 @@ function VEStatusBar(_editor) constructor {
   ///@type {Map<String, Containers>}
   containers = new Map(String, UI)
 
-    ///@private
+  ///@private
   ///@param {UIlayout} parent
   ///@return {UILayout}
   factoryLayout = function(parent) {

@@ -1558,6 +1558,7 @@ global.__VisuBrushContainers = new Map(String, Callable, {
       brushToolbar: brushToolbar,
       layout: layout,
       executor: null,
+      instantSubscribe: false,
       scrollbarY: { align: HAlign.RIGHT },
       updateArea: Callable.run(UIUtil.updateAreaTemplates.get("scrollableY")),
       renderItem: Callable.run(UIUtil.renderTemplates.get("renderItemDefaultScrollable")),

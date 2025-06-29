@@ -776,7 +776,6 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
           },
         ]),
       }),      
-
       updateTimer: new Timer(FRAME_MS * 4, { loop: Infinity, shuffle: true }),
       templateToolbar: templateToolbar,
       layout: layout,
@@ -808,6 +807,7 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
           },
           data: container
         })
+        
       },
       onDestroy: function() {
         this.templateToolbar.store
@@ -2379,6 +2379,7 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
       templateToolbar: templateToolbar,
       layout: layout,
       executor: null,
+      instantSubscribe: false,
       updateArea: Callable.run(UIUtil.updateAreaTemplates.get("scrollableY")),
       updateCustom: function() {
         var previousOffset = this.state.get("previousOffset");
