@@ -1929,6 +1929,9 @@ function GridRenderer() constructor {
     this.camera.free()
     this.camera = new GridCamera()
     this.overlayRenderer.clear()
+    this.gridGlitchService.dispatcher.send(new Event("clear-glitch"))
+    this.backgroundGlitchService.dispatcher.send(new Event("clear-glitch"))
+    this.combinedGlitchService.dispatcher.send(new Event("clear-glitch"))
     this.init()
     return this
   }
