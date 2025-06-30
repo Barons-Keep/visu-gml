@@ -3,6 +3,120 @@
 ///@param {Struct} json
 ///@return {Struct}
 function brush_entity_bullet(json) {
+  var emitter = {
+    json: Struct.getIfType(json, "en-blt_em-cfg", Struct, {
+      amount: 1,
+      duration: 0,
+      //arrays: 1,
+      arrays: {
+        value: 1,
+        target: 1,
+        duration: 0,
+        ease: "LINEAR",
+      },
+      //perArray: 1,
+      perArray: {
+        value: 1,
+        target: 1,
+        duration: 0,
+        ease: "LINEAR",
+      },
+      angle: {
+        value: 0,
+        target: 0,
+        duration: 0,
+        ease: "LINEAR",
+      },
+      //angleRng: 0,
+      angleRng: {
+        value: 0,
+        target: 0,
+        duration: 0,
+        ease: "LINEAR",
+      },
+      //angleStep: 0,
+      angleStep: {
+        value: 0,
+        target: 0,
+        duration: 0,
+        ease: "LINEAR",
+      },
+      //anglePerArray: 0,
+      anglePerArray: {
+        value: 0,
+        target: 0,
+        duration: 0,
+        ease: "LINEAR",
+      },
+      //anglePerArrayRng: 0,
+      anglePerArrayRng: {
+        value: 0,
+        target: 0,
+        duration: 0,
+        ease: "LINEAR",
+      },
+      //anglePerArrayStep: 0,
+      anglePerArrayStep: {
+        value: 0,
+        target: 0,
+        duration: 0,
+        ease: "LINEAR",
+      },
+      speed: {
+        value: 0,
+        target: 0,
+        duration: 0,
+        ease: "LINEAR",
+      },
+      //speedRng: 0,
+      speedRng: {
+        value: 0,
+        target: 0,
+        duration: 0,
+        ease: "LINEAR",
+      },
+      offset: {
+        value: 0,
+        target: 0,
+        duration: 0,
+        ease: "LINEAR",
+      },
+      offsetX: {
+        value: 0,
+        target: 0,
+        duration: 0,
+        ease: "LINEAR",
+      },
+      offsetY: {
+        value: 0,
+        target: 0,
+        duration: 0,
+        ease: "LINEAR",
+      },
+      wiggleFrequency: {
+        value: 0,
+        target: 0,
+        duration: 0,
+        ease: "LINEAR",
+      },
+      wiggleAmplitude: {
+        value: 0,
+        target: 0,
+        duration: 0,
+        ease: "LINEAR",
+      },
+    }),
+    array: new Array(String),
+  }
+  GMArray.forEach(GMArray.sort(Struct.keys(emitter.json)), function(key, index, emitter) {
+    var value = Struct.get(emitter.json, key)
+    var json = Struct.set({}, key, value)
+    var array = String.split(JSON.stringify(json, { pretty: true }), "\n")
+    emitter.array.add(array.remove(0).remove(array.size() - 1).join("\n"))
+  }, emitter)
+  var text = emitter.array.join(",\n")
+  var emitterConfig = $"\{\n{text}\n\}"
+
   var store = {
     "en-blt_preview": {
       type: Boolean,
@@ -195,108 +309,7 @@ function brush_entity_bullet(json) {
     },
     "en-blt_em-cfg": {
       type: String,
-      value: JSON.stringify(Struct.getIfType(json, "en-blt_em-cfg", Struct, {
-        amount: 1,
-        duration: 0,
-        //arrays: 1,
-        arrays: {
-          value: 1,
-          target: 1,
-          duration: 0,
-          ease: "LINEAR",
-        },
-        //perArray: 1,
-        perArray: {
-          value: 1,
-          target: 1,
-          duration: 0,
-          ease: "LINEAR",
-        },
-        angle: {
-          value: 0,
-          target: 0,
-          duration: 0,
-          ease: "LINEAR",
-        },
-        //angleRng: 0,
-        angleRng: {
-          value: 0,
-          target: 0,
-          duration: 0,
-          ease: "LINEAR",
-        },
-        //angleStep: 0,
-        angleStep: {
-          value: 0,
-          target: 0,
-          duration: 0,
-          ease: "LINEAR",
-        },
-        //anglePerArray: 0,
-        anglePerArray: {
-          value: 0,
-          target: 0,
-          duration: 0,
-          ease: "LINEAR",
-        },
-        //anglePerArrayRng: 0,
-        anglePerArrayRng: {
-          value: 0,
-          target: 0,
-          duration: 0,
-          ease: "LINEAR",
-        },
-        //anglePerArrayStep: 0,
-        anglePerArrayStep: {
-          value: 0,
-          target: 0,
-          duration: 0,
-          ease: "LINEAR",
-        },
-        speed: {
-          value: 0,
-          target: 0,
-          duration: 0,
-          ease: "LINEAR",
-        },
-        //speedRng: 0,
-        speedRng: {
-          value: 0,
-          target: 0,
-          duration: 0,
-          ease: "LINEAR",
-        },
-        offset: {
-          value: 0,
-          target: 0,
-          duration: 0,
-          ease: "LINEAR",
-        },
-        offsetX: {
-          value: 0,
-          target: 0,
-          duration: 0,
-          ease: "LINEAR",
-        },
-        offsetY: {
-          value: 0,
-          target: 0,
-          duration: 0,
-          ease: "LINEAR",
-        },
-        wiggleFrequency: {
-          value: 0,
-          target: 0,
-          duration: 0,
-          ease: "LINEAR",
-        },
-        wiggleAmplitude: {
-          value: 0,
-          target: 0,
-          duration: 0,
-          ease: "LINEAR",
-        },
-      }), { pretty: true }),
+      value: emitterConfig,
       serialize: UIUtil.serialize.getStringStruct(),
       passthrough: UIUtil.passthrough.getStringStruct(),
     },
