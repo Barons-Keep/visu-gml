@@ -143,8 +143,10 @@ function BulletTemplate(_name, json) constructor {
   ///@param {?Boolean} [sumAngleOffset]
   ///@param {?Number|?Struct} [speedOffset]
   ///@param {?Boolean} [sumSpeedOffset]
+  ///@param {?Number} [lifespan]
+  ///@param {?Number} [damage]
   ///@return {Struct}
-  serializeSpawn = function(uid, producer, x, y, angle, speed, angleOffset = null, angleOffsetRng = null, sumAngleOffset = null, speedOffset = null, sumSpeedOffset = null) {
+  serializeSpawn = function(uid, producer, x, y, angle, speed, angleOffset = null, angleOffsetRng = null, sumAngleOffset = null, speedOffset = null, sumSpeedOffset = null, lifespan = null, damage = null) {
     return {
       uid: uid,
       producer: producer,
@@ -162,8 +164,8 @@ function BulletTemplate(_name, json) constructor {
       changeSpeedOffset: speedOffset != null ? true : this.changeSpeedOffset,
       sumSpeedOffset: sumSpeedOffset != null ? sumSpeedOffset : this.sumSpeedOffset,
 
-      damage: this.damage,
-      lifespanMax: this.lifespanMax,
+      damage: damage != null ? damage : this.damage,
+      lifespanMax: lifespan != null ? lifespan : this.lifespanMax,
       sprite: this.sprite,
       mask: this.mask,
       wiggle: this.wiggle,

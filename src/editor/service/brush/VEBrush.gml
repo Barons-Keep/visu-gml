@@ -7,6 +7,7 @@ function _VEBrushType(): Enum() constructor {
   EFFECT_PARTICLE = "brush_effect_particle"
   EFFECT_CONFIG = "brush_effect_config"
   ENTITY_SHROOM = "brush_entity_shroom"
+  ENTITY_BULLET = "brush_entity_bullet"
   ENTITY_COIN = "brush_entity_coin"
   ENTITY_PLAYER = "brush_entity_player"
   ENTITY_CONFIG = "brush_entity_config"
@@ -31,6 +32,7 @@ global.__VEBrushTypeNames = {
   "brush_effect_particle": "Effect particle",
   "brush_effect_config": "Effect config",
   "brush_entity_shroom": "Entity shroom",
+  "brush_entity_bullet": "Entity bullet",
   "brush_entity_coin": "Entity coin",
   "brush_entity_player": "Entity player",
   "brush_entity_config": "Entity config",

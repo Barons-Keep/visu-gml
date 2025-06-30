@@ -336,6 +336,11 @@ global.__VisuBrushContainers = new Map(String, Callable, {
             brushType: VEBrushType.ENTITY_SHROOM,
           },
           {
+            name: "button_category-entity_type-bullet",
+            text: "Bullet",
+            brushType: VEBrushType.ENTITY_BULLET,
+          },
+          {
             name: "button_category-entity_type-coin",
             text: "Coin",
             brushType: VEBrushType.ENTITY_COIN,
@@ -2068,6 +2073,7 @@ function VEBrushToolbar(_editor) constructor {
     ]),
     "entity": new Array(String, [
       VEBrushType.ENTITY_SHROOM,
+      VEBrushType.ENTITY_BULLET,
       VEBrushType.ENTITY_COIN, 
       VEBrushType.ENTITY_PLAYER,
       VEBrushType.ENTITY_CONFIG 

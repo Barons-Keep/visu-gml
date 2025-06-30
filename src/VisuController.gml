@@ -633,6 +633,13 @@ function VisuController(layerName) constructor {
 
   ///@param {String} name
   ///@return {Boolean}
+  bulletTemplateExists = function(name) {
+    return this.bulletService.templates.contains(name) 
+        || Visu.assets().bulletTemplates.contains(name)
+  }
+
+  ///@param {String} name
+  ///@return {Boolean}
   coinTemplateExists = function(name) {
     return this.coinService.templates.contains(name) 
         || Visu.assets().coinTemplates.contains(name)

@@ -97,6 +97,17 @@ function BulletService(_controller, config = {}): Service() constructor {
     },
   }))
 
+  ///@type {TaskExecutor}
+  executor = new TaskExecutor(this, { 
+    loggerPrefix: "BulletServiceExecutor",
+    enableLogger: true,
+    catchException: true,
+    exceptionCallback: function(task, exception) {
+      Beans.get(BeanVisuController).exceptionDebugHandler(
+        $"'BulletService::executor' (task.name: {task.name}), fatal error: {exception.message}")
+    },
+  })
+
   ///@param {String} name
   ///@param {Shroom|Player} producer
   ///@param {Number} x
@@ -108,7 +119,9 @@ function BulletService(_controller, config = {}): Service() constructor {
   ///@param {?Boolean} [sumAngleOffset]
   ///@param {?Number|?Struct} [speedOffset]
   ///@param {?Boolean} [sumSpeedOffset]
-  static spawnBullet = function(name, producer, x, y, angle, speed, angleOffset = null, angleOffsetRng = null, sumAngleOffset = null, speedOffset = null, sumSpeedOffset = null) {
+  ///@param {?Number} [lifespan]
+  ///@param {?Number} [damage]
+  static spawnBullet = function(name, producer, x, y, angle, speed, angleOffset = null, angleOffsetRng = null, sumAngleOffset = null, speedOffset = null, sumSpeedOffset = null, lifespan = null, damage = null) {
     var template = this.getTemplate(name).serializeSpawn(
       this.controller.gridService.generateUID(),
       producer,
@@ -120,7 +133,9 @@ function BulletService(_controller, config = {}): Service() constructor {
       angleOffsetRng,
       sumAngleOffset,
       speedOffset,
-      sumSpeedOffset
+      sumSpeedOffset,
+      lifespan,
+      damage
     )
     if (producer == Shroom) {
       controller.sfxService.play("shroom-shoot")
@@ -137,6 +152,57 @@ function BulletService(_controller, config = {}): Service() constructor {
     if (this.optimalizationSortEntitiesByTxGroup) {
       this.controller.gridService.textureGroups.sortItems(this.bullets)
     }
+  }
+
+  ///@param {Struct} item
+  ///@param {Struct} emitter
+  ///@return {BulletService}
+  static spawnBulletEmitter = function(item, emitter) {
+    var task = new Task("bullet-emitter")
+      .setTimeout(60.0)
+      .setState({
+        item: item,
+        emitter: new GridItemEmitter(Struct.appendRecursive({
+          callback: function(item, controller, emitter, idx, arrIdx, x, y, angle, speed) {
+            var view = controller.gridService.view
+            var locked = controller.gridService.targetLocked
+            var viewX = item.snapH ? locked.snapH : view.x
+            var viewY = item.snapV ? locked.snapV : view.y
+            var angleOffset = item.angleOffset
+            var angleOffsetRng = item.angleOffsetRng
+            var sumAngleOffset = item.sumAngleOffset
+            var speedOffset = item.speedOffset
+            var sumSpeedOffset = item.sumSpeedOffset
+            var lifespan = item.lifespan
+            var damage = item.damage
+            controller.bulletService.spawnBullet(
+              item.name,
+              Shroom,
+              viewX + item.spawnX + x,
+              viewY + item.spawnY + y,
+              angle,
+              speed,
+              angleOffset,
+              angleOffsetRng,
+              sumAngleOffset,
+              speedOffset,
+              sumSpeedOffset,
+              lifespan,
+              damage
+            )
+          }
+        }, emitter, false)),
+      })
+      .whenUpdate(function() {
+        if (this.state.emitter.finished()) {
+          this.fullfill()
+          return
+        }
+
+        this.state.emitter.update(this.state.item, Beans.get(BeanVisuController))
+      })
+    this.executor.add(task)
+    return this
   }
 
   ///@param {Event} event
@@ -205,6 +271,7 @@ function BulletService(_controller, config = {}): Service() constructor {
     }
 
     this.dispatcher.update()
+    this.executor.update()
     this.bullets.forEach(this.updateBullet, this).runGC()
     return this
   }
