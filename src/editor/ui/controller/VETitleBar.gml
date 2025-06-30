@@ -365,6 +365,11 @@ function VETitleBar(_editor) constructor {
                               height: function() { return GuiHeight() },
                             }),
                           }))
+                        
+                        editor.uiService.send(new Event("remove", { 
+                          name: this.context.name, 
+                          quiet: true,
+                        }))
                       },
                     },
                   },
@@ -394,6 +399,12 @@ function VETitleBar(_editor) constructor {
                           Beans.get(BeanVisuController).send(new Event("load", {
                             manifest: manifest,
                             autoplay: false
+                          }))
+
+                          var uiService = Beans.get(BeanVisuEditorController).uiService
+                          uiService.send(new Event("remove", { 
+                            name: this.context.name, 
+                            quiet: true,
                           }))
                         } catch (exception) {
                           Beans.get(BeanVisuController).send(new Event("spawn-popup", 
@@ -430,6 +441,11 @@ function VETitleBar(_editor) constructor {
                           controller.track.saveProject(path)
                           controller.send(new Event("spawn-popup", 
                             { message: $"Project '{controller.trackService.track.name}' saved successfully at: '{path}'" }))
+
+                          editor.uiService.send(new Event("remove", { 
+                            name: this.context.name, 
+                            quiet: true,
+                          }))
                         } catch (exception) {
                           var message = $"Cannot save the project: {exception.message}"
                           controller.send(new Event("spawn-popup", { message: message }))
@@ -477,6 +493,11 @@ function VETitleBar(_editor) constructor {
                           controller.track.saveProject(path)
                           controller.send(new Event("spawn-popup", 
                             { message: $"Project '{controller.trackService.track.name}' saved successfully at: '{path}'" }))
+
+                          editor.uiService.send(new Event("remove", { 
+                            name: this.context.name, 
+                            quiet: true,
+                          }))
                         } catch (exception) {
                           var message = $"Cannot save the project: {exception.message}"
                           controller.send(new Event("spawn-popup", { message: message }))
@@ -631,6 +652,11 @@ function VETitleBar(_editor) constructor {
                               height: function() { return GuiHeight() },
                             }),
                           }))
+
+                        editor.uiService.send(new Event("remove", { 
+                          name: this.context.name, 
+                          quiet: true,
+                        }))
                       },
                       preRender: function() {
                         var value = Beans.get(BeanVisuController).trackService.isTrackLoaded()
@@ -1034,6 +1060,11 @@ function VETitleBar(_editor) constructor {
                       callback: function() {
                         try {
                           url_open("https://github.com/Alkapivo/visu-project/wiki/1.-UI-overview")
+                          var uiService = Beans.get(BeanVisuEditorController).uiService
+                          uiService.send(new Event("remove", { 
+                            name: this.context.name, 
+                            quiet: true,
+                          }))
                         } catch (exception) {
                           var message = $"Cannot open URL: {exception.message}"
                           Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
