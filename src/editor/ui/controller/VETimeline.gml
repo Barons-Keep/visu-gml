@@ -1144,7 +1144,7 @@ function VETimeline(_editor) constructor {
               channel.events.forEach(function(event, index, acc) {
                 ///@description do not use addEvent as TrackEvent already exists
                 var uiItem = acc.container.factoryEventUIItem(acc.channel.name, event)
-                acc.container.add(uiItem, uiItem.name)
+                acc.container.add(uiItem, true)
               }, { channel: channel, container: container })
               
               this.finishUpdateTimer()
@@ -2372,7 +2372,7 @@ function VETimeline(_editor) constructor {
       
               var uiItem = this.data.context.factoryEventUIItem(this.data.channelName, trackEvent, this.data.key)
               track.addEvent(this.data.channelName, trackEvent)
-              this.data.context.add(uiItem, uiItem.name)
+              this.data.context.add(uiItem, true)
 
               this.data.key = uiItem.name
               this.data.name = uiItem.name
@@ -2483,7 +2483,7 @@ function VETimeline(_editor) constructor {
       
               var uiItem = this.data.context.factoryEventUIItem(this.data.channelName, trackEvent, this.data.key)
               track.addEvent(this.data.channelName, trackEvent)
-              this.data.context.add(uiItem, uiItem.name)
+              this.data.context.add(uiItem, true)
 
               this.data.key = uiItem.name
               this.data.name = uiItem.name

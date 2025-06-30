@@ -15,7 +15,7 @@ function FollowPlayerFeature(json): GridItemFeature(json) constructor {
     target: Core.getIfType(GMArray.resolveRandom(Struct.get(Struct.get(data, "value"), "factor")), Number, 1.0),
     increase: Core.getIfType(GMArray.resolveRandom(Struct.get(Struct.get(data, "value"), "increase")), Number, 0.0),
     duration: Core.getIfType(GMArray.resolveRandom(Struct.get(Struct.get(data, "value"), "duration")), Number, 0.0),
-    ease: Core.getIfType(GMArray.resolveRandom(Struct.get(Struct.get(data, "value"), "ease")), String, EaseType.LINEAR),
+    ease: Core.getIfType(GMArray.resolveRandom(Struct.get(Struct.get(data, "value"), "ease")), String, EaseType.LEGACY), // todo migrate
   })
 
   ///@type {NumberTransformer}
@@ -25,7 +25,7 @@ function FollowPlayerFeature(json): GridItemFeature(json) constructor {
     target: Core.getIfType(GMArray.resolveRandom(Struct.get(Struct.get(data, "transformer"), "factor")), Number, 1.0),
     increase: Core.getIfType(GMArray.resolveRandom(Struct.get(Struct.get(data, "transformer"), "increase")), Number, 0.0),
     duration: Core.getIfType(GMArray.resolveRandom(Struct.get(Struct.get(data, "transformer"), "duration")), Number, 0.0),
-    ease: Core.getIfType(GMArray.resolveRandom(Struct.get(Struct.get(data, "transformer"), "ease")), String, EaseType.LINEAR),
+    ease: Core.getIfType(GMArray.resolveRandom(Struct.get(Struct.get(data, "transformer"), "ease")), String, EaseType.LEGACY), // todo migrate
     
   })
 

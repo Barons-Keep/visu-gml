@@ -46,7 +46,7 @@ function SpriteFeature(json): GridItemFeature(json) constructor {
           target: Core.getIfType(GMArray.resolveRandom(Struct.get(data.scaleX.add, "target")), Number, 1.0),
           increase: Core.getIfType(GMArray.resolveRandom(Struct.get(data.scaleX.add, "increase")), Number, 0.0),
           duration: Core.getIfType(GMArray.resolveRandom(Struct.get(data.scaleX.add, "duration")), Number, 0.0),
-          ease: Core.getIfType(GMArray.resolveRandom(Struct.get(data.scaleX.add, "ease")), String, EaseType.LINEAR),
+          ease: Core.getIfType(GMArray.resolveRandom(Struct.get(data.scaleX.add, "ease")), String, EaseType.LEGACY), // todo migrate
         })
         : null),
       transform: (Core.isType(Struct.get(data.scaleX, "transform"), Struct)
@@ -56,7 +56,7 @@ function SpriteFeature(json): GridItemFeature(json) constructor {
           target: Core.getIfType(GMArray.resolveRandom(Struct.get(data.scaleX.transform, "target")), Number, 1.0),
           increase: Core.getIfType(GMArray.resolveRandom(Struct.get(data.scaleX.transform, "increase")), Number, 0.0),
           duration: Core.getIfType(GMArray.resolveRandom(Struct.get(data.scaleX.transform, "duration")), Number, 0.0),
-          ease: Core.getIfType(GMArray.resolveRandom(Struct.get(data.scaleX.transform, "ease")), String, EaseType.LINEAR),
+          ease: Core.getIfType(GMArray.resolveRandom(Struct.get(data.scaleX.transform, "ease")), String, EaseType.LEGACY), // todo migrate
         })
         : null),
       initialized: false,
@@ -73,7 +73,7 @@ function SpriteFeature(json): GridItemFeature(json) constructor {
           target: Core.getIfType(GMArray.resolveRandom(Struct.get(data.scaleY.add, "target")), Number, 1.0),
           increase: Core.getIfType(GMArray.resolveRandom(Struct.get(data.scaleY.add, "increase")), Number, 0.0),
           duration: Core.getIfType(GMArray.resolveRandom(Struct.get(data.scaleY.add, "duration")), Number, 0.0),
-          ease: Core.getIfType(GMArray.resolveRandom(Struct.get(data.scaleY.add, "ease")), String, EaseType.LINEAR),
+          ease: Core.getIfType(GMArray.resolveRandom(Struct.get(data.scaleY.add, "ease")), String, EaseType.LEGACY), // todo migrate
         })
         : null),
       transform: (Core.isType(Struct.get(data.scaleX, "transform"), Struct)
@@ -83,7 +83,7 @@ function SpriteFeature(json): GridItemFeature(json) constructor {
           target: Core.getIfType(GMArray.resolveRandom(Struct.get(data.scaleY.transform, "target")), Number, 1.0),
           increase: Core.getIfType(GMArray.resolveRandom(Struct.get(data.scaleY.transform, "increase")), Number, 0.0),
           duration: Core.getIfType(GMArray.resolveRandom(Struct.get(data.scaleY.transform, "duration")), Number, 0.0),
-          ease: Core.getIfType(GMArray.resolveRandom(Struct.get(data.scaleY.transform, "ease")), String, EaseType.LINEAR),
+          ease: Core.getIfType(GMArray.resolveRandom(Struct.get(data.scaleY.transform, "ease")), String, EaseType.LEGACY), // todo migrate
         })
         : null),
       initialized: false,
@@ -100,7 +100,7 @@ function SpriteFeature(json): GridItemFeature(json) constructor {
           target: Core.getIfType(GMArray.resolveRandom(Struct.get(data.angle.add, "target")), Number, 1.0),
           increase: Core.getIfType(GMArray.resolveRandom(Struct.get(data.angle.add, "increase")), Number, 0.0),
           duration: Core.getIfType(GMArray.resolveRandom(Struct.get(data.angle.add, "duration")), Number, 0.0),
-          ease: Core.getIfType(GMArray.resolveRandom(Struct.get(data.angle.add, "ease")), String, EaseType.LINEAR),
+          ease: Core.getIfType(GMArray.resolveRandom(Struct.get(data.angle.add, "ease")), String, EaseType.LEGACY), // todo migrate
         })
         : null),
       transform: (Core.isType(Struct.get(data.angle, "transform"), Struct)
@@ -110,7 +110,7 @@ function SpriteFeature(json): GridItemFeature(json) constructor {
           target: Core.getIfType(GMArray.resolveRandom(Struct.get(data.angle.transform, "target")), Number, 1.0),
           increase: Core.getIfType(GMArray.resolveRandom(Struct.get(data.angle.transform, "increase")), Number, 0.0),
           duration: Core.getIfType(GMArray.resolveRandom(Struct.get(data.angle.transform, "duration")), Number, 0.0),
-          ease: Core.getIfType(GMArray.resolveRandom(Struct.get(data.angle.transform, "ease")), String, EaseType.LINEAR),
+          ease: Core.getIfType(GMArray.resolveRandom(Struct.get(data.angle.transform, "ease")), String, EaseType.LEGACY), // todo migrate
         })
         : null),
       initialized: false,
@@ -127,7 +127,7 @@ function SpriteFeature(json): GridItemFeature(json) constructor {
           target: Core.getIfType(GMArray.resolveRandom(Struct.get(data.alpha.add, "target")), Number, 1.0),
           increase: Core.getIfType(GMArray.resolveRandom(Struct.get(data.alpha.add, "increase")), Number, 0.0),
           duration: Core.getIfType(GMArray.resolveRandom(Struct.get(data.alpha.add, "duration")), Number, 0.0),
-          ease: Core.getIfType(GMArray.resolveRandom(Struct.get(data.alpha.add, "ease")), String, EaseType.LINEAR),
+          ease: Core.getIfType(GMArray.resolveRandom(Struct.get(data.alpha.add, "ease")), String, EaseType.LEGACY), // todo migrate
         })
         : null),
       transform: (Core.isType(Struct.get(data.alpha, "transform"), Struct)
@@ -137,7 +137,7 @@ function SpriteFeature(json): GridItemFeature(json) constructor {
           target: Core.getIfType(GMArray.resolveRandom(Struct.get(data.alpha.transform, "target")), Number, 1.0),
           increase: Core.getIfType(GMArray.resolveRandom(Struct.get(data.alpha.transform, "increase")), Number, 0.0),
           duration: Core.getIfType(GMArray.resolveRandom(Struct.get(data.alpha.transform, "duration")), Number, 0.0),
-          ease: Core.getIfType(GMArray.resolveRandom(Struct.get(data.alpha.transform, "ease")), String, EaseType.LINEAR),
+          ease: Core.getIfType(GMArray.resolveRandom(Struct.get(data.alpha.transform, "ease")), String, EaseType.LEGACY), // todo migrate
         })
         
         : null),
