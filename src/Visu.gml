@@ -1046,6 +1046,13 @@ function _Visu() constructor {
     Core.loadProperties(FileUtil.get($"{working_directory}core-properties.json"))
     Core.loadProperties(FileUtil.get($"{working_directory}visu-properties.json"))
 
+    MAGIC_NUMBER_TASK = Core.getProperty("visu.const.MAGIC_NUMBER_TASK", MAGIC_NUMBER_TASK)
+    SYNC_UI_STORE_STEP = Core.getProperty("visu.const.SYNC_UI_STORE_STEP", SYNC_UI_STORE_STEP)
+    BRUSH_ENTRY_STEP = Core.getProperty("visu.const.BRUSH_ENTRY_STEP", BRUSH_ENTRY_STEP)
+    BRUSH_TOOLBAR_ENTRY_STEP = Core.getProperty("visu.const.BRUSH_TOOLBAR_ENTRY_STEP", BRUSH_TOOLBAR_ENTRY_STEP)
+    FLIP_VALUE = Core.getProperty("visu.const.FLIP_VALUE", FLIP_VALUE)
+
+
     this.settings.set(new SettingEntry({ name: "visu.editor.autosave", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.language", type: SettingTypes.STRING, defaultValue: LanguageType.en_EN }))
       .set(new SettingEntry({ name: "visu.fullscreen", type: SettingTypes.BOOLEAN, defaultValue: false }))

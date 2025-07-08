@@ -5839,56 +5839,6 @@ global.__VEComponents = new Map(String, Callable, {
       )
     ).forEach(addItem, items)
 
-    /*
-    factoryTextFieldIncreaseStickCheckbox(
-      $"{name}_factor",
-      layout.nodes.factor,
-      Struct.appendRecursive(
-        Struct.get(config, "factor"),
-        {
-          layout: { 
-            //type: layout.type,
-            propagateHidden: true,
-          },
-          field: { transformNumericProperty: "factor" },
-          decrease: { transformNumericProperty: "factor" },
-          increase: { transformNumericProperty: "factor" },
-          stick: {
-            transformNumericProperty: "factor",
-            enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "factor"), "field"), "enable", Struct, { })),
-            store: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "factor"), "field"), "store", Struct, { })),
-            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "factor"), "field"), "hidden", Struct, { })),
-          },
-        },
-        false
-      )
-    ).forEach(addItem, items)
-
-    factoryTextFieldIncreaseStickCheckbox(
-      $"{name}_increase",
-      layout.nodes.increase,
-      Struct.appendRecursive(
-        Struct.get(config, "increase"),
-        {
-          layout: { 
-            //type: layout.type,
-            propagateHidden: true,
-          },
-          field: { transformNumericProperty: "increase" },
-          decrease: { transformNumericProperty: "increase" },
-          increase: { transformNumericProperty: "increase" },
-          stick: {
-            transformNumericProperty: "increase",
-            enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "enable", Struct, { })),
-            store: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "store", Struct, { })),
-            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "hidden", Struct, { })),
-          },
-        },
-        false
-      )
-    ).forEach(addItem, items)
-    */
-
     factoryTextFieldIncreaseStickCheckbox(
       $"{name}_duration",
       layout.nodes.duration,
@@ -5901,38 +5851,38 @@ global.__VEComponents = new Map(String, Callable, {
           label: {
             text: "Duration",
             color: VETheme.color.textShadow,
-            enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "enable", Struct, { })),
-            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "hidden", Struct, { })),
+            enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "target"), "field"), "enable", Struct, { })),
+            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "target"), "field"), "hidden", Struct, { })),
           },
           field: {
             transformNumericProperty: "duration",
-            enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "enable", Struct, { })),
-            store: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "store", Struct, { })),
-            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "hidden", Struct, { })),
+            enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "target"), "field"), "enable", Struct, { })),
+            store: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "target"), "field"), "store", Struct, { })),
+            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "target"), "field"), "hidden", Struct, { })),
           },
           decrease: {
             transformNumericProperty: "duration",
-            enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "enable", Struct, { })),
-            store: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "store", Struct, { })),
-            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "hidden", Struct, { })),
+            enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "target"), "field"), "enable", Struct, { })),
+            store: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "target"), "field"), "store", Struct, { })),
+            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "target"), "field"), "hidden", Struct, { })),
           },
           increase: {
             transformNumericProperty: "duration",
-            enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "enable", Struct, { })),
-            store: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "store", Struct, { })),
-            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "hidden", Struct, { })),
+            enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "target"), "field"), "enable", Struct, { })),
+            store: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "target"), "field"), "store", Struct, { })),
+            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "target"), "field"), "hidden", Struct, { })),
           },
           stick: {
             transformNumericProperty: "duration",
-            enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "enable", Struct, { })),
-            store: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "store", Struct, { })),
-            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "hidden", Struct, { })),
+            enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "target"), "field"), "enable", Struct, { })),
+            store: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "target"), "field"), "store", Struct, { })),
+            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "target"), "field"), "hidden", Struct, { })),
           },
           checkbox: { 
-            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "hidden", Struct, { })),
+            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "target"), "field"), "hidden", Struct, { })),
           },
           title: { 
-            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "hidden", Struct, { })),
+            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "target"), "field"), "hidden", Struct, { })),
           },
         },
         Struct.get(config, "duration"),
@@ -5951,23 +5901,23 @@ global.__VEComponents = new Map(String, Callable, {
           },
           label: {
             text: "Ease",
-            enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "enable", Struct, { })),
-            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "hidden", Struct, { })),
+            enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "target"), "field"), "enable", Struct, { })),
+            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "target"), "field"), "hidden", Struct, { })),
           },
           previous: { 
-            enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "enable", Struct, { })),
-            store: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "store", Struct, { })),
-            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "hidden", Struct, { })),
+            enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "target"), "field"), "enable", Struct, { })),
+            store: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "target"), "field"), "store", Struct, { })),
+            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "target"), "field"), "hidden", Struct, { })),
           },
           preview: { 
-            enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "enable", Struct, { })),
-            store: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "store", Struct, { })),
-            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "hidden", Struct, { })),
+            enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "target"), "field"), "enable", Struct, { })),
+            store: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "target"), "field"), "store", Struct, { })),
+            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "target"), "field"), "hidden", Struct, { })),
           },
           next: { 
-            enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "enable", Struct, { })),
-            store: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "store", Struct, { })),
-            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "hidden", Struct, { })),
+            enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "target"), "field"), "enable", Struct, { })),
+            store: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "target"), "field"), "store", Struct, { })),
+            hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "target"), "field"), "hidden", Struct, { })),
           },
         },
         Struct.get(config, "ease"),

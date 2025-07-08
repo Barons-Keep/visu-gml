@@ -515,32 +515,35 @@ function brush_view_config(json = null) {
         },
       },
       {
+        name: "vw-cfg_video-blend-col-title",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: {
+            text: "Blend color",
+            enable: { key: "vw-cfg_video-use-blend-col" },
+            backgroundColor: VETheme.color.side,
+          },
+          checkbox: { 
+            spriteOn: { name: "visu_texture_checkbox_on" },
+            spriteOff: { name: "visu_texture_checkbox_off" },
+            store: { key: "vw-cfg_video-use-blend-col" },
+            backgroundColor: VETheme.color.side,
+          },
+          input: {
+            store: { key: "vw-cfg_video-blend-col" },
+            enable: { key: "vw-cfg_video-use-blend-col" },
+            backgroundColor: VETheme.color.side,
+          }
+        },
+      },
+      {
         name: "vw-cfg_video-blend-col",
         template: VEComponents.get("color-picker"),
         layout: VELayouts.get("color-picker"),
         config: {
-          layout: { 
-            type: UILayoutType.VERTICAL,
-            hex: { margin: { top: 0 } },
-          },
-          title: { 
-            label: {
-              text: "Blend color",
-              enable: { key: "vw-cfg_video-use-blend-col" },
-              backgroundColor: VETheme.color.side,
-            },
-            checkbox: { 
-              spriteOn: { name: "visu_texture_checkbox_on" },
-              spriteOff: { name: "visu_texture_checkbox_off" },
-              store: { key: "vw-cfg_video-use-blend-col" },
-              backgroundColor: VETheme.color.side,
-            },
-            input: {
-              store: { key: "vw-cfg_video-blend-col" },
-              enable: { key: "vw-cfg_video-use-blend-col" },
-              backgroundColor: VETheme.color.side,
-            }
-          },
+          layout: { type: UILayoutType.VERTICAL },
           red: {
             label: {
               text: "Red",
@@ -672,6 +675,11 @@ function brush_view_config(json = null) {
               text: "Override",
               enable: { key: "vw-cfg_use-video-alpha" },
             },
+            stick: {
+              store: { key: "vw-cfg_video-alpha" },
+              enable: { key: "vw-cfg_use-video-alpha" },
+              factor: 0.01,
+            },
           },
           target: {
             label: {
@@ -701,10 +709,15 @@ function brush_view_config(json = null) {
               text: "Change",
               enable: { key: "vw-cfg_change-video-alpha" },
             },
+            stick: {
+              store: { key: "vw-cfg_video-alpha" },
+              enable: { key: "vw-cfg_change-video-alpha" },
+              factor: 0.01,
+            },
           },
-          factor: {
+          duration: {
             label: {
-              text: "Factor",
+              text: "Duration",
               enable: { key: "vw-cfg_change-video-alpha" },
             },
             field: {
@@ -714,32 +727,17 @@ function brush_view_config(json = null) {
             decrease: { 
               store: { key: "vw-cfg_video-alpha" },
               enable: { key: "vw-cfg_change-video-alpha" },
-              factor: -0.001,
+              factor: -0.01,
             },
             increase: { 
               store: { key: "vw-cfg_video-alpha" },
               enable: { key: "vw-cfg_change-video-alpha" },
-              factor: 0.001,
+              factor: 0.01,
             },
-          },
-          increase: {
-            label: {
-              text: "Increase",
-              enable: { key: "vw-cfg_change-video-alpha" },
-            },
-            field: {
+            stick: {
               store: { key: "vw-cfg_video-alpha" },
               enable: { key: "vw-cfg_change-video-alpha" },
-            },
-            decrease: { 
-              store: { key: "vw-cfg_video-alpha" },
-              enable: { key: "vw-cfg_change-video-alpha" },
-              factor: -0.0001,
-            },
-            increase: { 
-              store: { key: "vw-cfg_video-alpha" },
-              enable: { key: "vw-cfg_change-video-alpha" },
-              factor: 0.0001,
+              factor: 0.01,
             },
           },
         },

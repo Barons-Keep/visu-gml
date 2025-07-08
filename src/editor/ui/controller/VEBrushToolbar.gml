@@ -1,8 +1,16 @@
 ///@package io.alkapivo.visu.editor.ui.controller
 
-#macro BRUSH_ENTRY_STEP 1
-#macro BRUSH_TOOLBAR_ENTRY_STEP 1
-#macro FLIP_VALUE 1
+///@static
+global.__BRUSH_ENTRY_STEP = 1
+#macro BRUSH_ENTRY_STEP global.__BRUSH_ENTRY_STEP
+
+///@static
+global.__BRUSH_TOOLBAR_ENTRY_STEP = 1
+#macro BRUSH_TOOLBAR_ENTRY_STEP global.__BRUSH_TOOLBAR_ENTRY_STEP
+
+///@static
+global.__FLIP_VALUE = 1
+#macro FLIP_VALUE global.__FLIP_VALUE
 
 
 function VEBrushGetTemplateName(templates, prefix, attempt) {
