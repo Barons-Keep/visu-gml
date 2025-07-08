@@ -150,12 +150,19 @@ function VisuEditorController() constructor {
     },
     "channel-settings-config": {
       type: String,
-      value: "{}",
+      value: JSON.stringify({
+        difficulty: {
+          EASY: true,
+          NORMAL: true,
+          HARD: true,
+          LUNATIC: true,
+        },
+      }, { pretty: true }),
       serialize: function() {
         return JSON.parse(this.get())
       },
       validate: function(value) {
-        Assert.isType(JSON.parse(value), Struct)
+        Assert.isType(JSON.parse(value), Struct, "channel-settings-config must be type of String->Struct")
       },
     },
     "selected-event": {
