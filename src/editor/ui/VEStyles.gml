@@ -368,17 +368,17 @@ function generateVEStyles() {
       },
       remove: {
         backgroundColor: VETheme.color.primaryDark,
-        colorHoverOver: VETheme.color.deny,
+        colorHoverOver: VETheme.color.primaryShadow,
         colorHoverOut: VETheme.color.primaryDark,
         label: {
           align: { v: VAlign.CENTER, h: HAlign.CENTER },
           font: "font_inter_10_regular",
           color: VETheme.color.textShadow,
         },
-        sprite: {
-          name: "texture_ve_icon_trash",
-          blend: VETheme.color.textShadow,
-        },
+        //sprite: {
+        //  name: "texture_ve_icon_trash",
+        //  blend: VETheme.color.textShadow,
+        //},
       },
       label: {
         backgroundColor: VETheme.color.primaryDark,

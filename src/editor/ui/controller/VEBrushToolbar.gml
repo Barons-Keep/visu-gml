@@ -615,7 +615,7 @@ global.__VisuBrushContainers = new Map(String, Callable, {
               var templates = Beans.get(BeanVisuController).brushService
                 .fetchTemplates(type)
                 .filter(function(template, index, keys) {
-                  return keys.get(template.name)
+                  return keys.get(template.name) == true
                 }, keys)
 
               if (templates.size() == 0) {

@@ -862,7 +862,7 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
               text: "Import",
             },
             align: { v: VAlign.CENTER, h: HAlign.RIGHT },
-            group: { index: 1, size: 2, width: 48 },
+            group: { index: 3, size: 4, width: 40 },
             margin: { top: 1 },
             updateArea: Callable.run(UIUtil.updateAreaTemplates.get("groupByXWidth")),
             onMouseHoverOver: function(event) {
@@ -1133,14 +1133,32 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
             onMouseHoverOut: function(event) {
               this.backgroundColor = ColorUtil.fromHex(this.colorHoverOut).toGMColor()
             },
-            group: { index: 0, size: 2, width: 48 },
+            group: { index: 2, size: 4, width: 40 },
             updateArea: Callable.run(UIUtil.updateAreaTemplates.get("groupByXWidth")),
-            onMousePressedLeft: function(event) {
-              var controller = Beans.get(BeanVisuController)
+            callback: function(event) {
+              var view = this.context.templateToolbar.containers
+                .get("ve-template-toolbar_template-view")
+              if (!Optional.is(view)) {
+                return
+              }
+
+              var keys = new Map(String, Boolean)
+              view.collection.components.filter(function(component, iterator, keys) {
+                if (component.getSelected()) {
+                  keys.add(true, component.name)
+                }
+              }, keys)
+
+              if (keys.size() == 0) {
+                return
+              }
+
               var type = this.context.templateToolbar.store.getValue("type")
+
               var templates = null
               var model = null
               var filename = null
+              var controller = Beans.get(BeanVisuController)
               switch (type) {
                 case VETemplateType.SHADER:
                   templates = controller.shaderPipeline.templates
@@ -1196,6 +1214,14 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                 return
               }
 
+              templates = templates.filter(function(template, iterator, keys) {
+                return keys.get(template.name) == true
+              }, keys)
+
+              if (templates.size() == 0) {
+                return
+              }
+
               var struct = {}
               templates.forEach(function(template, iterator, struct) {
                 Struct.set(struct, template.name, template.serialize())
@@ -1212,6 +1238,124 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                   data: data
                 })))
             }
+          },
+          VEStyles.get("bar-button"),
+          false
+        ),
+        "button_template-remove": Struct.appendRecursiveUnique(
+          {
+            type: UIButton,
+            group: { index: 1, size: 4, width: 40 },
+            label: { 
+              font: "font_inter_8_regular",
+              text: "Del.",
+            },
+            margin: { top: 1 },
+            updateArea: Callable.run(UIUtil.updateAreaTemplates.get("groupByXWidth")),
+            callback: function(event) {
+              var view = this.context.templateToolbar.containers
+                .get("ve-template-toolbar_template-view")
+              if (!Optional.is(view)) {
+                return
+              }
+
+              var type = this.context.templateToolbar.store.getValue("type")
+
+              var templates = null
+              var controller = Beans.get(BeanVisuController)
+              switch (type) {
+                case VETemplateType.SHADER:
+                  templates = controller.shaderPipeline.templates
+                  break
+                case VETemplateType.SHROOM:
+                  templates = controller.shroomService.templates
+                  break
+                case VETemplateType.BULLET:
+                  templates = controller.bulletService.templates
+                  break
+                case VETemplateType.COIN:
+                  templates = controller.coinService.templates
+                  break
+                case VETemplateType.SUBTITLE:
+                  templates = controller.subtitleService.templates
+                  break
+                case VETemplateType.PARTICLE:
+                  templates = controller.particleService.templates
+                  break
+                case VETemplateType.TEXTURE:
+                  templates = Beans.get(BeanTextureService).templates
+                  break
+                default:
+                  throw new Exception($"Remove dispatcher for type '{template.type}' wasn't found")
+                  break
+              }
+
+              if (!Core.isType(templates, Collection)) {
+                return
+              }
+
+              var acc = {
+                templates: templates,
+                gc: new Array(Number),
+              }
+
+              view.collection.components.forEach(function(component, key, acc) {
+                if (component.getSelected() && !component.isAsset()) {
+                  acc.templates.remove(component.getTemplateName())
+                  acc.gc.add(component.index)
+                }
+              }, acc)
+
+              acc.gc
+                .sort(function(a, b) { return a > b } )
+                .forEach(function(index, gcIndex, collection) {
+                  collection.remove(index)
+                }, view.collection)
+            },
+            onMouseHoverOver: function(event) {
+              this.backgroundColor = ColorUtil.fromHex(this.colorHoverOver).toGMColor()
+            },
+            onMouseHoverOut: function(event) {
+              this.backgroundColor = ColorUtil.fromHex(this.colorHoverOut).toGMColor()
+            },
+          },
+          VEStyles.get("bar-button"),
+          false
+        ),
+        "button_template-all": Struct.appendRecursiveUnique(
+          {
+            type: UIButton,
+            group: { index: 0, size: 4, width: 40 },
+            label: { 
+              font: "font_inter_8_regular",
+              text: "Sel.",
+            },
+            margin: { top: 1 },
+            updateArea: Callable.run(UIUtil.updateAreaTemplates.get("groupByXWidth")),
+            callback: function(event) {
+              var view = this.context.templateToolbar.containers
+                .get("ve-template-toolbar_template-view")
+              if (!Optional.is(view)) {
+                return
+              }
+
+              var sum = { value: 0 }
+              view.collection.components.forEach(function(component, iterator, sum) {
+                if (component.getSelected()) {
+                  sum.value++
+                }
+              }, sum)
+
+              view.collection.components.forEach(function(component, iterator, selected) {
+                component.setSelected(selected)
+              }, view.collection.size() != sum.value)
+            },
+            onMouseHoverOver: function(event) {
+              this.backgroundColor = ColorUtil.fromHex(this.colorHoverOver).toGMColor()
+            },
+            onMouseHoverOut: function(event) {
+              this.backgroundColor = ColorUtil.fromHex(this.colorHoverOut).toGMColor()
+            },
           },
           VEStyles.get("bar-button"),
           false
@@ -1295,35 +1439,48 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                         }
   
                         var template = task.state.templates.get(task.state.templateNames.pop())
+                        if (!Optional.is(template)) {
+                          continue
+                        }
+
                         task.state.collection.add(new UIComponent({
                           name: template.name,
                           template: VEComponents.get("template-entry"),
                           layout: VELayouts.get("template-entry"),
                           config: {
                             settings: { 
-                              callback: function() {
-                                var shader = Beans.get(BeanVisuController).shaderPipeline.templates
-                                  .get(this.templateName)
-                                if (!Core.isType(shader, ShaderTemplate)) {
-                                  return
-                                }
-                
-                                Struct.set(shader, "type", VETemplateType.SHADER)
-                                this.context.templateToolbar.store
-                                  .get("template")
-                                  .set(new VETemplate(shader))
-                              },
+                              sprite: { name: "visu_texture_checkbox_off" },
+                              spriteOn: { name: "visu_texture_checkbox_on" },
+                              spriteOff: { name: "visu_texture_checkbox_off" },
+                              selected: false,
+                              isAsset: false,
                               templateName: template.name,
-                            },
-                            remove: { 
                               callback: function() {
-                                this.removeUIItemfromUICollection()
-                                Beans.get(BeanVisuController).shaderPipeline.templates
-                                  .remove(this.templateName)
+                                this.component.setSelected(!this.component.getSelected())
                               },
-                              templateName: template.name,
-                              removeUIItemfromUICollection: new BindIntent(Callable
-                                .run(UIUtil.templates.get("removeUIItemfromUICollection"))),
+                              onComponentInit: function(component) {
+                                var setSelected = method(this, function(selected) {
+                                  this.selected = selected
+                                  this.sprite = SpriteUtil.parse(selected ? this.spriteOn : this.spriteOff)
+                                })
+
+                                var getSelected = method(this, function() {
+                                  return this.selected
+                                })
+
+                                var isAsset = method(this, function() {
+                                  return this.isAsset
+                                })
+
+                                var getTemplateName = method(this, function() {
+                                  return this.templateName
+                                })
+
+                                Struct.set(component, "setSelected", setSelected)
+                                Struct.set(component, "getSelected", getSelected)
+                                Struct.set(component, "isAsset", isAsset)
+                                Struct.set(component, "getTemplateName", getTemplateName)
+                              },
                             },
                             label: { 
                               text: template.name,
@@ -1358,23 +1515,39 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                           template: VEComponents.get("template-entry-lock"),
                           layout: VELayouts.get("template-entry"),
                           config: {
-                            settings: { 
+                            settings: {
+                              sprite: { name: "visu_texture_checkbox_off" },
+                              spriteOn: { name: "visu_texture_checkbox_on" },
+                              spriteOff: { name: "visu_texture_checkbox_off" },
+                              selected: false,
+                              isAsset: true,
+                              templateName: template.name,
                               callback: function() {
-                                var shader = Visu.assets().shaderTemplates.get(this.templateName)
-                                if (!Core.isType(shader, ShaderTemplate)) {
-                                  return
-                                }
-                  
-                                Struct.set(shader, "type", VETemplateType.SHADER)
-                                this.context.templateToolbar.store
-                                  .get("template")
-                                  .set(new VETemplate(shader))
+                                this.component.setSelected(!this.component.getSelected())
                               },
-                              templateName: template.name,
-                            },
-                            remove: { 
-                              callback: function() { },
-                              templateName: template.name,
+                              onComponentInit: function(component) {
+                                var setSelected = method(this, function(selected) {
+                                  this.selected = selected
+                                  this.sprite = SpriteUtil.parse(selected ? this.spriteOn : this.spriteOff)
+                                })
+
+                                var getSelected = method(this, function() {
+                                  return this.selected
+                                })
+
+                                var isAsset = method(this, function() {
+                                  return this.isAsset
+                                })
+
+                                var getTemplateName = method(this, function() {
+                                  return this.templateName
+                                })
+
+                                Struct.set(component, "setSelected", setSelected)
+                                Struct.set(component, "getSelected", getSelected)
+                                Struct.set(component, "isAsset", isAsset)
+                                Struct.set(component, "getTemplateName", getTemplateName)
+                              },
                             },
                             label: { 
                               text: template.name,
@@ -1390,8 +1563,7 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                                   .set(new VETemplate(shader))
                               },
                               templateName: template.name,
-                            },
-                            
+                            }, 
                           },
                         }))
                       }
@@ -1432,30 +1604,39 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                           template: VEComponents.get("template-entry"),
                           layout: VELayouts.get("template-entry"),
                           config: {
-                            settings: { 
-                              callback: function() {
-                                var shroom = Beans.get(BeanVisuController).shroomService
-                                  .getTemplate(this.templateName)
-                                if (!Core.isType(shroom, ShroomTemplate)) {
-                                  return
-                                }
-                
-                                Struct.set(shroom, "type", VETemplateType.SHROOM)
-                                this.context.templateToolbar.store
-                                  .get("template")
-                                  .set(new VETemplate(shroom))
-                              },
+                              settings: { 
+                              sprite: { name: "visu_texture_checkbox_off" },
+                              spriteOn: { name: "visu_texture_checkbox_on" },
+                              spriteOff: { name: "visu_texture_checkbox_off" },
+                              selected: false,
+                              isAsset: false,
                               templateName: template.name,
-                            },
-                            remove: { 
                               callback: function() {
-                                this.removeUIItemfromUICollection()
-                                Beans.get(BeanVisuController).shroomService.templates
-                                  .remove(this.templateName)
+                                this.component.setSelected(!this.component.getSelected())
                               },
-                              templateName: template.name,
-                              removeUIItemfromUICollection: new BindIntent(Callable
-                                .run(UIUtil.templates.get("removeUIItemfromUICollection"))),
+                              onComponentInit: function(component) {
+                                var setSelected = method(this, function(selected) {
+                                  this.selected = selected
+                                  this.sprite = SpriteUtil.parse(selected ? this.spriteOn : this.spriteOff)
+                                })
+
+                                var getSelected = method(this, function() {
+                                  return this.selected
+                                })
+
+                                var isAsset = method(this, function() {
+                                  return this.isAsset
+                                })
+
+                                var getTemplateName = method(this, function() {
+                                  return this.templateName
+                                })
+
+                                Struct.set(component, "setSelected", setSelected)
+                                Struct.set(component, "getSelected", getSelected)
+                                Struct.set(component, "isAsset", isAsset)
+                                Struct.set(component, "getTemplateName", getTemplateName)
+                              },
                             },
                             label: { 
                               text: template.name,
@@ -1490,23 +1671,39 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                           template: VEComponents.get("template-entry-lock"),
                           layout: VELayouts.get("template-entry"),
                           config: {
-                            settings: { 
+                            settings: {
+                              sprite: { name: "visu_texture_checkbox_off" },
+                              spriteOn: { name: "visu_texture_checkbox_on" },
+                              spriteOff: { name: "visu_texture_checkbox_off" },
+                              selected: false,
+                              isAsset: true,
+                              templateName: template.name,
                               callback: function() {
-                                var shroom = Visu.assets().shroomTemplates.get(this.templateName)
-                                if (!Core.isType(shroom, ShroomTemplate)) {
-                                  return
-                                }
-                  
-                                Struct.set(shroom, "type", VETemplateType.SHROOM)
-                                this.context.templateToolbar.store
-                                  .get("template")
-                                  .set(new VETemplate(shroom))
+                                this.component.setSelected(!this.component.getSelected())
                               },
-                              templateName: template.name,
-                            },
-                            remove: { 
-                              callback: function() { },
-                              templateName: template.name,
+                              onComponentInit: function(component) {
+                                var setSelected = method(this, function(selected) {
+                                  this.selected = selected
+                                  this.sprite = SpriteUtil.parse(selected ? this.spriteOn : this.spriteOff)
+                                })
+
+                                var getSelected = method(this, function() {
+                                  return this.selected
+                                })
+
+                                var isAsset = method(this, function() {
+                                  return this.isAsset
+                                })
+
+                                var getTemplateName = method(this, function() {
+                                  return this.templateName
+                                })
+
+                                Struct.set(component, "setSelected", setSelected)
+                                Struct.set(component, "getSelected", getSelected)
+                                Struct.set(component, "isAsset", isAsset)
+                                Struct.set(component, "getTemplateName", getTemplateName)
+                              },
                             },
                             label: { 
                               text: template.name,
@@ -1564,29 +1761,38 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                           layout: VELayouts.get("template-entry"),
                           config: {
                             settings: { 
-                              callback: function() {
-                                var bullet = Beans.get(BeanVisuController).bulletService
-                                  .getTemplate(this.templateName)
-                                if (!Core.isType(bullet, BulletTemplate)) {
-                                  return
-                                }
-                
-                                Struct.set(bullet, "type", VETemplateType.BULLET)
-                                this.context.templateToolbar.store
-                                  .get("template")
-                                  .set(new VETemplate(bullet))
-                              },
+                              sprite: { name: "visu_texture_checkbox_off" },
+                              spriteOn: { name: "visu_texture_checkbox_on" },
+                              spriteOff: { name: "visu_texture_checkbox_off" },
+                              selected: false,
+                              isAsset: false,
                               templateName: template.name,
-                            },
-                            remove: { 
                               callback: function() {
-                                this.removeUIItemfromUICollection()
-                                Beans.get(BeanVisuController).bulletService.templates
-                                  .remove(this.templateName)
+                                this.component.setSelected(!this.component.getSelected())
                               },
-                              templateName: template.name,
-                              removeUIItemfromUICollection: new BindIntent(Callable
-                                .run(UIUtil.templates.get("removeUIItemfromUICollection"))),
+                              onComponentInit: function(component) {
+                                var setSelected = method(this, function(selected) {
+                                  this.selected = selected
+                                  this.sprite = SpriteUtil.parse(selected ? this.spriteOn : this.spriteOff)
+                                })
+
+                                var getSelected = method(this, function() {
+                                  return this.selected
+                                })
+
+                                var isAsset = method(this, function() {
+                                  return this.isAsset
+                                })
+
+                                var getTemplateName = method(this, function() {
+                                  return this.templateName
+                                })
+
+                                Struct.set(component, "setSelected", setSelected)
+                                Struct.set(component, "getSelected", getSelected)
+                                Struct.set(component, "isAsset", isAsset)
+                                Struct.set(component, "getTemplateName", getTemplateName)
+                              },
                             },
                             label: { 
                               text: template.name,
@@ -1621,23 +1827,39 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                           template: VEComponents.get("template-entry-lock"),
                           layout: VELayouts.get("template-entry"),
                           config: {
-                            settings: { 
+                            settings: {
+                              sprite: { name: "visu_texture_checkbox_off" },
+                              spriteOn: { name: "visu_texture_checkbox_on" },
+                              spriteOff: { name: "visu_texture_checkbox_off" },
+                              selected: false,
+                              isAsset: true,
+                              templateName: template.name,
                               callback: function() {
-                                var bullet = Visu.assets().bulletTemplates.get(this.templateName)
-                                if (!Core.isType(bullet, BulletTemplate)) {
-                                  return
-                                }
-                  
-                                Struct.set(bullet, "type", VETemplateType.BULLET)
-                                this.context.templateToolbar.store
-                                  .get("template")
-                                  .set(new VETemplate(bullet))
+                                this.component.setSelected(!this.component.getSelected())
                               },
-                              templateName: template.name,
-                            },
-                            remove: { 
-                              callback: function() { },
-                              templateName: template.name,
+                              onComponentInit: function(component) {
+                                var setSelected = method(this, function(selected) {
+                                  this.selected = selected
+                                  this.sprite = SpriteUtil.parse(selected ? this.spriteOn : this.spriteOff)
+                                })
+
+                                var getSelected = method(this, function() {
+                                  return this.selected
+                                })
+
+                                var isAsset = method(this, function() {
+                                  return this.isAsset
+                                })
+
+                                var getTemplateName = method(this, function() {
+                                  return this.templateName
+                                })
+
+                                Struct.set(component, "setSelected", setSelected)
+                                Struct.set(component, "getSelected", getSelected)
+                                Struct.set(component, "isAsset", isAsset)
+                                Struct.set(component, "getTemplateName", getTemplateName)
+                              },
                             },
                             label: { 
                               text: template.name,
@@ -1695,19 +1917,38 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                           layout: VELayouts.get("template-entry"),
                           config: {
                             settings: { 
-                              callback: function() {
-                                var coin = Beans.get(BeanVisuController).coinService
-                                  .getTemplate(this.templateName)
-                                if (!Core.isType(coin, CoinTemplate)) {
-                                  return
-                                }
-    
-                                Struct.set(coin, "type", VETemplateType.COIN)
-                                this.context.templateToolbar.store
-                                  .get("template")
-                                  .set(new VETemplate(coin))
-                              },
+                              sprite: { name: "visu_texture_checkbox_off" },
+                              spriteOn: { name: "visu_texture_checkbox_on" },
+                              spriteOff: { name: "visu_texture_checkbox_off" },
+                              selected: false,
+                              isAsset: false,
                               templateName: template.name,
+                              callback: function() {
+                                this.component.setSelected(!this.component.getSelected())
+                              },
+                              onComponentInit: function(component) {
+                                var setSelected = method(this, function(selected) {
+                                  this.selected = selected
+                                  this.sprite = SpriteUtil.parse(selected ? this.spriteOn : this.spriteOff)
+                                })
+
+                                var getSelected = method(this, function() {
+                                  return this.selected
+                                })
+
+                                var isAsset = method(this, function() {
+                                  return this.isAsset
+                                })
+
+                                var getTemplateName = method(this, function() {
+                                  return this.templateName
+                                })
+
+                                Struct.set(component, "setSelected", setSelected)
+                                Struct.set(component, "getSelected", getSelected)
+                                Struct.set(component, "isAsset", isAsset)
+                                Struct.set(component, "getTemplateName", getTemplateName)
+                              },
                             },
                             remove: { 
                               callback: function() {
@@ -1752,23 +1993,39 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                           template: VEComponents.get("template-entry-lock"),
                           layout: VELayouts.get("template-entry"),
                           config: {
-                            settings: { 
+                            settings: {
+                              sprite: { name: "visu_texture_checkbox_off" },
+                              spriteOn: { name: "visu_texture_checkbox_on" },
+                              spriteOff: { name: "visu_texture_checkbox_off" },
+                              selected: false,
+                              isAsset: true,
+                              templateName: template.name,
                               callback: function() {
-                                var coin = Visu.assets().coinTemplates.get(this.templateName)
-                                if (!Core.isType(coin, CoinTemplate)) {
-                                  return
-                                }
-      
-                                Struct.set(coin, "type", VETemplateType.COIN)
-                                this.context.templateToolbar.store
-                                  .get("template")
-                                  .set(new VETemplate(coin))
+                                this.component.setSelected(!this.component.getSelected())
                               },
-                              templateName: template.name,
-                            },
-                            remove: { 
-                              callback: function() { },
-                              templateName: template.name,
+                              onComponentInit: function(component) {
+                                var setSelected = method(this, function(selected) {
+                                  this.selected = selected
+                                  this.sprite = SpriteUtil.parse(selected ? this.spriteOn : this.spriteOff)
+                                })
+
+                                var getSelected = method(this, function() {
+                                  return this.selected
+                                })
+
+                                var isAsset = method(this, function() {
+                                  return this.isAsset
+                                })
+
+                                var getTemplateName = method(this, function() {
+                                  return this.templateName
+                                })
+
+                                Struct.set(component, "setSelected", setSelected)
+                                Struct.set(component, "getSelected", getSelected)
+                                Struct.set(component, "isAsset", isAsset)
+                                Struct.set(component, "getTemplateName", getTemplateName)
+                              },
                             },
                             label: { 
                               text: template.name,
@@ -1826,29 +2083,38 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                           layout: VELayouts.get("template-entry"),
                           config: {
                             settings: { 
-                              callback: function() {
-                                var subtitle = Beans.get(BeanVisuController).subtitleService
-                                  .getTemplate(this.templateName)
-                                if (!Core.isType(subtitle, SubtitleTemplate)) {
-                                  return
-                                }
-                
-                                Struct.set(subtitle, "type", VETemplateType.SUBTITLE)
-                                this.context.templateToolbar.store
-                                  .get("template")
-                                  .set(new VETemplate(subtitle))
-                              },
+                              sprite: { name: "visu_texture_checkbox_off" },
+                              spriteOn: { name: "visu_texture_checkbox_on" },
+                              spriteOff: { name: "visu_texture_checkbox_off" },
+                              selected: false,
+                              isAsset: false,
                               templateName: template.name,
-                            },
-                            remove: { 
                               callback: function() {
-                                this.removeUIItemfromUICollection()
-                                Beans.get(BeanVisuController).subtitleService.templates
-                                  .remove(this.templateName)
+                                this.component.setSelected(!this.component.getSelected())
                               },
-                              templateName: template.name,
-                              removeUIItemfromUICollection: new BindIntent(Callable
-                                .run(UIUtil.templates.get("removeUIItemfromUICollection"))),
+                              onComponentInit: function(component) {
+                                var setSelected = method(this, function(selected) {
+                                  this.selected = selected
+                                  this.sprite = SpriteUtil.parse(selected ? this.spriteOn : this.spriteOff)
+                                })
+
+                                var getSelected = method(this, function() {
+                                  return this.selected
+                                })
+
+                                var isAsset = method(this, function() {
+                                  return this.isAsset
+                                })
+
+                                var getTemplateName = method(this, function() {
+                                  return this.templateName
+                                })
+
+                                Struct.set(component, "setSelected", setSelected)
+                                Struct.set(component, "getSelected", getSelected)
+                                Struct.set(component, "isAsset", isAsset)
+                                Struct.set(component, "getTemplateName", getTemplateName)
+                              },
                             },
                             label: { 
                               text: template.name,
@@ -1883,23 +2149,39 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                           template: VEComponents.get("template-entry-lock"),
                           layout: VELayouts.get("template-entry"),
                           config: {
-                            settings: { 
+                            settings: {
+                              sprite: { name: "visu_texture_checkbox_off" },
+                              spriteOn: { name: "visu_texture_checkbox_on" },
+                              spriteOff: { name: "visu_texture_checkbox_off" },
+                              selected: false,
+                              isAsset: true,
+                              templateName: template.name,
                               callback: function() {
-                                var subtitle = Visu.assets().subtitleTemplates.get(this.templateName)
-                                if (!Core.isType(subtitle, SubtitleTemplate)) {
-                                  return
-                                }
-                  
-                                Struct.set(subtitle, "type", VETemplateType.SUBTITLE)
-                                this.context.templateToolbar.store
-                                  .get("template")
-                                  .set(new VETemplate(subtitle))
+                                this.component.setSelected(!this.component.getSelected())
                               },
-                              templateName: template.name,
-                            },
-                            remove: { 
-                              callback: function() { },
-                              templateName: template.name,
+                              onComponentInit: function(component) {
+                                var setSelected = method(this, function(selected) {
+                                  this.selected = selected
+                                  this.sprite = SpriteUtil.parse(selected ? this.spriteOn : this.spriteOff)
+                                })
+
+                                var getSelected = method(this, function() {
+                                  return this.selected
+                                })
+
+                                var isAsset = method(this, function() {
+                                  return this.isAsset
+                                })
+
+                                var getTemplateName = method(this, function() {
+                                  return this.templateName
+                                })
+
+                                Struct.set(component, "setSelected", setSelected)
+                                Struct.set(component, "getSelected", getSelected)
+                                Struct.set(component, "isAsset", isAsset)
+                                Struct.set(component, "getTemplateName", getTemplateName)
+                              },
                             },
                             label: { 
                               text: template.name,
@@ -1957,29 +2239,38 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                           layout: VELayouts.get("template-entry"),
                           config: {
                             settings: { 
-                              callback: function() {
-                                var particle = Beans.get(BeanVisuController).particleService
-                                  .getTemplate(this.templateName)
-                                if (!Core.isType(particle, ParticleTemplate)) {
-                                  return
-                                }
-                
-                                Struct.set(particle, "type", VETemplateType.PARTICLE)
-                                this.context.templateToolbar.store
-                                  .get("template")
-                                  .set(new VETemplate(particle))
-                              },
+                              sprite: { name: "visu_texture_checkbox_off" },
+                              spriteOn: { name: "visu_texture_checkbox_on" },
+                              spriteOff: { name: "visu_texture_checkbox_off" },
+                              selected: false,
+                              isAsset: false,
                               templateName: template.name,
-                            },
-                            remove: { 
                               callback: function() {
-                                this.removeUIItemfromUICollection()
-                                Beans.get(BeanVisuController).particleService.templates
-                                  .remove(this.templateName)
+                                this.component.setSelected(!this.component.getSelected())
                               },
-                              templateName: template.name,
-                              removeUIItemfromUICollection: new BindIntent(Callable
-                                .run(UIUtil.templates.get("removeUIItemfromUICollection"))),
+                              onComponentInit: function(component) {
+                                var setSelected = method(this, function(selected) {
+                                  this.selected = selected
+                                  this.sprite = SpriteUtil.parse(selected ? this.spriteOn : this.spriteOff)
+                                })
+
+                                var getSelected = method(this, function() {
+                                  return this.selected
+                                })
+
+                                var isAsset = method(this, function() {
+                                  return this.isAsset
+                                })
+
+                                var getTemplateName = method(this, function() {
+                                  return this.templateName
+                                })
+
+                                Struct.set(component, "setSelected", setSelected)
+                                Struct.set(component, "getSelected", getSelected)
+                                Struct.set(component, "isAsset", isAsset)
+                                Struct.set(component, "getTemplateName", getTemplateName)
+                              },
                             },
                             label: { 
                               text: template.name,
@@ -2014,23 +2305,39 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                           template: VEComponents.get("template-entry-lock"),
                           layout: VELayouts.get("template-entry"),
                           config: {
-                            settings: { 
+                            settings: {
+                              sprite: { name: "visu_texture_checkbox_off" },
+                              spriteOn: { name: "visu_texture_checkbox_on" },
+                              spriteOff: { name: "visu_texture_checkbox_off" },
+                              selected: false,
+                              isAsset: true,
+                              templateName: template.name,
                               callback: function() {
-                                var particle = Visu.assets().particleTemplates.get(this.templateName)
-                                if (!Core.isType(particle, ParticleTemplate)) {
-                                  return
-                                }
-                  
-                                Struct.set(particle, "type", VETemplateType.PARTICLE)
-                                this.context.templateToolbar.store
-                                  .get("template")
-                                  .set(new VETemplate(particle))
+                                this.component.setSelected(!this.component.getSelected())
                               },
-                              templateName: template.name,
-                            },
-                            remove: { 
-                              callback: function() { },
-                              templateName: template.name,
+                              onComponentInit: function(component) {
+                                var setSelected = method(this, function(selected) {
+                                  this.selected = selected
+                                  this.sprite = SpriteUtil.parse(selected ? this.spriteOn : this.spriteOff)
+                                })
+
+                                var getSelected = method(this, function() {
+                                  return this.selected
+                                })
+
+                                var isAsset = method(this, function() {
+                                  return this.isAsset
+                                })
+
+                                var getTemplateName = method(this, function() {
+                                  return this.templateName
+                                })
+
+                                Struct.set(component, "setSelected", setSelected)
+                                Struct.set(component, "getSelected", getSelected)
+                                Struct.set(component, "isAsset", isAsset)
+                                Struct.set(component, "getTemplateName", getTemplateName)
+                              },
                             },
                             label: { 
                               text: template.name,
@@ -2087,29 +2394,38 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                           layout: VELayouts.get("template-entry"),
                           config: {
                             settings: { 
-                              callback: function() {
-                                var texture = Beans.get(BeanTextureService)
-                                  .getTemplate(this.templateName)
-                                if (!Core.isType(texture, TextureTemplate)) {
-                                  return
-                                }
-                
-                                Struct.set(texture, "type", VETemplateType.TEXTURE)
-                                this.context.templateToolbar.store
-                                  .get("template")
-                                  .set(new VETemplate(texture))
-                              },
+                              sprite: { name: "visu_texture_checkbox_off" },
+                              spriteOn: { name: "visu_texture_checkbox_on" },
+                              spriteOff: { name: "visu_texture_checkbox_off" },
+                              selected: false,
+                              isAsset: false,
                               templateName: template.name,
-                            },
-                            remove: { 
                               callback: function() {
-                                this.removeUIItemfromUICollection()
-                                Beans.get(BeanTextureService).templates
-                                  .remove(this.templateName)
+                                this.component.setSelected(!this.component.getSelected())
                               },
-                              templateName: template.name,
-                              removeUIItemfromUICollection: new BindIntent(Callable
-                                .run(UIUtil.templates.get("removeUIItemfromUICollection"))),
+                              onComponentInit: function(component) {
+                                var setSelected = method(this, function(selected) {
+                                  this.selected = selected
+                                  this.sprite = SpriteUtil.parse(selected ? this.spriteOn : this.spriteOff)
+                                })
+
+                                var getSelected = method(this, function() {
+                                  return this.selected
+                                })
+
+                                var isAsset = method(this, function() {
+                                  return this.isAsset
+                                })
+
+                                var getTemplateName = method(this, function() {
+                                  return this.templateName
+                                })
+
+                                Struct.set(component, "setSelected", setSelected)
+                                Struct.set(component, "getSelected", getSelected)
+                                Struct.set(component, "isAsset", isAsset)
+                                Struct.set(component, "getTemplateName", getTemplateName)
+                              },
                             },
                             label: { 
                               text: template.name,
@@ -2144,23 +2460,39 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                           template: VEComponents.get("template-entry-lock"),
                           layout: VELayouts.get("template-entry"),
                           config: {
-                            settings: { 
+                            settings: {
+                              sprite: { name: "visu_texture_checkbox_off" },
+                              spriteOn: { name: "visu_texture_checkbox_on" },
+                              spriteOff: { name: "visu_texture_checkbox_off" },
+                              selected: false,
+                              isAsset: true,
+                              templateName: template.name,
                               callback: function() {
-                                var texture = Visu.assets().textures.get(this.templateName)
-                                if (!Core.isType(texture, TextureTemplate)) {
-                                  return
-                                }
-                  
-                                Struct.set(texture, "type", VETemplateType.TEXTURE)
-                                this.context.templateToolbar.store
-                                  .get("template")
-                                  .set(new VETemplate(texture))
+                                this.component.setSelected(!this.component.getSelected())
                               },
-                              templateName: template.name,
-                            },
-                            remove: { 
-                              callback: function() { },
-                              templateName: template.name,
+                              onComponentInit: function(component) {
+                                var setSelected = method(this, function(selected) {
+                                  this.selected = selected
+                                  this.sprite = SpriteUtil.parse(selected ? this.spriteOn : this.spriteOff)
+                                })
+
+                                var getSelected = method(this, function() {
+                                  return this.selected
+                                })
+
+                                var isAsset = method(this, function() {
+                                  return this.isAsset
+                                })
+
+                                var getTemplateName = method(this, function() {
+                                  return this.templateName
+                                })
+
+                                Struct.set(component, "setSelected", setSelected)
+                                Struct.set(component, "getSelected", getSelected)
+                                Struct.set(component, "isAsset", isAsset)
+                                Struct.set(component, "getTemplateName", getTemplateName)
+                              },
                             },
                             label: { 
                               text: template.name,
