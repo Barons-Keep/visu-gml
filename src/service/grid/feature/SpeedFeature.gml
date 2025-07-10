@@ -9,7 +9,10 @@ function SpeedFeature(json): GridItemFeature(json) constructor {
   type = "SpeedFeature"
 
   ///@type {Boolean}
-  initTransformValue = Core.getIfType(GMArray.resolveRandom(Struct.get(data, "initTransformValue")), Boolean)
+  isRelative = Core.getIfType(GMArray.resolveRandom(Struct.get(data, "isRelative")), Boolean, true)
+
+  ///@type {Boolean}
+  isSpeedSet = false
 
   ///@type {?NumberTransformer}
   transform = Struct.contains(data, "transform")
@@ -40,10 +43,14 @@ function SpeedFeature(json): GridItemFeature(json) constructor {
   ///@param {VisuController} controller
   static update = function(item, controller) {
     if (this.transform != null) {
-      if (this.initTransformValue == null) {
-        this.transform.value = item.speed * 1000.0
+      if (!this.isSpeedSet) {
+        var value = this.transform.value
+        var target = this.transform.target
+        this.transform.value = this.isRelative ? value + (item.speed * 1000.0) : value
         this.transform.startValue = this.transform.value
-        this.initTransformValue = this.transform.value
+        this.transform.target = this.isRelative ? target + (item.speed * 1000.0) : target
+        this.transform.reset()
+        this.isSpeedSet = true
       }
       item.setSpeed(this.transform.update().value / 1000.0)
     }
