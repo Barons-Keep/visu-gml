@@ -192,8 +192,8 @@ function brush_entity_shroom(json) {
       value: Struct.get(json, "en-shr_x", Number, 0),
       passthrough: UIUtil.passthrough.getClampedStringNumber(),
       data: new Vector2(
-        -1.0 * (SHROOM_SPAWN_CHANNEL_AMOUNT / 2.0), 
-        SHROOM_SPAWN_CHANNEL_AMOUNT / 2.0
+        -1.0 * (SHROOM_SPAWN_AMOUNT / 2.0), 
+        SHROOM_SPAWN_AMOUNT / 2.0
       ),
     },
     "en-shr_snap-x": {
@@ -210,7 +210,7 @@ function brush_entity_shroom(json) {
       passthrough: UIUtil.passthrough.getClampedStringNumber(),
       data: new Vector2(
         0.0, 
-        SHROOM_SPAWN_CHANNEL_AMOUNT / 2.0
+        SHROOM_SPAWN_AMOUNT / 2.0
       ),
     },
     "en-shr_y": {
@@ -218,8 +218,8 @@ function brush_entity_shroom(json) {
       value: Struct.get(json, "en-shr_y", Number, 0),
       passthrough: UIUtil.passthrough.getClampedStringNumber(),
       data: new Vector2(
-        -1.0 * (SHROOM_SPAWN_ROW_AMOUNT / 2.0), 
-        SHROOM_SPAWN_ROW_AMOUNT / 2.0
+        -1.0 * (SHROOM_SPAWN_AMOUNT / 2.0), 
+        SHROOM_SPAWN_AMOUNT / 2.0
       ),
     },
     "en-shr_snap-y": {
@@ -236,7 +236,7 @@ function brush_entity_shroom(json) {
       passthrough: UIUtil.passthrough.getClampedStringNumber(),
       data: new Vector2(
         0.0, 
-        SHROOM_SPAWN_ROW_AMOUNT / 2.0
+        SHROOM_SPAWN_AMOUNT / 2.0
       ),
     },
     "en-shr_use-inherit": {
@@ -552,9 +552,9 @@ function brush_entity_shroom(json) {
               }))
             }
 
-            var _x = store.getValue("en-shr_x") * (SHROOM_SPAWN_CHANNEL_SIZE / SHROOM_SPAWN_CHANNEL_AMOUNT) + 0.5
+            var _x = store.getValue("en-shr_x") * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT) + 0.5
             if (store.getValue("en-shr_use-rng-x")) {
-              _x += sin(this.spawnerXTimer.update().time) * (store.getValue("en-shr_rng-x") * (SHROOM_SPAWN_CHANNEL_SIZE / SHROOM_SPAWN_CHANNEL_AMOUNT) / 2.0)
+              _x += sin(this.spawnerXTimer.update().time) * (store.getValue("en-shr_rng-x") * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT) / 2.0)
             }
 
             if (store.getValue("en-shr_snap-x")) {
@@ -569,9 +569,9 @@ function brush_entity_shroom(json) {
               }))
             }
 
-            var _y = store.getValue("en-shr_y") * (SHROOM_SPAWN_ROW_SIZE / SHROOM_SPAWN_ROW_AMOUNT) - 0.5
+            var _y = store.getValue("en-shr_y") * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT) - 0.5
             if (store.getValue("en-shr_use-rng-y")) {
-              _y += sin(this.spawnerYTimer.update().time) * (store.getValue("en-shr_rng-y") * (SHROOM_SPAWN_ROW_SIZE / SHROOM_SPAWN_ROW_AMOUNT) / 2.0)
+              _y += sin(this.spawnerYTimer.update().time) * (store.getValue("en-shr_rng-y") * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT) / 2.0)
             }
 
             if (store.getValue("en-shr_snap-y")) {
@@ -827,9 +827,9 @@ function brush_entity_shroom(json) {
           hidden: { key: "en-shr_hide-spawn" },
         },
         slider: {
-          minValue: -1.0 * (SHROOM_SPAWN_CHANNEL_AMOUNT / 2.0),
-          maxValue: SHROOM_SPAWN_CHANNEL_AMOUNT / 2.0,
-          snapValue: 1.0 / SHROOM_SPAWN_CHANNEL_AMOUNT,
+          minValue: -1.0 * (SHROOM_SPAWN_AMOUNT / 2.0),
+          maxValue: SHROOM_SPAWN_AMOUNT / 2.0,
+          snapValue: 1.0 / SHROOM_SPAWN_AMOUNT,
           store: { key: "en-shr_x" },
           hidden: { key: "en-shr_hide-spawn" },
         },
@@ -964,9 +964,9 @@ function brush_entity_shroom(json) {
           hidden: { key: "en-shr_hide-spawn" },
         },
         slider: {
-          minValue: -1.0 * (SHROOM_SPAWN_CHANNEL_AMOUNT / 2.0),
-          maxValue: SHROOM_SPAWN_CHANNEL_AMOUNT / 2.0,
-          snapValue: 1.0 / SHROOM_SPAWN_CHANNEL_AMOUNT,
+          minValue: -1.0 * (SHROOM_SPAWN_AMOUNT / 2.0),
+          maxValue: SHROOM_SPAWN_AMOUNT / 2.0,
+          snapValue: 1.0 / SHROOM_SPAWN_AMOUNT,
           store: { key: "en-shr_y" },
           hidden: { key: "en-shr_hide-spawn" },
         },
@@ -1462,17 +1462,17 @@ function brush_entity_shroom(json) {
         layout: { type: UILayoutType.VERTICAL },
         label: {
           text: "Emitter",
-          backgroundColor: VETheme.color.accentShadow,
+          //backgroundColor: VETheme.color.accentShadow,
           enable: { key: "en-shr_use-em"},
         },
         input: {
-          backgroundColor: VETheme.color.accentShadow,
+          //backgroundColor: VETheme.color.accentShadow,
           spriteOn: { name: "visu_texture_checkbox_switch_on" },
           spriteOff: { name: "visu_texture_checkbox_switch_off" },
           store: { key: "en-shr_use-em" },
         },
         checkbox: {
-          backgroundColor: VETheme.color.accentShadow,
+          //backgroundColor: VETheme.color.accentShadow,
           store: { key: "en-shr_hide-em" },
           spriteOn: { name: "visu_texture_checkbox_show" },
           spriteOff: { name: "visu_texture_checkbox_hide" },

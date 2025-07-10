@@ -298,10 +298,13 @@ function GridItemEmitter(json = null) constructor {
     this.timeSum += this.time
     this.time = this.time - (floor(this.time / this.interval) * this.interval)
 
-    var pixelWidth = SHROOM_SPAWN_CHANNEL_AMOUNT
-    var pixelHeight = SHROOM_SPAWN_ROW_AMOUNT
-    var offsetLength = Math.fetchLength(0.0, 0.0, this.offsetX.value / pixelWidth, this.offsetY.value / pixelHeight)
-    var offsetAngle = Math.fetchPointsAngle(0.0, 0.0, this.offsetX.value / pixelWidth, this.offsetY.value / pixelHeight)
+    var _offset = this.offset.value * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
+    var _offsetX = this.offsetX.value * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
+    var _offsetY = this.offsetY.value * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
+    var pixelWidth = SHROOM_SPAWN_AMOUNT
+    var pixelHeight = SHROOM_SPAWN_AMOUNT
+    var offsetLength = Math.fetchLength(0.0, 0.0, _offsetX, _offsetY)
+    var offsetAngle = Math.fetchPointsAngle(0.0, 0.0, _offsetX, _offsetY)
     var posX = this.x + Math.fetchCircleX(offsetLength, offsetAngle)
     var posY = this.y + Math.fetchCircleY(offsetLength, offsetAngle)
     var startAngle = this.angle.value + item.angle
@@ -315,8 +318,8 @@ function GridItemEmitter(json = null) constructor {
       var wiggle = sin(this.wiggleFrequency.value * this.timeSum) * this.wiggleAmplitude.value
       for (var idx = 0; idx < floor(this.arrays.value); idx++) {
         var angle = startAngle + (idx * this.angleStep.value) + random(this.angleRng.value) + wiggle
-        var _posX = Math.fetchCircleX(this.offset.value / pixelWidth, angle)
-        var _posY = Math.fetchCircleY(this.offset.value / pixelHeight, angle)
+        var _posX = Math.fetchCircleX(_offset, angle)
+        var _posY = Math.fetchCircleY(_offset, angle)
         for (var arrIdx = 0; arrIdx < floor(this.perArray.value); arrIdx++) {
           this.callback(
             item, controller, this, idx, arrIdx, posX + _posX, posY + _posY,

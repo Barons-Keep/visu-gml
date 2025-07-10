@@ -192,8 +192,8 @@ function brush_entity_bullet(json) {
       value: Struct.get(json, "en-blt_x", Number, 0),
       passthrough: UIUtil.passthrough.getClampedStringNumber(),
       data: new Vector2(
-        -1.0 * (SHROOM_SPAWN_CHANNEL_AMOUNT / 2.0), 
-        SHROOM_SPAWN_CHANNEL_AMOUNT / 2.0
+        -1.0 * (SHROOM_SPAWN_AMOUNT / 2.0), 
+        SHROOM_SPAWN_AMOUNT / 2.0
       ),
     },
     "en-blt_snap-x": {
@@ -210,7 +210,7 @@ function brush_entity_bullet(json) {
       passthrough: UIUtil.passthrough.getClampedStringNumber(),
       data: new Vector2(
         0.0, 
-        SHROOM_SPAWN_CHANNEL_AMOUNT / 2.0
+        SHROOM_SPAWN_AMOUNT / 2.0
       ),
     },
     "en-blt_y": {
@@ -218,8 +218,8 @@ function brush_entity_bullet(json) {
       value: Struct.get(json, "en-blt_y", Number, 0),
       passthrough: UIUtil.passthrough.getClampedStringNumber(),
       data: new Vector2(
-        -1.0 * (SHROOM_SPAWN_ROW_AMOUNT / 2.0), 
-        SHROOM_SPAWN_ROW_AMOUNT / 2.0
+        -1.0 * (SHROOM_SPAWN_AMOUNT / 2.0), 
+        SHROOM_SPAWN_AMOUNT / 2.0
       ),
     },
     "en-blt_snap-y": {
@@ -236,7 +236,7 @@ function brush_entity_bullet(json) {
       passthrough: UIUtil.passthrough.getClampedStringNumber(),
       data: new Vector2(
         0.0, 
-        SHROOM_SPAWN_ROW_AMOUNT / 2.0
+        SHROOM_SPAWN_AMOUNT / 2.0
       ),
     },
     "en-blt_use-texture": {
@@ -538,9 +538,9 @@ function brush_entity_bullet(json) {
               }))
             }
 
-            var _x = store.getValue("en-blt_x") * (SHROOM_SPAWN_CHANNEL_SIZE / SHROOM_SPAWN_CHANNEL_AMOUNT) + 0.5
+            var _x = store.getValue("en-blt_x") * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT) + 0.5
             if (store.getValue("en-blt_use-rng-x")) {
-              _x += sin(this.spawnerXTimer.update().time) * (store.getValue("en-blt_rng-x") * (SHROOM_SPAWN_CHANNEL_SIZE / SHROOM_SPAWN_CHANNEL_AMOUNT) / 2.0)
+              _x += sin(this.spawnerXTimer.update().time) * (store.getValue("en-blt_rng-x") * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT) / 2.0)
             }
 
             if (store.getValue("en-blt_snap-x")) {
@@ -555,9 +555,9 @@ function brush_entity_bullet(json) {
               }))
             }
 
-            var _y = store.getValue("en-blt_y") * (SHROOM_SPAWN_ROW_SIZE / SHROOM_SPAWN_ROW_AMOUNT) - 0.5
+            var _y = store.getValue("en-blt_y") * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT) - 0.5
             if (store.getValue("en-blt_use-rng-y")) {
-              _y += sin(this.spawnerYTimer.update().time) * (store.getValue("en-blt_rng-y") * (SHROOM_SPAWN_ROW_SIZE / SHROOM_SPAWN_ROW_AMOUNT) / 2.0)
+              _y += sin(this.spawnerYTimer.update().time) * (store.getValue("en-blt_rng-y") * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT) / 2.0)
             }
 
             if (store.getValue("en-blt_snap-y")) {
@@ -813,9 +813,9 @@ function brush_entity_bullet(json) {
           hidden: { key: "en-blt_hide-spawn" },
         },
         slider: {
-          minValue: -1.0 * (SHROOM_SPAWN_CHANNEL_AMOUNT / 2.0),
-          maxValue: SHROOM_SPAWN_CHANNEL_AMOUNT / 2.0,
-          snapValue: 1.0 / SHROOM_SPAWN_CHANNEL_AMOUNT,
+          minValue: -1.0 * (SHROOM_SPAWN_AMOUNT / 2.0),
+          maxValue: SHROOM_SPAWN_AMOUNT / 2.0,
+          snapValue: 1.0 / SHROOM_SPAWN_AMOUNT,
           store: { key: "en-blt_x" },
           hidden: { key: "en-blt_hide-spawn" },
         },
@@ -950,9 +950,9 @@ function brush_entity_bullet(json) {
           hidden: { key: "en-blt_hide-spawn" },
         },
         slider: {
-          minValue: -1.0 * (SHROOM_SPAWN_CHANNEL_AMOUNT / 2.0),
-          maxValue: SHROOM_SPAWN_CHANNEL_AMOUNT / 2.0,
-          snapValue: 1.0 / SHROOM_SPAWN_CHANNEL_AMOUNT,
+          minValue: -1.0 * (SHROOM_SPAWN_AMOUNT / 2.0),
+          maxValue: SHROOM_SPAWN_AMOUNT / 2.0,
+          snapValue: 1.0 / SHROOM_SPAWN_AMOUNT,
           store: { key: "en-blt_y" },
           hidden: { key: "en-blt_hide-spawn" },
         },
@@ -1391,17 +1391,17 @@ function brush_entity_bullet(json) {
         layout: { type: UILayoutType.VERTICAL },
         label: {
           text: "Emitter",
-          backgroundColor: VETheme.color.accentShadow,
+          //backgroundColor: VETheme.color.accentShadow,
           enable: { key: "en-blt_use-em"},
         },
         input: {
-          backgroundColor: VETheme.color.accentShadow,
+          //backgroundColor: VETheme.color.accentShadow,
           spriteOn: { name: "visu_texture_checkbox_switch_on" },
           spriteOff: { name: "visu_texture_checkbox_switch_off" },
           store: { key: "en-blt_use-em" },
         },
         checkbox: {
-          backgroundColor: VETheme.color.accentShadow,
+          //backgroundColor: VETheme.color.accentShadow,
           store: { key: "en-blt_hide-em" },
           spriteOn: { name: "visu_texture_checkbox_show" },
           spriteOff: { name: "visu_texture_checkbox_hide" },

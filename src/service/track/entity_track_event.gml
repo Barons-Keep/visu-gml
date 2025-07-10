@@ -1,15 +1,9 @@
 
 ///@type {Number}
-#macro SHROOM_SPAWN_CHANNEL_AMOUNT 50
+#macro SHROOM_SPAWN_AMOUNT 50
 
 ///@type {Number}
-#macro SHROOM_SPAWN_CHANNEL_SIZE 8
-
-///@type {Number}
-#macro SHROOM_SPAWN_ROW_AMOUNT 50
-
-///@type {Number}
-#macro SHROOM_SPAWN_ROW_SIZE 8
+#macro SHROOM_SPAWN_SIZE 8
 
 ///@type {Struct}
 global.__entity_track_event = {
@@ -211,21 +205,21 @@ global.__entity_track_event = {
         "en-shr_use-dir-rng": Struct.parse.boolean(data, "en-shr_use-dir-rng"),
         "en-shr_dir-rng": Struct.parse.number(data, "en-shr_dir-rng", 0.0, 0.0, 360.0),
         "en-shr_x": Struct.parse.number(data, "en-shr_x", 0.0, 
-          -1.0 * (SHROOM_SPAWN_CHANNEL_AMOUNT / 2.0), 
-          SHROOM_SPAWN_CHANNEL_AMOUNT / 2.0),
+          -1.0 * (SHROOM_SPAWN_AMOUNT / 2.0), 
+          SHROOM_SPAWN_AMOUNT / 2.0),
         "en-shr_snap-x": Struct.parse.boolean(data, "en-shr_snap-x"),
         "en-shr_use-rng-x": Struct.parse.boolean(data, "en-shr_use-rng-x"),
         "en-shr_rng-x": Struct.parse.number(data, "en-shr_rng-x", 0.0, 
           0.0,
-          SHROOM_SPAWN_CHANNEL_AMOUNT),
+          SHROOM_SPAWN_AMOUNT),
         "en-shr_y": Struct.parse.number(data, "en-shr_y", 0.0,
-          -1.0 * (SHROOM_SPAWN_ROW_AMOUNT / 2.0),
-          SHROOM_SPAWN_ROW_AMOUNT / 2.0),
+          -1.0 * (SHROOM_SPAWN_AMOUNT / 2.0),
+          SHROOM_SPAWN_AMOUNT / 2.0),
         "en-shr_snap-y": Struct.parse.boolean(data, "en-shr_snap-y"),
         "en-shr_use-rng-y": Struct.parse.boolean(data, "en-shr_use-rng-y"),
         "en-shr_rng-y": Struct.parse.number(data, "en-shr_rng-y", 0.0,
           0.0,
-          SHROOM_SPAWN_ROW_AMOUNT),
+          SHROOM_SPAWN_AMOUNT),
         "en-shr_use-inherit": Struct.parse.boolean(data, "en-shr_use-inherit"),
         "en-shr_inherit": Struct.getIfType(data, "en-shr_inherit", GMArray, [ ]),
         "en-shr_use-texture": Struct.parse.boolean(data, "en-shr_use-texture"),
@@ -257,20 +251,20 @@ global.__entity_track_event = {
           * choose(1.0, -1.0))
         : 0.0)),
       var spawnX = Struct.get(data, "en-shr_x")
-        * (SHROOM_SPAWN_CHANNEL_SIZE / SHROOM_SPAWN_CHANNEL_AMOUNT)
+        * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
         + 0.5
         + (Struct.get(data, "en-shr_use-rng-x")
           ? (random(Struct.get(data, "en-shr_rng-x") / 2.0)
-            * (SHROOM_SPAWN_CHANNEL_SIZE / SHROOM_SPAWN_CHANNEL_AMOUNT)
+            * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
             * choose(1.0, -1.0))
           : 0.0)
       var snapH = Struct.getDefault(data, "en-shr_snap-x", false)
       var spawnY = Struct.get(data, "en-shr_y")
-        * (SHROOM_SPAWN_ROW_SIZE / SHROOM_SPAWN_ROW_AMOUNT)
+        * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
         - 0.5
         + (Struct.get(data, "en-shr_use-rng-y")
           ? (random(Struct.get(data, "en-shr_rng-y") / 2.0)
-            * (SHROOM_SPAWN_ROW_SIZE / SHROOM_SPAWN_ROW_AMOUNT)
+            * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
             * choose(1.0, -1.0))
           : 0.0)
       var snapV = Struct.getDefault(data, "en-shr_snap-y", false)
@@ -369,11 +363,11 @@ global.__entity_track_event = {
         position: { 
           x: controller.gridService.view.x
             + (Struct.get(data, "en-shr_x") 
-              * (SHROOM_SPAWN_CHANNEL_SIZE / SHROOM_SPAWN_CHANNEL_AMOUNT) 
+              * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT) 
               + 0.5),
           y: controller.gridService.view.y
             + (Struct.get(data, "en-shr_y") 
-              * (SHROOM_SPAWN_ROW_SIZE / SHROOM_SPAWN_ROW_AMOUNT) 
+              * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT) 
               - 0.5),
         },
         velocity: { 
@@ -582,21 +576,21 @@ global.__entity_track_event = {
         "en-blt_use-dir-rng": Struct.parse.boolean(data, "en-blt_use-dir-rng"),
         "en-blt_dir-rng": Struct.parse.number(data, "en-blt_dir-rng", 0.0, 0.0, 360.0),
         "en-blt_x": Struct.parse.number(data, "en-blt_x", 0.0, 
-          -1.0 * (SHROOM_SPAWN_CHANNEL_AMOUNT / 2.0), 
-          SHROOM_SPAWN_CHANNEL_AMOUNT / 2.0),
+          -1.0 * (SHROOM_SPAWN_AMOUNT / 2.0), 
+          SHROOM_SPAWN_AMOUNT / 2.0),
         "en-blt_snap-x": Struct.parse.boolean(data, "en-blt_snap-x"),
         "en-blt_use-rng-x": Struct.parse.boolean(data, "en-blt_use-rng-x"),
         "en-blt_rng-x": Struct.parse.number(data, "en-blt_rng-x", 0.0, 
           0.0,
-          SHROOM_SPAWN_CHANNEL_AMOUNT),
+          SHROOM_SPAWN_AMOUNT),
         "en-blt_y": Struct.parse.number(data, "en-blt_y", 0.0,
-          -1.0 * (SHROOM_SPAWN_ROW_AMOUNT / 2.0),
-          SHROOM_SPAWN_ROW_AMOUNT / 2.0),
+          -1.0 * (SHROOM_SPAWN_AMOUNT / 2.0),
+          SHROOM_SPAWN_AMOUNT / 2.0),
         "en-blt_snap-y": Struct.parse.boolean(data, "en-blt_snap-y"),
         "en-blt_use-rng-y": Struct.parse.boolean(data, "en-blt_use-rng-y"),
         "en-blt_rng-y": Struct.parse.number(data, "en-blt_rng-y", 0.0,
           0.0,
-          SHROOM_SPAWN_ROW_AMOUNT),
+          SHROOM_SPAWN_AMOUNT),
         "en-blt_use-texture": Struct.parse.boolean(data, "en-blt_use-texture"),
         "en-blt_texture": Struct.parse.sprite(data, "en-blt_texture"),
         "en-blt_use-mask": Struct.parse.boolean(data, "en-blt_use-mask"),
@@ -626,20 +620,20 @@ global.__entity_track_event = {
           * choose(1.0, -1.0))
         : 0.0)),
       var spawnX = Struct.get(data, "en-blt_x")
-        * (SHROOM_SPAWN_CHANNEL_SIZE / SHROOM_SPAWN_CHANNEL_AMOUNT)
+        * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
         + 0.5
         + (Struct.get(data, "en-blt_use-rng-x")
           ? (random(Struct.get(data, "en-blt_rng-x") / 2.0)
-            * (SHROOM_SPAWN_CHANNEL_SIZE / SHROOM_SPAWN_CHANNEL_AMOUNT)
+            * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
             * choose(1.0, -1.0))
           : 0.0)
       var snapH = Struct.getDefault(data, "en-blt_snap-x", false)
       var spawnY = Struct.get(data, "en-blt_y")
-        * (SHROOM_SPAWN_ROW_SIZE / SHROOM_SPAWN_ROW_AMOUNT)
+        * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
         - 0.5
         + (Struct.get(data, "en-blt_use-rng-y")
           ? (random(Struct.get(data, "en-blt_rng-y") / 2.0)
-            * (SHROOM_SPAWN_ROW_SIZE / SHROOM_SPAWN_ROW_AMOUNT)
+            * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
             * choose(1.0, -1.0))
           : 0.0)
       var snapV = Struct.getDefault(data, "en-blt_snap-y", false)
@@ -752,11 +746,11 @@ global.__entity_track_event = {
         position: { 
           x: controller.gridService.view.x
             + (Struct.get(data, "en-blt_x") 
-              * (SHROOM_SPAWN_CHANNEL_SIZE / SHROOM_SPAWN_CHANNEL_AMOUNT) 
+              * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT) 
               + 0.5),
           y: controller.gridService.view.y
             + (Struct.get(data, "en-blt_y") 
-              * (SHROOM_SPAWN_ROW_SIZE / SHROOM_SPAWN_ROW_AMOUNT) 
+              * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT) 
               - 0.5),
         },
         velocity: { 
@@ -777,21 +771,21 @@ global.__entity_track_event = {
         "en-coin_preview": Struct.parse.boolean(data, "en-coin_preview"),
         "en-coin_template": Struct.parse.text(data, "en-coin_template", "coin-default"),
         "en-coin_x": Struct.parse.number(data, "en-coin_x", 0.0,
-          -1.0 * (SHROOM_SPAWN_CHANNEL_AMOUNT / 2.0),
-          SHROOM_SPAWN_CHANNEL_AMOUNT / 2.0),
+          -1.0 * (SHROOM_SPAWN_AMOUNT / 2.0),
+          SHROOM_SPAWN_AMOUNT / 2.0),
         "en-coin_snap-x": Struct.parse.boolean(data, "en-coin_snap-x"),
         "en-coin_use-rng-x": Struct.parse.boolean(data, "en-coin_use-rng-x"),
         "en-coin_rng-x": Struct.parse.number(data, "en-coin_rng-x", 0.0,
           0.0,
-          SHROOM_SPAWN_CHANNEL_AMOUNT),
+          SHROOM_SPAWN_AMOUNT),
         "en-coin_y": Struct.parse.number(data, "en-coin_y", 0.0,
-          -1.0 * (SHROOM_SPAWN_ROW_AMOUNT / 2.0),
-          SHROOM_SPAWN_ROW_AMOUNT / 2.0),
+          -1.0 * (SHROOM_SPAWN_AMOUNT / 2.0),
+          SHROOM_SPAWN_AMOUNT / 2.0),
         "en-coin_snap-y": Struct.parse.boolean(data, "en-coin_snap-y"),
         "en-coin_use-rng-y": Struct.parse.boolean(data, "en-coin_use-rng-y"),
         "en-coin_rng-y": Struct.parse.number(data, "en-coin_rng-y", 0.0,
           0.0, 
-          SHROOM_SPAWN_ROW_AMOUNT),
+          SHROOM_SPAWN_AMOUNT),
       }
     },
     run: function(data, channel) {
@@ -812,19 +806,19 @@ global.__entity_track_event = {
       controller.coinService.send(new Event("spawn-coin", {
         template: Struct.get(data, "en-coin_template"),
         x: viewX + Struct.get(data, "en-coin_x")
-          * (SHROOM_SPAWN_CHANNEL_SIZE / SHROOM_SPAWN_CHANNEL_AMOUNT)
+          * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
           + 0.5
           + (Struct.get(data, "en-coin_use-rng-x")
             ? (random(Struct.get(data, "en-coin_rng-x") / 2.0)
-              * (SHROOM_SPAWN_CHANNEL_SIZE / SHROOM_SPAWN_CHANNEL_AMOUNT)
+              * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
               * choose(1.0, -1.0))
             : 0.0),
         y: viewY + Struct.get(data, "en-coin_y")
-          * (SHROOM_SPAWN_ROW_SIZE / SHROOM_SPAWN_ROW_AMOUNT)
+          * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
           - 0.5
           + (Struct.get(data, "en-coin_use-rng-y")
             ? (random(Struct.get(data, "en-coin_rng-y") / 2.0)
-              * (SHROOM_SPAWN_ROW_SIZE / SHROOM_SPAWN_ROW_AMOUNT)
+              * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
               * choose(1.0, -1.0))
             : 0.0),
       }))
