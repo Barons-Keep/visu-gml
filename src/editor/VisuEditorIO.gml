@@ -148,14 +148,11 @@ function VisuEditorIO() constructor {
       editor.store.get("tool").set("tool_select")
     }
 
-    if (!this.keyboard.keys.controlLeft.on
-      && !this.keyboard.keys.controlLeft.released
-      && this.keyboard.keys.eraseTool.pressed) {
+    if (this.keyboard.keys.eraseTool.pressed) {
       editor.store.get("tool").set("tool_erase")
     }
 
-    if (!this.keyboard.keys.controlLeft.on 
-      && this.keyboard.keys.brushTool.pressed) {
+    if (this.keyboard.keys.brushTool.pressed) {
       editor.store.get("tool").set("tool_brush")
     }
 
