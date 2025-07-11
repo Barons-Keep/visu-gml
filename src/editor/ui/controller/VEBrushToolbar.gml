@@ -12,6 +12,11 @@ global.__BRUSH_TOOLBAR_ENTRY_STEP = 1
 global.__FLIP_VALUE = 1
 #macro FLIP_VALUE global.__FLIP_VALUE
 
+///@hack
+#macro TEMPLATE_ENTRY_STEP global.__BRUSH_ENTRY_STEP
+#macro TEMPLATE_TOOLBAR_ENTRY_STEP global.__BRUSH_TOOLBAR_ENTRY_STEP
+#macro EVENT_INSPECTOR_ENTRY_STEP global.__BRUSH_TOOLBAR_ENTRY_STEP
+
 
 function VEBrushGetTemplateName(templates, prefix, attempt) {
   var result = templates.find(function(template, index, name) {
@@ -1711,7 +1716,7 @@ global.__VisuBrushContainers = new Map(String, Callable, {
                 .setState({
                   context: data,
                   template: template,
-                  stage: "load-components",
+                  stage: "intro-cooldown",//"load-components",
                   flip: FLIP_VALUE,
                   components: brush.components,
                   componentsQueue: new Queue(String, GMArray
@@ -1725,7 +1730,13 @@ global.__VisuBrushContainers = new Map(String, Callable, {
                       width: function() { return this.area.getWidth() },
                     }),
                     textField: null,
-                    updateArea: true,
+                    updateArea: Core.getProperty("visu.editor.ui.brush-toolbar.inspector-view.init-ui-contanier.updateArea", true),
+                  },
+                  cooldown: new Timer(FRAME_MS * Core.getProperty("visu.editor.ui.brush-toolbar.inspector-view.init-ui-contanier.cooldown", 4)),
+                  "intro-cooldown": function(task) {
+                    if (task.state.cooldown.update().finished) {
+                      task.state.stage = "load-components"
+                    }
                   },
                   "load-components": function(task) {
                     repeat (BRUSH_TOOLBAR_ENTRY_STEP) {

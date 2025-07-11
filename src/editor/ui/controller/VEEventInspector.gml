@@ -1,8 +1,5 @@
 ///@package io.alkapivo.visu.editor.ui.controller
 
-#macro EVENT_INSPECTOR_ENTRY_STEP 1
-
-
 ///@param {VisuEditorController} _editor
 function VEEventInspector(_editor) constructor {
 
@@ -412,7 +409,7 @@ function VEEventInspector(_editor) constructor {
                   var task = new Task("init-ui-components")
                     .setTimeout(60)
                     .setState({
-                      stage: "load-components",
+                      stage: "intro-cooldown",//"load-components",
                       flip: FLIP_VALUE,
                       context: data,
                       components: event.components,
@@ -427,7 +424,7 @@ function VEEventInspector(_editor) constructor {
                           width: function() { return this.area.getWidth() },
                         }),
                         textField: null,
-                        updateArea: true,
+                        updateArea: Core.getProperty("visu.editor.ui.event-inspector.inspector-view.init-ui-contanier.updateArea", true),
                       },
                       subscribers: event.store.container,
                       subscribersQueue: new Queue(String, event.store.container
@@ -440,6 +437,12 @@ function VEEventInspector(_editor) constructor {
                           data.state.set("updateTrackEvent", true)
                         },
                         data: data,
+                      },
+                      cooldown: new Timer(FRAME_MS * Core.getProperty("visu.editor.ui.event-inspector.inspector-view.init-ui-contanier.cooldown", 8)),
+                      "intro-cooldown": function(task) {
+                        if (task.state.cooldown.update().finished) {
+                          task.state.stage = "load-components"
+                        }
                       },
                       "load-components": function(task) {
                         repeat (EVENT_INSPECTOR_ENTRY_STEP) {

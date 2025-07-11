@@ -94,7 +94,15 @@ function VisuController(layerName) constructor {
 
                 if (!task.state.sfxPlayed && task.state.fadeIn.finished) {
                   task.state.sfxPlayed = true
-                  controller.sfxService.play("menu-splashscreen")
+                  //controller.sfxService.play("menu-splashscreen")
+                  try {
+                    var sound = Assert.isType(SoundUtil.fetch("sound_sfx_intro", { loop: false }), Sound, "sound_sfx_intro must be sound")
+                    var ostVolume = Visu.settings.getValue("visu.audio.ost-volume")
+                    sound.play(0.0).setVolume(ostVolume, 1.0)
+                  } catch (exception) {
+                    Core.printStackTrace()
+                    Logger.error(BeanVisuController, $"Fatal error, splashscreen, {exception.message}")
+                  }
                 }
 
                 if (shader_is_compiled(shader_dissolve)) {

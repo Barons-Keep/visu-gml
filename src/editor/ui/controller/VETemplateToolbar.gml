@@ -1,8 +1,5 @@
 ///@package io.alkapivo.visu.editor.ui.controller
 
-#macro TEMPLATE_ENTRY_STEP 1
-#macro TEMPLATE_TOOLBAR_ENTRY_STEP 1
-
 ///@todo move to VEBrushToolbar
 ///@static
 ///@type {Map<String, Callable>}
@@ -2862,9 +2859,8 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                 .setTimeout(60)
                 .setState({
                   context: data,
-                  stage: "load-components",
+                  stage: "intro-cooldown",//"load-components",
                   flip: FLIP_VALUE,
-                  cooldownTimer: new Timer(0.128, { loop: true }),
                   components: template.components,
                   componentsQueue: new Queue(String, GMArray
                     .map(template.components.getContainer(), function(component, index) { 
@@ -2877,13 +2873,19 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                       width: function() { return this.area.getWidth() },
                     }),
                     textField: null,
-                    updateArea: true,
+                    updateArea: Core.getProperty("visu.editor.ui.template-toolbar.inspector-view.init-ui-contanier.updateArea", true),
                   },
                   previousOffset: {
                     x: data.offset.x,
                     y: data.offset.y,
                     xMax: data.offsetMax.x,
                     yMax: data.offsetMax.y,
+                  },
+                  cooldown: new Timer(FRAME_MS * Core.getProperty("visu.editor.ui.template-toolbar.inspector-view.init-ui-contanier.cooldown", 4)),
+                  "intro-cooldown": function(task) {
+                    if (task.state.cooldown.update().finished) {
+                      task.state.stage = "load-components"
+                    }
                   },
                   "load-components": function(task) {
                     repeat (TEMPLATE_TOOLBAR_ENTRY_STEP) {
@@ -2905,11 +2907,6 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
     
                       var component = new UIComponent(task.state.components.get(index))
                       task.state.context.addUIComponent(component, index, task.state.componentsConfig)
-                    }
-                  },
-                  "cooldown": function(task) {
-                    if (task.state.cooldownTimer.update().finished) {
-                      task.state.stage = "load-components"
                     }
                   },
                 })
