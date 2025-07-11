@@ -217,6 +217,7 @@ function VETemplate(json) constructor {
       useSpeedOffset: this.store.getValue("bullet_use-speed-offset"),
       changeSpeedOffset: this.store.getValue("bullet_change-speed-offset"),
       speedOffset: this.store.getValue("bullet_speed-offset").serialize(),
+      sumSpeedOffset: this.store.getValue("bullet_sum-speed-offset"),
       onDeath: this.store.getValue("bullet_use-on-death")
         ? this.store.getValue("bullet_on-death")
         : null,
