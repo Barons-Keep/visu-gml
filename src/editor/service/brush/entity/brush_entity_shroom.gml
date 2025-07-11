@@ -27,13 +27,13 @@ function brush_entity_shroom(json) {
         duration: 0,
         ease: "LINEAR",
       },
-      //angleRng: 0,
-      angleRng: {
-        value: 0,
-        target: 0,
-        duration: 0,
-        ease: "LINEAR",
-      },
+      angleRng: 0,
+      //angleRng: {
+      //  value: 0,
+      //  target: 0,
+      //  duration: 0,
+      //  ease: "LINEAR",
+      //},
       //angleStep: 0,
       angleStep: {
         value: 0,
@@ -48,13 +48,13 @@ function brush_entity_shroom(json) {
         duration: 0,
         ease: "LINEAR",
       },
-      //anglePerArrayRng: 0,
-      anglePerArrayRng: {
-        value: 0,
-        target: 0,
-        duration: 0,
-        ease: "LINEAR",
-      },
+      anglePerArrayRng: 0,
+      //anglePerArrayRng: {
+      //  value: 0,
+      //  target: 0,
+      //  duration: 0,
+      //  ease: "LINEAR",
+      //},
       //anglePerArrayStep: 0,
       anglePerArrayStep: {
         value: 0,
@@ -68,13 +68,13 @@ function brush_entity_shroom(json) {
         duration: 0,
         ease: "LINEAR",
       },
-      //speedRng: 0,
-      speedRng: {
-        value: 0,
-        target: 0,
-        duration: 0,
-        ease: "LINEAR",
-      },
+      speedRng: 0,
+      //speedRng: {
+      //  value: 0,
+      //  target: 0,
+      //  duration: 0,
+      //  ease: "LINEAR",
+      //},
       offset: {
         value: 0,
         target: 0,
@@ -1184,7 +1184,7 @@ function brush_entity_shroom(json) {
             }
 
             var angle = sprite.getAngle()
-            if (this.store != null && this.store.getStore().getValue("en-shr_use-dir-rng")) {
+            if (this.store != null && this.store.getStore() != null && this.store.getStore().getValue("en-shr_use-dir-rng")) {
               sprite.setAngle(angle + sin(this.spawnerAngleTimer.update().time) * (this.store.getStore().getValue("en-shr_dir-rng") / 2.0))
             }
             

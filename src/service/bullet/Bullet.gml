@@ -333,7 +333,7 @@ function Bullet(template): GridItem(template) constructor {
     #region @Implement component Speed
     var componentSpeed = 0.0
     if (this.speedOffset != null) {
-      componentSpeed = this.speedOffset.update().value / 1000.0
+      componentSpeed = this.speedOffset.update().value / GRID_ITEM_SPEED_SCALE
     }
 
     this.speed = this.sumSpeedOffset

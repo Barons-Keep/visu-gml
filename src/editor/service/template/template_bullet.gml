@@ -1331,7 +1331,7 @@ function template_bullet(json = null) {
               }
               this.renderBackgroundColor()
 
-              if (!Optional.is(this.store)) {
+              if (!Optional.is(this.store) || this.store.getStore() == null) {
                 return
               }
 

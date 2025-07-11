@@ -4,6 +4,8 @@
 global.__GRID_ITEM_DEFAULT_SPRITE = { name: "texture_missing" }
 #macro GRID_ITEM_DEFAULT_SPRITE global.__GRID_ITEM_DEFAULT_SPRITE
 
+///@type {Number}
+#macro GRID_ITEM_SPEED_SCALE 1000.0
 
 function GridItemSignals() constructor {
   
@@ -70,7 +72,7 @@ function GridItemMovement(json = null, _useScale = true) constructor {
   speedMaxFocus = Struct.getIfType(json, "speedMaxFocus", Number, 0.66) / (this.useScale ? 100.0 : 1.0)
   
   ///@type {Number}
-  acceleration = Struct.getIfType(json, "acceleration", Number, 1.92) / (this.useScale ? 1000.0 : 1.0)
+  acceleration = Struct.getIfType(json, "acceleration", Number, 1.92) / (this.useScale ? GRID_ITEM_SPEED_SCALE : 1.0)
   
   ///@type {Number}
   friction = Struct.getIfType(json, "friction", Number, 9.3) / (this.useScale ? 10000.0 : 1.0)
@@ -80,7 +82,7 @@ function GridItemMovement(json = null, _useScale = true) constructor {
     return {
       speed: this.speed * (this.useScale ? 100.0 : 1.0),
       speedMax: this.speedMax * (this.useScale ? 100.0 : 1.0),
-      acceleration: this.acceleration * (this.useScale ? 1000.0 : 1.0),
+      acceleration: this.acceleration * (this.useScale ? GRID_ITEM_SPEED_SCALE : 1.0),
       friction: this.friction * (this.useScale ? 10000.0 : 1.0),
     }
   }
@@ -119,15 +121,15 @@ function GridItemEmitter(json = null) constructor {
   }))
 
   ///@type {Number}
-  //angleRng = Struct.getIfType(json, "angleRng", Number, 0.0)
+  angleRng = Struct.getIfType(json, "angleRng", Number, 0.0)
 
   ///@type {NumberTransformer}
-  angleRng = new NumberTransformer(Struct.getDefault(json, "angleRng", {
-    value: 0.0,
-    target: 0.0,
-    duration: 0.0,
-    ease: EaseType.LINEAR,
-  }))
+  //angleRng = new NumberTransformer(Struct.getDefault(json, "angleRng", {
+  //  value: 0.0,
+  //  target: 0.0,
+  //  duration: 0.0,
+  //  ease: EaseType.LINEAR,
+  //}))
 
   ///@type {Number}
   //angleStep = Struct.getIfType(json, "angleStep", Number, 0.0)
@@ -160,15 +162,15 @@ function GridItemEmitter(json = null) constructor {
   }))
 
   ///@type {Number}
-  //anglePerArrayRng = Struct.getIfType(json, "anglePerArrayRng", Number, 0.0)
+  anglePerArrayRng = Struct.getIfType(json, "anglePerArrayRng", Number, 0.0)
 
   ///@type {NumberTransformer}
-  anglePerArrayRng = new NumberTransformer(Struct.getDefault(json, "anglePerArrayRng", {
-    value: 0.0,
-    target: 0.0,
-    duration: 0.0,
-    ease: EaseType.LINEAR,
-  }))
+  //anglePerArrayRng = new NumberTransformer(Struct.getDefault(json, "anglePerArrayRng", {
+  //  value: 0.0,
+  //  target: 0.0,
+  //  duration: 0.0,
+  //  ease: EaseType.LINEAR,
+  //}))
 
   ///@type {Number}
   //anglePerArrayStep = Struct.getIfType(json, "anglePerArrayStep", Number, 0.0)
@@ -190,15 +192,15 @@ function GridItemEmitter(json = null) constructor {
   }))
 
   ///@type {Number}
-  //speedRng = Struct.getIfType(json, "speedRng", Number, 0.0)
+  speedRng = Struct.getIfType(json, "speedRng", Number, 0.0)
 
   ///@type {NumberTransformer}
-  speedRng = new NumberTransformer(Struct.getDefault(json, "speedRng", {
-    value: 0.0,
-    target: 0.0,
-    duration: 0.0,
-    ease: EaseType.LINEAR,
-  }))
+  //speedRng = new NumberTransformer(Struct.getDefault(json, "speedRng", {
+  //  value: 0.0,
+  //  target: 0.0,
+  //  duration: 0.0,
+  //  ease: EaseType.LINEAR,
+  //}))
 
   ///@type {Number}
   duration = Struct.getIfType(json, "duration", Number, 0)
@@ -284,12 +286,12 @@ function GridItemEmitter(json = null) constructor {
     this.wiggleFrequency.update()
     this.wiggleAmplitude.update()
     this.arrays.update()
-    this.angleRng.update()
+    //this.angleRng.update()
     this.angleStep.update()
     this.perArray.update()
-    this.anglePerArrayRng.update()
+    //this.anglePerArrayRng.update()
     this.anglePerArrayStep.update()
-    this.speedRng.update()
+    //this.speedRng.update()
 
     this.time += DeltaTime.apply(FRAME_MS)
     if (this.time < this.interval) {
@@ -317,14 +319,14 @@ function GridItemEmitter(json = null) constructor {
     if (this.callback != null) {
       var wiggle = sin(this.wiggleFrequency.value * this.timeSum) * this.wiggleAmplitude.value
       for (var idx = 0; idx < floor(this.arrays.value); idx++) {
-        var angle = startAngle + (idx * this.angleStep.value) + random(this.angleRng.value) + wiggle
+        var angle = startAngle + (idx * this.angleStep.value) + random(this.angleRng/*.value*/) + wiggle
         var _posX = Math.fetchCircleX(_offset, angle)
         var _posY = Math.fetchCircleY(_offset, angle)
         for (var arrIdx = 0; arrIdx < floor(this.perArray.value); arrIdx++) {
           this.callback(
             item, controller, this, idx, arrIdx, posX + _posX, posY + _posY,
-            angle + this.anglePerArray.value + (arrIdx * this.anglePerArrayStep.value) + random(this.anglePerArrayRng.value),
-            spd + random(this.speedRng.value)
+            angle + this.anglePerArray.value + (arrIdx * this.anglePerArrayStep.value) + random(this.anglePerArrayRng/*.value*/),
+            spd + random(this.speedRng/*.value*/)
           )
         }
       }
@@ -352,12 +354,12 @@ function GridItemEmitter(json = null) constructor {
     this.wiggleFrequency.reset()
     this.wiggleAmplitude.reset()
     this.arrays.reset()
-    this.angleRng.reset()
+    //this.angleRng.reset()
     this.angleStep.reset()
     this.perArray.reset()
-    this.anglePerArrayRng.reset()
+    //this.anglePerArrayRng.reset()
     this.anglePerArrayStep.reset()
-    this.speedRng.reset()
+    //this.speedRng.reset()
     return this
   }
 

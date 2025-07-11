@@ -866,7 +866,7 @@ function VETrackControl(_editor) constructor {
             spriteOff: {
               name: "texture_ve_brush_toolbar_icon_save",
               blend: "#FFFFFF",
-              alpha: 0.5,
+              alpha: 0.2,
             },
             backgroundMargin: { top: 1, bottom: 1, left: 0, right: 1 },
             backgroundColor: VETheme.color.sideDark,
@@ -945,7 +945,7 @@ function VETrackControl(_editor) constructor {
             spriteOff: {
               name: "texture_ve_brush_toolbar_icon_update",
               blend: "#FFFFFF",
-              alpha: 0.5,
+              alpha: 0.2,
             },
             backgroundMargin: { top: 1, bottom: 1, left: 0, right: 1 },
             backgroundColor: VETheme.color.sideDark,
@@ -1020,7 +1020,7 @@ function VETrackControl(_editor) constructor {
             spriteOff: {
               name: "texture_ve_brush_toolbar_icon_follow",
               blend: "#FFFFFF",
-              alpha: 0.5,
+              alpha: 0.2,
             },
             backgroundMargin: { top: 1, bottom: 1, left: 0, right: 1 },
             backgroundColor: VETheme.color.sideDark,

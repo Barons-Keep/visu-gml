@@ -44,19 +44,21 @@ function SpeedFeature(json): GridItemFeature(json) constructor {
   static update = function(item, controller) {
     if (this.transform != null) {
       if (!this.isSpeedSet) {
-        var value = this.transform.value
-        var target = this.transform.target
-        this.transform.value = this.isRelative ? value + (item.speed * 1000.0) : value
+        this.transform.value = (this.isRelative
+          ? this.transform.value + (item.speed * GRID_ITEM_SPEED_SCALE) 
+          : this.transform.value)
         this.transform.startValue = this.transform.value
-        this.transform.target = this.isRelative ? target + (item.speed * 1000.0) : target
+        this.transform.target = this.transform.target + (this.isRelative
+          ? item.speed * GRID_ITEM_SPEED_SCALE
+          : 0.0)
         this.transform.reset()
         this.isSpeedSet = true
       }
-      item.setSpeed(this.transform.update().value / 1000.0)
+      item.setSpeed(this.transform.update().value / GRID_ITEM_SPEED_SCALE)
     }
 
     if (this.add != null) {
-      item.setSpeed(item.speed + (this.add.update().value / 1000.0))
+      item.setSpeed(item.speed + (this.add.update().value / GRID_ITEM_SPEED_SCALE))
     }
   }
 }
@@ -101,15 +103,15 @@ function _SpeedFeature(json) {
     update: function(item, controller) {
       if (this.transform != null) {
         if (this.initTransformValue == null) {
-          this.transform.value = item.speed * 1000.0
+          this.transform.value = item.speed * GRID_ITEM_SPEED_SCALE
           this.transform.startValue = this.transform.value
           this.initTransformValue = this.transform.value
         }
-        item.setSpeed(this.transform.update().value / 1000.0)
+        item.setSpeed(this.transform.update().value / GRID_ITEM_SPEED_SCALE)
       }
 
       if (this.add != null) {
-        item.setSpeed(item.speed + (this.add.update().value / 1000.0))
+        item.setSpeed(item.speed + (this.add.update().value / GRID_ITEM_SPEED_SCALE))
       }
     },
   }))

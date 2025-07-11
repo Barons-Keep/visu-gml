@@ -23,7 +23,7 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
         "label_bar-title": {
           type: UIText,
           text: "Template toolbar",
-          update: Callable.run(UIUtil.updateAreaTemplates.get("applyMargin")),
+          updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyMargin")),
           font: "font_inter_8_bold",
           color: VETheme.color.textShadow,
           align: { v: VAlign.CENTER, h: HAlign.LEFT },
@@ -823,22 +823,35 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
         "background-alpha": 1.0,
         "background-color": ColorUtil.fromHex(VETheme.color.accentShadow).toGMColor(),
       }),
-      updateTimer: new Timer(FRAME_MS * 2, { loop: Infinity, shuffle: true }),
+      //updateTimer: new Timer(FRAME_MS * 2, { loop: Infinity, shuffle: true }),
       templateToolbar: templateToolbar,
       layout: layout,
       updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
-      render: Callable.run(UIUtil.renderTemplates.get("renderDefault")),
+      render: function() {
+        var color = this.state.get("background-color")
+        if (Core.isType(color, GMColor)) {
+          GPU.render.rectangle(
+            this.area.x, this.area.y, 
+            this.area.x + this.area.getWidth(), this.area.y + this.area.getHeight(), 
+            false,
+            color, color, color, color, 
+            this.state.getIfType("background-alpha", Number, 1.0)
+          )
+        }
+        
+        this.items.forEach(this.renderItem, this.area)
+      },
       items: {
         "label_template-title": {
           type: UIText,
           text: "Templates",
-          update: Callable.run(UIUtil.updateAreaTemplates.get("applyMargin")),
+          updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyMargin")),
           backgroundColor: VETheme.color.sideDark,
           font: "font_inter_8_bold",
           color: VETheme.color.textShadow,
           align: { v: VAlign.CENTER, h: HAlign.LEFT },
           offset: { x: 4 },
-          margin: { right: 96, top: 1 },
+          margin: { right: 40 * 4, top: 1 },
           onMousePressedRight: function(event) {
             var editor = Beans.get(BeanVisuEditorController)
             var accordion = editor.accordion
@@ -854,6 +867,247 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
             accordion.eventInspector.containers.forEach(accordion.resetUpdateTimer)
           },
         },
+        "button_template-save": Struct.appendRecursiveUnique(
+          {
+            type: UIButton,
+            label: { 
+              font: "font_inter_8_regular",
+              text: "Export",
+            },
+            margin: { top: 1 },
+            onMouseHoverOver: function(event) {
+              this.backgroundColor = ColorUtil.fromHex(this.colorHoverOver).toGMColor()
+            },
+            onMouseHoverOut: function(event) {
+              this.backgroundColor = ColorUtil.fromHex(this.colorHoverOut).toGMColor()
+            },
+            group: { index: 2, size: 4, width: 40 },
+            updateArea: Callable.run(UIUtil.updateAreaTemplates.get("groupByXWidth")),
+            callback: function(event) {
+              var view = this.context.templateToolbar.containers
+                .get("ve-template-toolbar_template-view")
+              if (!Optional.is(view)) {
+                return
+              }
+
+              var keys = new Map(String, Boolean)
+              view.collection.components.filter(function(component, iterator, keys) {
+                if (component.getSelected()) {
+                  keys.add(true, component.name)
+                }
+              }, keys)
+
+              if (keys.size() == 0) {
+                return
+              }
+
+              var type = this.context.templateToolbar.store.getValue("type")
+
+              var templates = null
+              var model = null
+              var filename = null
+              var controller = Beans.get(BeanVisuController)
+              switch (type) {
+                case VETemplateType.SHADER:
+                  templates = controller.shaderPipeline.templates
+                  model = "Collection<io.alkapivo.core.service.shader.ShaderTemplate>"
+                  filename = "shader"
+                  break
+                case VETemplateType.SHROOM:
+                  templates = controller.shroomService.templates
+                  model = "Collection<io.alkapivo.visu.service.shroom.ShroomTemplate>"
+                  filename = "shroom"
+                  break
+                case VETemplateType.BULLET:
+                  templates = controller.bulletService.templates
+                  model = "Collection<io.alkapivo.visu.service.bullet.BulletTemplate>"
+                  filename = "bullet"
+                  break
+                case VETemplateType.COIN:
+                  templates = controller.coinService.templates
+                  model = "Collection<io.alkapivo.visu.service.coin.CoinTemplate>"
+                  filename = "coin"
+                  break
+                case VETemplateType.SUBTITLE:
+                  templates = controller.subtitleService.templates
+                  model = "Collection<io.alkapivo.visu.service.subtitle.SubtitleTemplate>"
+                  filename = "subtitle"
+                  break
+                case VETemplateType.PARTICLE:
+                  templates = controller.particleService.templates
+                  model = "Collection<io.alkapivo.core.service.particle.ParticleTemplate>"
+                  filename = "particle"
+                  break
+                case VETemplateType.TEXTURE:
+                  templates = Beans.get(BeanTextureService).templates
+                  model = "Collection<io.alkapivo.core.service.texture.TextureTemplate>"
+                  filename = "texture"
+                  break
+                default:
+                  throw new Exception($"Save dispatcher for type '{template.type}' wasn't found")
+                  break
+              }
+
+              var path = FileUtil.getPathToSaveWithDialog({ 
+                description: "JSON file",
+                filename: filename, 
+                extension: "json",
+              })
+              
+              if (!Core.isType(path, String)) {
+                return
+              }
+
+              if (!Core.isType(templates, Collection)) {
+                return
+              }
+
+              templates = templates.filter(function(template, iterator, keys) {
+                return keys.get(template.name) == true
+              }, keys)
+
+              if (templates.size() == 0) {
+                return
+              }
+
+              var struct = {}
+              templates.forEach(function(template, iterator, struct) {
+                Struct.set(struct, template.name, template.serialize())
+              }, struct)
+
+              var data = JSON.stringify({
+                "model": model,
+                "data": struct,
+              }, { pretty: true })
+
+              Beans.get(BeanFileService).send(new Event("save-file-sync")
+                .setData(new File({
+                  path: path,
+                  data: data
+                })))
+            }
+          },
+          VEStyles.get("bar-button"),
+          false
+        ),
+        "button_template-remove": Struct.appendRecursiveUnique(
+          {
+            type: UIButton,
+            group: { index: 1, size: 4, width: 40 },
+            label: { 
+              font: "font_inter_8_regular",
+              text: "Remove",
+            },
+            margin: { top: 1 },
+            updateArea: Callable.run(UIUtil.updateAreaTemplates.get("groupByXWidth")),
+            callback: function(event) {
+              var view = this.context.templateToolbar.containers
+                .get("ve-template-toolbar_template-view")
+              if (!Optional.is(view)) {
+                return
+              }
+
+              var type = this.context.templateToolbar.store.getValue("type")
+
+              var templates = null
+              var controller = Beans.get(BeanVisuController)
+              switch (type) {
+                case VETemplateType.SHADER:
+                  templates = controller.shaderPipeline.templates
+                  break
+                case VETemplateType.SHROOM:
+                  templates = controller.shroomService.templates
+                  break
+                case VETemplateType.BULLET:
+                  templates = controller.bulletService.templates
+                  break
+                case VETemplateType.COIN:
+                  templates = controller.coinService.templates
+                  break
+                case VETemplateType.SUBTITLE:
+                  templates = controller.subtitleService.templates
+                  break
+                case VETemplateType.PARTICLE:
+                  templates = controller.particleService.templates
+                  break
+                case VETemplateType.TEXTURE:
+                  templates = Beans.get(BeanTextureService).templates
+                  break
+                default:
+                  throw new Exception($"Remove dispatcher for type '{template.type}' wasn't found")
+                  break
+              }
+
+              if (!Core.isType(templates, Collection)) {
+                return
+              }
+
+              var acc = {
+                templates: templates,
+                gc: new Array(Number),
+              }
+
+              view.collection.components.forEach(function(component, key, acc) {
+                if (component.getSelected() && !component.isAsset()) {
+                  acc.templates.remove(component.getTemplateName())
+                  acc.gc.add(component.index)
+                }
+              }, acc)
+
+              acc.gc
+                .sort(function(a, b) { return a > b } )
+                .forEach(function(index, gcIndex, collection) {
+                  collection.remove(index)
+                }, view.collection)
+            },
+            onMouseHoverOver: function(event) {
+              this.backgroundColor = ColorUtil.fromHex(this.colorHoverOver).toGMColor()
+            },
+            onMouseHoverOut: function(event) {
+              this.backgroundColor = ColorUtil.fromHex(this.colorHoverOut).toGMColor()
+            },
+          },
+          VEStyles.get("bar-button"),
+          false
+        ),
+        "button_template-all": Struct.appendRecursiveUnique(
+          {
+            type: UIButton,
+            group: { index: 0, size: 4, width: 40 },
+            label: { 
+              font: "font_inter_8_regular",
+              text: "Select",
+            },
+            margin: { top: 1 },
+            updateArea: Callable.run(UIUtil.updateAreaTemplates.get("groupByXWidth")),
+            callback: function(event) {
+              var view = this.context.templateToolbar.containers
+                .get("ve-template-toolbar_template-view")
+              if (!Optional.is(view)) {
+                return
+              }
+
+              var sum = { value: 0 }
+              view.collection.components.forEach(function(component, iterator, sum) {
+                if (component.getSelected()) {
+                  sum.value++
+                }
+              }, sum)
+
+              view.collection.components.forEach(function(component, iterator, selected) {
+                component.setSelected(selected)
+              }, view.collection.size() != sum.value)
+            },
+            onMouseHoverOver: function(event) {
+              this.backgroundColor = ColorUtil.fromHex(this.colorHoverOver).toGMColor()
+            },
+            onMouseHoverOut: function(event) {
+              this.backgroundColor = ColorUtil.fromHex(this.colorHoverOut).toGMColor()
+            },
+          },
+          VEStyles.get("bar-button"),
+          false
+        ),
         "button_template-load": Struct.appendRecursiveUnique(
           {
             type: UIButton,
@@ -1115,247 +1369,6 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
 
               var promise = Beans.get(BeanFileService).send(event)
             }
-          },
-          VEStyles.get("bar-button"),
-          false
-        ),
-        "button_template-save": Struct.appendRecursiveUnique(
-          {
-            type: UIButton,
-            label: { 
-              font: "font_inter_8_regular",
-              text: "Export",
-            },
-            margin: { top: 1 },
-            onMouseHoverOver: function(event) {
-              this.backgroundColor = ColorUtil.fromHex(this.colorHoverOver).toGMColor()
-            },
-            onMouseHoverOut: function(event) {
-              this.backgroundColor = ColorUtil.fromHex(this.colorHoverOut).toGMColor()
-            },
-            group: { index: 2, size: 4, width: 40 },
-            updateArea: Callable.run(UIUtil.updateAreaTemplates.get("groupByXWidth")),
-            callback: function(event) {
-              var view = this.context.templateToolbar.containers
-                .get("ve-template-toolbar_template-view")
-              if (!Optional.is(view)) {
-                return
-              }
-
-              var keys = new Map(String, Boolean)
-              view.collection.components.filter(function(component, iterator, keys) {
-                if (component.getSelected()) {
-                  keys.add(true, component.name)
-                }
-              }, keys)
-
-              if (keys.size() == 0) {
-                return
-              }
-
-              var type = this.context.templateToolbar.store.getValue("type")
-
-              var templates = null
-              var model = null
-              var filename = null
-              var controller = Beans.get(BeanVisuController)
-              switch (type) {
-                case VETemplateType.SHADER:
-                  templates = controller.shaderPipeline.templates
-                  model = "Collection<io.alkapivo.core.service.shader.ShaderTemplate>"
-                  filename = "shader"
-                  break
-                case VETemplateType.SHROOM:
-                  templates = controller.shroomService.templates
-                  model = "Collection<io.alkapivo.visu.service.shroom.ShroomTemplate>"
-                  filename = "shroom"
-                  break
-                case VETemplateType.BULLET:
-                  templates = controller.bulletService.templates
-                  model = "Collection<io.alkapivo.visu.service.bullet.BulletTemplate>"
-                  filename = "bullet"
-                  break
-                case VETemplateType.COIN:
-                  templates = controller.coinService.templates
-                  model = "Collection<io.alkapivo.visu.service.coin.CoinTemplate>"
-                  filename = "coin"
-                  break
-                case VETemplateType.SUBTITLE:
-                  templates = controller.subtitleService.templates
-                  model = "Collection<io.alkapivo.visu.service.subtitle.SubtitleTemplate>"
-                  filename = "subtitle"
-                  break
-                case VETemplateType.PARTICLE:
-                  templates = controller.particleService.templates
-                  model = "Collection<io.alkapivo.core.service.particle.ParticleTemplate>"
-                  filename = "particle"
-                  break
-                case VETemplateType.TEXTURE:
-                  templates = Beans.get(BeanTextureService).templates
-                  model = "Collection<io.alkapivo.core.service.texture.TextureTemplate>"
-                  filename = "texture"
-                  break
-                default:
-                  throw new Exception($"Save dispatcher for type '{template.type}' wasn't found")
-                  break
-              }
-
-              var path = FileUtil.getPathToSaveWithDialog({ 
-                description: "JSON file",
-                filename: filename, 
-                extension: "json",
-              })
-              
-              if (!Core.isType(path, String)) {
-                return
-              }
-
-              if (!Core.isType(templates, Collection)) {
-                return
-              }
-
-              templates = templates.filter(function(template, iterator, keys) {
-                return keys.get(template.name) == true
-              }, keys)
-
-              if (templates.size() == 0) {
-                return
-              }
-
-              var struct = {}
-              templates.forEach(function(template, iterator, struct) {
-                Struct.set(struct, template.name, template.serialize())
-              }, struct)
-
-              var data = JSON.stringify({
-                "model": model,
-                "data": struct,
-              }, { pretty: true })
-
-              Beans.get(BeanFileService).send(new Event("save-file-sync")
-                .setData(new File({
-                  path: path,
-                  data: data
-                })))
-            }
-          },
-          VEStyles.get("bar-button"),
-          false
-        ),
-        "button_template-remove": Struct.appendRecursiveUnique(
-          {
-            type: UIButton,
-            group: { index: 1, size: 4, width: 40 },
-            label: { 
-              font: "font_inter_8_regular",
-              text: "Del.",
-            },
-            margin: { top: 1 },
-            updateArea: Callable.run(UIUtil.updateAreaTemplates.get("groupByXWidth")),
-            callback: function(event) {
-              var view = this.context.templateToolbar.containers
-                .get("ve-template-toolbar_template-view")
-              if (!Optional.is(view)) {
-                return
-              }
-
-              var type = this.context.templateToolbar.store.getValue("type")
-
-              var templates = null
-              var controller = Beans.get(BeanVisuController)
-              switch (type) {
-                case VETemplateType.SHADER:
-                  templates = controller.shaderPipeline.templates
-                  break
-                case VETemplateType.SHROOM:
-                  templates = controller.shroomService.templates
-                  break
-                case VETemplateType.BULLET:
-                  templates = controller.bulletService.templates
-                  break
-                case VETemplateType.COIN:
-                  templates = controller.coinService.templates
-                  break
-                case VETemplateType.SUBTITLE:
-                  templates = controller.subtitleService.templates
-                  break
-                case VETemplateType.PARTICLE:
-                  templates = controller.particleService.templates
-                  break
-                case VETemplateType.TEXTURE:
-                  templates = Beans.get(BeanTextureService).templates
-                  break
-                default:
-                  throw new Exception($"Remove dispatcher for type '{template.type}' wasn't found")
-                  break
-              }
-
-              if (!Core.isType(templates, Collection)) {
-                return
-              }
-
-              var acc = {
-                templates: templates,
-                gc: new Array(Number),
-              }
-
-              view.collection.components.forEach(function(component, key, acc) {
-                if (component.getSelected() && !component.isAsset()) {
-                  acc.templates.remove(component.getTemplateName())
-                  acc.gc.add(component.index)
-                }
-              }, acc)
-
-              acc.gc
-                .sort(function(a, b) { return a > b } )
-                .forEach(function(index, gcIndex, collection) {
-                  collection.remove(index)
-                }, view.collection)
-            },
-            onMouseHoverOver: function(event) {
-              this.backgroundColor = ColorUtil.fromHex(this.colorHoverOver).toGMColor()
-            },
-            onMouseHoverOut: function(event) {
-              this.backgroundColor = ColorUtil.fromHex(this.colorHoverOut).toGMColor()
-            },
-          },
-          VEStyles.get("bar-button"),
-          false
-        ),
-        "button_template-all": Struct.appendRecursiveUnique(
-          {
-            type: UIButton,
-            group: { index: 0, size: 4, width: 40 },
-            label: { 
-              font: "font_inter_8_regular",
-              text: "Sel.",
-            },
-            margin: { top: 1 },
-            updateArea: Callable.run(UIUtil.updateAreaTemplates.get("groupByXWidth")),
-            callback: function(event) {
-              var view = this.context.templateToolbar.containers
-                .get("ve-template-toolbar_template-view")
-              if (!Optional.is(view)) {
-                return
-              }
-
-              var sum = { value: 0 }
-              view.collection.components.forEach(function(component, iterator, sum) {
-                if (component.getSelected()) {
-                  sum.value++
-                }
-              }, sum)
-
-              view.collection.components.forEach(function(component, iterator, selected) {
-                component.setSelected(selected)
-              }, view.collection.size() != sum.value)
-            },
-            onMouseHoverOver: function(event) {
-              this.backgroundColor = ColorUtil.fromHex(this.colorHoverOver).toGMColor()
-            },
-            onMouseHoverOut: function(event) {
-              this.backgroundColor = ColorUtil.fromHex(this.colorHoverOut).toGMColor()
-            },
           },
           VEStyles.get("bar-button"),
           false

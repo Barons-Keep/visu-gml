@@ -331,12 +331,11 @@ function VisuRenderer() constructor {
   ///@param {UILayout} layout
   ///@return {VisuRenderer}
   renderUI = function(layout) {
+    Beans.get(BeanVisuController).uiService.render()
     var editor = Beans.get(Visu.modules().editor.controller)
     if (Core.isType(editor, VisuEditorController) && editor.renderUI) {
       editor.uiService.render()
     }
-
-    Beans.get(BeanVisuController).uiService.render()
 
     return this
   }
@@ -465,7 +464,7 @@ function VisuRenderer() constructor {
     var _layout = editor == null ? this.layout : editor.layout.nodes.preview
     var stateName = controller.fsm.getStateName()
     if (stateName == "splashscreen") {
-      this.executor.tasks.forEach(this.renderSplashscreen, _layout)
+      this.executor.tasks.forEach(this.renderSplashscreen, this.layout)
     } else {
       this.renderMenu(_layout)
       this.renderGame(_layout)

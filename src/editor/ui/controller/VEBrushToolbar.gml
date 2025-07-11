@@ -294,7 +294,7 @@ global.__VisuBrushContainers = new Map(String, Callable, {
           {
             type: UIText,
             text: "Brush toolbar",
-            update: Callable.run(UIUtil.updateAreaTemplates.get("applyMargin")),
+            updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyMargin")),
             font: "font_inter_8_bold",
             color: VETheme.color.textShadow,
             align: { v: VAlign.CENTER, h: HAlign.LEFT },
@@ -471,11 +471,24 @@ global.__VisuBrushContainers = new Map(String, Callable, {
         "background-color": ColorUtil.fromHex(VETheme.color.accentShadow).toGMColor(),
         "background-alpha": 1.0,
       }),
-      updateTimer: new Timer(FRAME_MS * 2, { loop: Infinity, shuffle: true }),
+      //updateTimer: new Timer(FRAME_MS * 2, { loop: Infinity, shuffle: true }),
       brushToolbar: brushToolbar,
       layout: layout,
       updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
-      render: Callable.run(UIUtil.renderTemplates.get("renderDefault")),
+      render: function() {
+        var color = this.state.get("background-color")
+        if (Core.isType(color, GMColor)) {
+          GPU.render.rectangle(
+            this.area.x, this.area.y, 
+            this.area.x + this.area.getWidth(), this.area.y + this.area.getHeight(), 
+            false,
+            color, color, color, color, 
+            this.state.getIfType("background-alpha", Number, 1.0)
+          )
+        }
+        
+        this.items.forEach(this.renderItem, this.area)
+      },
       items: {
         "label_brush-control-title": Struct.appendRecursiveUnique(
           {
@@ -483,56 +496,10 @@ global.__VisuBrushContainers = new Map(String, Callable, {
             text: "Brushes",
             font: "font_inter_8_bold",
             offset: { x: 4 },
-            margin: { right: 32 * 5, top: 1 },
-            update: Callable.run(UIUtil.updateAreaTemplates.get("applyMargin")),
+            margin: { right: 40 * 5, top: 1 },
+            updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyMargin")),
           },
           VEStyles.get("bar-title"),
-          false
-        ),
-        "button_brush-control-new": Struct.appendRecursiveUnique(
-          {
-            type: UIButton,
-            group: { index: 4, size: 5, width: 40 },
-            label: { 
-              font: "font_inter_8_regular",
-              text: "New",
-            },
-            margin: { top: 1 },
-            updateArea: Callable.run(UIUtil.updateAreaTemplates.get("groupByXWidth")),
-            callback: function(event) {
-              var controller = Beans.get(BeanVisuController)
-              var brushToolbar = this.context.brushToolbar
-              var type = brushToolbar.store.getValue("type")
-              var templates = controller.brushService.fetchTemplates(type)
-              var name = "new brush template"
-              if (Optional.is(templates)) {
-                name = VEBrushGetTemplateName(templates, name, 1)
-              }
-
-              var template = new VEBrushTemplate({
-                "name": name,
-                "type": type,
-                "color":"#FFFFFF",
-                "texture":"texture_baron",
-              })
-              controller.brushService.saveTemplate(template)
-
-              var view = brushToolbar.containers.get("ve-brush-toolbar_brush-view")
-              if (Optional.is(view)) {
-                view.collection.add(brushToolbar.parseBrushTemplate(template), 0)
-              } else {
-                brushToolbar.store.get("type").set(type)
-                brushToolbar.store.get("template").set(template)
-              }
-            },
-            onMouseHoverOver: function(event) {
-              this.backgroundColor = ColorUtil.fromHex(this.colorHoverOver).toGMColor()
-            },
-            onMouseHoverOut: function(event) {
-              this.backgroundColor = ColorUtil.fromHex(this.colorHoverOut).toGMColor()
-            },
-          },
-          VEStyles.get("bar-button"),
           false
         ),
         "button_brush-control-load": Struct.appendRecursiveUnique(
@@ -541,7 +508,7 @@ global.__VisuBrushContainers = new Map(String, Callable, {
             group: { index: 3, size: 5, width: 40 },
             label: { 
               font: "font_inter_8_regular",
-              text: "Load",
+              text: "Import",
             },
             margin: { top: 1 },
             updateArea: Callable.run(UIUtil.updateAreaTemplates.get("groupByXWidth")),
@@ -598,7 +565,7 @@ global.__VisuBrushContainers = new Map(String, Callable, {
             group: { index: 2, size: 5, width: 40 },
             label: { 
               font: "font_inter_8_regular",
-              text: "Save",
+              text: "Export",
             },
             margin: { top: 1 },
             updateArea: Callable.run(UIUtil.updateAreaTemplates.get("groupByXWidth")),
@@ -667,7 +634,7 @@ global.__VisuBrushContainers = new Map(String, Callable, {
             group: { index: 1, size: 5, width: 40 },
             label: { 
               font: "font_inter_8_regular",
-              text: "Del.",
+              text: "Remove",
             },
             margin: { top: 1 },
             updateArea: Callable.run(UIUtil.updateAreaTemplates.get("groupByXWidth")),
@@ -710,7 +677,7 @@ global.__VisuBrushContainers = new Map(String, Callable, {
             group: { index: 0, size: 5, width: 40 },
             label: { 
               font: "font_inter_8_regular",
-              text: "Sel.",
+              text: "Select",
             },
             margin: { top: 1 },
             updateArea: Callable.run(UIUtil.updateAreaTemplates.get("groupByXWidth")),
@@ -730,6 +697,52 @@ global.__VisuBrushContainers = new Map(String, Callable, {
               view.collection.components.forEach(function(component, iterator, selected) {
                 component.setSelected(selected)
               }, view.collection.size() != sum.value)
+            },
+            onMouseHoverOver: function(event) {
+              this.backgroundColor = ColorUtil.fromHex(this.colorHoverOver).toGMColor()
+            },
+            onMouseHoverOut: function(event) {
+              this.backgroundColor = ColorUtil.fromHex(this.colorHoverOut).toGMColor()
+            },
+          },
+          VEStyles.get("bar-button"),
+          false
+        ),
+        "button_brush-control-new": Struct.appendRecursiveUnique(
+          {
+            type: UIButton,
+            group: { index: 4, size: 5, width: 40 },
+            label: { 
+              font: "font_inter_8_regular",
+              text: "New",
+            },
+            margin: { top: 1 },
+            updateArea: Callable.run(UIUtil.updateAreaTemplates.get("groupByXWidth")),
+            callback: function(event) {
+              var controller = Beans.get(BeanVisuController)
+              var brushToolbar = this.context.brushToolbar
+              var type = brushToolbar.store.getValue("type")
+              var templates = controller.brushService.fetchTemplates(type)
+              var name = "new brush template"
+              if (Optional.is(templates)) {
+                name = VEBrushGetTemplateName(templates, name, 1)
+              }
+
+              var template = new VEBrushTemplate({
+                "name": name,
+                "type": type,
+                "color":"#FFFFFF",
+                "texture":"texture_baron",
+              })
+              controller.brushService.saveTemplate(template)
+
+              var view = brushToolbar.containers.get("ve-brush-toolbar_brush-view")
+              if (Optional.is(view)) {
+                view.collection.add(brushToolbar.parseBrushTemplate(template), 0)
+              } else {
+                brushToolbar.store.get("type").set(type)
+                brushToolbar.store.get("template").set(template)
+              }
             },
             onMouseHoverOver: function(event) {
               this.backgroundColor = ColorUtil.fromHex(this.colorHoverOver).toGMColor()
@@ -1442,7 +1455,7 @@ global.__VisuBrushContainers = new Map(String, Callable, {
           spriteOff: {
             name: "texture_ve_brush_toolbar_icon_snap",
             blend: "#FFFFFF",
-            alpha: 0.5,
+            alpha: 0.2,
           },
           //backgroundMargin: { top: 1, bottom: 1, left: 0, right: 1 },
           backgroundColor: VETheme.color.sideDark,

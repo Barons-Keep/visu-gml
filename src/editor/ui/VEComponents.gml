@@ -3905,7 +3905,7 @@ global.__VEComponents = new Map(String, Callable, {
           return
         }
 
-        if (!Optional.is(this.store)) {
+        if (!Optional.is(this.store) || this.store.getStore() == null) {
           return
         }
 

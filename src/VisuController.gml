@@ -1252,8 +1252,9 @@ function VisuController(layerName) constructor {
       this.visuRenderer.renderGUI()
     } catch (exception) {
       var message = $"'renderGUI' fatal error: {exception.message}"
-      Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
       Logger.error(BeanVisuController, message)
+      Core.printStackTrace()
+      Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
       GPU.reset.shader()
       GPU.reset.surface()
       GPU.reset.blendMode()

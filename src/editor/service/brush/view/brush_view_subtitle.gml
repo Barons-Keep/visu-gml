@@ -1094,7 +1094,7 @@ function brush_view_subtitle(json = null) {
                 set: function(value) { return },
               },
               render: function() {  
-                if (!Optional.is(this.store)) {
+                if (!Optional.is(this.store) || this.store.getStore() == null) {
                   return
                 }
 

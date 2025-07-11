@@ -2207,7 +2207,7 @@ function brush_view_layer(json = null) {
                 ],
               },
               render: function() {
-                if (!Optional.is(this.store)) {
+                if (!Optional.is(this.store) || this.store.getStore() == null) {
                   return
                 }
 

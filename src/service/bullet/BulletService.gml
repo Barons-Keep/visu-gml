@@ -128,7 +128,7 @@ function BulletService(_controller, config = {}): Service() constructor {
       x,
       y,
       angle,
-      speed / 1000.0,
+      speed / GRID_ITEM_SPEED_SCALE,
       angleOffset,
       angleOffsetRng,
       sumAngleOffset,
@@ -240,7 +240,7 @@ function BulletService(_controller, config = {}): Service() constructor {
         + (rngDir * idx * bullet.onDeathAngleStep * Math.pow(bullet.onDeathAngleIncrease, clamp(idx - 1, 1, bullet.onDeathAmount))) 
         + (rngDir * (random(2.0 * bullet.onDeathRngStep) - bullet.onDeathRngStep))
       var spd = clamp(abs(bullet.onDeathSpeedMerge 
-        ? (rngSpd + (bullet.speed * 1000.0) + bullet.onDeathSpeed) 
+        ? (rngSpd + (bullet.speed * GRID_ITEM_SPEED_SCALE) + bullet.onDeathSpeed) 
         : (rngSpd + bullet.onDeathSpeed)), 0.1, 99.9)
 
       context.spawnBullet(

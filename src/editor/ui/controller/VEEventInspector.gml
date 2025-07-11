@@ -137,7 +137,7 @@ function VEEventInspector(_editor) constructor {
                 if (percentage == current) {
                   return
                 }
-    
+
                 Struct.set(store, "events-percentage", percentage)
                 accordion.containers.forEach(accordion.resetUpdateTimer)
                 accordion.templateToolbar.containers.forEach(accordion.resetUpdateTimer)
@@ -174,7 +174,7 @@ function VEEventInspector(_editor) constructor {
               if (percentage == current) {
                 return
               }
-  
+
               Struct.set(store, "events-percentage", percentage)
               accordion.containers.forEach(accordion.resetUpdateTimer)
               accordion.templateToolbar.containers.forEach(accordion.resetUpdateTimer)

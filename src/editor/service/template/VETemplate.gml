@@ -212,6 +212,7 @@ function VETemplate(json) constructor {
       useAngleOffset: this.store.getValue("bullet_use-angle-offset"),
       changeAngleOffset: this.store.getValue("bullet_change-angle-offset"),
       angleOffset: this.store.getValue("bullet_angle-offset").serialize(),
+      sumAngleOffset: this.store.getValue("bullet_sum-angle-offset"),
       angleOffsetRng: this.store.getValue("bullet_use-angle-offset-rng"),
       useSpeedOffset: this.store.getValue("bullet_use-speed-offset"),
       changeSpeedOffset: this.store.getValue("bullet_change-speed-offset"),

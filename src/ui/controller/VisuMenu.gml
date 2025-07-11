@@ -2503,7 +2503,7 @@ function VisuMenu(_config = null) constructor {
           //this.renderDefault()
         },
         onInit: function() {
-          this.items.clear()
+          this.items.forEach(function(item) { item.free() }).clear()
           this.addUIComponents(new Array(UIComponent, [ 
             new UIComponent(this.state.get("title"))
           ]),

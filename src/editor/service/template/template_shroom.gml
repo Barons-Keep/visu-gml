@@ -3,12 +3,25 @@
 ///@param {Struct} json
 ///@return {Struct}
 function template_shroom(json) {
+  var use_shroom_lifespan = Struct.get(json, "use_shroom_lifespan")
+  if (use_shroom_lifespan == null) {
+    use_shroom_lifespan = Struct.getIfType(json, "lifespanMax", Number) != null
+  }
+
+  var use_shroom_healthPoints = Struct.get(json, "use_shroom_healthPoints")
+  if (use_shroom_healthPoints == null) {
+    use_shroom_healthPoints = Struct.getIfType(json, "use_shroom_healthPoints", Boolean) != null
+  }
+
+  var use_shroom_mask = Struct.get(json, "use_shroom_mask")
+  if (use_shroom_mask == null) {
+    use_shroom_mask = Struct.getIfType(json, "mask", Struct) != null
+  }
   return {
     name: Assert.isType(json.name, String),
     store: new Map(String, Struct, {
       "use_shroom_lifespan": {
         type: Boolean,
-        value: Struct.get(json, "use_shroom_lifespan") == true,
         value: Struct.getIfType(json, "use_shroom_lifespan", Boolean, false),
       },
       "shroom_lifespan": {
