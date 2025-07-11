@@ -1,5 +1,9 @@
 ///@package io.alkapivo.visu.service.shroom
 
+///@type {Number}
+#macro SHROOM_FADE_TIME 0.33
+
+
 ///@param {String} _name
 ///@param {Struct} json
 function ShroomTemplate(_name, json) constructor {
@@ -137,16 +141,25 @@ function Shroom(template): GridItem(template) constructor {
       gameMode.update(this, controller)
     }
 
-    if (this.fadeIn < 1.0) {
-      this.fadeIn = clamp(this.fadeIn + this.fadeInFactor, 0.0, 1.0)
-    }
-
+    #region @Implement component Lifespan
     this.lifespan += DeltaTime.apply(FRAME_MS)
-    if (this.lifespan >= this.lifespanMax - 0.5) {
-      this.fadeIn = clamp((this.lifespanMax - this.lifespan) / 0.5, 0.0, 1.0)
-      if (this.lifespan >= this.lifespanMax) {
-        this.signal("kill")
+    if (this.lifespan >= this.lifespanMax) {
+      this.signal("kill")
+    }
+    #endregion
+    
+    #region @Implement component Fade
+    if (this.lifespan < this.lifespanMax - SHROOM_FADE_TIME) {
+      if (this.fadeIn < 1.0) {
+        this.fadeIn = clamp(this.lifespan / SHROOM_FADE_TIME, 0.0, 1.0)
       }
+    } else {
+      this.fadeIn = clamp((this.lifespanMax - this.lifespan) / SHROOM_FADE_TIME, 0.0, 1.0)
+    }
+    #endregion
+
+    if (this.lifespan >= this.lifespanMax) {
+      this.signal("kill")
     }
 
     return this

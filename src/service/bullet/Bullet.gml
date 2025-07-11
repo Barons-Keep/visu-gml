@@ -1,6 +1,8 @@
 ///@package io.alkapivo.visu.service.bullet
 
-#macro TAU 6.28318530
+///@type {Number}
+#macro BULLET_FADE_TIME 0.33
+
 
 ///@param {String}
 ///@param {Struct} json
@@ -284,9 +286,6 @@ function Bullet(template): GridItem(template) constructor {
   ///@type {?Number}
   onDeathRngSpeed = Struct.get(template, "onDeathRngSpeed")
 
-  ///@type {Number}
-  fadeOut = 0.5
-
   ///@param {VisuController} controller
   ///@return {Bullet}
   static update = function(controller) {
@@ -302,10 +301,12 @@ function Bullet(template): GridItem(template) constructor {
     #endregion
 
     #region @Implement component Fade
-    if (this.fadeIn < 1.0 && this.lifespan < this.lifespanMax - this.fadeOut) {
-      this.fadeIn = clamp(this.fadeIn + this.fadeInFactor, 0.0, 1.0)
+    if (this.lifespan < this.lifespanMax - BULLET_FADE_TIME) {
+      if (this.fadeIn < 1.0) {
+        this.fadeIn = clamp(this.lifespan / BULLET_FADE_TIME, 0.0, 1.0)
+      }
     } else {
-      this.fadeIn = clamp(this.lifespanMax - this.lifespan, 0.0, 1.0)
+      this.fadeIn = clamp((this.lifespanMax - this.lifespan) / BULLET_FADE_TIME, 0.0, 1.0)
     }
     #endregion
 

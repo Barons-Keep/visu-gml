@@ -674,7 +674,7 @@ function Player(template): GridItem(template) constructor {
     }
 
     if (this.fadeIn < 1.0) {
-      this.fadeIn = clamp(this.fadeIn + this.fadeInFactor, 0.0, 1.0)
+      this.fadeIn = clamp(this.fadeIn + VISU_FADE_FACTOR, 0.0, 1.0)
     }
 
     this.stats.update()

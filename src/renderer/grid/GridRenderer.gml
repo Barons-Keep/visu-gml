@@ -1187,12 +1187,15 @@ function GridRenderer() constructor {
   ///@return {GridRenderer}
   entityRenderBullets = function(gridService, bulletService) {
     static renderBullet = function(bullet, index, gridService) {
+      var alpha = bullet.sprite.getAlpha()
       bullet.sprite
+        .setAlpha(alpha * bullet.fadeIn)
         .setAngle(bullet.angle - 90.0)
         .render(
           (bullet.x - ((bullet.sprite.texture.width * bullet.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) + ((bullet.sprite.texture.offsetX * bullet.sprite.scaleX) / GRID_SERVICE_PIXEL_WIDTH) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH,
           (bullet.y - ((bullet.sprite.texture.height * bullet.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) + ((bullet.sprite.texture.offsetY * bullet.sprite.scaleY) / GRID_SERVICE_PIXEL_HEIGHT) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT
         )
+        .setAlpha(alpha)
     }
     
     if (!gridService.properties.renderElements

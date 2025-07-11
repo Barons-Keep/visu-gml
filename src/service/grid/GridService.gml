@@ -20,6 +20,8 @@ global.__GRID_ITEM_FRUSTUM_RANGE = 8
 global.__GRID_ITEM_CHUNK_SERVICE_SIZE = 0.5
 #macro GRID_ITEM_CHUNK_SERVICE_SIZE global.__GRID_ITEM_CHUNK_SERVICE_SIZE
 
+///@type {Number}
+#macro VISU_FADE_FACTOR 0.03
 
 ///@param {Number} {_size}
 function GridItemChunkService(_size) constructor {
