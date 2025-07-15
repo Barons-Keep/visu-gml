@@ -305,7 +305,7 @@ function Bullet(template): GridItem(template) constructor {
       if (this.fadeIn < 1.0) {
         this.fadeIn = clamp(this.lifespan / BULLET_FADE_TIME, 0.0, 1.0)
       }
-    } else {
+    } else if (this.onDeath == null) {
       this.fadeIn = clamp((this.lifespanMax - this.lifespan) / BULLET_FADE_TIME, 0.0, 1.0)
     }
     #endregion

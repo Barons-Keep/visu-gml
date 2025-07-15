@@ -1,31 +1,5 @@
 ///@package io.alkapivo.visu.service.bullet.BulletService
 
-///@type {Number}
-#macro BULLET_MAX_DISTANCE 3.0
-
-global.BULLET_TEMPLATE = {
-  name: "bullet_default",
-  sprite: {
-    name: "texture_test",
-  },
-  "gameModes": {
-    "bulletHell": {
-      "features": [
-        {
-          "feature": "AngleFeature",
-          "value": {
-            "value": 0.0,
-            "target": 360.0,
-            "factor": 1.0,
-            "increase": 0.0
-          }
-        }
-      ]
-    }
-  }
-}
-
-
 ///@param {VisuController} _controller
 ///@param {Struct} [config]
 function BulletService(_controller, config = {}): Service() constructor {
@@ -121,7 +95,8 @@ function BulletService(_controller, config = {}): Service() constructor {
   ///@param {?Boolean} [sumSpeedOffset]
   ///@param {?Number} [lifespan]
   ///@param {?Number} [damage]
-  static spawnBullet = function(name, producer, x, y, angle, speed, angleOffset = null, angleOffsetRng = null, sumAngleOffset = null, speedOffset = null, sumSpeedOffset = null, lifespan = null, damage = null) {
+  ///@param {Boolean} [onDeath]
+  static spawnBullet = function(name, producer, x, y, angle, speed, angleOffset = null, angleOffsetRng = null, sumAngleOffset = null, speedOffset = null, sumSpeedOffset = null, lifespan = null, damage = null, onDeath = false) {
     var template = this.getTemplate(name).serializeSpawn(
       this.controller.gridService.generateUID(),
       producer,
@@ -137,7 +112,7 @@ function BulletService(_controller, config = {}): Service() constructor {
       lifespan,
       damage
     )
-    if (producer == Shroom) {
+    if (producer == Shroom && !onDeath) {
       controller.sfxService.play("shroom-shoot")
     }
     
@@ -151,6 +126,10 @@ function BulletService(_controller, config = {}): Service() constructor {
 
     if (this.optimalizationSortEntitiesByTxGroup) {
       this.controller.gridService.textureGroups.sortItems(this.bullets)
+    }
+
+    if (onDeath) {
+      bullet.fadeIn = 1.0
     }
   }
 
@@ -243,13 +222,29 @@ function BulletService(_controller, config = {}): Service() constructor {
         ? (rngSpd + (bullet.speed * GRID_ITEM_SPEED_SCALE) + bullet.onDeathSpeed) 
         : (rngSpd + bullet.onDeathSpeed)), 0.1, 99.9)
 
+      var angleOffset = null
+      var angleOffsetRng = null
+      var sumAngleOffset = null
+      var speedOffset = null
+      var sumSpeedOffset = null
+      var lifespan = null
+      var damage = null
+      var onDeath = true
       context.spawnBullet(
         bullet.onDeath, 
         bullet.producer,
         bullet.x, 
         bullet.y,
         dir,
-        spd
+        spd,
+        angleOffset,
+        angleOffsetRng,
+        sumAngleOffset,
+        speedOffset,
+        sumSpeedOffset,
+        lifespan,
+        damage,
+        onDeath
       )        
       //context.send(new Event("spawn-bullet", {
       //  template: bullet.onDeath,
