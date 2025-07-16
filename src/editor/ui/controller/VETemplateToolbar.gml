@@ -776,6 +776,7 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
       updateTimer: new Timer(FRAME_MS * 4, { loop: Infinity, shuffle: true }),
       templateToolbar: templateToolbar,
       layout: layout,
+      notify: true,
       updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
       updateCustom: function() {
         ///@hack
@@ -1405,6 +1406,7 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
         this.__render()
       },
       scrollbarY: { align: HAlign.LEFT },
+      notify: true,
       fetchViewHeight: function() {
         return 32 * this.collection.size()
       },
@@ -2752,6 +2754,7 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
         return this
       },
       scrollbarY: { align: HAlign.LEFT },
+      notify: true,
       onMouseOnLeft: Callable.run(UIUtil.mouseEventTemplates.get("onMouseScrollbarY")),
       onMousePressedLeft: Callable.run(UIUtil.mouseEventTemplates.get("onMouseScrollbarY")),
       onMouseWheelUp: Callable.run(UIUtil.mouseEventTemplates.get("scrollableOnMouseWheelUpY")),

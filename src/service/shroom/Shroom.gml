@@ -1,7 +1,10 @@
 ///@package io.alkapivo.visu.service.shroom
 
 ///@type {Number}
-#macro SHROOM_FADE_TIME 0.2
+#macro SHROOM_FADE_IN_TIME 0.25
+
+///@type {Number}
+#macro SHROOM_FADE_OUT_TIME 0.33
 
 
 ///@param {String} _name
@@ -149,12 +152,12 @@ function Shroom(template): GridItem(template) constructor {
     #endregion
     
     #region @Implement component Fade
-    if (this.lifespan < this.lifespanMax - SHROOM_FADE_TIME) {
+    if (this.lifespan < this.lifespanMax - SHROOM_FADE_OUT_TIME) {
       if (this.fadeIn < 1.0) {
-        this.fadeIn = clamp(this.lifespan / SHROOM_FADE_TIME, 0.0, 1.0)
+        this.fadeIn = clamp(this.lifespan / SHROOM_FADE_IN_TIME, 0.0, 1.0)
       }
     } else {
-      this.fadeIn = clamp((this.lifespanMax - this.lifespan) / SHROOM_FADE_TIME, 0.0, 1.0)
+      this.fadeIn = clamp((this.lifespanMax - this.lifespan) / SHROOM_FADE_OUT_TIME, 0.0, 1.0)
     }
     #endregion
 

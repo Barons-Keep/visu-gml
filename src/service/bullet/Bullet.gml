@@ -1,7 +1,10 @@
 ///@package io.alkapivo.visu.service.bullet
 
 ///@type {Number}
-#macro BULLET_FADE_TIME 0.125
+#macro BULLET_FADE_IN_TIME 0.125
+
+///@type {Number}
+#macro BULLET_FADE_OUT_TIME 0.33
 
 
 ///@param {String}
@@ -301,12 +304,12 @@ function Bullet(template): GridItem(template) constructor {
     #endregion
 
     #region @Implement component Fade
-    if (this.lifespan < this.lifespanMax - BULLET_FADE_TIME) {
+    if (this.lifespan < this.lifespanMax - BULLET_FADE_OUT_TIME) {
       if (this.fadeIn < 1.0) {
-        this.fadeIn = clamp(this.lifespan / BULLET_FADE_TIME, 0.0, 1.0)
+        this.fadeIn = clamp(this.lifespan / BULLET_FADE_IN_TIME, 0.0, 1.0)
       }
     } else if (this.onDeath == null) {
-      this.fadeIn = clamp((this.lifespanMax - this.lifespan) / BULLET_FADE_TIME, 0.0, 1.0)
+      this.fadeIn = clamp((this.lifespanMax - this.lifespan) / BULLET_FADE_OUT_TIME, 0.0, 1.0)
     }
     #endregion
 

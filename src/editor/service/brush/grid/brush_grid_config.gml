@@ -2929,7 +2929,6 @@ function brush_grid_config(json) {
             store: { key: "gr-cfg_bpm-shift" },
             enable: { key: "gr-cfg_use-bpm-shift" },
             hidden: { key: "gr-cfg_hide-bpm" },
-            GMTF_DECIMAL: 0,
           },
           decrease: {
             store: { key: "gr-cfg_bpm-shift" },
