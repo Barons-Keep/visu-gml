@@ -1634,6 +1634,16 @@ function VETrackControl(_editor) constructor {
             false
           ),
         },
+        onInit: function() {
+          var bpm = this.items.get("text-field_ve-track-control_bpm_field").textField
+          var meter = this.items.get("text-field_ve-track-control_meter_field").textField
+          var sub = this.items.get("text-field_ve-track-control_sub_field").textField
+          var shift = this.items.get("text-field_ve-track-control_shift_field").textField
+          bpm.setPrevious(shift).setNext(meter)
+          meter.setPrevious(bpm).setNext(sub)
+          sub.setPrevious(meter).setNext(shift)
+          shift.setPrevious(sub).setNext(bpm)
+        }
       })
     })
   }
