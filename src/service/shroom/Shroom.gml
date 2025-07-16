@@ -1,7 +1,7 @@
 ///@package io.alkapivo.visu.service.shroom
 
 ///@type {Number}
-#macro SHROOM_FADE_TIME 0.33
+#macro SHROOM_FADE_TIME 0.2
 
 
 ///@param {String} _name

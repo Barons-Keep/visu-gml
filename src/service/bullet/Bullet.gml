@@ -1,7 +1,7 @@
 ///@package io.alkapivo.visu.service.bullet
 
 ///@type {Number}
-#macro BULLET_FADE_TIME 0.33
+#macro BULLET_FADE_TIME 0.125
 
 
 ///@param {String}

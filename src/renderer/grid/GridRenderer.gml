@@ -1032,7 +1032,7 @@ function GridRenderer() constructor {
       var view = gridService.view
       var horizontal = gridService.properties.borderHorizontalLength / 2.0
       var beginX = (lockX + (view.width / 2.0) + horizontal - view.x) * GRID_SERVICE_PIXEL_WIDTH
-      var beginY = -3.0 * GRID_SERVICE_PIXEL_HEIGHT
+      var beginY = -6.0 * GRID_SERVICE_PIXEL_HEIGHT
       var endX = beginX
       var endY = (5.0 + view.height) * GRID_SERVICE_PIXEL_HEIGHT
 
@@ -1056,7 +1056,7 @@ function GridRenderer() constructor {
       var view = gridService.view
       var horizontal = gridService.properties.borderHorizontalLength / 2.0
       var beginX = (lockX + (view.width / 2.0) - horizontal - view.x) * GRID_SERVICE_PIXEL_WIDTH
-      var beginY = -3.0 * GRID_SERVICE_PIXEL_HEIGHT
+      var beginY = -6.0 * GRID_SERVICE_PIXEL_HEIGHT
       var endX = beginX
       var endY = (5.0 + view.height) * GRID_SERVICE_PIXEL_HEIGHT
 
