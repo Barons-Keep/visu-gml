@@ -18,6 +18,9 @@ function VisuTrack(_path, json) constructor {
   ///@type {Number}
   bpmSub = Assert.isType(Struct.getDefault(json, "bpm-sub", _editor == null ? 2 : _editor.store.getValue("bpm-sub")), Number)
 
+  ///@type {Number}
+  bpmShift = Assert.isType(Struct.getDefault(json, "bpm-shift", _editor == null ? 0 : _editor.store.getValue("bpm-shift")), Number)
+
   ///@type {String}
   sound = Assert.isType(Struct.get(json, "sound"), String)
 
@@ -66,6 +69,7 @@ function VisuTrack(_path, json) constructor {
         "bpm": this.bpm,
         "bpm-count": this.bpmCount,
         "bpm-sub": this.bpmSub,
+        "bpm-shift": this.bpmShift,
         "track": this.track,
         "bullet": this.bullet,
         "coin": this.coin,

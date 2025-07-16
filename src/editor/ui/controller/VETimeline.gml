@@ -1327,6 +1327,10 @@ function VETimeline(_editor) constructor {
           var bpmSub = editor.store.getValue("bpm-sub")
           var bpmWidth = ((this.area.getWidth() / this.state.get("viewSize")) * 60) / bpm
           var bpmSize = ceil(this.area.getWidth() / bpmWidth)
+          var bpmShift = (this.area.getWidth() / this.state.get("viewSize")) * editor.store.getValue("bpm-shift")
+          var bpmShiftCount = floor(bpmShift / (bpmWidth * bpmCount))
+          bpmShift = bpmShift - ((bpmWidth * bpmCount) * bpmShiftCount)
+          var startIndex = bpmShift > 0 ? -1.0 * bpmCount : 0.0
 
           // background
           var bkgStartIndex = ((offsetY div 32) mod 2 != 0) ? 1 : 0
@@ -1389,14 +1393,14 @@ function VETimeline(_editor) constructor {
           var bpmX = 0
           var bpmY = round(clamp((linesSize - 1) * 32, 0, areaHeight))
           var _thickness = thickness
-          var bpmCountIndex = floor(abs(this.offset.x) / bpmWidth)
+          var bpmCountIndex = floor(abs(this.offset.x) / bpmWidth) + startIndex
           _alpha = draw_get_alpha()
           var isMain = false
           draw_set_alpha(alpha * 0.66)
           if (bpmSub > 1) {
             var bpmSubLength = round(bpmWidth / bpmSub)
-            for (var bpmIndex = 0; bpmIndex <= bpmSize; bpmIndex++) {
-              bpmX = floor((bpmIndex * bpmWidth) - (abs(this.offset.x) mod bpmWidth))
+            for (var bpmIndex = startIndex; bpmIndex <= bpmSize; bpmIndex++) {
+              bpmX = floor((bpmIndex * bpmWidth) - (abs(this.offset.x) mod bpmWidth)) + bpmShift
               _thickness = bpmCount > 0 && bpmCountIndex mod bpmCount == 0 ? thickness * 4 : thickness
               isMain = bpmCount > 0 && bpmCountIndex mod bpmCount == 0
               bpmCountIndex++
@@ -1410,8 +1414,8 @@ function VETimeline(_editor) constructor {
             }
 
             draw_set_alpha(alpha * 0.25)
-            for (var bpmIndex = 0; bpmIndex <= bpmSize; bpmIndex++) {
-              bpmX = floor((bpmIndex * bpmWidth) - (abs(this.offset.x) mod bpmWidth))
+            for (var bpmIndex = startIndex; bpmIndex <= bpmSize; bpmIndex++) {
+              bpmX = floor((bpmIndex * bpmWidth) - (abs(this.offset.x) mod bpmWidth)) + bpmShift
               for (var bpmSubIndex = 1; bpmSubIndex < bpmSub; bpmSubIndex++) {
                 draw_line_color(
                   bpmX + (bpmSubIndex * bpmSubLength), 
@@ -1424,8 +1428,8 @@ function VETimeline(_editor) constructor {
               }
             }
           } else {
-            for (var bpmIndex = 0; bpmIndex <= bpmSize; bpmIndex++) {
-              bpmX = round((bpmIndex * bpmWidth) - (abs(this.offset.x) mod bpmWidth))
+            for (var bpmIndex = startIndex; bpmIndex <= bpmSize; bpmIndex++) {
+              bpmX = round((bpmIndex * bpmWidth) - (abs(this.offset.x) mod bpmWidth)) + bpmShift
               _thickness = bpmCount > 0 && bpmCountIndex mod bpmCount == 0 ? thickness * 4 : thickness
               bpmCountIndex++
               //GPU.render.texturedLine(bpmX, 0, bpmX, bpmY, _thickness, alpha, color)

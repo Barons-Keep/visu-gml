@@ -142,6 +142,11 @@ function VisuTrackLoader(_controller): Service() constructor {
 
                       item = editor.store.get("bpm-sub")
                       item.set(this.response.bpmSub)
+
+                      //if (Struct.get(this.response, "bpmShift") != null) {
+                      //  item = editor.store.get("bpm-shift")
+                      //  item.set(this.response.bpmShift)
+                      //}
                     }
                     
                     return {

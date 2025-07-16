@@ -31,7 +31,7 @@ function VETrackControl(_editor) constructor {
               - this.__margin.left
               - this.__margin.right },
             height: function() { 
-              return 28
+              return 36
             },
           },
 
@@ -39,7 +39,7 @@ function VETrackControl(_editor) constructor {
             name: "track-control.timestamp",
             width: function() { return 64 },
             height: function() { return 32 },
-            margin: { top: 4, bottom: 4, left: 24, right: 8 },
+            margin: { top: 4, bottom: 4, left: 24, right: 4 },
             x: function() { return this.__margin.left },
             y: function() { return this.context.height()
               - this.__margin.bottom 
@@ -47,7 +47,7 @@ function VETrackControl(_editor) constructor {
           },
           bpm_label: {
             name: "track-control.bpm_label",
-            width: function() { return 34 },
+            width: function() { return 28 },
             height: function() { return 32 },
             margin: { top: 4, bottom: 4, left: 4, right: 0 },
             x: function() { return this.context.nodes.timestamp.right() 
@@ -69,7 +69,7 @@ function VETrackControl(_editor) constructor {
           },
           meter_label: {
             name: "track-control.meter_label",
-            width: function() { return 42 },
+            width: function() { return 28 },
             height: function() { return 32 },
             margin: { top: 4, bottom: 4, left: 4, right: 0 },
             x: function() { return this.context.nodes.bpm_field.right() 
@@ -80,7 +80,7 @@ function VETrackControl(_editor) constructor {
           },
           meter_field: {
             name: "track-control.meter_field",
-            width: function() { return 36 },
+            width: function() { return 32 },
             height: function() { return 24 },
             margin: { top: 10, bottom: 10, left: 0, right: 4 },
             x: function() { return this.context.nodes.meter_label.right() 
@@ -102,7 +102,7 @@ function VETrackControl(_editor) constructor {
           },
           sub_field: {
             name: "track-control.sub_field",
-            width: function() { return 36 },
+            width: function() { return 32 },
             height: function() { return 24 },
             margin: { top: 10, bottom: 10, left: 0, right: 4 },
             x: function() { return this.context.nodes.sub_label.right() 
@@ -111,7 +111,53 @@ function VETrackControl(_editor) constructor {
               - this.__margin.bottom 
               - this.height() },
           },
-
+          shift_label: {
+            name: "track-control.shift_label",
+            width: function() { return 28 },
+            height: function() { return 32 },
+            margin: { top: 4, bottom: 4, left: 4, right: 0 },
+            x: function() { return this.context.nodes.sub_field.right() 
+              + this.__margin.left },
+            y: function() { return this.context.height()
+              - this.__margin.bottom 
+              - this.height() },
+          },
+          shift_field: {
+            name: "track-control.shift_field",
+            width: function() { return 32 },
+            height: function() { return 24 },
+            margin: { top: 10, bottom: 10, left: 0, right: 4 },
+            x: function() { return this.context.nodes.shift_label.right() 
+              + this.__margin.left },
+            y: function() { return this.context.height()
+              - this.__margin.bottom 
+              - this.height() },
+          },
+          /*
+          shift_label: {
+            name: "track-control.shift_label",
+            width: function() { return 28 },
+            height: function() { return 32 },
+            margin: { top:0, bottom: 0, left: 4, right: 0 },
+            x: function() { return this.context.nodes.sub_field.right() 
+              + this.__margin.left },
+            y: function() { return this.context.height()
+              - this.__margin.bottom 
+              - this.height()
+              - 20.0},
+          },
+          shift_field: {
+            name: "track-control.shift_field",
+            width: function() { return 32 },
+            height: function() { return 24 },
+            margin: { top: 10, bottom: 2, left: 0, right: 4 },
+            x: function() { return this.context.nodes.sub_field.right() 
+              + this.__margin.left },
+            y: function() { return this.context.height()
+              - this.__margin.bottom 
+              - this.height() },
+          },
+          */
           backward: {
             name: "track-control.backward",
             width: function() { return 32 },
@@ -845,6 +891,62 @@ function VETrackControl(_editor) constructor {
             },
             margin: { left: 2, right: 2 },
           },
+          "text_ve-track-control_shift_label": factoryLabel({
+            layout: layout.nodes.shift_label,
+            text: "Shift",
+            font: "font_inter_10_regular",
+            offset: { y: 1 },
+            color: VETheme.color.textShadow,
+            align: { v: VAlign.CENTER, h: HAlign.LEFT },
+          }),
+          "text-field_ve-track-control_shift_field": {
+            type: UITextField,
+            layout: layout.nodes.shift_field,
+            updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayoutTextField")),
+            text: "0",
+            value: "0",
+            font: "font_inter_10_regular",
+            colorBackgroundUnfocused: VETheme.color.side,
+            colorBackgroundFocused: VETheme.color.primaryShadow,
+            colorOutlineUnfocused: VETheme.color.primaryShadow,
+            colorOutlineFocused: VETheme.color.primary,
+            colorTextUnfocused: VETheme.color.textShadow,
+            colorTextFocused: VETheme.color.textFocus,
+            colorSelection: VETheme.color.textSelected,
+            lh: 20.0000,
+            padding: { top: 2, bottom: 0, left: 4, right: 4 },
+            config: { key: "bpmShift" },
+            store: {
+              key: "bpm-shift",
+              callback: function(value, data) { 
+                var item = data.store.get("bpm-shift")
+                if (item == null) {
+                  return 
+                }
+    
+                var bpm = item.get()
+                if (!Core.isType(bpm, Number)) {
+                  return 
+                }
+                data.textField.setText(string(bpm))
+              },
+              set: function(value) {
+                var item = this.get()
+                if (item == null) {
+                  return 
+                }
+    
+                var parsedValue = NumberUtil.parse(value, null)
+                if (parsedValue == null) {
+                  return
+                }
+                item.set(parsedValue)
+    
+                Struct.set(Beans.get(BeanVisuController).track, "bpmShift", parsedValue)
+              },
+            },
+            margin: { left: 2, right: 2 },
+          },
           "checkbox_ve-track-control_autosave": {
             type: UICheckbox,
             layout: layout.nodes.autosave,
@@ -1386,6 +1488,7 @@ function VETrackControl(_editor) constructor {
               minValue: 5.0,
               maxValue: 30.0,
               //snapValue: 1.0 / 15.0,
+              notify: true,
               store: { key: "timeline-zoom" },
               onMouseHoverOver: function(event) { },
               onMouseHoverOut: function(event) { },

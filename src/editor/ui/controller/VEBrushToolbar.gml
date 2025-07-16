@@ -40,6 +40,7 @@ function factoryVEBrushToolbarTypeItem(config, index) {
     template: VEComponents.get("type-button"),
     layout: VELayouts.get("horizontal-item"),
     config: {
+      notify: true,
       backgroundMargin: { top: 1, bottom: 2, left: (index == 0 ? 0 : 1), right: 1 },
       callback: function() {
         var brushToolbar = this.context.brushToolbar
@@ -417,6 +418,7 @@ global.__VisuBrushContainers = new Map(String, Callable, {
       updateTimer: new Timer(FRAME_MS * 2, { loop: Infinity, shuffle: true }),
       brushToolbar: brushToolbar,
       layout: layout,
+      notify: true,
       updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
       render: Callable.run(UIUtil.renderTemplates.get("renderDefault")),
       onInit: function() {

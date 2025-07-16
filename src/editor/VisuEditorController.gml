@@ -85,6 +85,13 @@ function VisuEditorController() constructor {
         return round(clamp(value, 1, 16))
       }
     },
+    "bpm-shift": {
+      type: Number,
+      value: Assert.isType(Visu.settings.getValue("visu.editor.bpm-shift", 0), Number),
+      passthrough: function(value) {
+        return clamp(value, 0.0, 9999.9)
+      }
+    },
     "tool": {
       type: String,
       value: ToolType.SELECT,
@@ -578,7 +585,7 @@ function VisuEditorController() constructor {
           name: "visu-editor.track-control",
           percentageHeight: 1.0,
           width: function() { return Struct.get(this.context.nodes, "preview").width() },
-          height: function() { return round(68 * this.percentageHeight) },
+          height: function() { return round(72 * this.percentageHeight) },
           x: function() { return this.context.nodes.preview.x() },
           y: function() {
             return min(

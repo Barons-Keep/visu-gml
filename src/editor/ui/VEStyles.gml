@@ -268,7 +268,7 @@ function generateVEStyles() {
       },
     },
     "context-menu-button": {
-      backgroundColor: VETheme.color.primaryDark,
+      backgroundColor: VETheme.color.sideDark,
       backgroundMargin: { top: 1, bottom: 1, left: 1, right: 1 },
       colorHoverOver: VETheme.color.primaryShadow,
       colorHoverOut: VETheme.color.primaryDark,
