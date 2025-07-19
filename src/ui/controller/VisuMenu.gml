@@ -3,6 +3,7 @@
 ///@enum
 function _VisuMenuEntryEventType(): Enum() constructor {
   OPEN_NODE = "open-node"
+  OPEN_TRACK_SETUP = "open-track-setup"
   LOAD_TRACK = "load-track"
 }
 global.__VisuMenuEntryEventType = new _VisuMenuEntryEventType()
@@ -235,6 +236,14 @@ function VisuMenu(_config = null) constructor {
                         : menu.factoryOpenMainMenuEvent())
                       controller.sfxService.play("menu-select-entry")
                       break
+                    case VisuMenuEntryEventType.OPEN_TRACK_SETUP:
+                      if (!Optional.is(Struct.getIfType(event.data, "title", String))) {
+                        Struct.set(event.data, "title", this.text)
+                      }
+
+                      menu.send(menu.factoryOpenTrackSetupEvent(event.data))
+                      controller.sfxService.play("menu-select-entry")
+                      break
                     case VisuMenuEntryEventType.LOAD_TRACK:
                       controller.send(new Event("load", {
                         manifest: $"{working_directory}{event.data.path}",
@@ -281,6 +290,155 @@ function VisuMenu(_config = null) constructor {
           }
         ).getContainer()
       ),
+    })
+
+    return event
+  }
+
+  ///@param {?Struct} [_config]
+  ///@return {Event}
+  factoryOpenTrackSetupEvent = function(_config = null) {
+    var context = this
+    var config = Struct.appendUnique(
+      _config,
+      {
+        title: "",
+        path: "",
+        node: null,
+      }
+    )
+
+    var event = new Event("open").setData({
+      layout: Beans.get(BeanVisuController).visuRenderer.layout,
+      title: {
+        name: "open-track-setup_title",
+        template: VisuComponents.get("menu-title"),
+        layout: VisuLayouts.get("menu-title"),
+        config: { label: { text: config.title } },
+      },
+      content: new Array(Struct, [
+        {
+          name: "open-track-setup_menu-button-entry_play",
+          template: VisuComponents.get("menu-button-entry"),
+          layout: VisuLayouts.get("menu-button-entry"),
+          config: {
+            layout: { type: UILayoutType.VERTICAL },
+            label: { 
+              text: "Play",
+              callback: new BindIntent(function() {
+                Beans.get(BeanVisuController).send(new Event("load", {
+                  manifest: $"{working_directory}{this.callbackData}",
+                  autoplay: true,
+                }))
+                Beans.get(BeanVisuController).sfxService.play("menu-select-entry")
+              }),
+              callbackData: config.path,
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            },
+          }
+        },
+        {
+          name: "open-track-setup_menu-spin-select-entry_difficulty",
+          template: VisuComponents.get("menu-spin-select-entry"),
+          layout: VisuLayouts.get("menu-spin-select-entry"),
+          config: { 
+            layout: { type: UILayoutType.VERTICAL },
+            label: { text: "Difficulty" },
+            previous: { 
+              callback: function() {
+                var map = new Map(String, Number)
+                  .set(Difficulty.EASY, 0)
+                  .set(Difficulty.NORMAL, 1)
+                  .set(Difficulty.HARD, 2)
+                  .set(Difficulty.LUNATIC, 3)
+                var pointer = map.getDefault(Visu.settings.getValue("visu.difficulty"), 1)
+                var target = clamp(int64(pointer - 1), 0, 3)
+                var value = map.findKey(function(value, key, target) {
+                  return value == target
+                }, target)
+
+                if (!Optional.is(value)) {
+                  return
+                }
+
+                Visu.settings.setValue("visu.difficulty", value).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              },
+              updateCustom: function() {
+                var value = Visu.settings.getValue("visu.difficulty")
+                if (value == Difficulty.EASY) {
+                  this.sprite.setAlpha(0.15)
+                } else {
+                  this.sprite.setAlpha(1.0)
+                }
+              }
+            },
+            preview: {
+              label: {
+                text: Visu.settings.getValue("visu.difficulty")
+              },
+              updateCustom: function() { 
+                this.label.text = Visu.settings.getValue("visu.difficulty")
+              },
+            },
+            next: { 
+              callback: function() {
+                var map = new Map(String, Number)
+                  .set(Difficulty.EASY, 0)
+                  .set(Difficulty.NORMAL, 1)
+                  .set(Difficulty.HARD, 2)
+                  .set(Difficulty.LUNATIC, 3)
+                var pointer = map.getDefault(Visu.settings.getValue("visu.difficulty"), 1)
+                var target = clamp(int64(pointer + 1), 0, 3)
+                var value = map.findKey(function(value, key, target) {
+                  return value == target
+                }, target)
+
+                if (!Optional.is(value)) {
+                  return
+                }
+
+                Visu.settings.setValue("visu.difficulty", value).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              },
+              updateCustom: function() {
+                var value = Visu.settings.getValue("visu.difficulty")
+                if (value == Difficulty.LUNATIC) {
+                  this.sprite.setAlpha(0.15)
+                } else {
+                  this.sprite.setAlpha(1.0)
+                }
+              }
+            },
+          },
+        },
+        {
+          name: "open-track-setup_menu-button-entry_back",
+          template: VisuComponents.get("menu-button-entry"),
+          layout: VisuLayouts.get("menu-button-entry"),
+          config: {
+            layout: { type: UILayoutType.VERTICAL },
+            label: { 
+              text: "Back",
+              callback: new BindIntent(function() {
+                var controller = Beans.get(BeanVisuController)
+                var menu = controller.menu
+                menu.send(Core.isType(menu.nodes.get(this.callbackData), VisuMenuNode)
+                  ? menu.factoryOpenVisuMenuNode(this.callbackData)
+                  : menu.factoryOpenMainMenuEvent())
+                controller.sfxService.play("menu-select-entry")
+              }),
+              callbackData: config.node,
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+              colorHoverOut: VisuTheme.color.deny,
+            },
+          }
+        }
+      ])
     })
 
     return event
@@ -774,10 +932,10 @@ function VisuMenu(_config = null) constructor {
     return event
   }
 
-    ///@param {?Struct} [_config]
+  ///@param {?Struct} [_config]
   ///@return {Event}
   factoryOpenCreditsMenuEvent = function(_config = null) {
-    static  factoryCreditsEntry = function(index, text) {
+    static factoryCreditsEntry = function(index, text) {
       return {
         name: $"credits_menu-button-entry_{index}",
         template: VisuComponents.get("menu-label-entry"),
