@@ -1047,7 +1047,7 @@ function VisuTrackLoader(_controller): Service() constructor {
             var editorIO = Beans.get(Visu.modules().editor.io)
             if (timer.update().finished) {
               fsm.dispatcher.send(new Event("transition", { name: "loaded" }))
-            } else if (editorIO != && editorIO.keyboard.keys.renderUI.pressed) {
+            } else if (editorIO != null && editorIO.keyboard.keys.renderUI.pressed) {
               fsm.dispatcher.send(new Event("transition", { name: "loaded" }))
 
               var controller = Beans.get(BeanVisuController)
