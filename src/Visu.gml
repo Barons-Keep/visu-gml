@@ -1028,10 +1028,10 @@ function _Visu() constructor {
 
   ///@return {Visu}
   static initShaders = function() {
-    ShaderArcRunner.install(SHADERS, VE_SHADER_CONFIGS)
-    ShaderFunkFlux.install(SHADERS, VE_SHADER_CONFIGS)
-    ShaderWavyMesh.install(SHADERS, VE_SHADER_CONFIGS)
-    ShaderWavySpectrum.install(SHADERS, VE_SHADER_CONFIGS)
+    ShaderArcRunner.install(SHADERS, SHADER_CONFIGS)
+    ShaderFunkFlux.install(SHADERS, SHADER_CONFIGS)
+    ShaderWavyMesh.install(SHADERS, SHADER_CONFIGS)
+    ShaderWavySpectrum.install(SHADERS, SHADER_CONFIGS)
     return this
   }
   
