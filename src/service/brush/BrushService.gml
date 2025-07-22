@@ -1,16 +1,16 @@
-///@package io.alkapivo.visu.editor.service.brush
+///@package io.alkapivo.visu.service.brush
 
 function VEBrushService() constructor {
 
   ///@type {Map<String, Array>}
   templates = new Map(String, Array)
 
-  ///@description init templates with VEBrushType keys
-  VEBrushType.keys().forEach(function(key, index, templates) {
-    templates.add(new Array(VEBrushTemplate), VEBrushType.get(key))
+  ///@description init templates with BrushType keys
+  BrushType.keys().forEach(function(key, index, templates) {
+    templates.add(new Array(VEBrushTemplate), BrushType.get(key))
   }, this.templates)
 
-  ///@param {VEBrushType} type
+  ///@param {BrushType} type
   ///@return {?Array}
   fetchTemplates = function(type) {
     var templates = this.templates.get(type)
@@ -77,41 +77,6 @@ function VEBrushService() constructor {
     }
 
     return this
-  }
-
-  ///@param {VEBrushTemplate}
-  ///@return {VEBrush}
-  templateToBrush = function(template) {
-    return new VEBrush(template)
-  }
-
-  ///@param {VEBrush}
-  ///@return {VEBrushTemplate}
-  brushToTemplate = function(brush) {
-    var json = {
-      name: Assert.isType(brush.store.getValue("brush-name"), String),
-      type: Assert.isEnum(brush.type, VEBrushType),
-      color: Assert.isType(brush.store.getValue("brush-color"), Color).toHex(),
-      texture: Assert.isType(brush.store.getValue("brush-texture"), String),
-      hidden: Assert.isType(brush.store.getValue("brush-hidden"), Boolean),
-    }
-
-    var properties = brush.store.container
-      .filter(function(item) {
-        return item.name != "brush-name" 
-          && item.name != "brush-color" 
-          && item.name != "brush-texture" 
-          && item.name != "brush-hidden" 
-      })
-      .toStruct(function(item) { 
-        return item.stringify()
-      })
-    
-    if (Struct.size(properties) > 0) {
-      Struct.set(json, "properties", properties)
-    }
-
-    return new VEBrushTemplate(json)
   }
 
   ///@return {VEBrushTemplate}

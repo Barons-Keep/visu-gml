@@ -333,7 +333,7 @@ function VisuRenderer() constructor {
   renderUI = function(layout) {
     Beans.get(BeanVisuController).uiService.render()
     var editor = Beans.get(Visu.modules().editor.controller)
-    if (Core.isType(editor, VisuEditorController) && editor.renderUI) {
+    if (editor != null && editor.renderUI) {
       editor.uiService.render()
     }
 

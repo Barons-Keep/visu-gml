@@ -1044,10 +1044,10 @@ function VisuTrackLoader(_controller): Service() constructor {
             Assert.isTrue(textureLoadTask.promise.status != PromiseStatus.REJECTED, "textureLoadTask.promise.status must be fullfilled")
             
             var timer = this.state.get("cooldown-timer")
-            var editorIO = Beans.get(BeanVisuEditorIO)
+            var editorIO = Beans.get(Visu.modules().editor.io)
             if (timer.update().finished) {
               fsm.dispatcher.send(new Event("transition", { name: "loaded" }))
-            } else if (Optional.is(editorIO) && editorIO.keyboard.keys.renderUI.pressed) {
+            } else if (editorIO != && editorIO.keyboard.keys.renderUI.pressed) {
               fsm.dispatcher.send(new Event("transition", { name: "loaded" }))
 
               var controller = Beans.get(BeanVisuController)

@@ -8,6 +8,22 @@ global.__MAGIC_NUMBER_TASK = 12
 global.__SYNC_UI_STORE_STEP = 12
 #macro SYNC_UI_STORE_STEP global.__SYNC_UI_STORE_STEP
 
+///@type {Number}
+global.__BRUSH_ENTRY_STEP = 1
+#macro BRUSH_ENTRY_STEP global.__BRUSH_ENTRY_STEP
+
+///@type {Number}
+global.__BRUSH_TOOLBAR_ENTRY_STEP = 1
+#macro BRUSH_TOOLBAR_ENTRY_STEP global.__BRUSH_TOOLBAR_ENTRY_STEP
+
+///@type {Number}
+global.__FLIP_VALUE = 1
+#macro FLIP_VALUE global.__FLIP_VALUE
+
+///@hack
+#macro TEMPLATE_ENTRY_STEP global.__BRUSH_ENTRY_STEP
+#macro TEMPLATE_TOOLBAR_ENTRY_STEP global.__BRUSH_TOOLBAR_ENTRY_STEP
+#macro EVENT_INSPECTOR_ENTRY_STEP global.__BRUSH_TOOLBAR_ENTRY_STEP
 
 ///@enum
 function _GameMode(): Enum() constructor {

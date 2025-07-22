@@ -571,7 +571,7 @@ global.__grid_track_event = {
         properties.supportGridBlendConfig,
         "gr-cfg_focus-grid-blend-eq-alpha")
 
-      var editor = Beans.get(BeanVisuEditorController)
+      var editor = Beans.get(Visu.modules().editor.controller)
       if (editor == null) {
         return
       }

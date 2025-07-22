@@ -1,23 +1,5 @@
 ///@package io.alkapivo.visu.editor.ui.controller
 
-///@static
-global.__BRUSH_ENTRY_STEP = 1
-#macro BRUSH_ENTRY_STEP global.__BRUSH_ENTRY_STEP
-
-///@static
-global.__BRUSH_TOOLBAR_ENTRY_STEP = 1
-#macro BRUSH_TOOLBAR_ENTRY_STEP global.__BRUSH_TOOLBAR_ENTRY_STEP
-
-///@static
-global.__FLIP_VALUE = 1
-#macro FLIP_VALUE global.__FLIP_VALUE
-
-///@hack
-#macro TEMPLATE_ENTRY_STEP global.__BRUSH_ENTRY_STEP
-#macro TEMPLATE_TOOLBAR_ENTRY_STEP global.__BRUSH_TOOLBAR_ENTRY_STEP
-#macro EVENT_INSPECTOR_ENTRY_STEP global.__BRUSH_TOOLBAR_ENTRY_STEP
-
-
 function VEBrushGetTemplateName(templates, prefix, attempt) {
   var result = templates.find(function(template, index, name) {
     return template.name == name
@@ -325,93 +307,93 @@ global.__VisuBrushContainers = new Map(String, Callable, {
           {
             name: "button_category-effect_type-shader",
             text: "Shader",
-            brushType: VEBrushType.EFFECT_SHADER,
+            brushType: BrushType.EFFECT_SHADER,
           },
           {
             name: "button_category-effect_type-glitch",
             text: "Glitch",
-            brushType: VEBrushType.EFFECT_GLITCH,
+            brushType: BrushType.EFFECT_GLITCH,
           },
           {
             name: "button_category-effect_type-particle",
             text: "Particle",
-            brushType: VEBrushType.EFFECT_PARTICLE,
+            brushType: BrushType.EFFECT_PARTICLE,
           },
           {
             name: "button_category-effect_type-config",
             text: "Config",
-            brushType: VEBrushType.EFFECT_CONFIG,
+            brushType: BrushType.EFFECT_CONFIG,
           },
         ]).map(factoryVEBrushToolbarTypeItem),
         "entity": new Array(Struct, [
           {
             name: "button_category-entity_type-shroom",
             text: "Shroom",
-            brushType: VEBrushType.ENTITY_SHROOM,
+            brushType: BrushType.ENTITY_SHROOM,
           },
           {
             name: "button_category-entity_type-bullet",
             text: "Bullet",
-            brushType: VEBrushType.ENTITY_BULLET,
+            brushType: BrushType.ENTITY_BULLET,
           },
           {
             name: "button_category-entity_type-coin",
             text: "Coin",
-            brushType: VEBrushType.ENTITY_COIN,
+            brushType: BrushType.ENTITY_COIN,
           },
           {
             name: "button_category-entity_type-player",
             text: "Player",
-            brushType: VEBrushType.ENTITY_PLAYER,
+            brushType: BrushType.ENTITY_PLAYER,
           },
           {
             name: "button_category-entity_type-config",
             text: "Config",
-            brushType: VEBrushType.ENTITY_CONFIG,
+            brushType: BrushType.ENTITY_CONFIG,
           },
         ]).map(factoryVEBrushToolbarTypeItem),
         "grid": new Array(Struct, [
           {
             name: "button_category-grid_type-area",
             text: "Area",
-            brushType: VEBrushType.GRID_AREA,
+            brushType: BrushType.GRID_AREA,
           },
           {
             name: "button_category-grid_type-column",
             text: "Column",
-            brushType: VEBrushType.GRID_COLUMN,
+            brushType: BrushType.GRID_COLUMN,
           },
           {
             name: "button_category-grid_type-row",
             text: "Row",
-            brushType: VEBrushType.GRID_ROW,
+            brushType: BrushType.GRID_ROW,
           },
           {
             name: "button_category-grid_type-config",
             text: "Config",
-            brushType: VEBrushType.GRID_CONFIG,
+            brushType: BrushType.GRID_CONFIG,
           },
         ]).map(factoryVEBrushToolbarTypeItem),
         "view": new Array(Struct, [
           {
             name: "button_category-view_type-camera",
             text: "Camera",
-            brushType: VEBrushType.VIEW_CAMERA,
+            brushType: BrushType.VIEW_CAMERA,
           },
           {
             name: "button_category-view_type-layer",
             text: "Layer",
-            brushType: VEBrushType.VIEW_LAYER,
+            brushType: BrushType.VIEW_LAYER,
           },
           {
             name: "button_category-view_type-subtitle",
             text: "Subtitle",
-            brushType: VEBrushType.VIEW_SUBTITLE,
+            brushType: BrushType.VIEW_SUBTITLE,
           },
           {
             name: "button_category-view_type-config",
             text: "Config",
-            brushType: VEBrushType.VIEW_CONFIG,
+            brushType: BrushType.VIEW_CONFIG,
           },
         ]).map(factoryVEBrushToolbarTypeItem),
       }),
@@ -2078,7 +2060,7 @@ function VEBrushToolbar(_editor) constructor {
     },
     "type": {
       type: String,
-      value: VEBrushType.EFFECT_SHADER,
+      value: BrushType.EFFECT_SHADER,
     },
     "template": {
       type: Optional.of(VEBrushTemplate),
@@ -2100,33 +2082,33 @@ function VEBrushToolbar(_editor) constructor {
   ///@type {Map<String, Array>}
   categories = new Map(String, Array, {
     "effect": new Array(String, [
-      VEBrushType.EFFECT_SHADER,
-      VEBrushType.EFFECT_GLITCH,
-      VEBrushType.EFFECT_PARTICLE,
-      VEBrushType.EFFECT_CONFIG
+      BrushType.EFFECT_SHADER,
+      BrushType.EFFECT_GLITCH,
+      BrushType.EFFECT_PARTICLE,
+      BrushType.EFFECT_CONFIG
     ]),
     "entity": new Array(String, [
-      VEBrushType.ENTITY_SHROOM,
-      VEBrushType.ENTITY_BULLET,
-      VEBrushType.ENTITY_COIN, 
-      VEBrushType.ENTITY_PLAYER,
-      VEBrushType.ENTITY_CONFIG 
+      BrushType.ENTITY_SHROOM,
+      BrushType.ENTITY_BULLET,
+      BrushType.ENTITY_COIN, 
+      BrushType.ENTITY_PLAYER,
+      BrushType.ENTITY_CONFIG 
     ]),
     "grid": new Array(String, [
-      VEBrushType.GRID_AREA,
-      VEBrushType.GRID_COLUMN,
-      VEBrushType.GRID_ROW,
-      VEBrushType.GRID_CONFIG
+      BrushType.GRID_AREA,
+      BrushType.GRID_COLUMN,
+      BrushType.GRID_ROW,
+      BrushType.GRID_CONFIG
     ]),
     "view": new Array(String, [
-      VEBrushType.VIEW_CAMERA,
-      VEBrushType.VIEW_LAYER,
-      VEBrushType.VIEW_SUBTITLE,
-      VEBrushType.VIEW_CONFIG
+      BrushType.VIEW_CAMERA,
+      BrushType.VIEW_LAYER,
+      BrushType.VIEW_SUBTITLE,
+      BrushType.VIEW_CONFIG
     ]),
   })
 
-  ///@param {VEBrushType}
+  ///@param {BrushType}
   ///@return {?String}
   getCategoryFromType = function(type) {
     static find = function(types, category, type) {
