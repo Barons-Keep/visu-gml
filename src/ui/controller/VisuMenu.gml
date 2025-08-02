@@ -2670,7 +2670,7 @@ function VisuMenu(_config = null) constructor {
           var uiAlpha = clamp(this.state.get("uiAlpha") + DeltaTime.apply(this.state.get("uiAlphaFactor")), 0.0, 1.0)
           this.state.set("uiAlpha", uiAlpha)
           if (this.surface == null) {
-            this.surface = new Surface(this.area.getWidth(), this.area.getHeight())
+            this.surface = new Surface({ width: this.area.getWidth(), height: this.area.getHeight() })
           }
 
           this.surface.update(this.area.getWidth(), this.area.getHeight())
