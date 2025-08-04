@@ -2481,6 +2481,7 @@ function VisuMenu(_config = null) constructor {
             }
           }
         },
+        /*
         {
           name: "developer_menu-button-input-entry_optimalization-sort-entities-by-txgroup",
           template: VisuComponents.get("menu-button-input-entry"),
@@ -2515,6 +2516,7 @@ function VisuMenu(_config = null) constructor {
             }
           }
         },
+        */
         {
           name: "developer_menu-button-entry_restart",
           template: VisuComponents.get("menu-button-entry"),
