@@ -84,6 +84,7 @@ function VETemplate(json) constructor {
           spriteOff: { name: "visu_texture_checkbox_hide" },
           store: { key: "template-hide" },
         },
+        input: { },
       },
     },
     {
@@ -159,23 +160,22 @@ function VETemplate(json) constructor {
       lifespanMax: this.store.getValue("shroom_lifespan"),
       healthPoints: this.store.getValue("shroom_health-points"),
       inherit: JSON.parse(this.store.getValue("shroom_inherit")).getContainer(),
-      gameModes: {
-        bulletHell: { features: JSON.parse(this.store.getValue("shroom_game-mode_bullet-hell_features")).getContainer() },
-        //platformer: { features: JSON.parse(this.store.getValue("shroom_game-mode_platformer_features")).getContainer() },
-        //racing: { features: JSON.parse(this.store.getValue("shroom_game-mode_racing_features")).getContainer() },
-        platformer: { features: [ ] },
-        racing: { features: [ ] },
-      },
+      onDamage: JSON.parse(this.store.getValue("shroom_queue")).getContainer(),
+      onDeath: JSON.parse(this.store.getValue("shroom_queue")).getContainer(),
+      queue: JSON.parse(this.store.getValue("shroom_queue")).getContainer(),
+      features: JSON.parse(this.store.getValue("shroom_features")).getContainer(),
       use_shroom_mask: this.store.getValue("use_shroom_mask"),
       use_shroom_lifespan: this.store.getValue("use_shroom_lifespan"),
       use_shroom_healthPoints: this.store.getValue("use_shroom_healthPoints"),
       use_shroom_inherit: this.store.getValue("use_shroom_inherit"),
       use_shroom_features: this.store.getValue("use_shroom_features"),
+      use_shroom_queue: this.store.getValue("use_shroom_queue"),
       shroom_hide: this.store.getValue("shroom_hide"),
       shroom_hide_texture: this.store.getValue("shroom_hide_texture"),
       shroom_hide_mask: this.store.getValue("shroom_hide_mask"),
       shroom_hide_inherit: this.store.getValue("shroom_hide_inherit"),
       shroom_hide_features: this.store.getValue("shroom_hide_features"),
+      shroom_hide_queue: this.store.getValue("shroom_hide_queue"),
     }
     return new ShroomTemplate(json.name, json)
   }

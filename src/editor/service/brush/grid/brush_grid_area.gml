@@ -14,7 +14,7 @@ function brush_grid_area(json) {
         type: NumberTransformer,
         value: Struct.get(json, "gr-area_h"),
         passthrough: UIUtil.passthrough.getClampedNumberTransformer(),
-        data: new Vector2(0.0, 10.0),
+        data: new Vector2(0.0, 100.0),
       },
       "gr-area_change-h": {
         type: Boolean,
@@ -69,7 +69,7 @@ function brush_grid_area(json) {
         type: NumberTransformer,
         value: Struct.get(json, "gr-area_v"),
         passthrough: UIUtil.passthrough.getClampedNumberTransformer(),
-        data: new Vector2(0.0, 10.0),
+        data: new Vector2(0.0, 100.0),
       },
       "gr-area_change-v": {
         type: Boolean,
