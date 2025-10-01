@@ -153,12 +153,16 @@ function ShroomTemplate(_name, json) constructor {
       use_shroom_inherit: this.use_shroom_inherit,
       use_shroom_features: this.use_shroom_features,
       use_shroom_queue: this.use_shroom_queue,
+      use_shroom_on_damage: this.use_shroom_on_damage,
+      use_shroom_on_death: this.use_shroom_on_death,
       shroom_hide: this.shroom_hide,
       shroom_hide_texture: this.shroom_hide_texture,
       shroom_hide_mask: this.shroom_hide_mask,
       shroom_hide_inherit: this.shroom_hide_inherit,
       shroom_hide_features: this.shroom_hide_features,
       shroom_hide_queue: this.shroom_hide_queue,
+      shroom_hide_on_damage: this.shroom_hide_on_damage,
+      shroom_hide_on_death: this.shroom_hide_on_death,
     }
   }
 
@@ -170,10 +174,10 @@ function ShroomTemplate(_name, json) constructor {
       lifespanMax: lifespan != null ? lifespan : (this.use_shroom_lifespan ? this.lifespanMax : 15),
       healthPoints: hp != null ? hp : (this.use_shroom_healthPoints ? this.healthPoints : 1),
       hostile: this.hostile,
-      onDamage: JSON.clone(this.onDamage).getContainer(),
-      onDeath: JSON.clone(this.onDeath).getContainer(),
-      queue: JSON.clone(this.queue).getContainer(),
-      features: JSON.clone(this.features).getContainer(),
+      onDamage: this.use_shroom_on_damage ? JSON.clone(this.onDamage).getContainer() : [],
+      onDeath: this.use_shroom_on_death ? JSON.clone(this.onDeath).getContainer() : [],
+      queue: this.use_shroom_queue ? JSON.clone(this.queue).getContainer() : [],
+      features: this.use_shroom_features ? JSON.clone(this.features).getContainer() : [],
       inherit: this.use_shroom_inherit ? GMArray.clone(this.inherit) : [],
       x: x,
       y: y,
@@ -236,7 +240,7 @@ function Shroom(template): GridItem(template) constructor {
     var size = features.size()
     for (var index = 0; index < size; index++) {
       var feature = features.get(index)
-      if (feature.updateTimer() && feature.checkConditions(item, controller)) {
+      if (feature.checkConditions(item, controller)) {
         feature.update(item, controller)
       }
     }
@@ -250,11 +254,12 @@ function Shroom(template): GridItem(template) constructor {
   ///@return {Shroom}
   static updateGridItemFeatureQueue = function(item, controller, queue) {
     var feature = queue.peek()
-    if (feature == null || feature.timer == null || feature.timer.finished) {
+    if (feature == null) {
       return item
     }
-
-    if (feature.update(item, controller).updateTimer()) {
+    
+    feature.update(item, controller)
+    if (feature.updateTimer()) {
       queue.pop()
     }
 

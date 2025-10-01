@@ -965,6 +965,20 @@ function Player(template): GridItem(template) constructor {
   handler = new PlayerHandler(Struct.getIfType(template, "handler", Struct, {})).onStart(this)
   
   ///@override
+  ///@param {VisuController} controller
+  ///@return {GridItem}
+  static move = function(controller) {
+    gml_pragma("forceinline")
+    this.signals.reset()
+
+    var _speed = DeltaTime.apply(this.speed)
+    this.x += Math.fetchCircleX(_speed, this.angle)
+    this.y += Math.fetchCircleY(_speed, this.angle)
+    return this
+  }
+
+
+  ///@override
   ///@return {GridItem}
   static update = function(controller) {
     this.keyboard.update()

@@ -250,6 +250,9 @@ function GridProperties(config = null) constructor {
     playerZ: 2051,
   }
   
+  ///@type {Number}
+  bulletTime = Struct.getIfType(config, "properties.bulletTime", Number, GRID_SERVICE_BULLET_TIME)
+
   ///@private
   ///@type {Timer}
   separatorTimer = new Timer(FRAME_MS, { amount: this.speed / GRID_ITEM_SPEED_SCALE, loop: Infinity })
@@ -317,6 +320,15 @@ function GridProperties(config = null) constructor {
 
     this.gridClearColor.alpha = this.gridClearFrameAlpha
     this.shaderClearColor.alpha = this.shaderClearFrameAlpha
+
+    //if (keyboard_check(ord("K"))) {
+    //  this.bulletTime = Math.transformNumber(GRID_SERVICE_BULLET_TIME, 0.5, 0.02)
+    //  Core.print("bulletTime", this.bulletTime)
+    //} else {
+    //  this.bulletTime = Math.transformNumber(GRID_SERVICE_BULLET_TIME, 1.0, 0.02)
+    //}
+
+    GRID_SERVICE_BULLET_TIME = this.bulletTime
     return this
   }
 }

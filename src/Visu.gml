@@ -929,6 +929,12 @@ function _Visu() constructor {
               Beans.get(BeanTestRunner).push(args.get(0))
               Core.setProperty("visu.manifest.load-on-start", false)
               Core.setProperty("visu.menu.open-on-start", false)
+              Core.setProperty("visu.skip-splashscreen", true)
+
+              var fsm = Beans.get(BeanVisuController).fsm
+              if (fsm.getStateName() != "idle") {
+                fsm.dispatcher.send(new Event("transition", { name: "idle" }))
+              }
             },
           }),
           new CLIParam({

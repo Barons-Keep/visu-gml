@@ -160,8 +160,8 @@ function VETemplate(json) constructor {
       lifespanMax: this.store.getValue("shroom_lifespan"),
       healthPoints: this.store.getValue("shroom_health-points"),
       inherit: JSON.parse(this.store.getValue("shroom_inherit")).getContainer(),
-      onDamage: JSON.parse(this.store.getValue("shroom_queue")).getContainer(),
-      onDeath: JSON.parse(this.store.getValue("shroom_queue")).getContainer(),
+      onDamage: JSON.parse(this.store.getValue("shroom_on_damage")).getContainer(),
+      onDeath: JSON.parse(this.store.getValue("shroom_on_death")).getContainer(),
       queue: JSON.parse(this.store.getValue("shroom_queue")).getContainer(),
       features: JSON.parse(this.store.getValue("shroom_features")).getContainer(),
       use_shroom_mask: this.store.getValue("use_shroom_mask"),
@@ -170,12 +170,16 @@ function VETemplate(json) constructor {
       use_shroom_inherit: this.store.getValue("use_shroom_inherit"),
       use_shroom_features: this.store.getValue("use_shroom_features"),
       use_shroom_queue: this.store.getValue("use_shroom_queue"),
+      use_shroom_on_death: this.store.getValue("use_shroom_on_death"),
+      use_shroom_on_damage: this.store.getValue("use_shroom_on_damage"),
       shroom_hide: this.store.getValue("shroom_hide"),
       shroom_hide_texture: this.store.getValue("shroom_hide_texture"),
       shroom_hide_mask: this.store.getValue("shroom_hide_mask"),
       shroom_hide_inherit: this.store.getValue("shroom_hide_inherit"),
       shroom_hide_features: this.store.getValue("shroom_hide_features"),
       shroom_hide_queue: this.store.getValue("shroom_hide_queue"),
+      shroom_hide_on_damage: this.store.getValue("shroom_hide_on_damage"),
+      shroom_hide_on_death: this.store.getValue("shroom_hide_on_death"),
     }
     return new ShroomTemplate(json.name, json)
   }

@@ -598,6 +598,31 @@ function VisuController(layerName) constructor {
     return this
   }
 
+  ///@private
+  ///@return {VisuController}
+  updateDebugFPS = function() {
+    if (Core.getProperty("visu.enable-debug-fps", false) != true) {
+      return this
+    }
+
+    if (keyboard_check(ord("B"))) {
+      if (irandom(100) > 40) {
+        var spd = 15 + irandom(keyboard_check(ord("N")) ? 15 : 45)
+        game_set_speed(spd, gamespeed_fps)
+        Core.print("set spd", spd, "DT", DeltaTime.get())
+      }
+    } else {
+      var spd = game_get_speed(gamespeed_fps)
+      if (game_get_speed(gamespeed_fps) < 60) {
+        spd = clamp(spd + choose(1, 0, 1, 0, 0, 2, 0, 1, 0, 0, 0, 0, -1, 0, 1, 1, 0, -1, 1), 15, 60)
+        game_set_speed(spd, gamespeed_fps)
+        Core.print("restore spd60:", spd, "DT", DeltaTime.get())
+      }
+    }
+
+    return this
+  }
+
   ///@param {Event}
   ///@return {?Promise}
   send = function(event) {
@@ -608,6 +633,7 @@ function VisuController(layerName) constructor {
   update = function() {
     this.updateDebugTimer.start()
     this.updateGCFrameTime()
+    //this.updateDebugFPS()
     var state = this.fsm.getStateName()
     if (state != "splashscreen") {
       this.updateUIService()

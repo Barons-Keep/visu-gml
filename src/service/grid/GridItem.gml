@@ -491,8 +491,10 @@ function GridItem(config) constructor {
   static move = function() {
     gml_pragma("forceinline")
     this.signals.reset()
-    this.x += Math.fetchCircleX(DeltaTime.apply(this.speed), this.angle)
-    this.y += Math.fetchCircleY(DeltaTime.apply(this.speed), this.angle)
+    //var _speed = DeltaTime.apply(controller.gridService.properties.bulletTime * this.speed)
+    var _speed = DeltaTime.apply(GRID_SERVICE_BULLET_TIME * this.speed)
+    this.x += Math.fetchCircleX(_speed, this.angle)
+    this.y += Math.fetchCircleY(_speed, this.angle)
     return this
   }
 
@@ -507,3 +509,4 @@ function GridItem(config) constructor {
     return this
   }
 }
+
