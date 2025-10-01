@@ -775,10 +775,6 @@ function GridRenderer() constructor {
           if (index + 1 > size) {
             _alpha = secondaryAlpha * borderRatio
           }
-
-          if (index > primaryEnd) {
-            _alpha = _alpha * ((finishEndY - beginY) / (finishEndY - startEndY))
-          }
     
           GPU.render.texturedLineSimple(
             beginX, beginY, 
@@ -844,8 +840,6 @@ function GridRenderer() constructor {
 
           if (index < 0.0) {
             _alpha = _alpha * ((beginY - startBeginY) / (finishBeginY - startBeginY))
-          } else if (index > primaryEnd) {
-            _alpha = _alpha * ((finishEndY - beginY) / (finishEndY - startEndY))
           }
           
           GPU.render.texturedLineSimple(
@@ -864,13 +858,7 @@ function GridRenderer() constructor {
           var beginY = ((-6 * view.height) + (index * separatorHeight) + offset + time) * GRID_SERVICE_PIXEL_HEIGHT
           var endX = (view.width + 4.0) * GRID_SERVICE_PIXEL_WIDTH
           var endY = beginY
-
-          //var alpha = index == primaryBegin ? primaryAlpha * (1.0 - borderRatio) : primaryAlpha
-          //if (index + 1 > primaryEnd) {
-          //  alpha = primaryAlpha * borderRatio
-          //}
           var alpha = primaryAlpha
-    
           var thickness = index == primaryBegin ? primaryThickness * (1.0 - borderRatio) : primaryThickness
           if (index + 1 > primaryEnd) {
             thickness = primaryThickness * borderRatio
@@ -879,7 +867,7 @@ function GridRenderer() constructor {
           GPU.render.texturedLineSimple(
             beginX, beginY, 
             endX, endY, 
-            thickness,//max(thickness, secondaryThickness), 
+            thickness, 
             alpha, 
             primaryColor,
             this.textureLine
