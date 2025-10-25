@@ -750,8 +750,8 @@ function _Visu() constructor {
       "asset": texture_hechan_3_background,
       "file": "",
     },
-    "texture_hechan_3_abstract": {
-      "asset": texture_hechan_3_abstract,
+    "texture_abstract_2": {
+      "asset": texture_abstract_2,
       "file": "",
     },
     "texture_hechan_4": {
@@ -826,8 +826,12 @@ function _Visu() constructor {
       "asset": texture_abstract_1,
       "file": "",
     },
-    "texture_abstract_2": {
-      "asset": texture_abstract_2,
+    "tx_bkg_goetia_1": {
+      "asset": tx_bkg_goetia_1,
+      "file": "",
+    },
+    "tx_bkg_magic": {
+      "asset": tx_bkg_magic,
       "file": "",
     },
   } 
@@ -1144,8 +1148,13 @@ function _Visu() constructor {
   static loadProperties = function() {
     //Logger.info("Visu", "run::loadProperties()")
     Core.loadProperties(FileUtil.get($"{working_directory}core-properties.json"))
+
     Core.loadProperties(FileUtil.get($"{working_directory}visu-properties.json"))
-    Core.loadProperties(FileUtil.get($"{working_directory}visu-editor-properties.json"))
+
+    var editorConstructor = Core.getConstructor("VisuEditorController")
+    if (Optional.is(editorConstructor)) {
+      Core.loadProperties(FileUtil.get($"{working_directory}visu-editor-properties.json"))
+    }
 
     MAGIC_NUMBER_TASK = Core.getProperty("visu.const.MAGIC_NUMBER_TASK", MAGIC_NUMBER_TASK)
     SYNC_UI_STORE_STEP = Core.getProperty("visu.const.SYNC_UI_STORE_STEP", SYNC_UI_STORE_STEP)
@@ -1378,6 +1387,10 @@ function _Visu() constructor {
     }
   }
 
+  static initDebug = function() {
+    Core.debugOverlay(Visu.settings.getValue("visu.debug", false))
+  }
+
   static parseCli = function() {
     //Logger.info("Visu", "run::parseCli()")
     this.cliParser().parse()
@@ -1405,6 +1418,7 @@ function _Visu() constructor {
     this.initTestRunner(layerId)
     this.initEditor(layerId)
     this.initVisu(layerId, layerName)
+    this.initDebug()
     this.parseCli()
 
     return this
