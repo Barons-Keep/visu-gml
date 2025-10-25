@@ -1784,6 +1784,13 @@ global.__VisuBrushContainers = new Map(String, Callable, {
             config: {
               label: { text: "Preview" },
               callback: function() { 
+                if (Core.isType(GMTFContext.get(), GMTF)) {
+                  if (Core.isType(GMTFContext.get().uiItem, UIItem)) {
+                    GMTFContext.get().uiItem.update()
+                  }
+                  GMTFContext.get().unfocus()
+                }
+                
                 var brushToolbar = this.context.brushToolbar
                 var brush = brushToolbar.store.getValue("brush")
                 if (!Core.isType(brush, VEBrush)) {
