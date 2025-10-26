@@ -2371,9 +2371,18 @@ function VEBrushToolbar(_editor) constructor {
           brushTemplate: template,
         },
         select: { 
-          sprite: { name: "visu_texture_checkbox_off" },
-          spriteOn: { name: "visu_texture_checkbox_on" },
-          spriteOff: { name: "visu_texture_checkbox_off" },
+          sprite: {
+            name: "visu_texture_checkbox_off",
+            blend: VETheme.color.textShadow,
+          },
+          spriteOn: {
+            name: "visu_texture_checkbox_on",
+            blend: VETheme.color.textFocus,
+          },
+          spriteOff: {
+            name: "visu_texture_checkbox_off",
+            blend: VETheme.color.textShadow,
+          },
           selected: false,
           brushTemplate: template,
           callback: function() {
