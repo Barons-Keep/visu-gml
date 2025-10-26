@@ -236,8 +236,8 @@ function VisuTrackLoader(_controller): Service() constructor {
                     .setState({ 
                       callback: function(prototype, json, key, acc) {
                         //Logger.debug("VisuTrackLoader", $"Load sound intent '{key}'")
-                        var soundIntent = new prototype(json)
                         var soundService = acc.soundService
+                        var soundIntent = new prototype(json)
                         var visuWASM = Callable.run("VisuWASM")
                         if (Core.getRuntimeType() == RuntimeType.GXGAMES && Core.isType(visuWASM, Struct)) {
                           Assert.isTrue(audio_group_is_loaded(visuWASM.getAudioGroup()), "audiogroup must be loaded")
@@ -252,9 +252,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                         Assert.fileExists(path)
                         Assert.isFalse(soundService.sounds.contains(key), "GMSound already loaded")
 
-                        var stream = audio_create_stream(path)
-                        soundService.sounds.add(stream, key)
-                        soundService.intents.add(soundIntent, key)
+                        soundService.loadOGG(key, path, soundIntent)
                       },
                       acc: {
                         soundService: Beans.get(BeanSoundService),

@@ -363,9 +363,9 @@ function VisuController(layerName) constructor {
       .set("shroom-die", new SFX("sound_sfx_shroom_die", 3))
       .set("shroom-damage", new SFX("sound_sfx_shroom_damage", 3))
       .set("shroom-shoot", new SFX("sound_sfx_shroom_shoot", 3))
-      .set("menu-move-cursor", new SFX("sound_sfx_player_collect_point_or_force"), 1)
-      .set("menu-select-entry", new SFX("sound_sfx_player_shoot"), 1)
-      .set("menu-use-entry", new SFX("sound_sfx_shroom_damage"), 1)
+      .set("menu-move-cursor", new SFX("sound_sfx_menu_move_cursor"), 1)
+      .set("menu-select-entry", new SFX("sound_sfx_menu_select_entry"), 1)
+      .set("menu-use-entry", new SFX("sound_sfx_menu_use_entry"), 1)
       .set("menu-splashscreen", new SFX("sound_sfx_intro"), 1)
     
 

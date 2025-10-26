@@ -346,9 +346,11 @@ function VisuStateMachine(context, name) {
               controller.ostSound = null
             }
 
+            var staticSounds = GMArray.toMap(VISU_SFX_AUDIO_NAMES, String, Boolean, Lambda.returnTrue, null, Lambda.passthrough)
+
             audio_stop_all()
             controller.visuRenderer.gridRenderer.clear()
-            Beans.get(BeanSoundService).free()
+            Beans.get(BeanSoundService).free(staticSounds)
             Beans.get(BeanTextureService).free()
             
             controller.trackService.dispatcher.execute(new Event("close-track"))
