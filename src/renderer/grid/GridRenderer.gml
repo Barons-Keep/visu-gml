@@ -1638,11 +1638,11 @@ function GridRenderer() constructor {
       shader_set(shader_gaussian_blur)
       shader_set_uniform_f(shader_get_uniform(shader_gaussian_blur, "size"), width, height, size)
       this.gridSurface.renderStretched(width, height, 0, 0, gridAlpha, color, blendConfig)
-      this.gridSurface.renderStretched(width, height, 0, 0, gridAlpha, gridColor, blendConfig)
+      this.gridItemSurface.renderStretched(width, height, 0, 0, gridAlpha, color, blendConfig)
       shader_reset()
     } else {
       this.gridSurface.renderStretched(width, height, 0, 0, gridAlpha, color, blendConfig)
-      this.gridSurface.renderStretched(width, height, 0, 0, gridAlpha, gridColor, blendConfig)
+      this.gridItemSurface.renderStretched(width, height, 0, 0, gridAlpha, color, blendConfig)
     }
 
     this.gridItemSurface.renderStretched(width, height, 0, 0, focusAlpha, focusColor, blendConfig)
