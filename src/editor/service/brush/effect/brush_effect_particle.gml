@@ -88,8 +88,6 @@ function brush_effect_particle(json) {
         hidden: { key: "ef-part_hide" },
       }),
       VETitleComponent("ef-part_area-title", {
-        hidden: { key: "gr-c_hide-side" },
-        enable: { key: "gr-c_use-side-col" },
         label: { 
           text: "Emitter",
           updateCustom: function() {
@@ -257,7 +255,7 @@ function brush_effect_particle(json) {
         background: VETheme.color.side,
         hidden: { key: "ef-part_hide-area" },
         enable: { key: "ef-part_preview" },
-        label: { text: "Show emitter" },
+        label: { text: "Show emitter area" },
         checkbox: {
           spriteOn: { name: "visu_texture_checkbox_on" },
           spriteOff: { name: "visu_texture_checkbox_off" },
