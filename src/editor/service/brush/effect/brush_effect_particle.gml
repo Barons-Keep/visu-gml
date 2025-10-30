@@ -31,10 +31,10 @@ function brush_effect_particle(json) {
         type: Rectangle,
         value: Struct.get(json, "ef-part_area"),
         passthrough: function(value) {
-          value.x = clamp(value.x, -5.0, 5.0)
-          value.y = clamp(value.y, -5.0, 5.0)
-          value.z = clamp(value.z, 0.0, 10.0)
-          value.a = clamp(value.a, 0.0, 10.0)
+          value.x = clamp(value.x, -10.0, 10.0)
+          value.y = clamp(value.y, -10.0, 10.0)
+          value.z = clamp(value.z, 0.0, 20.0)
+          value.a = clamp(value.a, 0.0, 20.0)
           return value
         }
       },
@@ -282,9 +282,9 @@ function brush_effect_particle(json) {
               hidden: { key: "ef-part_hide-area" },
             },
             slider: {
-              snapValue: 0.01 / 10.0,
-              minValue: -5.0,
-              maxValue: 5.0,
+              snapValue: 0.01 / 20.0,
+              minValue: -10.0,
+              maxValue: 10.0,
               store: { key: "ef-part_area" },
               hidden: { key: "ef-part_hide-area" },
             },
@@ -309,9 +309,9 @@ function brush_effect_particle(json) {
               hidden: { key: "ef-part_hide-area" },
             },
             slider: {
-              snapValue: 0.01 / 10.0,
-              minValue: -5.0,
-              maxValue: 5.0,
+              snapValue: 0.01 / 20.0,
+              minValue: -10.0,
+              maxValue: 10.0,
               store: { key: "ef-part_area" },
               hidden: { key: "ef-part_hide-area" },
             },
@@ -336,9 +336,9 @@ function brush_effect_particle(json) {
               hidden: { key: "ef-part_hide-area" },
             },
             slider: {
-              snapValue: 0.01 / 10.0,
+              snapValue: 0.01 / 20.0,
               minValue: 0.0,
-              maxValue: 10.0,
+              maxValue: 20.0,
               store: { key: "ef-part_area" },
               hidden: { key: "ef-part_hide-area" },
             },
@@ -363,9 +363,9 @@ function brush_effect_particle(json) {
               hidden: { key: "ef-part_hide-area" },
             },
             slider: {
-              snapValue: 0.01 / 10.0,
+              snapValue: 0.01 / 20.0,
               minValue: 0.0,
-              maxValue: 10.0,
+              maxValue: 20.0,
               store: { key: "ef-part_area" },
               hidden: { key: "ef-part_hide-area" },
             },

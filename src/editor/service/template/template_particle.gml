@@ -68,10 +68,10 @@ function template_particle(json = null) {
         type: Rectangle,
         value: Struct.parse.rectangle(json, "particle_area-preview", { width: 1.0, height: 1.0 }),
         passthrough: function(value) {
-          value.x = clamp(value.x, -5.0, 5.0)
-          value.y = clamp(value.y, -5.0, 5.0)
-          value.z = clamp(value.z, 0.0, 10.0)
-          value.a = clamp(value.a, 0.0, 10.0)
+          value.x = clamp(value.x, -10.0, 10.0)
+          value.y = clamp(value.y, -10.0, 10.0)
+          value.z = clamp(value.z, 0.0, 20.0)
+          value.a = clamp(value.a, 0.0, 20.0)
           return value
         }
       },
@@ -222,9 +222,9 @@ function template_particle(json = null) {
               hidden: { key: "particle_hide-preview" },
             },
             slider: {
-              snapValue: 0.01 / 10.0,
-              minValue: -5.0,
-              maxValue: 5.0,
+              snapValue: 0.01 / 20.0,
+              minValue: -10.0,
+              maxValue: 10.0,
               store: { key: "particle_area-preview" },
               hidden: { key: "particle_hide-preview" },
             },
@@ -249,9 +249,9 @@ function template_particle(json = null) {
               hidden: { key: "particle_hide-preview" },
             },
             slider: {
-              snapValue: 0.01 / 10.0,
-              minValue: -5.0,
-              maxValue: 5.0,
+              snapValue: 0.01 / 20.0,
+              minValue: -10.0,
+              maxValue: 10.0,
               store: { key: "particle_area-preview" },
               hidden: { key: "particle_hide-preview" },
             },
@@ -276,9 +276,9 @@ function template_particle(json = null) {
               hidden: { key: "particle_hide-preview" },
             },
             slider: {
-              snapValue: 0.01 / 10.0,
+              snapValue: 0.01 / 20.0,
               minValue: 0.0,
-              maxValue: 10.0,
+              maxValue: 20.0,
               store: { key: "particle_area-preview" },
               hidden: { key: "particle_hide-preview" },
             },
@@ -303,9 +303,9 @@ function template_particle(json = null) {
               hidden: { key: "particle_hide-preview" },
             },
             slider: {
-              snapValue: 0.01 / 10.0,
+              snapValue: 0.01 / 20.0,
               minValue: 0.0,
-              maxValue: 10.0,
+              maxValue: 20.0,
               store: { key: "particle_area-preview" },
               hidden: { key: "particle_hide-preview" },
             },
