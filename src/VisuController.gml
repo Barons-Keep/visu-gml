@@ -769,7 +769,10 @@ function VisuController(layerName) constructor {
         .setState({
           cooldown: new Timer(1.0),
           event: new Event("load", {
-            manifest: FileUtil.get(Core.getProperty("visu.manifest.path")),
+            manifest: FileUtil.get(String.concat(
+              String.replaceAll(String.replaceAll(working_directory, "\\", "/"), "//", "/"),
+              Core.getProperty("visu.manifest.path")
+            )),
             autoplay: Core.getProperty("visu.manifest.play-on-start", false),
           }),
         })

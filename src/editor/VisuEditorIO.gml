@@ -58,16 +58,16 @@ function VisuEditorIO() constructor {
     cameraKeyboardLook: KeyboardKeyType.F8,
     cameraMouseLook: KeyboardKeyType.F9,
 
-    clearGridShaders:  "1", // + ctrl
-    clearBackgroundShaders:  "2", // + ctrl
-    clearCombinedShaders:  "3", // + ctrl
-    clearBackgroundTextures:  "4", // + ctrl
-    clearGridTextures:  "5", // + ctrl
-    clearForegroundTextures:  "6", // + ctrl
-    clearShrooms: "7", // + ctrl
-    clearBullets: "8", // + ctrl
-    clearCoins: "9", // + ctrl
-    clearParticle: "0", // + ctrl
+    clearGridShaders: ord("1"), // + ctrl
+    clearBackgroundShaders: ord("2"), // + ctrl
+    clearCombinedShaders: ord("3"), // + ctrl
+    clearBackgroundTextures: ord("4"), // + ctrl
+    clearGridTextures: ord("5"), // + ctrl
+    clearForegroundTextures: ord("6"), // + ctrl
+    clearShrooms: ord("7"), // + ctrl
+    clearBullets: ord("8"), // + ctrl
+    clearCoins: ord("9"), // + ctrl
+    clearParticles: ord("0"), // + ctrl
   })
 
   ///@type {Mouse}
@@ -497,10 +497,9 @@ function VisuEditorIO() constructor {
       controller.coinService.send(new Event("clear-coins"))
     }
 
-    if (this.keyboard.keys.clearParticle.pressed) {
+    if (this.keyboard.keys.clearParticles.pressed) {
       controller.particleService.send(new Event("clear-particles"))
     }
-
 
     return this
   }
