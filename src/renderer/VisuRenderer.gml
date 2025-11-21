@@ -246,7 +246,7 @@ function VisuRenderer() constructor {
     }
 
     var deltaTime = DELTA_TIME
-    if (deltaTime > this.debugMaxDelta) {
+    if (deltaTime >= this.debugMaxDelta) {
       this.debugMaxDelta = deltaTime
       this.debugDeltaHighCooldown = GAME_FPS * 2
     }
@@ -289,8 +289,8 @@ function VisuRenderer() constructor {
                + $"update: { c1} ms | total:       { d1} ms \n"
                + $"render: { c2} ms | avg:         { d2} ms \n"
                +  "-----------------|-----------------------\n"
-               + $"shrooms: {e1}    | dt:      {     f1}    \n"
-               + $"bullets: {e2}    | dt-max:  {     f2}    \n"
+               + $"shrooms: {e1}    | dt:        {   f1}    \n"
+               + $"bullets: {e2}    | dt-max:    {   f2}    \n"
         
       GPU.render.text(64, 80, text, 1.0, 0.0, 1.0, c_lime, 
         GPU_DEFAULT_FONT_BOLD, HAlign.LEFT, VAlign.TOP, c_black, 1.0)
