@@ -20,6 +20,7 @@
   "visu.manifest.play-on-start": false,
   "visu.skip-splashscreen": false,
   "visu.menu.open-on-start": true,
+  "visu.menu.play.root": "root.tracks",
   "visu.player.force-god-mode": false,
   "visu.manifest.load-brushes": true,
   "visu.manifest.parse-track-async": true,
