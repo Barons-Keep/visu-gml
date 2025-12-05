@@ -186,6 +186,7 @@ global.__entity_track_event = {
 
       return Struct.append({
         "icon": Struct.parse.sprite(data, "icon"),
+        "en-shr_use_oldEmitter": oldEmitter != null,
         "en-shr_hide": Struct.parse.boolean(data, "en-shr_hide", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-shr_hide-spawn": Struct.parse.boolean(data, "en-shr_hide-spawn", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-shr_hide-inherit": Struct.parse.boolean(data, "en-shr_hide-inherit", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
@@ -247,13 +248,16 @@ global.__entity_track_event = {
         return
       }
       
-      Struct.get(data, "en-shr_em-angle").reset()
-      Struct.get(data, "en-shr_em-per-array-dir").reset()
-      Struct.get(data, "en-shr_em-spd").reset()
-      Struct.get(data, "en-shr_em-offset-x").reset()
-      Struct.get(data, "en-shr_em-offset-y").reset()
-      Struct.get(data, "en-shr_em-wiggle-freq").reset()
-      Struct.get(data, "en-shr_em-wiggle-amp").reset()
+      if (Struct.get(data, "en-shr_em-use-cfg") == false) {
+        Struct.get(data, "en-shr_em-angle").reset()
+        Struct.get(data, "en-shr_em-per-array-dir").reset()
+        Struct.get(data, "en-shr_em-spd").reset()
+        Struct.get(data, "en-shr_em-offset-x").reset()
+        Struct.get(data, "en-shr_em-offset-y").reset()
+        Struct.get(data, "en-shr_em-wiggle-freq").reset()
+        Struct.get(data, "en-shr_em-wiggle-amp").reset()
+      }
+
       Struct.set(data, "en-shr_texture", Struct.parse.sprite(data, "_en-shr_texture"))
       var spd = abs(Struct.get(data, "en-shr_spd")
         + (Struct.get(data, "en-shr_use-spd-rng")
