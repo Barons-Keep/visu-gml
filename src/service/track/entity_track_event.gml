@@ -186,7 +186,6 @@ global.__entity_track_event = {
 
       return Struct.append({
         "icon": Struct.parse.sprite(data, "icon"),
-        "en-shr_use_oldEmitter": oldEmitter != null,
         "en-shr_hide": Struct.parse.boolean(data, "en-shr_hide", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-shr_hide-spawn": Struct.parse.boolean(data, "en-shr_hide-spawn", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-shr_hide-inherit": Struct.parse.boolean(data, "en-shr_hide-inherit", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
