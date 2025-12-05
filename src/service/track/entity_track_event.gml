@@ -605,14 +605,17 @@ global.__entity_track_event = {
         return
       }
 
-      Struct.get(data, "en-blt_em-angle").reset()
-      Struct.get(data, "en-blt_em-per-array-dir").reset()
-      Struct.get(data, "en-blt_em-spd").reset()
-      Struct.get(data, "en-blt_em-offset-x").reset()
-      Struct.get(data, "en-blt_em-offset-y").reset()
-      Struct.get(data, "en-blt_em-wiggle-freq").reset()
-      Struct.get(data, "en-blt_em-wiggle-amp").reset()
-      Struct.set(data, "en-blt_texture", Struct.parse.sprite(data, "_en-blt_texture"))
+      if (Struct.get(data, "en-blt_em-use-cfg") == false) {
+        Struct.get(data, "en-blt_em-angle").reset()
+        Struct.get(data, "en-blt_em-per-array-dir").reset()
+        Struct.get(data, "en-blt_em-spd").reset()
+        Struct.get(data, "en-blt_em-offset-x").reset()
+        Struct.get(data, "en-blt_em-offset-y").reset()
+        Struct.get(data, "en-blt_em-wiggle-freq").reset()
+        Struct.get(data, "en-blt_em-wiggle-amp").reset()
+        Struct.set(data, "en-blt_texture", Struct.parse.sprite(data, "_en-blt_texture"))
+      }
+
       var spd = abs(Struct.get(data, "en-blt_spd")
         + (Struct.get(data, "en-blt_use-spd-rng")
           ? (random(Struct.get(data, "en-blt_spd-rng") / 2.0)
