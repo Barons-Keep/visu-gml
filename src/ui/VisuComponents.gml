@@ -274,6 +274,51 @@ global.__VisuComponents = new Map(String, Callable, {
 
   ///@param {String} name
   ///@param {UILayout} layout
+  ///@param {?Struct} [config]
+  ///@return {Array<UIItem>}
+  "menu-slider-entry": function(name, layout, config = null) {
+    return new Array(UIItem, [
+      UIText(
+        $"label_{name}", 
+        Struct.appendRecursive(
+          Struct.appendRecursive(
+            { 
+              layout: layout.nodes.label,
+              updateArea: Callable
+                .run(UIUtil.updateAreaTemplates
+                .get("applyCollectionLayout")),
+            }, 
+            VisuStyles.get("menu-slider-entry").label,
+            false
+          ),
+          Struct.get(config, "label"),
+          false
+        )
+      ),
+      UISliderHorizontal(
+        $"slider_{name}",
+        Struct.appendRecursive(
+          Struct.appendRecursive(
+            { 
+              layout: Assert.isType(Struct.get(layout.nodes, "slider"), Struct),
+              updateArea: Callable
+                .run(UIUtil.updateAreaTemplates
+                .get("applyCollectionLayout")),
+              getClipboard: Beans.get(BeanVisuIO).mouse.getClipboard,
+              setClipboard: Beans.get(BeanVisuIO).mouse.setClipboard,
+            },
+            VisuStyles.get("menu-slider-entry").slider,
+            false
+          ),
+          Struct.get(config, "slider"),
+          false
+        )
+      ),
+    ])
+  },
+
+  ///@param {String} name
+  ///@param {UILayout} layout
   ///@param {?Struct} [_config]
   ///@return {Array<UIItem>}
   "number-property": function(name, layout, config = null) {
