@@ -355,18 +355,21 @@ function VisuController(layerName) constructor {
   ///@private
   ///@return {VisuController}
   init = function() {
-    var width = Visu.settings.getValue("visu.window.width", 1440),
-    var height = Visu.settings.getValue("visu.window.height", 900)
-    var fullscreen = Visu.settings.getValue("visu.fullscreen", false)
-    var borderlessWindow = Visu.settings.getValue("visu.borderless-window", false)
-    this.displayService
-      .resize(width, height)
-      .setBorderlessWindow(borderlessWindow)
-      .setFullscreen(fullscreen)
-      .setCaption(game_display_name)
-      .setCursor(Cursor.DEFAULT)
-      .center()
-    
+    this.displayService.setCursor(Cursor.DEFAULT)
+    if (!VISU_DISPLAY_SERVICE_SETUP) {
+      var width = Visu.settings.getValue("visu.window.width", 1440),
+      var height = Visu.settings.getValue("visu.window.height", 900)
+      var fullscreen = Visu.settings.getValue("visu.fullscreen", false)
+      var borderlessWindow = Visu.settings.getValue("visu.borderless-window", false)
+      this.displayService
+        .resize(width, height)
+        .setBorderlessWindow(borderlessWindow)
+        .setFullscreen(fullscreen)
+        .setCaption(game_display_name)
+        .center()
+      VISU_DISPLAY_SERVICE_SETUP = true
+    }
+
     this.sfxService
       .set("player-collect-bomb", new SFX("sound_sfx_player_collect_bomb"))
       .set("player-collect-life", new SFX("sound_sfx_player_collect_life"))
@@ -928,17 +931,13 @@ function VisuController(layerName) constructor {
   free = function() {
     Struct.toMap(this)
       .filter(function(value) {
-        if (!Core.isType(value, Struct)
-          || !Struct.contains(value, "free")
-          || !Core.isType(Struct.get(value, "free"), Callable)) {
-          return false
-        }
-        return true
+        return Core.isType(Struct.get(value, "free"), Callable)
       })
       .forEach(function(struct, key, context) {
         try {
           Logger.debug(BeanVisuController, $"Free '{key}'")
-          Callable.run(Struct.get(struct, "free"))
+          var freeHandler = Struct.get(struct, "free")
+          freeHandler()
         } catch (exception) {
           Logger.error(BeanVisuController, $"Free '{key}' fatal error: {exception.message}")
           Core.printStackTrace().printException(exception)
