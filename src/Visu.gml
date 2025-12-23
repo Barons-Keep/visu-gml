@@ -1576,11 +1576,11 @@ function _Visu() constructor {
     this.initTextureService(layerId)
     this.initSoundService(layerId)
     this.initDialogueDesignerService(layerId)
-    this.initTestRunner(layerId)
     this.initEditor(layerId)
     this.initVisu(layerId, layerName)
     this.initDebugSFX()
     this.initDebug()
+    this.initTestRunner(layerId)
     this.parseCli()
 
     return this

@@ -424,7 +424,7 @@ function VisuController(layerName) constructor {
   updateCursor = function() {
     var cursor = this.displayService.getCursor()
     var editor = Beans.get(Visu.modules().editor.controller)
-    if (Optional.is(editor)) {
+    if (editor != null) {
       if (editor.renderUI && cursor == Cursor.NONE && cursor_sprite == -1) {
         this.displayService.setCursor(Cursor.DEFAULT)
       } else if (!editor.renderUI && !this.menu.enabled && cursor != Cursor.NONE) {
@@ -639,18 +639,15 @@ function VisuController(layerName) constructor {
         this.sfxService.setVolume(sfxVolume)
       }
 
-      if (Optional.is(this.watchdogPromise)) {
+      if (this.watchdogPromise != null) {
         this.watchdogPromise = this.watchdogPromise.status == PromiseStatus.PENDING
           ? this.watchdogPromise
           : null
         return this
-      }
-
-      if (!Optional.is(this.watchdogPromise)
-        && this.trackService.isTrackLoaded()
-        && !this.trackService.track.audio.isLoaded() 
-        && 1 > abs(this.trackService.time - this.trackService.duration)
-        && this.fsm.getStateName() == "play") {
+      } else if (this.trackService.isTrackLoaded()
+          && !this.trackService.track.audio.isLoaded() 
+          && 1 > abs(this.trackService.time - this.trackService.duration)
+          && this.fsm.getStateName() == "play") {
         
         Logger.info("VisuController", $"Track finished at {this.trackService.time}")
         this.watchdogPromise = this.send(new Event("pause").setPromise(new Promise()))
