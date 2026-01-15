@@ -64,7 +64,7 @@ function GridRenderer() constructor {
 
   ///@private
   ///@type {Struct}
-  player2DCoords = { x: 0, y: 0 }
+  player2DCoords = { x: null, y: null }
 
   ///@private
   ///@type {Struct}
@@ -249,7 +249,10 @@ function GridRenderer() constructor {
         .render(_x, _y)
         .setAlpha(alpha)
         .setAngle(angle)
-      this.player2DCoords = Math.project3DCoordsOn2D(_x + baseX, _y + baseY, gridService.properties.depths.playerZ, this.camera.viewMatrix, this.camera.projectionMatrix, this.gridSurface.width, this.gridSurface.height)
+      var player2DCoords = Math.project3DCoordsOn2D(_x + baseX, _y + baseY, gridService.properties.depths.playerZ, this.camera.viewMatrix, this.camera.projectionMatrix, this.gridSurface.width, this.gridSurface.height)
+      this.player2DCoords.x = player2DCoords != null ? player2DCoords[0] : null
+      this.player2DCoords.y = player2DCoords != null ? player2DCoords[1] : null
+      
       this.player3DCoords.x = _x
       this.player3DCoords.y = _y
       this.player3DCoords.z = gridService.properties.depths.playerZ
@@ -1249,7 +1252,9 @@ function GridRenderer() constructor {
         .setAngle(angle)
         .setScaleX(scaleX)
         .setScaleY(scaleY)
-      this.player2DCoords = Math.project3DCoordsOn2D(_x + baseX, _y + baseY, gridService.properties.depths.playerZ, this.camera.viewMatrix, this.camera.projectionMatrix, this.gridSurface.width, this.gridSurface.height)
+      var player2DCoords = Math.project3DCoordsOn2D(_x + baseX, _y + baseY, gridService.properties.depths.playerZ, this.camera.viewMatrix, this.camera.projectionMatrix, this.gridSurface.width, this.gridSurface.height)
+      this.player2DCoords.x = player2DCoords != null ? player2DCoords[0] : null
+      this.player2DCoords.y = player2DCoords != null ? player2DCoords[1] : null
       this.player3DCoords.x = _x
       this.player3DCoords.y = _y
       this.player3DCoords.z = gridService.properties.depths.playerZ
