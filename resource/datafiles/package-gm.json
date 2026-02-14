@@ -1,0 +1,20 @@
+{
+  "name": "visu-project-bin",
+  "version": "26.02.14",
+  "description": "Visu is an experimental bullet hell game that combines classic mechanics inspired by Touhou with mind-blowing visual effects. It's an intense fusion of rhythm, chaos, and visual effects.",
+  "main": "yyp",
+  "author": "Alkapivo",
+  "license": "ISC",
+  "scripts": {
+    "setup": "./setup.sh",
+    "setup-clean": "./setup.sh --clean",
+    "log": "./log.sh",
+    "test": "./run-test.sh"
+  },
+  "dependencies": {
+    "track": {
+      "remote": "https://github.com/Barons-Keep/visu-track.git",
+      "revision": "main"
+    }
+  }
+}
