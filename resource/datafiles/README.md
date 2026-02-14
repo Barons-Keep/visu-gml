@@ -7,7 +7,6 @@
   - [Table of content](#table-of-content)
   - [Requirements](#requirements)
   - [Downloading tracks from a Git Repository](#downloading-tracks-from-a-git-repository)
-    - [What the `setup` Command Does](#what-the-setup-command-does)
     - [**Important Warning**](#important-warning)
     - [Summary](#summary)
   - [Run Tests](#run-tests)
@@ -28,10 +27,21 @@ npm install -g @ovipakla/gm-cli@1.0.0
 Please consider the following command:
 
 ```shell
+gm-cli install
 gm-cli run setup
 ```
 
-The `setup` command is a script defined in `package-gm.json`. You can create your own scripts by adding new entries to the `scripts` section:
+`gm-cli install`: This downloads dependencies into the `gm_modules` folder according to the specified revisions in `package-gm.json`. To modify the revision for the track, change the relevant value to any available Git SHA:
+
+```json
+"track": {
+  "remote": "https://github.com/Barons-Keep/visu-track.git",
+  "revision": "INSERT_YOUR_GIT_REVISION"
+}
+```
+
+
+`gm-cli run setup`: this command is a script defined in `package-gm.json`. You can create your own scripts by adding new entries to the `scripts` section:
 
 ```json
 "scripts": {
@@ -42,21 +52,6 @@ The `setup` command is a script defined in `package-gm.json`. You can create you
 ```
 
 
-### What the `setup` Command Does
-
-The `setup` command performs two actions:
-
-1. **Run `gm-cli install`**: This downloads dependencies into the `gm_modules` folder according to the specified revisions in `package-gm.json`. To modify the revision for the track, change the relevant value to any available Git SHA:
-   ```json
-   "track": {
-     "remote": "https://github.com/Barons-Keep/visu-track.git",
-     "revision": "INSERT_YOUR_GIT_REVISION"
-   }
-   ```
-
-2. **Run `gm-cli sync`**: This replaces the entire `track` folder with the contents from the specified `"INSERT_YOUR_GIT_REVISION"`.
-
-
 ### **Important Warning**
 
 **BE CAREFUL**: This operation will remove the original `track` folder along with its contents. Ensure that you have a backup before executing `gm-cli run setup`.
@@ -64,9 +59,10 @@ The `setup` command performs two actions:
 
 ### Summary
 
-Whenever you want to override the `track` folder with new tracks from Git, run the command
+Whenever you want to override the `track` folder with new tracks from Git, then make sure you pushed your changes somewhere (#backup) and run the command
 
 ```shell
+gm-cli install --clean
 gm-cli run setup
 ```
 
