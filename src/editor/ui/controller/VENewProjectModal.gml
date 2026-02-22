@@ -884,9 +884,11 @@ function VENewProjectModal(_config = null) constructor {
         render: Callable.run(UIUtil.renderTemplates.get("renderDefaultScrollable")),
         onInit: function() {
           var container = this
-          this.collection = new UICollection(this, { layout: container.layout })
-          this.items.forEach(function(item) { item.free() }).clear() ///@todo replace with remove lambda
-          this.collection.components.clear() ///@todo replace with remove lambda
+          this.items.forEach(Lambda.free).clear() 
+          ///@UICOLLECTION_TEST this.collection = new UICollection(this, { layout: container.layout })
+          this.collection = this.collection == null
+            ? new UICollection(this, { layout: container.layout })
+            : this.collection.clear()
           this.state.set("form", null)
           this.state.set("store", null)
           this.updateArea()

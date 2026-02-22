@@ -778,12 +778,29 @@ function VisuMenu(_config = null) constructor {
               text: "Retry",
               callback: new BindIntent(function() {
                 var controller = Beans.get(BeanVisuController)
-                Assert.isType(controller.track, VisuTrack, "VisuController.track must be type of VisuTrack")
-                controller.send(new Event("load", {
-                  manifest: $"{controller.track.path}manifest.visu",
-                  autoplay: true,
-                }))
                 controller.sfxService.play("menu-select-entry")
+                controller.menu.send(Callable
+                  .run(this.callbackData.quit, {
+                    back: this.callbackData.back,
+                    accept: function() {
+                      var controller = Beans.get(BeanVisuController)
+                      controller.send(new Event("scene-close", {
+                        duration: 1.5,
+                        event: new Event("load", {
+                          manifest: $"{controller.track.path}manifest.visu",
+                          autoplay: true,
+                        }),
+                        callback: function() {
+                          var controller = Beans.get(BeanVisuController)
+                          Assert.isType(controller.track, VisuTrack, "VisuController.track must be type of VisuTrack")
+                          controller.send(this.event)
+                          controller.sfxService.play("menu-use-entry")
+                        },
+                      }))
+                      return new Event("close", { fade: true })
+                    },
+                    decline: this.callbackData.back,
+                  }))
               }),
               callbackData: config,
               onMouseReleasedLeft: function() {
@@ -803,17 +820,26 @@ function VisuMenu(_config = null) constructor {
             label: { 
               text: "Main menu",
               callback: new BindIntent(function() {
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-                Beans.get(BeanVisuController).menu.send(Callable
+                var controller = Beans.get(BeanVisuController)
+                controller.sfxService.play("menu-select-entry")
+                controller.menu.send(Callable
                   .run(this.callbackData.quit, {
                     back: this.callbackData.back,
                     accept: function() {
-                      Scene.open("scene_visu", {
-                        VisuController: {
-                          initialState: { name: "idle" },
+                      Beans.get(BeanVisuController).send(new Event("scene-close", {
+                        duration: 1.5,
+                        callback: function() {
+                          var controller = Beans.get(BeanVisuController)
+                          controller.playerService.remove()
+                          controller.sfxService.play("menu-use-entry")
+                          Scene.open("scene_visu", {
+                            VisuController: {
+                              initialState: { name: "idle" },
+                            },
+                          })
                         },
-                      })
-                      return new Event("close")
+                      }))
+                      return new Event("close", { fade: true })
                     },
                     decline: this.callbackData.back,
                   }))
@@ -865,8 +891,15 @@ function VisuMenu(_config = null) constructor {
                 text: "Resume (EDITOR)",
                 callback: new BindIntent(function() {
                   var controller = Beans.get(BeanVisuController)
+                  controller.menu.dispatcher.execute(new Event("close"))
                   controller.fsm.transition("play")
                   controller.sfxService.play("menu-select-entry")
+
+                  var editor = Beans.get(BeanVisuEditorController)
+                  if (editor != null) {
+                    editor.renderUI = true
+                    editor.send(new Event("open"))
+                  }
                 }),
                 callbackData: config,
                 onMouseReleasedLeft: function() {
@@ -888,12 +921,22 @@ function VisuMenu(_config = null) constructor {
               text: "Retry",
               callback: new BindIntent(function() {
                 var controller = Beans.get(BeanVisuController)
-                Assert.isType(controller.track, VisuTrack, "VisuController.track must be type of VisuTrack")
-                controller.send(new Event("load", {
-                  manifest: $"{controller.track.path}manifest.visu",
-                  autoplay: true,
-                }))
+                controller.playerService.remove()
                 controller.sfxService.play("menu-select-entry")
+                controller.menu.send(new Event("close", { fade: true }))
+                controller.dispatcher.execute(new Event("scene-close", {
+                  duration: 1.5,
+                  event: new Event("load", {
+                    manifest: $"{controller.track.path}manifest.visu",
+                    autoplay: true,
+                  }),
+                  callback: function() {
+                    var controller = Beans.get(BeanVisuController)
+                    Assert.isType(controller.track, VisuTrack, "VisuController.track must be type of VisuTrack")
+                    controller.send(this.event)
+                    controller.sfxService.play("menu-use-entry")
+                  },
+                }))
               }),
               callbackData: config,
               onMouseReleasedLeft: function() {
@@ -913,12 +956,22 @@ function VisuMenu(_config = null) constructor {
             label: { 
               text: "Main menu",
               callback: new BindIntent(function() {
-                Scene.open("scene_visu", {
-                  VisuController: {
-                    initialState: { name: "idle" },
+                var controller = Beans.get(BeanVisuController)
+                controller.sfxService.play("menu-select-entry")
+                controller.send(new Event("scene-close", {
+                  duration: 1.5,
+                  callback: function() {
+                    var controller = Beans.get(BeanVisuController)
+                    controller.playerService.remove()
+                    controller.sfxService.play("menu-use-entry")
+                    Scene.open("scene_visu", {
+                      VisuController: {
+                        initialState: { name: "idle" },
+                      },
+                    })
                   },
-                })
-                return new Event("close")
+                }))
+                controller.menu.send(new Event("close", { fade: true }))
               }),
               callbackData: config,
               onMouseReleasedLeft: function() {
@@ -997,8 +1050,9 @@ function VisuMenu(_config = null) constructor {
             label: { 
               text: config.acceptLabel,
               callback: new BindIntent(function() {
-                Beans.get(BeanVisuController).sfxService.play("menu-select-entry")
-                Beans.get(BeanVisuController).menu.send(Callable.run(this.callbackData))
+                var controller = Beans.get(BeanVisuController)
+                controller.sfxService.play("menu-select-entry")
+                controller.menu.send(Callable.run(this.callbackData))
               }),
               callbackData: config.accept,
               onMouseReleasedLeft: function() {
@@ -1228,6 +1282,15 @@ function VisuMenu(_config = null) constructor {
       }
     )
 
+    var generator = {
+      count: 0,
+      seed: 2137,
+      run: function() {
+        this.count += 1
+        return sha1_string_utf8($"{this.count + this.seed}")
+      },
+    }
+
     var event = new Event("open").setData({
       back: config.back,
       layout: Beans.get(BeanVisuController).visuRenderer.layout,
@@ -1242,73 +1305,94 @@ function VisuMenu(_config = null) constructor {
         },
       },
       content: new Array(Struct, [
-        factoryCreditsTitle("ijwgRtbT", "Game design"),
-        factoryCreditsEntry("TywGRhb1", "Alkapivo", "https://github.com/Alkapivo"),
-        factoryCreditsEntry("jkFuiRE3", "GOETIA", "https://github.com/ArsAzoetia"),
-        factoryCreditsEntry("jKf5Gkq4", "kattybratt", "https://github.com/kattybratt"),
-        factoryCreditsEntry("kOkllf43", "Nekomantikku", "https://github.com/Nekomantikku"),
-        factoryCreditsTitle("nrmgjhgj", "Level design"),
-        factoryCreditsEntry("gKgVhDsT", "Alkapivo", "https://github.com/Alkapivo"),
-        factoryCreditsEntry("kI5Gunb3", "kattybratt", "https://github.com/kattybratt"),
-        factoryCreditsTitle("YU9WJfKr", "Music"),
-        factoryCreditsEntry("GHR54bnv", "GOETIA - Death of the Muse - 01 Create and Yet Fate's Faw Avoid"),
-        factoryCreditsEntry("G10ccQRd", "GOETIA - Cerecloth"),
-        factoryCreditsEntry("hIcGb6n4", "kattybratt - pulsar"),
-        factoryCreditsEntry("I94zzBo7", "kedy_selma - Just To Create Something"),
-        factoryCreditsEntry("Y6yNV8JN", "kedy_selma - Passion"),
-        factoryCreditsEntry("anMlmEyW", "pikaro & PAXNKOXD - the memories fade but the feeling remains"),
-        factoryCreditsEntry("fyQD5OCd", "Schnoopy - Destination Unknown"),
-        factoryCreditsEntry("TdMvcdS6", "Sewerslvt - Psychosis"),
-        factoryCreditsEntry("Zvsi4gtq", "Sewerslvt - Purple Hearts In Her Eyes"),
-        factoryCreditsEntry("4Ht9Ewl1", "zoogies - digitalshadow"),
-        factoryCreditsTitle("qQwqRmsT", "Programming"),
-        factoryCreditsEntry("Bimj4rUU", "Alkapivo - visu-project", "https://github.com/Barons-Keep/visu-project"),
-        factoryCreditsEntry("4MnGw7O7", "Alkapivo - visu-gml", "https://github.com/Barons-Keep/visu-gml"),
-        factoryCreditsEntry("Ubngnmgi", "Alkapivo - core-gml", "https://github.com/Alkapivo/core-gml"),
-        factoryCreditsEntry("7ixDm727", "Alkapivo - gm-cli", "https://github.com/Alkapivo/gm-cli"),
-        factoryCreditsEntry("YnO6tbvb", "Alkapivo, maras_cz - mh-cz.gmtf-gml", "https://github.com/Alkapivo/mh-cz.gmtf-gml"),
-        factoryCreditsEntry("nHAfeBGD", "Alkapivo, blokatt - fyi.odditica.bktGlitch-gml", "https://github.com/Alkapivo/fyi.odditica.bktGlitch-gml"),
-        factoryCreditsEntry("OO9EyOWN", "Alkapivo, Pixelated_Pope - com.pixelatedpope.tdmc-gml", "https://github.com/Alkapivo/com.pixelatedpope.tdmc-gml"),
-        factoryCreditsTitle("tu8URzmo", "Shaders"),
-        factoryCreditsEntry("aooLlGEu", "svtetering - NOG BETERE 2", "https://shadertoy.com/view/NtlSzX"),
-        factoryCreditsEntry("upVVCWbu", "KeeVee_Games - HUE: musnik.itch.io/hue-shader", "https://musnik.itch.io/hue-shader"),
-        factoryCreditsEntry("samNRF8w", "haquxx - 002 BLUE", "https://shadertoy.com/view/WldSRn"),
-        factoryCreditsEntry("jVnyiDrA", "tomorrowevening - 70S MELT", "https://shadertoy.com/view/XsX3zl"),
-        factoryCreditsEntry("LYOYldBk", "kishimisu - ART", "https://shadertoy.com/view/mtyGWy"),
-        factoryCreditsEntry("lyEVE3tF", "trinketMage - BASE WARP FBM", "https://shadertoy.com/view/tdG3Rd"),
-        factoryCreditsEntry("3ifsKUds", "iekdosha - BROKEN TIME PORTAL", "https://shadertoy.com/view/XXcGWr"),
-        factoryCreditsEntry("7K0W1mre", "edankwan - CINESHADER LAVA", "https://shadertoy.com/view/3sySRK"),
-        factoryCreditsEntry("aaaSDR6q", "murieron - CLOUDS 2D", "https://shadertoy.com/view/WdXBW4"),
-        factoryCreditsEntry("5RDIFbcJ", "Peace - COLORS EMBODY", "https://shadertoy.com/view/lffyWf"),
-        factoryCreditsEntry("ehqFeJ3X", "ProfessorPixels - CUBULAR", "https://shadertoy.com/view/M3tGWr"),
-        factoryCreditsEntry("2glz4V6F", "supah - DISCOTEQ 2", "https://shadertoy.com/view/DtXfDr"),
-        factoryCreditsEntry("o9fJZ0fn", "lise - DIVE TO CLOUD", "https://shadertoy.com/view/ll3SWl"),
-        factoryCreditsEntry("hVL0jFKT", "anatole_duprat - FLAME", "https://shadertoy.com/view/MdX3zr"),
-        factoryCreditsEntry("AIWL1gM4", "Peace - GRID SPACE", "https://shadertoy.com/view/lffyWf"),
-        factoryCreditsEntry("0jyLdQ6w", "Peace - LIGHTING WITH GLOW", "https://shadertoy.com/view/MclyWl"),
-        factoryCreditsEntry("rmwl74YR", "butadiene - MONSTER", "https://shadertoy.com/view/WtKSzt"),
-        factoryCreditsEntry("ogXsppv1", "whisky_shusuky - OCTAGRAMS", "https://shadertoy.com/view/tlVGDt"),
-        factoryCreditsEntry("zGNI2nXl", "kasari39 - PHANTOM STAR", "https://shadertoy.com/view/ttKGDt"),
-        factoryCreditsEntry("YrA0aotr", "ChunderFPV - SINCOS 3D", "https://shadertoy.com/view/XfXGz4"),
-        factoryCreditsEntry("WaV9TrLR", "Kali - STAR NEST", "https://shadertoy.com/view/XlfGRj"),
-        factoryCreditsEntry("sP4kWe3m", "magician0809 - UI NOISE HALO", "https://shadertoy.com/view/3tBGRm"),
-        factoryCreditsEntry("zTzYxKu5", "iq - WARP", "https://shadertoy.com/view/lsl3RH"),
-        factoryCreditsEntry("CHnh0XGa", "Dave_Hoskins - WARP SPEED 2", "https://shadertoy.com/view/4tjSDt"),
-        factoryCreditsEntry("GHNnOTK1", "nayk - WHIRLPOOL", "https://shadertoy.com/view/lcscDj"),
-        factoryCreditsEntry("Ihb80AdW", "xygthop3 - ABBERATION", "https://github.com/xygthop3/Free-Shaders"),
-        factoryCreditsEntry("OlklAeQ1", "xygthop3 - CRT", "https://github.com/xygthop3/Free-Shaders"),
-        factoryCreditsEntry("ZT7Suy4K", "xygthop3 - EMBOSS", "https://github.com/xygthop3/Free-Shaders"),
-        factoryCreditsEntry("aVEfOzcV", "xygthop3 - LED", "https://github.com/xygthop3/Free-Shaders"),
-        factoryCreditsEntry("FwKDGXOK", "xygthop3 - MAGNIFY", "https://github.com/xygthop3/Free-Shaders"),
-        factoryCreditsEntry("zfF2QBQb", "xygthop3 - MOSAIC", "https://github.com/xygthop3/Free-Shaders"),
-        factoryCreditsEntry("5VHqgJRb", "xygthop3 - POSTERIZATION", "https://github.com/xygthop3/Free-Shaders"),
-        factoryCreditsEntry("xHGSKCnB", "xygthop3 - REVERT", "https://github.com/xygthop3/Free-Shaders"),
-        factoryCreditsEntry("SqtaHVR2", "xygthop3 - RIPPLE", "https://github.com/xygthop3/Free-Shaders"),
-        factoryCreditsEntry("CLd7vpDl", "xygthop3 - SCANLINES", "https://github.com/xygthop3/Free-Shaders"),
-        factoryCreditsEntry("pt2ZUbes", "xygthop3 - SHOCK_WAVE", "https://github.com/xygthop3/Free-Shaders"),
-        factoryCreditsEntry("nQJhn2mH", "xygthop3 - SKETCH", "https://github.com/xygthop3/Free-Shaders"),
-        factoryCreditsEntry("wRA1P0cI", "xygthop3 - THERMAL", "https://github.com/xygthop3/Free-Shaders"),
-        factoryCreditsEntry("TYwCSS3l", "xygthop3 - WAVE", "https://github.com/xygthop3/Free-Shaders"),
+        factoryCreditsTitle(generator.run(), "Game design"),
+        factoryCreditsEntry(generator.run(), "Alkapivo", "https://github.com/Alkapivo"),
+        factoryCreditsEntry(generator.run(), "GOETIA", "https://github.com/ArsAzoetia"),
+        factoryCreditsEntry(generator.run(), "kattybratt", "https://github.com/kattybratt"),
+        factoryCreditsEntry(generator.run(), "Nekomantikku", "https://github.com/Nekomantikku"),
+        factoryCreditsTitle(generator.run(), "Level design"),
+        factoryCreditsEntry(generator.run(), "Alkapivo", "https://github.com/Alkapivo"),
+        factoryCreditsEntry(generator.run(), "kattybratt", "https://github.com/kattybratt"),
+        factoryCreditsTitle(generator.run(), "QA"),
+        factoryCreditsEntry(generator.run(), "maister_kapli", "https://www.youtube.com/@maister_kapli8184"),
+        factoryCreditsEntry(generator.run(), "kattybratt", "https://github.com/kattybratt"),
+        factoryCreditsEntry(generator.run(), "XieXie", "https://forum.marianabay.com/members/xiexie.171/"),
+        factoryCreditsTitle(generator.run(), "Music"),
+        factoryCreditsEntry(generator.run(), "GOETIA - Death of the Muse - Create and Yet Fate's Faw Avoid", "https://sigillumazoetia.bandcamp.com/track/create-and-yet-fates-faw-avoid"),
+        factoryCreditsEntry(generator.run(), "GOETIA - Cerecloth", "https://www.youtube.com/watch?v=-l4Q5X8Kj6I"),
+        factoryCreditsEntry(generator.run(), "kattybratt - pulsar", "https://dogpunk.bandcamp.com/track/07-pulsar"),
+        factoryCreditsEntry(generator.run(), "kedy_selma - Just To Create Something", "https://www.youtube.com/watch?v=xR_Q6hbTtgA"),
+        factoryCreditsEntry(generator.run(), "kedy_selma - Passion", "https://www.youtube.com/watch?v=wKkWH1uFcbc"),
+        factoryCreditsEntry(generator.run(), "pikaro & PAXNKOXD - the memories fade but the feeling remains", "https://www.youtube.com/watch?v=0cVlto8BBO4"),
+        factoryCreditsEntry(generator.run(), "Schnoopy - Destination Unknown", "https://schnoopy.bandcamp.com/track/destination-unknown"),
+        factoryCreditsEntry(generator.run(), "Sewerslvt - Psychosis", "https://www.youtube.com/watch?v=oT-0HHd-9Fw"),
+        factoryCreditsEntry(generator.run(), "Sewerslvt - Purple Hearts In Her Eyes", "https://www.youtube.com/watch?v=dTh4cp_ypu4"),
+        factoryCreditsEntry(generator.run(), "zoogies - digitalshadow", "https://zmuda.dev"),
+        factoryCreditsTitle(generator.run(), "cODE"),
+        factoryCreditsEntry(generator.run(), "Alkapivo - visu-project", "https://github.com/Barons-Keep/visu-project"),
+        factoryCreditsEntry(generator.run(), "Alkapivo - visu-gml", "https://github.com/Barons-Keep/visu-gml"),
+        factoryCreditsEntry(generator.run(), "Alkapivo - core-gml", "https://github.com/Alkapivo/core-gml"),
+        factoryCreditsEntry(generator.run(), "Alkapivo - gm-cli", "https://github.com/Alkapivo/gm-cli"),
+        factoryCreditsEntry(generator.run(), "Alkapivo, maras_cz - mh-cz.gmtf-gml", "https://github.com/Alkapivo/mh-cz.gmtf-gml"),
+        factoryCreditsEntry(generator.run(), "Alkapivo, blokatt - fyi.odditica.bktGlitch-gml", "https://github.com/Alkapivo/fyi.odditica.bktGlitch-gml"),
+        //factoryCreditsEntry(generator.run(), "Alkapivo, Pixelated_Pope - com.pixelatedpope.tdmc-gml", "https://github.com/Alkapivo/com.pixelatedpope.tdmc-gml"),
+        factoryCreditsTitle(generator.run(), "Shaders"),
+        factoryCreditsEntry(generator.run(), "Alkapivo - Arc Runner", "https://github.com/Alkapivo/core-gml"),
+        factoryCreditsEntry(generator.run(), "Alkapivo - Astral Flow", "https://github.com/Alkapivo/core-gml"),
+        factoryCreditsEntry(generator.run(), "Alkapivo - Cloudy Sky", "https://github.com/Alkapivo/core-gml"),
+        factoryCreditsEntry(generator.run(), "Alkapivo - Deep Space", "https://github.com/Alkapivo/core-gml"),
+        factoryCreditsEntry(generator.run(), "Alkapivo - Fractal Bloom", "https://github.com/Alkapivo/core-gml"),
+        factoryCreditsEntry(generator.run(), "Alkapivo - Funk Flux", "https://github.com/Alkapivo/core-gml"),
+        factoryCreditsEntry(generator.run(), "Alkapivo - Hyperspace", "https://github.com/Alkapivo/core-gml"),
+        factoryCreditsEntry(generator.run(), "Alkapivo - Polycular", "https://github.com/Alkapivo/core-gml"),
+        factoryCreditsEntry(generator.run(), "Alkapivo - Warp Pulse", "https://github.com/Alkapivo/core-gml"),
+        factoryCreditsEntry(generator.run(), "Alkapivo - Wavy Lines", "https://github.com/Alkapivo/core-gml"),
+        factoryCreditsEntry(generator.run(), "Alkapivo - Wavy Mesh", "https://github.com/Alkapivo/core-gml"),
+        factoryCreditsEntry(generator.run(), "Alkapivo - Wavy Spectrum", "https://github.com/Alkapivo/core-gml"),
+        factoryCreditsEntry(generator.run(), "Alkapivo - Wormhole Vortex", "https://github.com/Alkapivo/core-gml"),
+        factoryCreditsEntry(generator.run(), "ChunderFPV - SINCOS 3D", "https://shadertoy.com/view/XfXGz4"),
+        factoryCreditsEntry(generator.run(), "Dave_Hoskins - WARP SPEED 2", "https://shadertoy.com/view/4tjSDt"),
+        factoryCreditsEntry(generator.run(), "haquxx - 002 BLUE", "https://shadertoy.com/view/WldSRn"),
+        factoryCreditsEntry(generator.run(), "iekdosha - BROKEN TIME PORTAL", "https://shadertoy.com/view/XXcGWr"),
+        factoryCreditsEntry(generator.run(), "iq - WARP", "https://shadertoy.com/view/lsl3RH"),
+        factoryCreditsEntry(generator.run(), "Kali - STAR NEST", "https://shadertoy.com/view/XlfGRj"),
+        factoryCreditsEntry(generator.run(), "kasari39 - PHANTOM STAR", "https://shadertoy.com/view/ttKGDt"),
+        factoryCreditsEntry(generator.run(), "KeeVee_Games - HUE", "https://musnik.itch.io/hue-shader"),
+        factoryCreditsEntry(generator.run(), "kishimisu - ART", "https://shadertoy.com/view/mtyGWy"),
+        factoryCreditsEntry(generator.run(), "murieron - CLOUDS 2D", "https://shadertoy.com/view/WdXBW4"),
+        factoryCreditsEntry(generator.run(), "nayk - WHIRLPOOL", "https://shadertoy.com/view/lcscDj"),
+        factoryCreditsEntry(generator.run(), "Peace - COLORS EMBODY", "https://shadertoy.com/view/lffyWf"),
+        factoryCreditsEntry(generator.run(), "ProfessorPixels - CUBULAR", "https://shadertoy.com/view/M3tGWr"),
+        factoryCreditsEntry(generator.run(), "supah - DISCOTEQ 2", "https://shadertoy.com/view/DtXfDr"),
+        factoryCreditsEntry(generator.run(), "tomorrowevening - 70S MELT", "https://shadertoy.com/view/XsX3zl"),
+        factoryCreditsEntry(generator.run(), "trinketMage - BASE WARP FBM", "https://shadertoy.com/view/tdG3Rd"),
+        factoryCreditsEntry(generator.run(), "whisky_shusuky - OCTAGRAMS", "https://shadertoy.com/view/tlVGDt"),
+        factoryCreditsEntry(generator.run(), "xygthop3 - CRT", "https://github.com/xygthop3/Free-Shaders"),
+        factoryCreditsEntry(generator.run(), "xygthop3 - LED", "https://github.com/xygthop3/Free-Shaders"),
+        factoryCreditsEntry(generator.run(), "xygthop3 - MOSAIC", "https://github.com/xygthop3/Free-Shaders"),
+        factoryCreditsEntry(generator.run(), "xygthop3 - POSTERIZATION", "https://github.com/xygthop3/Free-Shaders"),
+        factoryCreditsEntry(generator.run(), "xygthop3 - REVERT", "https://github.com/xygthop3/Free-Shaders"),
+        /*
+        factoryCreditsEntry(generator.run(), "Alkapivo - Dissolve", "https://github.com/Alkapivo/core-gml"),
+        factoryCreditsEntry(generator.run(), "Alkapivo - Gaussian Blur", "https://github.com/Alkapivo/core-gml"),
+        factoryCreditsEntry(generator.run(), "anatole_duprat - FLAME", "https://shadertoy.com/view/MdX3zr"),
+        factoryCreditsEntry(generator.run(), "butadiene - MONSTER", "https://shadertoy.com/view/WtKSzt"),
+        factoryCreditsEntry(generator.run(), "edankwan - CINESHADER LAVA", "https://shadertoy.com/view/3sySRK"),
+        factoryCreditsEntry(generator.run(), "lise - DIVE TO CLOUD", "https://shadertoy.com/view/ll3SWl"),
+        factoryCreditsEntry(generator.run(), "magician0809 - UI NOISE HALO", "https://shadertoy.com/view/3tBGRm"),
+        factoryCreditsEntry(generator.run(), "Peace - GRID SPACE", "https://shadertoy.com/view/lffyWf"),
+        factoryCreditsEntry(generator.run(), "Peace - LIGHTING WITH GLOW", "https://shadertoy.com/view/MclyWl"),
+        factoryCreditsEntry(generator.run(), "svtetering - NOG BETERE 2", "https://shadertoy.com/view/NtlSzX"),
+        factoryCreditsEntry(generator.run(), "xygthop3 - ABBERATION", "https://github.com/xygthop3/Free-Shaders"),
+        factoryCreditsEntry(generator.run(), "xygthop3 - EMBOSS", "https://github.com/xygthop3/Free-Shaders"),
+        factoryCreditsEntry(generator.run(), "xygthop3 - MAGNIFY", "https://github.com/xygthop3/Free-Shaders"),
+        factoryCreditsEntry(generator.run(), "xygthop3 - RIPPLE", "https://github.com/xygthop3/Free-Shaders"),
+        factoryCreditsEntry(generator.run(), "xygthop3 - SCANLINES", "https://github.com/xygthop3/Free-Shaders"),
+        factoryCreditsEntry(generator.run(), "xygthop3 - SHOCK_WAVE", "https://github.com/xygthop3/Free-Shaders"),
+        factoryCreditsEntry(generator.run(), "xygthop3 - SKETCH", "https://github.com/xygthop3/Free-Shaders"),
+        factoryCreditsEntry(generator.run(), "xygthop3 - THERMAL", "https://github.com/xygthop3/Free-Shaders"),
+        factoryCreditsEntry(generator.run(), "xygthop3 - WAVE", "https://github.com/xygthop3/Free-Shaders"),
+        */
         {
           name: "credits_menu-button-entry_back",
           template: VisuComponents.get("menu-button-entry"),
@@ -2827,12 +2911,27 @@ function VisuMenu(_config = null) constructor {
                 VISU_LOAD_SETTINGS = false
                 VISU_PARSE_CLI = false
                 //VISU_DISPLAY_SERVICE_SETUP = false
-                Scene.open("scene_visu", {
-                  VisuController: {
-                    initialState: { name: Core.getProperty("visu.splashscreen.skip") ? "idle" : "splashscreen", },
+
+                var controller = Beans.get(BeanVisuController)
+                controller.sfxService.play("menu-select-entry")
+                controller.send(new Event("scene-close", {
+                  duration: 1.5,
+                  callback: function() {
+                    var controller = Beans.get(BeanVisuController)
+                    controller.sfxService.play("menu-use-entry")
+                    controller.playerService.remove()
+                    Scene.open("scene_visu", {
+                      VisuController: {
+                        initialState: {
+                          name: Core.getProperty("visu.splashscreen.skip")
+                            ? "idle" 
+                            : "splashscreen",
+                        },
+                      },
+                    })
                   },
-                })
-                return new Event("close")
+                }))
+                controller.menu.send(new Event("close", { fade: true }))
               }),
               callbackData: config,
               onMouseReleasedLeft: function() {
@@ -3092,7 +3191,7 @@ function VisuMenu(_config = null) constructor {
           //this.renderDefault()
         },
         onInit: function() {
-          this.items.forEach(function(item) { item.free() }).clear()
+          this.items.forEach(Lambda.free).clear()
           this.addUIComponents(new Array(UIComponent, [ 
             new UIComponent(this.state.get("title"))
           ]),
@@ -3519,7 +3618,10 @@ function VisuMenu(_config = null) constructor {
           .run(UIUtil.mouseEventTemplates
           .get("scrollableOnMouseWheelDownY")),
         onInit: function() {
-          this.collection = new UICollection(this, { layout: this.layout })
+          ///@UICOLLECTION_TEST this.collection = new UICollection(this, { layout: this.layout })
+          this.collection = this.collection == null
+            ? new UICollection(this, { layout: this.layout })
+            : this.collection.clear()
           this.state.get("content").forEach(function(template, index, context) {
             context.collection.add(new UIComponent(template))
           }, this)
@@ -3679,7 +3781,19 @@ function VisuMenu(_config = null) constructor {
       this.dispatcher.execute(new Event("close", { fade: true }))
     },
     "game-end": function(event) {
-      game_end()
+      var controller = Beans.get(BeanVisuController)
+      controller.playerService.remove()
+      controller.sfxService.play("menu-select-entry")
+      controller.send(new Event("scene-close", {
+        duration: 1.5,
+        callback: function() {
+          var controller = Beans.get(BeanVisuController)
+          controller.sfxService.play("menu-use-entry")
+          game_end()
+        },
+      }))
+
+      this.send(new Event("close", { fade: true }))
     },
   }))
 

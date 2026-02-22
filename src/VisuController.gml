@@ -143,6 +143,9 @@ function VisuController(config = null): Service(config) constructor {
 
   ///@type {EventPump}
   dispatcher = new EventPump(this, new Map(String, Callable, {
+    "scene-close": function(event) {
+      this.fsm.transition("scene-close", event.data)
+    },
     "game-over": function(event) {
       this.fsm.transition("game-over")
     },
@@ -321,23 +324,7 @@ function VisuController(config = null): Service(config) constructor {
   ///@private
   ///@return {VisuController}
   init = function() {
-    var displayService = Beans.get(BeanDisplayService)
-    displayService.setCursor(Cursor.DEFAULT)
-    if (!VISU_DISPLAY_SERVICE_SETUP) {
-      var width = Visu.settings.getValue("visu.window.width"),
-      var height = Visu.settings.getValue("visu.window.height")
-      var fullscreen = Visu.settings.getValue("visu.fullscreen",)
-      var borderlessWindow = Visu.settings.getValue("visu.borderless-window")
-      var timingMethod = TimingMethod.get(Visu.settings.getValue("visu.graphics.timing-method"))
-      displayService
-        .resize(width, height)
-        .setBorderlessWindow(borderlessWindow)
-        .setFullscreen(fullscreen)
-        .setCaption(game_display_name)
-        .setTimingMethod(timingMethod)
-        .center()
-      VISU_DISPLAY_SERVICE_SETUP = true
-    }
+    Beans.get(BeanDisplayService).setCursor(Cursor.DEFAULT)
 
     this.sfxService
       .set("player-collect-bomb", new SFX("sound_sfx_player_collect_bomb"))
@@ -579,6 +566,24 @@ function VisuController(config = null): Service(config) constructor {
   ///@private
   ///@return {VisuController}
   updateWatchdog = function() {
+    if (!VISU_DISPLAY_SERVICE_SETUP) {
+      var displayService = Beans.get(BeanDisplayService)
+      var width = Visu.settings.getValue("visu.window.width"),
+      var height = Visu.settings.getValue("visu.window.height")
+      var fullscreen = Visu.settings.getValue("visu.fullscreen",)
+      var borderlessWindow = Visu.settings.getValue("visu.borderless-window")
+      var timingMethod = TimingMethod.get(Visu.settings.getValue("visu.graphics.timing-method"))
+      displayService
+        .resize(width, height)
+        .setBorderlessWindow(borderlessWindow)
+        .setFullscreen(fullscreen)
+        .setCaption(game_display_name)
+        .setCursor(Cursor.DEFAULT)
+        .setTimingMethod(timingMethod)
+        .center()
+      VISU_DISPLAY_SERVICE_SETUP = true
+    }
+
     try {
       this.difficulty = Visu.settings.getValue("visu.difficulty")
       if (!Core.isEnumKey(this.difficulty, Difficulty)) {
@@ -716,6 +721,7 @@ function VisuController(config = null): Service(config) constructor {
     return (!this.menu.enabled) 
         && (state != "splashscreen")
         && (state != "game-over")
+        && (state != "scene-close")
         && (state != "paused" 
         || (Optional.is(editor) && editor.store.getValue("update-services")))
   }

@@ -381,6 +381,16 @@ function VisuRenderer() constructor {
   ///@param {Task} task
   ///@param {Number|String} iterator
   ///@param {UILayout} layout
+  renderSceneClose = function(task, iterator, layout) {
+    if (task.name == "scene-close") {
+      task.state.render(task, layout)
+    }
+  }
+
+  ///@private
+  ///@param {Task} task
+  ///@param {Number|String} iterator
+  ///@param {UILayout} layout
   renderTextureLoad = function(task, iterator, layout) {
     if (task.name == "texture-load-task") {
       task.state.render(task, layout)
@@ -521,6 +531,11 @@ function VisuRenderer() constructor {
       this.renderDebugGUI(layout)
       this.renderFadeBackground(this.initTimer)
       this.renderFadeBackground(this.fadeTimer)
+
+      
+      if (stateName == "scene-close") {
+        this.executor.tasks.forEach(this.renderSceneClose, this.layout)
+      }
     }
 
     return this

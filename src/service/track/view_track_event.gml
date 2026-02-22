@@ -411,46 +411,94 @@ global.__view_track_event = {
       angleTransformer = new NumberTransformer({
         value: 0.0,
         target: angleTarget,
-        factor: (changeAngleTransformer ? angleTransformer.factor : angleTarget),
-        increase: (changeAngleTransformer ? angleTransformer.increase : 0.0),
-        duration: changeAngleTransformer ? angleTransformer.duration : 0.0,
+        duration: changeAngleTransformer
+          ? Struct.get(angleTransformer, "duration")
+          : 0.0,
         ease: angleTransformer.easeType,
+
+        factor: (changeAngleTransformer
+          ? Struct.get(angleTransformer, "factor")
+          : angleTarget),
+        increase: (changeAngleTransformer
+          ? Struct.get(angleTransformer, "increase")
+          : 0.0),
       })
 
       var useSpeedTransformer = Struct.get(data, "vw-layer_use-spd")
       var changeSpeedTransformer = Struct.get(data, "vw-layer_change-spd")
       var speedTransformer = Struct.get(data, "vw-layer_spd")
       speedTransformer = new NumberTransformer({
-        value: useSpeedTransformer ? speedTransformer.value : lastSpeed,
-        target: changeSpeedTransformer ? speedTransformer.target : (useSpeedTransformer ? speedTransformer.value : lastSpeed),
-        factor: changeSpeedTransformer ? speedTransformer.factor : (useSpeedTransformer ? abs(speedTransformer.value) : 99.9),
-        increase: changeSpeedTransformer ? speedTransformer.increase : 0.0,
-        duration: changeSpeedTransformer ? speedTransformer.duration : 0.0,
+        value: useSpeedTransformer
+          ? speedTransformer.value
+          : lastSpeed,
+        target: changeSpeedTransformer
+          ? Struct.get(speedTransformer, "target")
+          : (useSpeedTransformer ? speedTransformer.value : lastSpeed),
+        duration: changeSpeedTransformer
+          ? speedTransformer.duration
+          : 0.0,
         ease: speedTransformer.easeType,
+
+        factor: changeSpeedTransformer
+          ? Struct.get(speedTransformer, "factor")
+          : (useSpeedTransformer ? abs(speedTransformer.value) : 99.9),
+        increase: changeSpeedTransformer
+          ? Struct.get(speedTransformer, "increase")
+          : 0.0,
       })
 
       var useXScaleTransformer = Struct.get(data, "vw-layer_use-scale-x")
       var changeXScaleTransformer = Struct.get(data, "vw-layer_change-scale-x")
       var xScaleTransformer = Struct.get(data, "vw-layer_scale-x")
       xScaleTransformer = new NumberTransformer({
-        value: useXScaleTransformer ? xScaleTransformer.value : lastXScale,
-        target: changeXScaleTransformer ? xScaleTransformer.target : (useXScaleTransformer ? xScaleTransformer.value : lastXScale),
-        factor: changeXScaleTransformer ? xScaleTransformer.factor : (useXScaleTransformer ? abs(xScaleTransformer.value) : 99.9),
-        increase: changeXScaleTransformer ? xScaleTransformer.increase : 0.0,
-        duration: changeXScaleTransformer ? xScaleTransformer.duration : 0.0,
+        value: useXScaleTransformer
+          ? xScaleTransformer.value
+          : lastXScale,
+        target: changeXScaleTransformer
+          ? Struct.get(xScaleTransformer, "target")
+          : (useXScaleTransformer
+            ? xScaleTransformer.value
+            : lastXScale),
+        duration: changeXScaleTransformer
+          ? Struct.get(xScaleTransformer, "duration")
+          : 0.0,
         ease: xScaleTransformer.easeType,
+
+        factor: changeXScaleTransformer
+          ? Struct.get(xScaleTransformer, "factor")
+          : (useXScaleTransformer
+            ? abs(xScaleTransformer.value)
+            : 99.9),
+        increase: changeXScaleTransformer
+          ? Struct.get(xScaleTransformer, "increase")
+          : 0.0,
       })
 
       var useYScaleTransformer = Struct.get(data, "vw-layer_use-scale-y")
       var changeYScaleTransformer = Struct.get(data, "vw-layer_change-scale-y")
       var yScaleTransformer = Struct.get(data, "vw-layer_scale-y")
       yScaleTransformer = new NumberTransformer({
-        value: useYScaleTransformer ? yScaleTransformer.value : lastYScale,
-        target: changeYScaleTransformer ? yScaleTransformer.target : (useYScaleTransformer ? yScaleTransformer.value : lastYScale),
-        factor: changeYScaleTransformer ? yScaleTransformer.factor : (useYScaleTransformer ? abs(yScaleTransformer.value) : 99.9),
-        increase: changeYScaleTransformer ? yScaleTransformer.increase : 0.0,
-        duration: changeYScaleTransformer ? yScaleTransformer.duration : 0.0,
+        value: useYScaleTransformer
+          ? yScaleTransformer.value
+          : lastYScale,
+        target: changeYScaleTransformer
+          ? Struct.get(yScaleTransformer, "target")
+          : (useYScaleTransformer
+            ? yScaleTransformer.value
+            : lastYScale),
+        duration: changeYScaleTransformer
+          ? Struct.get(yScaleTransformer, "duration")
+          : 0.0,
         ease: yScaleTransformer.easeType,
+
+        factor: changeYScaleTransformer
+          ? Struct.get(yScaleTransformer, "factor")
+          : (useYScaleTransformer
+            ? abs(yScaleTransformer.value)
+            : 99.9),
+        increase: changeYScaleTransformer
+          ? Struct.get(yScaleTransformer, "increase")
+          : 0.0,
       })
       
       ///@description feature TODO view.layer.texture
@@ -583,12 +631,12 @@ global.__view_track_event = {
               ? Struct.get(data, "vw-sub_dir").value
               : 0.0)),
           factor: (Struct.get(data, "vw-sub_change-dir")
-            ? Struct.get(data, "vw-sub_dir").factor
+            ? Struct.get(Struct.get(data, "vw-sub_dir"), "factor")
             : (Struct.get(data, "vw-sub_use-dir")
               ? Struct.get(data, "vw-sub_dir").value
               : 0.0)),
           increase: (Struct.get(data, "vw-sub_change-dir")
-            ? Struct.get(data, "vw-sub_dir").increase
+            ? Struct.get(Struct.get(data, "vw-sub_dir"), "increase")
             : 0.0),
           duration: (Struct.get(data, "vw-sub_change-dir")
             ? Struct.get(data, "vw-sub_dir").duration
@@ -605,12 +653,12 @@ global.__view_track_event = {
               ? Struct.get(data, "vw-sub_spd").value
               : 0.0)),
           factor: (Struct.get(data, "vw-sub_change-spd")
-            ? Struct.get(data, "vw-sub_spd").factor
+            ? Struct.get(Struct.get(data, "vw-sub_spd"), "factor")
             : (Struct.get(data, "vw-sub_use-spd")
               ? Struct.get(data, "vw-sub_spd").value
               : 0.0)),
           increase: (Struct.get(data, "vw-sub_change-spd")
-            ? Struct.get(data, "vw-sub_spd").increase
+            ? Struct.get(Struct.get(data, "vw-sub_spd"), "increase")
             : 0.0),
           duration: (Struct.get(data, "vw-sub_change-spd")
             ? Struct.get(data, "vw-sub_spd").duration

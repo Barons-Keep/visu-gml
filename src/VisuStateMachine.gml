@@ -18,6 +18,50 @@ function VisuStateMachine(context, name) {
     displayName: name,
     initialState: parseSceneIntent().initialState,
     states: {
+      "scene-close": {
+        actions: {
+          onStart: function(fsm, fsmState, data) {
+            var controller = Beans.get(BeanVisuController)
+            var task = new Task("scene-close")
+              .setState({
+                timer: new Timer(Struct.getIfType(data, "duration", Number, 2.0)),
+                callback: Struct.getIfType(data, "callback", Callable, Lambda.passthrough),
+                bkg: Assert.isType(SpriteUtil.parse({ name: "texture_white" }), Sprite,
+                  "bkg must be type of Sprite"),
+                render: function(task, layout) {
+                  var controller = Beans.get(BeanVisuController)
+                  var width = layout.width()
+                  var height = layout.height()
+                  if (task.state.timer.update().finished) {
+                    task.state.callback()
+                    task.fullfill()
+                  }
+
+                  task.state.bkg
+                    .scaleToFill(width, height)
+                    .setBlend(c_black)
+                    .setAlpha(task.state.timer.getProgress())
+                    .render(0.0, 0.0)
+
+                  return this
+                },
+              })
+            controller.visuRenderer.executor.add(task)
+          }
+        },
+        transitions: {
+          "splashscreen": null,
+          "idle": null, 
+          "game-over": null,
+          "load": null,
+          "play": null, 
+          "pause": null, 
+          "paused": null,
+          "scene-close": null,
+          "rewind": null,
+          "quit": null,
+        },
+      },
       "splashscreen": {
         actions: {
           onStart: function(fsm, fsmState, data) {
@@ -171,6 +215,7 @@ function VisuStateMachine(context, name) {
           "splashscreen": null,
           "idle": null,
           "quit": null,
+          "scene-close": null,
         },
       },
       "idle": {
@@ -294,6 +339,7 @@ function VisuStateMachine(context, name) {
           "pause": null, 
           "paused": null,
           "quit": null,
+          "scene-close": null,
         },
       },
       "game-over": {
@@ -336,6 +382,7 @@ function VisuStateMachine(context, name) {
           "pause": null, 
           "paused": null,
           "quit": null,
+          "scene-close": null,
         },
       },
       "load": {
@@ -384,6 +431,7 @@ function VisuStateMachine(context, name) {
           "idle": null, 
           "play": null, 
           "pause": null,
+          "scene-close": null,
         },
       },
       "play": {
@@ -502,6 +550,7 @@ function VisuStateMachine(context, name) {
           "paused": null,
           "rewind": null, 
           "quit": null,
+          "scene-close": null,
         },
       },
       "paused": {
@@ -526,6 +575,7 @@ function VisuStateMachine(context, name) {
           "pause": null, 
           "rewind": null, 
           "quit": null,
+          "scene-close": null,
         }
       },
       "rewind": {
@@ -620,6 +670,7 @@ function VisuStateMachine(context, name) {
           "play": null, 
           "pause": null, 
           "quit": null,
+          "scene-close": null,
         },
       },
       "quit": {

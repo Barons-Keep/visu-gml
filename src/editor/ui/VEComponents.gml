@@ -5485,7 +5485,7 @@ global.__VEComponents = new Map(String, Callable, {
 
                 transformer.easeType = data.get(index)
                 transformer.startValue = transformer.value
-                transformer.startFactor = transformer.factor
+
                 transformer.reset()
                 item.set(transformer)
               },
@@ -5647,9 +5647,6 @@ global.__VEComponents = new Map(String, Callable, {
                 var labelAlpha = label.alpha
                 label.alpha *= enableFactor
                 label.text = String.replaceAll(transformer.easeType, "_", " ")
-                if (keyboard_check(vk_control)) {
-                  label.text = $"F: {String.format(transformer.factor, 8, 4)},  I: {String.format(transformer.increase, 8, 4)}"
-                }
 
                 label.render(
                   // todo VALIGN HALIGN
@@ -5721,7 +5718,7 @@ global.__VEComponents = new Map(String, Callable, {
     
                   transformer.easeType = easeTypeName
                   transformer.startValue = transformer.value
-                  transformer.startFactor = transformer.factor
+  
                   transformer.reset()
                   item.set(transformer)
                 }
@@ -5755,7 +5752,7 @@ global.__VEComponents = new Map(String, Callable, {
 
                 transformer.easeType = data.get(index)
                 transformer.startValue = transformer.value
-                transformer.startFactor = transformer.factor
+
                 transformer.reset()
                 item.set(transformer)
               },
@@ -6069,7 +6066,7 @@ global.__VEComponents = new Map(String, Callable, {
 
                 transformer.easeType = data.get(index)
                 transformer.startValue = transformer.value
-                transformer.startFactor = transformer.factor
+
                 transformer.reset()
                 item.set(transformer)
               },
@@ -6231,9 +6228,6 @@ global.__VEComponents = new Map(String, Callable, {
                 var labelAlpha = label.alpha
                 label.alpha *= enableFactor
                 label.text = String.replaceAll(transformer.easeType, "_", " ")
-                if (keyboard_check(vk_control)) {
-                  label.text = $"F: {String.format(transformer.factor, 8, 4)},  I: {String.format(transformer.increase, 8, 4)}"
-                }
 
                 label.render(
                   // todo VALIGN HALIGN
@@ -6305,7 +6299,7 @@ global.__VEComponents = new Map(String, Callable, {
     
                   transformer.easeType = easeTypeName
                   transformer.startValue = transformer.value
-                  transformer.startFactor = transformer.factor
+  
                   transformer.reset()
                   item.set(transformer)
                 }
@@ -6339,7 +6333,7 @@ global.__VEComponents = new Map(String, Callable, {
 
                 transformer.easeType = data.get(index)
                 transformer.startValue = transformer.value
-                transformer.startFactor = transformer.factor
+
                 transformer.reset()
                 item.set(transformer)
               },
@@ -6560,7 +6554,7 @@ global.__VEComponents = new Map(String, Callable, {
 
                 transformer.easeType = data.get(index)
                 transformer.startValue = transformer.value
-                transformer.startFactor = transformer.factor
+
                 transformer.reset()
                 item.set(transformer)
               },
@@ -6722,9 +6716,6 @@ global.__VEComponents = new Map(String, Callable, {
                 var labelAlpha = label.alpha
                 label.alpha *= enableFactor
                 label.text = String.replaceAll(transformer.easeType, "_", " ")
-                if (keyboard_check(vk_control)) {
-                  label.text = $"F: {String.format(transformer.factor, 8, 4)},  I: {String.format(transformer.increase, 8, 4)}"
-                }
 
                 label.render(
                   // todo VALIGN HALIGN
@@ -6796,7 +6787,7 @@ global.__VEComponents = new Map(String, Callable, {
     
                   transformer.easeType = easeTypeName
                   transformer.startValue = transformer.value
-                  transformer.startFactor = transformer.factor
+  
                   transformer.reset()
                   item.set(transformer)
                 }
@@ -6830,7 +6821,7 @@ global.__VEComponents = new Map(String, Callable, {
 
                 transformer.easeType = data.get(index)
                 transformer.startValue = transformer.value
-                transformer.startFactor = transformer.factor
+
                 transformer.reset()
                 item.set(transformer)
               },
@@ -7266,7 +7257,7 @@ global.__VEComponents = new Map(String, Callable, {
 
                 transformer.easeType = data.get(index)
                 transformer.startValue = transformer.value
-                transformer.startFactor = transformer.factor
+
                 transformer.reset()
                 item.set(vecTransformer)
               },
@@ -7449,9 +7440,6 @@ global.__VEComponents = new Map(String, Callable, {
                 var labelAlpha = label.alpha
                 label.alpha *= enableFactor
                 label.text = String.replaceAll(transformer.easeType, "_", " ")
-                if (keyboard_check(vk_control)) {
-                  label.text = $"F: {String.format(transformer.factor, 8, 4)},  I: {String.format(transformer.increase, 8, 4)}"
-                }
 
                 label.render(
                   // todo VALIGN HALIGN
@@ -7530,7 +7518,7 @@ global.__VEComponents = new Map(String, Callable, {
     
                   transformer.easeType = easeTypeName
                   transformer.startValue = transformer.value
-                  transformer.startFactor = transformer.factor
+  
                   transformer.reset()
                   item.set(vecTransformer)
                 }
@@ -7571,7 +7559,7 @@ global.__VEComponents = new Map(String, Callable, {
 
                 transformer.easeType = data.get(index)
                 transformer.startValue = transformer.value
-                transformer.startFactor = transformer.factor
+
                 transformer.reset()
                 item.set(vecTransformer)
               },

@@ -1406,7 +1406,7 @@ function VETrackControl(_editor) constructor {
                 set: Lambda.passthrough,
                 callback: Lambda.passthrough,
               },
-              callback: function(vvv) {
+              callback: function() {
                 if (!Core.isType(this.store, UIStore)) {
                   return
                 }
@@ -1421,7 +1421,8 @@ function VETrackControl(_editor) constructor {
                   return
                 }
 
-                item.set(clamp(value - 1, 5, 30))
+                //item.set(clamp(value - 1, 5, 30))
+                item.set(value - 1)
               },
               backgroundMargin: { top: 1, bottom: 1, left: 0, right: 1 },
               backgroundColor: VETheme.color.sideDark,
@@ -1490,8 +1491,8 @@ function VETrackControl(_editor) constructor {
               updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
               getClipboard: Beans.get(BeanVisuEditorIO).mouse.getClipboard,
               setClipboard: Beans.get(BeanVisuEditorIO).mouse.setClipboard,
-              minValue: 5.0,
-              maxValue: 30.0,
+              minValue: VE_TIMELINE_ZOOM_MIN,
+              maxValue: VE_TIMELINE_ZOOM_MAX,
               //snapValue: 1.0 / 15.0,
               notify: true,
               store: { key: "timeline-zoom" },
@@ -1561,7 +1562,7 @@ function VETrackControl(_editor) constructor {
                 set: Lambda.passthrough,
                 callback: Lambda.passthrough,
               },
-              callback: function(vvv) {
+              callback: function() {
                 if (!Core.isType(this.store, UIStore)) {
                   return
                 }
@@ -1576,7 +1577,8 @@ function VETrackControl(_editor) constructor {
                   return
                 }
 
-                item.set(clamp(value + 1, 5, 30))
+                //item.set(clamp(value + 1, 5, 30))
+                item.set(value + 1)
               },
               backgroundMargin: { top: 1, bottom: 1, left: 0, right: 1 },
               backgroundColor: VETheme.color.sideDark,

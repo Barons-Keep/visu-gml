@@ -252,9 +252,11 @@ function VisuIO(config = null): Service(config) constructor {
         return this
       }
 
-      this.fullscreenKeyboardEvent(controller)
-      this.functionKeyboardEvent(controller)
-      this.mouseEvent(controller)
+      if (controller.fsm.getStateName() != "scene-close") {
+        this.fullscreenKeyboardEvent(controller)
+        this.functionKeyboardEvent(controller)
+        this.mouseEvent(controller)
+      }
     } catch (exception) {
       var message = $"'{BeanVisuIO}::update()' fatal error: {exception.message}"
       Logger.error(BeanVisuIO, message)

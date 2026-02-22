@@ -262,8 +262,10 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
       updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
       render: Callable.run(UIUtil.renderTemplates.get("renderDefault")),
       onInit: function() {
-        var container = this
-        this.collection = new UICollection(this, { layout: this.layout })
+        ///@UICOLLECTION_TEST this.collection = new UICollection(this, { layout: this.layout })
+        this.collection = this.collection == null
+          ? new UICollection(this, { layout: this.layout })
+          : this.collection.clear()
         this.state
           .set("store", this.templateToolbar.store)
           .get("types")
@@ -811,13 +813,16 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
       render: Callable.run(UIUtil.renderTemplates.get("renderDefault")),
       onInit: function() {
         var container = this
-        this.collection = new UICollection(this, { layout: this.layout })
+        ///@UICOLLECTION_TEST this.collection = new UICollection(this, { layout: this.layout })
+        this.collection = this.collection == null
+          ? new UICollection(this, { layout: this.layout })
+          : this.collection.clear()
         this.templateToolbar.store.get("type").addSubscriber({ 
           name: container.name,
           overrideSubscriber: true,
           callback: function(type, data) {
-            data.items.forEach(function(item) { item.free() }).clear() ///@todo replace with remove lambda
-            data.collection.components.clear() ///@todo replace with remove lambda
+            data.items.forEach(Lambda.free).clear() 
+            data.collection.components.clear() 
             data.state.set("store", data.templateToolbar.store)
             data.addUIComponents(data.state.get(type)
               .map(function(component) {
@@ -935,36 +940,71 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
               switch (type) {
                 case VETemplateType.SHADER:
                   templates = controller.shaderPipeline.templates
+                  templates.forEach(function(template, key, templates) {
+                    Struct.set(template, "type", VETemplateType.SHADER)
+                    var veTemplate = new VETemplate(template)
+                    templates.set(key, veTemplate.toShaderTemplate())
+                  }, templates)
                   model = "Collection<io.alkapivo.core.service.shader.ShaderTemplate>"
                   filename = "shader"
                   break
                 case VETemplateType.SHROOM:
                   templates = controller.shroomService.templates
+                  templates.forEach(function(template, key, templates) {
+                    Struct.set(template, "type", VETemplateType.SHROOM)
+                    var veTemplate = new VETemplate(template)
+                    templates.set(key, veTemplate.toShroomTemplate())
+                  }, templates)
                   model = "Collection<io.alkapivo.visu.service.shroom.ShroomTemplate>"
                   filename = "shroom"
                   break
                 case VETemplateType.BULLET:
                   templates = controller.bulletService.templates
+                  templates.forEach(function(template, key, templates) {
+                    Struct.set(template, "type", VETemplateType.BULLET)
+                    var veTemplate = new VETemplate(template)
+                    templates.set(key, veTemplate.toBulletTemplate())
+                  }, templates)
                   model = "Collection<io.alkapivo.visu.service.bullet.BulletTemplate>"
                   filename = "bullet"
                   break
                 case VETemplateType.COIN:
                   templates = controller.coinService.templates
+                  templates.forEach(function(template, key, templates) {
+                    Struct.set(template, "type", VETemplateType.COIN)
+                    var veTemplate = new VETemplate(template)
+                    templates.set(key, veTemplate.toCoinTemplate())
+                  }, templates)
                   model = "Collection<io.alkapivo.visu.service.coin.CoinTemplate>"
                   filename = "coin"
                   break
                 case VETemplateType.SUBTITLE:
                   templates = controller.subtitleService.templates
+                  templates.forEach(function(template, key, templates) {
+                    Struct.set(template, "type", VETemplateType.SUBTITLE)
+                    var veTemplate = new VETemplate(template)
+                    templates.set(key, veTemplate.toSubtitleTemplate())
+                  }, templates)
                   model = "Collection<io.alkapivo.visu.service.subtitle.SubtitleTemplate>"
                   filename = "subtitle"
                   break
                 case VETemplateType.PARTICLE:
                   templates = controller.particleService.templates
+                  templates.forEach(function(template, key, templates) {
+                    Struct.set(template, "type", VETemplateType.PARTICLE)
+                    var veTemplate = new VETemplate(template)
+                    templates.set(key, veTemplate.toParticleTemplate())
+                  }, templates)
                   model = "Collection<io.alkapivo.core.service.particle.ParticleTemplate>"
                   filename = "particle"
                   break
                 case VETemplateType.TEXTURE:
                   templates = Beans.get(BeanTextureService).templates
+                  templates.forEach(function(template, key, templates) {
+                    Struct.set(template, "type", VETemplateType.TEXTURE)
+                    var veTemplate = new VETemplate(template)
+                    templates.set(key, veTemplate.toTextureTemplate())
+                  }, templates)
                   model = "Collection<io.alkapivo.core.service.texture.TextureTemplate>"
                   filename = "texture"
                   break
@@ -1447,31 +1487,36 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
           this.executor.update()
         }
 
-        this.updateVerticalSelectedIndex(32.0)
+        this.updateVerticalSelectedIndex(VE_ICON_EVENT_SIZE)
         this.__render()
       },
       scrollbarY: { align: HAlign.LEFT },
       notify: true,
       fetchViewHeight: function() {
-        return 32 * this.collection.size()
+        return VE_ICON_EVENT_SIZE * this.collection.size()
       },
       onMousePressedLeft: Callable.run(UIUtil.mouseEventTemplates.get("onMouseScrollbarY")),
       onMouseWheelUp: Callable.run(UIUtil.mouseEventTemplates.get("scrollableOnMouseWheelUpY")),
       onMouseWheelDown: Callable.run(UIUtil.mouseEventTemplates.get("scrollableOnMouseWheelDownY")),
       onInit: function() {
-        this.executor = new TaskExecutor(this, {
-          enableLogger: true,
-          catchException: false,
-        })
+        this.executor = this.executor == null
+          ? new TaskExecutor(this, {
+              enableLogger: true,
+              catchException: false,
+            })
+          : this.executor.free()
 
         var container = this
-        this.collection = new UICollection(this, { layout: this.layout })
+        ///@UICOLLECTION_TEST this.collection = new UICollection(this, { layout: this.layout })
+        this.collection = this.collection == null
+          ? new UICollection(this, { layout: this.layout })
+          : this.collection.clear()
         this.templateToolbar.store.get("type").addSubscriber({ 
           name: container.name,
           overrideSubscriber: true,
           callback: function(type, data) {
-            data.items.forEach(function(item) { item.free() }).clear() ///@todo replace with remove lambda
-            data.collection.components.clear() ///@todo replace with remove lambda
+            data.items.forEach(Lambda.free).clear() 
+            data.collection.components.clear() 
 
             var task = null
             switch (type) {
@@ -2930,18 +2975,23 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
       onMouseWheelDown: Callable.run(UIUtil.mouseEventTemplates.get("scrollableOnMouseWheelDownY")),
       onInit: function() {
         var container = this
-        this.executor = new TaskExecutor(this, {
-          enableLogger: true,
-          catchException: false,
-        })
+        this.executor = this.executor == null
+          ? new TaskExecutor(this, {
+              enableLogger: true,
+              catchException: false,
+            })
+          : this.executor.free()
 
-        this.collection = new UICollection(this, { layout: container.layout })
+        ///@UICOLLECTION_TEST this.collection = new UICollection(this, { layout: container.layout })
+        this.collection = this.collection == null
+          ? new UICollection(this, { layout: container.layout })
+          : this.collection.clear()
         this.templateToolbar.store.get("template").addSubscriber({ 
           name: container.name,
           overrideSubscriber: true,
           callback: function(template, data) {
             if (!Core.isType(template, VETemplate)) {
-              data.items.forEach(function(item) { item.free() }).clear() 
+              data.items.forEach(Lambda.free).clear() 
               data.collection.components.clear()
               data.state
                 .set("template", null)
@@ -2961,136 +3011,76 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
               shaderResult = oldShader == newShader
             }
             
-            if (1 == 2 && Struct.get(oldTemplate, "type") == template.type && shaderResult) {
-              data.executor.tasks
-                .forEach(TaskUtil.fullfillByName, "sync-ui-store")
-                .forEach(TaskUtil.fullfillByName, "init-ui-components")
+            data.items.forEach(Lambda.free).clear()
+            data.collection.components.clear()
 
-              var task = new Task("sync-ui-store")
-                .setTimeout(60.0)
-                .setState({
+            data.executor.tasks
+              .forEach(TaskUtil.fullfillByName, "sync-ui-store")
+              .forEach(TaskUtil.fullfillByName, "init-ui-components")
+            
+            var task = new Task("init-ui-components")
+              .setTimeout(60)
+              .setState({
+                context: data,
+                stage: "intro-cooldown",//"load-components",
+                flip: FLIP_VALUE,
+                components: template.components,
+                componentsQueue: new Queue(String, GMArray
+                  .map(template.components.getContainer(), function(component, index) { 
+                    return index 
+                  })),
+                componentsConfig: {
                   context: data,
-                  template: template,
-                  itemKeys: new Queue(String, data.items.keys().getContainer()),
-                  templateKeys: new Queue(String, template.store.container.keys().getContainer()),
-                  subscribersConfig: {
-                    name: data.name,
-                    overrideSubscriber: true,
-                    callback: Lambda.passthrough,
-                  },
-                  stage: "update-store",
-                  stages: {
-                    "update-store": function(task) {
-                      if (task.state.itemKeys.size() == 0) {
-                        task.state.stage = "add-subscriber"
-                        return
-                      }
-
-                      var key = task.state.itemKeys.pop()
-                      var item = task.state.context.items.get(key)
-                      if (item != null) {
-                        item.updateStore()
-                      }
-                    },
-                    "add-subscriber": function(task) {
-                      if (task.state.templateKeys.size() == 0) {
-                        task.fullfill()
-                        return
-                      }
-
-                      var key = task.state.templateKeys.pop()
-                      var item = task.state.template.store.get(key)
-                      if (item != null) {
-                        item.addSubscriber(task.state.subscribersConfig)
-                      }
-                    },
+                  layout: new UILayout({
+                    area: data.area,
+                    width: function() { return this.area.getWidth() },
+                  }),
+                  textField: null,
+                  updateArea: Core.getProperty("visu.editor.ui.template-toolbar.inspector-view.init-ui-contanier.updateArea", true),
+                },
+                previousOffset: {
+                  x: data.offset.x,
+                  y: data.offset.y,
+                  xMax: data.offsetMax.x,
+                  yMax: data.offsetMax.y,
+                },
+                cooldown: new Timer(FRAME_MS * Core.getProperty("visu.editor.ui.template-toolbar.inspector-view.init-ui-contanier.cooldown", 4)),
+                "intro-cooldown": function(task) {
+                  if (task.state.cooldown.update().finished) {
+                    task.state.stage = "load-components"
                   }
-                })
-                .whenUpdate(function() {
-                  repeat (SYNC_UI_STORE_STEP) {
-                    var stage = Struct.get(this.state.stages, this.state.stage)
-                    stage(this)
+                },
+                "load-components": function(task) {
+                  repeat (TEMPLATE_TOOLBAR_ENTRY_STEP) {
+                    if (task.state.flip > 0) {
+                      task.state.flip -= 1
+                      break
+                    } else {
+                      task.state.flip = FLIP_VALUE
+                    }
 
-                    if (this.status == TaskStatus.FULLFILLED) {
+                    var index = task.state.componentsQueue.pop()
+                    if (!Optional.is(index)) {
+                      task.fullfill()
+                      task.state.context.state.set("previousOffset", task.state.previousOffset)
+                      task.state.context.finishUpdateTimer()
+                      task.state.context.areaWatchdog.signal()
                       break
                     }
+  
+                    var component = new UIComponent(task.state.components.get(index))
+                    task.state.context.addUIComponent(component, index, task.state.componentsConfig)
                   }
-                  return this
-                })
-                
-              data.executor.add(task)
-            } else {
-              data.items.forEach(function(item) { item.free() }).clear()
-              data.collection.components.clear()
-
-              data.executor.tasks
-                .forEach(TaskUtil.fullfillByName, "sync-ui-store")
-                .forEach(TaskUtil.fullfillByName, "init-ui-components")
-              
-              var task = new Task("init-ui-components")
-                .setTimeout(60)
-                .setState({
-                  context: data,
-                  stage: "intro-cooldown",//"load-components",
-                  flip: FLIP_VALUE,
-                  components: template.components,
-                  componentsQueue: new Queue(String, GMArray
-                    .map(template.components.getContainer(), function(component, index) { 
-                      return index 
-                    })),
-                  componentsConfig: {
-                    context: data,
-                    layout: new UILayout({
-                      area: data.area,
-                      width: function() { return this.area.getWidth() },
-                    }),
-                    textField: null,
-                    updateArea: Core.getProperty("visu.editor.ui.template-toolbar.inspector-view.init-ui-contanier.updateArea", true),
-                  },
-                  previousOffset: {
-                    x: data.offset.x,
-                    y: data.offset.y,
-                    xMax: data.offsetMax.x,
-                    yMax: data.offsetMax.y,
-                  },
-                  cooldown: new Timer(FRAME_MS * Core.getProperty("visu.editor.ui.template-toolbar.inspector-view.init-ui-contanier.cooldown", 4)),
-                  "intro-cooldown": function(task) {
-                    if (task.state.cooldown.update().finished) {
-                      task.state.stage = "load-components"
-                    }
-                  },
-                  "load-components": function(task) {
-                    repeat (TEMPLATE_TOOLBAR_ENTRY_STEP) {
-                      if (task.state.flip > 0) {
-                        task.state.flip -= 1
-                        break
-                      } else {
-                        task.state.flip = FLIP_VALUE
-                      }
-
-                      var index = task.state.componentsQueue.pop()
-                      if (!Optional.is(index)) {
-                        task.fullfill()
-                        task.state.context.state.set("previousOffset", task.state.previousOffset)
-                        task.state.context.finishUpdateTimer()
-                        task.state.context.areaWatchdog.signal()
-                        break
-                      }
-    
-                      var component = new UIComponent(task.state.components.get(index))
-                      task.state.context.addUIComponent(component, index, task.state.componentsConfig)
-                    }
-                  },
-                })
-                .whenUpdate(function() {
-                  var stage = Struct.get(this.state, this.state.stage)
-                  stage(this)
-                  return this
-                })
-              
-              data.state.set("previousOffset", task.state.previousOffset)
-              data.executor.add(task)
-            }
+                },
+              })
+              .whenUpdate(function() {
+                var stage = Struct.get(this.state, this.state.stage)
+                stage(this)
+                return this
+              })
+            
+            data.state.set("previousOffset", task.state.previousOffset)
+            data.executor.add(task)
           },
           data: container
         })
@@ -3244,7 +3234,10 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
       },
       render: Callable.run(UIUtil.renderTemplates.get("renderDefault")),
       onInit: function() {
-        this.collection = new UICollection(this, { layout: this.layout })
+        ///@UICOLLECTION_TEST this.collection = new UICollection(this, { layout: this.layout })
+        this.collection = this.collection == null
+          ? new UICollection(this, { layout: this.layout })
+          : this.collection.clear()
         this.state.get("components")
           .forEach(function(component, index, collection) {
             collection.add(new UIComponent(component))

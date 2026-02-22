@@ -1163,11 +1163,12 @@ function _Visu() constructor {
         executor: executor,
         transformer: new NumberTransformer({
           value: override ? transformer.value : Struct.get(container, containerKey),
-          target: transformer.target,
-          factor: transformer.factor,
-          increase: transformer.increase,
-          ease: transformer.easeType,
-          duration: transformer.duration,
+          target: Struct.get(transformer, "target"),
+          ease: Struct.get(transformer, "easeType"),
+          duration: Struct.get(transformer, "duration"),
+
+          factor: Struct.get(transformer, "factor"),
+          increase: Struct.get(transformer, "increase"),
         })
       }))
     }
@@ -1568,6 +1569,7 @@ function _Visu() constructor {
     //display_reset(Visu.settings.getValue("visu.graphics.aa"), Visu.settings.getValue("visu.graphics.vsync"))
     display_reset(display_aa, Visu.settings.getValue("visu.graphics.vsync", true))
     display_set_timing_method(TimingMethod.get(Visu.settings.getValue("visu.graphics.timing-method")))
+    displayService.resize(displayService.windowWidth, displayService.windowHeight)
   }
 
   static initSoundService = function(layerId) {

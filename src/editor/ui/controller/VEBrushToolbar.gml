@@ -257,7 +257,10 @@ global.__VisuBrushContainers = new Map(String, Callable, {
       updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
       render: Callable.run(UIUtil.renderTemplates.get("renderDefaultNoSurface")),
       onInit: function() {
-        this.collection = new UICollection(this, { layout: this.layout })
+        ///@UICOLLECTION_TEST this.collection = new UICollection(this, { layout: this.layout })
+        this.collection = this.collection == null
+          ? new UICollection(this, { layout: this.layout })
+          : this.collection.clear()
         this.state.get("components")
           .forEach(function(component, index, collection) {
             collection.add(new UIComponent(component))
@@ -404,7 +407,10 @@ global.__VisuBrushContainers = new Map(String, Callable, {
       updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
       render: Callable.run(UIUtil.renderTemplates.get("renderDefault")),
       onInit: function() {
-        this.collection = new UICollection(this, { layout: this.layout })
+        ///@UICOLLECTION_TEST this.collection = new UICollection(this, { layout: this.layout })
+        this.collection = this.collection == null
+          ? new UICollection(this, { layout: this.layout })
+          : this.collection.clear()
         var container = this
         var store = this.brushToolbar.store
         
@@ -434,8 +440,8 @@ global.__VisuBrushContainers = new Map(String, Callable, {
             //  return
             //}
 
-            data.items.forEach(function(item) { item.free() }).clear() ///@todo replace with remove lambda
-            data.collection.components.clear() ///@todo replace with remove lambda
+            data.items.forEach(Lambda.free).clear() 
+            data.collection.components.clear() 
             context.state
               .set("type", type)
               .get(context.brushToolbar.store.getValue("category"))
@@ -768,7 +774,7 @@ global.__VisuBrushContainers = new Map(String, Callable, {
       layout: layout,
       scrollbarY: { align: HAlign.RIGHT },
       fetchViewHeight: function() {
-        return 32 * this.collection.size()
+        return VE_ICON_EVENT_SIZE * this.collection.size()
       },
       updateArea: Callable.run(UIUtil.updateAreaTemplates.get("scrollableY")),
       renderItem: Callable.run(UIUtil.renderTemplates.get("renderItemDefaultScrollable")),
@@ -780,7 +786,7 @@ global.__VisuBrushContainers = new Map(String, Callable, {
           this.executor.update()
         }
 
-        this.updateVerticalSelectedIndex(32)
+        this.updateVerticalSelectedIndex(VE_ICON_EVENT_SIZE)
 
         this.renderDefaultScrollable()
         if (!Core.isType(this.collection, UICollection) 
@@ -926,13 +932,16 @@ global.__VisuBrushContainers = new Map(String, Callable, {
         })
 
         var container = this
-        this.collection = new UICollection(this, { layout: this.layout })
+        ///@UICOLLECTION_TEST this.collection = new UICollection(this, { layout: this.layout })
+        this.collection = this.collection == null
+          ? new UICollection(this, { layout: this.layout })
+          : this.collection.clear()
         this.brushToolbar.store.get("type").addSubscriber({ 
           name: container.name,
           overrideSubscriber: true,
           callback: function(type, data) {
-            data.items.forEach(function(item) { item.free() }).clear() ///@todo replace with remove lambda
-            data.collection.components.clear() ///@todo replace with remove lambda
+            data.items.forEach(Lambda.free).clear() 
+            data.collection.components.clear() 
             data.state.set("type", type)
 
             var brushService = Beans.get(BeanVisuController).brushService
@@ -1553,8 +1562,10 @@ global.__VisuBrushContainers = new Map(String, Callable, {
         */
       },
       onInit: function() {
-        var container = this
-        this.collection = new UICollection(this, { layout: container.layout.nodes.toolbar })
+        ///@UICOLLECTION_TEST this.collection = new UICollection(this, { layout: this.layout.nodes.toolbar })
+        this.collection = this.collection == null
+            ? new UICollection(this, { layout: this.layout.nodes.toolbar })
+            : this.collection.clear()
         this.state.get("tools")
           .forEach(function(component, index, collection) {
             collection.add(new UIComponent(component))
@@ -1599,18 +1610,24 @@ global.__VisuBrushContainers = new Map(String, Callable, {
       onMouseWheelDown: Callable.run(UIUtil.mouseEventTemplates.get("scrollableOnMouseWheelDownY")),
       onInit: function() {
         var container = this
-        this.executor = new TaskExecutor(this, {
-          enableLogger: true,
-          catchException: false,
-        })
-        this.collection = new UICollection(this, { layout: container.layout })
+        this.executor = this.executor == null
+          ? new TaskExecutor(this, {
+              enableLogger: true,
+              catchException: false,
+            })
+          : this.executor.free()
+
+        ///@UICOLLECTION_TEST this.collection = new UICollection(this, { layout: container.layout })
+        this.collection = this.collection == null
+          ? new UICollection(this, { layout: container.layout })
+          : this.collection.clear()
         this.brushToolbar.store.get("template").addSubscriber({ 
           name: this.name,
           overrideSubscriber: true,
           callback: function(template, data) {
             if (!Optional.is(template)) {
-              data.items.forEach(function(item) { item.free() }).clear() ///@todo replace with remove lambda
-              data.collection.components.clear() ///@todo replace with remove lambda
+              data.items.forEach(Lambda.free).clear() 
+              data.collection.components.clear() 
               data.state
                 .set("template", null)
                 .set("brush", null)
@@ -1688,7 +1705,7 @@ global.__VisuBrushContainers = new Map(String, Callable, {
                 
               data.executor.add(task)
             } else {
-              data.items.forEach(function(item) { item.free() }).clear()
+              data.items.forEach(Lambda.free).clear()
               data.collection.components.clear()
 
               data.executor.tasks
@@ -2032,7 +2049,10 @@ global.__VisuBrushContainers = new Map(String, Callable, {
       updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
       render: Callable.run(UIUtil.renderTemplates.get("renderDefault")),
       onInit: function() {
-        this.collection = new UICollection(this, { layout: this.layout })
+        ///@UICOLLECTION_TEST this.collection = new UICollection(this, { layout: this.layout })
+        this.collection = this.collection == null
+          ? new UICollection(this, { layout: this.layout })
+          : this.collection.clear()
         this.state.get("components")
           .forEach(function(component, index, collection) {
             collection.add(new UIComponent(component))
@@ -2216,8 +2236,8 @@ function VEBrushToolbar(_editor) constructor {
                 name: "brush-toolbar.iinspector-tool.brushIconPreview",
                 x: function() { return 4 },
                 y: function() { return 4 },
-                width: function() { return 32 },
-                height: function() { return 32 },
+                width: function() { return 32.0 },
+                height: function() { return 32.0 },
               },
               toolbar: {
                 name: "brush-toolbar.inspector-tool.toolbar",

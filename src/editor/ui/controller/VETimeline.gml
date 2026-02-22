@@ -1,6 +1,13 @@
 ///@package io.alkapivo.visu.editor.ui.controller
 
-#macro VETIMELINE_EVENT_SIZE 32
+///@type {Number}
+#macro VE_TIMELINE_ZOOM_MIN 5
+
+
+///@type {Number}
+#macro VE_TIMELINE_ZOOM_MAX 45
+
+
 ///@enum
 function _ToolType(): Enum() constructor {
   SELECT = "tool_select"
@@ -12,9 +19,13 @@ global.__ToolType = new _ToolType()
 #macro ToolType global.__ToolType
 
 
+///@type {Number}
+global.__VE_ICON_EVENT_SIZE = 32.0
+#macro VE_ICON_EVENT_SIZE global.__VE_ICON_EVENT_SIZE
+
+
 ///@param {VisuEditorController} _editor
 function VETimeline(_editor) constructor {
-
 
   ///@type {VisuEditorController}
   editor = Assert.isType(_editor, VisuEditorController)
@@ -33,7 +44,7 @@ function VETimeline(_editor) constructor {
   ///@return {ChunkService}
   factoryChunkService = function() {
     return new ChunkService(this, {
-      step: 30,
+      step: VE_TIMELINE_ZOOM_MAX,
       fetchKey: function(timestamp) {
         var from = floor(timestamp / this.step) * this.step
         var to = from + this.step
@@ -541,7 +552,7 @@ function VETimeline(_editor) constructor {
         _render: new BindIntent(Callable.run(UIUtil.renderTemplates.get("renderDefaultScrollable"))),
         updateVerticalSelectedIndex: new BindIntent(Callable.run(UIUtil.templates.get("updateVerticalSelectedIndex"))),
         render: function() {
-          this.updateVerticalSelectedIndex(VETIMELINE_EVENT_SIZE)
+          this.updateVerticalSelectedIndex(VE_ICON_EVENT_SIZE)
           this._render()
 
           ///@todo replace with Promise in clipboard
@@ -567,7 +578,7 @@ function VETimeline(_editor) constructor {
           return this
         },
         fetchViewHeight: function() {
-          return (VETIMELINE_EVENT_SIZE * this.collection.size())
+          return (VE_ICON_EVENT_SIZE * this.collection.size())
         },
         scrollbarY: { align: HAlign.LEFT },
         _onMousePressedLeft: new BindIntent(Callable.run(UIUtil.mouseEventTemplates.get("onMouseScrollbarY"))),
@@ -704,8 +715,11 @@ function VETimeline(_editor) constructor {
           }
         },
         onInit: function() {
-          this.items.forEach(function(item) { item.free() }).clear() ///@todo replace with remove lambda
-          this.collection = new UICollection(this, { layout: this.layout })
+          this.items.forEach(Lambda.free).clear() 
+          ///@UICOLLECTION_TEST this.collection = new UICollection(this, { layout: this.layout })
+          this.collection = this.collection == null
+            ? new UICollection(this, { layout: this.layout })
+            : this.collection.clear()
           
           var trackService = Beans.get(BeanVisuController).trackService
           if (!Core.isType(trackService.track, Track)) {
@@ -1090,7 +1104,7 @@ function VETimeline(_editor) constructor {
           "background-color": ColorUtil.fromHex(VETheme.color.side).toGMColor(),
           "store": Beans.get(BeanVisuEditorController).store,
           "chunkService": controller.factoryChunkService(),
-          "viewSize": ((1.0 - (clamp(Beans.get(BeanVisuEditorController).store.getValue("timeline-zoom") - 5.0, 0.0, 25.0) / 25.0)) * 25.0) + 5.0,
+          "viewSize": ((1.0 - (clamp(Beans.get(BeanVisuEditorController).store.getValue("timeline-zoom") - VE_TIMELINE_ZOOM_MIN, 0.0, (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN) / (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN)))) * (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN)) + VE_TIMELINE_ZOOM_MIN,
           "speed": 2.0,
           "position": 0,
           "amount": 0,
@@ -1113,7 +1127,7 @@ function VETimeline(_editor) constructor {
           speed: 80,
         }),
         fetchViewHeight: function() {
-          return (VETIMELINE_EVENT_SIZE * this.state.get("amount"))
+          return (VE_ICON_EVENT_SIZE * this.state.get("amount"))
         },
         updateArea: Callable.run(UIUtil.updateAreaTemplates.get("scrollableY")),
         updateCustom: function() {
@@ -1219,7 +1233,7 @@ function VETimeline(_editor) constructor {
               .addSubscriber({ 
                 name: this.name,
                 callback: function(zoom, context) { 
-                  context.state.set("viewSize", ((1.0 - (clamp(zoom - 5.0, 0.0, 25.0) / 25.0)) * 25.0) + 5.0)
+                  context.state.set("viewSize", ((1.0 - (clamp(zoom - VE_TIMELINE_ZOOM_MIN, 0.0, (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN) / (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN)))) * (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN)) + VE_TIMELINE_ZOOM_MIN)
                 },
                 data: container,
                 overrideSubscriber: true,
@@ -1282,8 +1296,8 @@ function VETimeline(_editor) constructor {
           var timestamp = this.getTimestampFromMouseX(MouseUtil.getMouseX())
           var previousX = this.getXFromTimestamp(selectEvent.data.timestampFrom) + this.offset.x
           var nextX = this.getXFromTimestamp(timestamp) + this.offset.x
-          var previousY = (selectEvent.data.channelIndexFrom * VETIMELINE_EVENT_SIZE) + this.offset.y + (VETIMELINE_EVENT_SIZE / 2.0)
-          var nextY = (index * VETIMELINE_EVENT_SIZE) + this.offset.y + (VETIMELINE_EVENT_SIZE / 2.0)
+          var previousY = (selectEvent.data.channelIndexFrom * VE_ICON_EVENT_SIZE) + this.offset.y + (VE_ICON_EVENT_SIZE / 2.0)
+          var nextY = (index * VE_ICON_EVENT_SIZE) + this.offset.y + (VE_ICON_EVENT_SIZE / 2.0)
           nextY = MouseUtil.getMouseY() - this.area.getY()
 
           //rectangle: function(beginX, beginY, endX, endY, outline = false, color1 = null, color2 = null, color3 = null, color4 = null, alpha = null) {
@@ -1318,7 +1332,7 @@ function VETimeline(_editor) constructor {
 
           var previousX = this.getXFromTimestamp(trackEvent.timestamp)
           var nextX = this.getXFromTimestamp(timestamp)
-          var eventY = index * VETIMELINE_EVENT_SIZE
+          var eventY = index * VE_ICON_EVENT_SIZE
           var line = new TexturedLine({ 
             thickness: 2.0,
             alpha: 0.5,
@@ -1338,7 +1352,7 @@ function VETimeline(_editor) constructor {
           //render previous
           SpriteUtil.parse(icon)
             .setAlpha(0.3)
-            .scaleToFillStretched(VETIMELINE_EVENT_SIZE, VETIMELINE_EVENT_SIZE)
+            .scaleToFillStretched(VE_ICON_EVENT_SIZE, VE_ICON_EVENT_SIZE)
             .render(
               this.offset.x + previousX,
               this.offset.y + eventY
@@ -1346,16 +1360,16 @@ function VETimeline(_editor) constructor {
 
           //render line
           line.render(
-            this.offset.x + previousX + (VETIMELINE_EVENT_SIZE / 2.0),
-            this.offset.y + eventY + (VETIMELINE_EVENT_SIZE / 2.0),
-            this.offset.x + nextX + (VETIMELINE_EVENT_SIZE / 2.0),
-            this.offset.y + eventY + (VETIMELINE_EVENT_SIZE / 2.0) 
+            this.offset.x + previousX + (VE_ICON_EVENT_SIZE / 2.0),
+            this.offset.y + eventY + (VE_ICON_EVENT_SIZE / 2.0),
+            this.offset.x + nextX + (VE_ICON_EVENT_SIZE / 2.0),
+            this.offset.y + eventY + (VE_ICON_EVENT_SIZE / 2.0) 
           )
 
           //render next
           SpriteUtil.parse(icon)
             .setAlpha(0.8)
-            .scaleToFillStretched(VETIMELINE_EVENT_SIZE, VETIMELINE_EVENT_SIZE)
+            .scaleToFillStretched(VE_ICON_EVENT_SIZE, VE_ICON_EVENT_SIZE)
             .render(
               this.offset.x + nextX,
               this.offset.y + eventY
@@ -1363,8 +1377,8 @@ function VETimeline(_editor) constructor {
 
           //render timestamp
           label.render(
-            (VETIMELINE_EVENT_SIZE / 2.0) + this.offset.x + min(previousX, nextX) + (abs(previousX - nextX) / 2),
-            (VETIMELINE_EVENT_SIZE / 2.0) + this.offset.y + eventY,
+            (VE_ICON_EVENT_SIZE / 2.0) + this.offset.x + min(previousX, nextX) + (abs(previousX - nextX) / 2),
+            (VE_ICON_EVENT_SIZE / 2.0) + this.offset.y + eventY,
           )
         }),
         renderSurface: function() {
@@ -1396,12 +1410,12 @@ function VETimeline(_editor) constructor {
           var startIndex = bpmShift > 0 ? -1.0 * bpmCount : 0.0
 
           // background
-          var bkgStartIndex = ((offsetY div VETIMELINE_EVENT_SIZE) mod 2 != 0) ? 1 : 0
+          var bkgStartIndex = ((offsetY div VE_ICON_EVENT_SIZE) mod 2 != 0) ? 1 : 0
           var bkgSize = this.state.get("amount")
           if (areaWidth > 0) {
             for (var bkgIndex = bkgStartIndex; bkgIndex < bkgSize; bkgIndex += 2) {
-              var bkgY = (offsetY mod VETIMELINE_EVENT_SIZE) + (bkgIndex * VETIMELINE_EVENT_SIZE)
-              draw_sprite_ext(texture_white, 0.0, 0, bkgY, areaWidth / 64, VETIMELINE_EVENT_SIZE / 64, 0.0, bkgColor, 1.0)
+              var bkgY = (offsetY mod VE_ICON_EVENT_SIZE) + (bkgIndex * VE_ICON_EVENT_SIZE)
+              draw_sprite_ext(texture_white, 0.0, 0, bkgY, areaWidth / 64, VE_ICON_EVENT_SIZE / 64, 0.0, bkgColor, 1.0)
             }
           }
 
@@ -1419,9 +1433,9 @@ function VETimeline(_editor) constructor {
               channelIndex = MouseUtil.getMouseY() < this.area.getY() ? 0 : this.lastIndex
             }
 
-            brushSprite.setAlpha(0.5).scaleToFit(VETIMELINE_EVENT_SIZE, VETIMELINE_EVENT_SIZE).render(
+            brushSprite.setAlpha(0.5).scaleToFit(VE_ICON_EVENT_SIZE, VE_ICON_EVENT_SIZE).render(
               this.getXFromTimestamp(brushTimestamp) + this.offset.x,
-              (VETIMELINE_EVENT_SIZE * channelIndex) + this.offset.y
+              (VE_ICON_EVENT_SIZE * channelIndex) + this.offset.y
             )
           }
 
@@ -1446,7 +1460,7 @@ function VETimeline(_editor) constructor {
           var _alpha = draw_get_alpha()
           draw_set_alpha(alpha)
           for (var linesIndex = 0; linesIndex < linesSize; linesIndex++) {
-            var linesY = (offsetY mod VETIMELINE_EVENT_SIZE) + (linesIndex * VETIMELINE_EVENT_SIZE)
+            var linesY = (offsetY mod VE_ICON_EVENT_SIZE) + (linesIndex * VE_ICON_EVENT_SIZE)
             draw_line_color(0, linesY, areaWidth, linesY, color, color)
             //GPU.render.texturedLine(0, linesY, areaWidth, linesY, thickness, alpha, color)
           }
@@ -1454,7 +1468,7 @@ function VETimeline(_editor) constructor {
 
           /// bpm
           var bpmX = 0
-          var bpmY = round(clamp((linesSize - 1) * VETIMELINE_EVENT_SIZE, 0, areaHeight))
+          var bpmY = round(clamp((linesSize - 1) * VE_ICON_EVENT_SIZE, 0, areaHeight))
           var _thickness = thickness
           var bpmCountIndex = floor(abs(this.offset.x) / bpmWidth) + startIndex
           _alpha = draw_get_alpha()
@@ -1524,8 +1538,8 @@ function VETimeline(_editor) constructor {
               context.selectedSprite
                 .setBlend(key == acc.name ? acc.color : c_white)
                 .setAnimate(index == 0)
-                .setScaleX(VETIMELINE_EVENT_SIZE / (context.selectedSprite.getWidth() - (context.selectedSprite.texture.offsetX * 2.0)))
-                .setScaleY(VETIMELINE_EVENT_SIZE / (context.selectedSprite.getHeight() - (context.selectedSprite.texture.offsetY * 2.0)))
+                .setScaleX(VE_ICON_EVENT_SIZE / (context.selectedSprite.getWidth() - (context.selectedSprite.texture.offsetX * 2.0)))
+                .setScaleY(VE_ICON_EVENT_SIZE / (context.selectedSprite.getHeight() - (context.selectedSprite.texture.offsetY * 2.0)))
                 .render(xx, yy)
                 .setBlend(c_white)
                 .setAnimate(true)
@@ -1646,7 +1660,7 @@ function VETimeline(_editor) constructor {
 
           this.deselect()
 
-          var width = (this.state.get("viewSize") * VETIMELINE_EVENT_SIZE) / this.area.getWidth()
+          var width = (this.state.get("viewSize") * VE_ICON_EVENT_SIZE) / this.area.getWidth()
           this.items.forEach(function(item, key, acc) {
             var timestamp = item.state.get("timestamp")
             if ((timestamp < acc.from 
@@ -2214,7 +2228,7 @@ function VETimeline(_editor) constructor {
         getYFromChannelName: new BindIntent(function(channel) {
           return this.controller.containers
             .get("ve-timeline-channels").collection
-            .get(channel).index * VETIMELINE_EVENT_SIZE 
+            .get(channel).index * VE_ICON_EVENT_SIZE 
         }),
 
         ///@param {Number} mouseX
@@ -2229,7 +2243,7 @@ function VETimeline(_editor) constructor {
         getChannelNameFromMouseY: new BindIntent(function(mouseY) {
           var channelName = this.controller.containers
             .get("ve-timeline-channels").collection
-            .findKeyByIndex(floor((mouseY - this.area.getY() - this.offset.y) / VETIMELINE_EVENT_SIZE))
+            .findKeyByIndex(floor((mouseY - this.area.getY() - this.offset.y) / VE_ICON_EVENT_SIZE))
           return Optional.is(channelName) ? channelName : null
         }),
 
@@ -2238,7 +2252,7 @@ function VETimeline(_editor) constructor {
         getChannelIndexFromMouseY: new BindIntent(function(mouseY) {
           var channel = this.controller.containers
             .get("ve-timeline-channels").collection
-            .findByIndex(floor((mouseY - this.area.getY() - this.offset.y) / VETIMELINE_EVENT_SIZE))
+            .findByIndex(floor((mouseY - this.area.getY() - this.offset.y) / VE_ICON_EVENT_SIZE))
           return Optional.is(channel) ? channel.index : null
         }),
 
@@ -2296,7 +2310,7 @@ function VETimeline(_editor) constructor {
           return UIButton(
             name,
             {
-              area: { x: _x, width: VETIMELINE_EVENT_SIZE, height: VETIMELINE_EVENT_SIZE },
+              area: { x: _x, width: VE_ICON_EVENT_SIZE, height: VE_ICON_EVENT_SIZE },
               state: new Map(String, any, {
                 "timestamp": event.timestamp,
                 "event": event,
@@ -2685,7 +2699,7 @@ function VETimeline(_editor) constructor {
         state: new Map(String, any, {
           "background-color": ColorUtil.fromHex(VETheme.color.sideShadow).toGMColor(),
           "store": Beans.get(BeanVisuEditorController).store,
-          "viewSize": ((1.0 - (clamp(Beans.get(BeanVisuEditorController).store.getValue("timeline-zoom") - 5.0, 0.0, 25.0) / 25.0)) * 25.0) + 5.0,
+          "viewSize": ((1.0 - (clamp(Beans.get(BeanVisuEditorController).store.getValue("timeline-zoom")  - VE_TIMELINE_ZOOM_MIN, 0.0, (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN) / (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN)))) * (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN)) + VE_TIMELINE_ZOOM_MIN,
           "stepSize": 2,
           "speed": 2.0,
           "position": 0,
@@ -2706,7 +2720,7 @@ function VETimeline(_editor) constructor {
           var trackService = controller.trackService
           var duration = trackService.duration
           var width = this.area.getWidth()
-          var viewSize = ((1.0 - (clamp(this.state.get("store").getValue("timeline-zoom") - 5.0, 0.0, 25.0) / 25.0)) * 25.0) + 5.0
+          var viewSize = ((1.0 - (clamp(this.state.get("store").getValue("timeline-zoom")  - VE_TIMELINE_ZOOM_MIN, 0.0, (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN) / (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN)))) * (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN)) + VE_TIMELINE_ZOOM_MIN
           var spd = width / viewSize
           var time = this.state.get("time")
           var mouseX = this.state.get("mouseX")
@@ -2768,7 +2782,7 @@ function VETimeline(_editor) constructor {
           var _x = this.area.x
           var _y = this.area.y
           var width = this.area.getWidth()
-          var viewSize = ((1.0 - (clamp(this.state.get("store").getValue("timeline-zoom") - 5.0, 0.0, 25.0) / 25.0)) * 25.0) + 5.0
+          var viewSize = ((1.0 - (clamp(this.state.get("store").getValue("timeline-zoom")  - VE_TIMELINE_ZOOM_MIN, 0.0, (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN) / (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN)))) * (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN)) + VE_TIMELINE_ZOOM_MIN
           var stepSize = this.state.get("stepSize")
           var spd = this.state.get("speed")
           var position = this.state.get("position")

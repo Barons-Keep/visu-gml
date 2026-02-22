@@ -31,6 +31,36 @@ function AngleFeature(json): GridItemFeature(json) constructor {
 
 
 ///@param {Struct} json
+function __DeprecatedAngleFeature(json): GridItemFeature(json) constructor {
+  var data = Struct.get(json, "data")
+
+  ///@type {String}
+  type = "DeprecatedAngleFeature"
+
+  ///@type {GenericTransformer}
+  genericTransformer = new GenericTransformer({
+    onValue: Struct.get(data, "onValue"),
+    onTarget: Struct.get(data, "onTarget"),
+    transform: Struct.get(data, "transform"),
+    increase: Struct.get(data, "increase"),
+    get: function(item, controller) {
+      return item.angle
+    },
+    set: function(item, controller, value) {
+      item.setAngle(value)
+    },
+  })
+
+  ///@override
+  ///@param {GridItem} item
+  ///@param {VisuController} controller
+  static update = function(item, controller) {
+    this.genericTransformer.update(item, controller)
+  }
+}
+
+
+///@param {Struct} json
 function DeprecatedAngleFeature(json): GridItemFeature(json) constructor {
   var data = Struct.get(json, "data")
 
@@ -49,7 +79,7 @@ function DeprecatedAngleFeature(json): GridItemFeature(json) constructor {
       target: Core.getIfType(GMArray.resolveRandom(Struct.get(data.transform, "target")), Number, 0.0),
       increase: Core.getIfType(GMArray.resolveRandom(Struct.get(data.transform, "increase")), Number, 0.0),
       duration: Core.getIfType(GMArray.resolveRandom(Struct.get(data.transform, "duration")), Number, 0.0),
-      ease: Core.getIfType(GMArray.resolveRandom(Struct.get(data.transform, "ease")), String, EaseType.LEGACY), // todo migrate
+      ease: Core.getIfType(GMArray.resolveRandom(Struct.get(data.transform, "ease")), String, "LEGACY"), // todo migrate
     })
     : null
 
@@ -61,7 +91,7 @@ function DeprecatedAngleFeature(json): GridItemFeature(json) constructor {
       target: Core.getIfType(GMArray.resolveRandom(Struct.get(data.add, "target")), Number, 1.0),
       increase: Core.getIfType(GMArray.resolveRandom(Struct.get(data.add, "increase")), Number, 0.0),
       duration: Core.getIfType(GMArray.resolveRandom(Struct.get(data.add, "duration")), Number, 0.0),
-      ease: Core.getIfType(GMArray.resolveRandom(Struct.get(data.add, "ease")), String, EaseType.LEGACY), // todo migrate
+      ease: Core.getIfType(GMArray.resolveRandom(Struct.get(data.add, "ease")), String, "LEGACY"), // todo migrate
     })
     : null
 
@@ -75,8 +105,9 @@ function DeprecatedAngleFeature(json): GridItemFeature(json) constructor {
     if (this.transform != null) {
       if (!this.isAngleSet) {
         this.transform.startValue = item.angle
-        this.transform.target = item.angle + ((this.transform.factor >= 0 ? 1 : -1) * Math.fetchPointsAngleDiff(item.angle, (this.isRelative ? item.angle : 0.0) + this.transform.target))
-        this.transform.startFactor = abs(this.transform.factor)
+        //this.transform.target = item.angle + ((this.transform.factor >= 0 ? 1 : -1) * Math.fetchPointsAngleDiff(item.angle, (this.isRelative ? item.angle : 0.0) + this.transform.target))
+        this.transform.target = (this.isRelative ? item.angle : 0.0) - this.transform.target
+        //this.transform.startFactor = abs(this.transform.factor)
         this.transform.reset()
         this.isAngleSet = true
       }

@@ -88,15 +88,15 @@ global.__VELayouts = new Map(String, Callable, {
       name: "channel-entry",
       type: Assert.isEnum(Struct.getDefault(config, "type", UILayoutType.VERTICAL), UILayoutType),
       collection: true,
-      height: function() { return VETIMELINE_EVENT_SIZE },
+      height: function() { return VE_ICON_EVENT_SIZE },
       propagateHidden: Struct.getIfType(config, "propagateHidden", Boolean, false),
       x: function() { return this.__margin.left },
       y: function() { return this.__margin.top + this.collection.getIndex() * this.height() },
       nodes: {
         settings: {
           name: "channel-entry.settings",
-          width: function() { return VETIMELINE_EVENT_SIZE + 2 - this.__margin.left - this.__margin.right },
-          height: function() { return VETIMELINE_EVENT_SIZE - this.__margin.top - this.__margin.bottom },
+          width: function() { return VE_ICON_EVENT_SIZE + 2 - this.__margin.left - this.__margin.right },
+          height: function() { return VE_ICON_EVENT_SIZE - this.__margin.top - this.__margin.bottom },
           margin: { top: 0, left: 2, right: 2, bottom: 2 },
         },
         label: {
@@ -108,14 +108,14 @@ global.__VELayouts = new Map(String, Callable, {
             - this.context.nodes.mute.width()
             - this.context.nodes.mute.__margin.left
             - this.context.nodes.mute.__margin.right },
-          height: function() { return VETIMELINE_EVENT_SIZE - 2 },
+          height: function() { return VE_ICON_EVENT_SIZE - 2 },
           x: function() { return this.context.nodes.settings.right() },
           propagateHidden: Struct.getIfType(Struct.get(config, "label"), "propagateHidden", Boolean, true),
         },
         mute: {
           name: "channel-entry.mute",
-          width: function() { return VETIMELINE_EVENT_SIZE - this.__margin.left - this.__margin.right },
-          height: function() { return VETIMELINE_EVENT_SIZE - this.__margin.top - this.__margin.bottom },
+          width: function() { return VE_ICON_EVENT_SIZE - this.__margin.left - this.__margin.right },
+          height: function() { return VE_ICON_EVENT_SIZE - this.__margin.top - this.__margin.bottom },
           margin: { top: 0, left: 2, right: 0, bottom: 2 },
           x: function() { return this.context.nodes.label.right() + this.__margin.left },
           y: function() { return this.context.y() + this.__margin.top },
@@ -133,7 +133,7 @@ global.__VELayouts = new Map(String, Callable, {
       collection: true,
       x: function() { return this.__margin.left },
       y: function() { return this.__margin.top + this.collection.getIndex() * this.height() },
-      height: function() { return 32 },
+      height: function() { return VE_ICON_EVENT_SIZE },
       propagateHidden: Struct.getIfType(config, "propagateHidden", Boolean, false),
       nodes: {
         image: {
@@ -152,14 +152,14 @@ global.__VELayouts = new Map(String, Callable, {
             - this.context.nodes.select.width()
             - this.context.nodes.select.__margin.left
             - this.context.nodes.select.__margin.right },
-          height: function() { return 30 },
+          height: function() { return VE_ICON_EVENT_SIZE - 2 },
           x: function() { return this.context.x() + this.context.nodes.image.right() + 2 },
           propagateHidden: Struct.getIfType(Struct.get(config, "label"), "propagateHidden", Boolean, true),
         },
         select: {
           name: "brush-entry.select",
-          width: function() { return 34 - this.__margin.left - this.__margin.right },
-          height: function() { return 32 - this.__margin.top - this.__margin.bottom },
+          width: function() { return (VE_ICON_EVENT_SIZE + 2) - this.__margin.left - this.__margin.right },
+          height: function() { return VE_ICON_EVENT_SIZE - this.__margin.top - this.__margin.bottom },
           margin: { top: 0, left: 2, right: 2, bottom: 2 },
           x: function() { return this.context.x() + this.context.nodes.label.right()
             + this.__margin.right },
@@ -178,19 +178,19 @@ global.__VELayouts = new Map(String, Callable, {
       collection: true,
       x: function() { return this.__margin.left },
       y: function() { return this.__margin.top + this.collection.getIndex() * this.height() },
-      height: function() { return 32 },
+      height: function() { return VE_ICON_EVENT_SIZE },
       propagateHidden: Struct.getIfType(config, "propagateHidden", Boolean, false),
       nodes: {
         settings: {
           name: "template-entry.settings",
-          width: function() { return 34 - this.__margin.left - this.__margin.right },
-          height: function() { return 32 - this.__margin.top - this.__margin.bottom },
+          width: function() { return (VE_ICON_EVENT_SIZE + 2) - this.__margin.left - this.__margin.right },
+          height: function() { return VE_ICON_EVENT_SIZE - this.__margin.top - this.__margin.bottom },
           margin: { top: 0, left: 2, right: 2, bottom: 2 },
         },
         remove: {
           name: "template-entry.remove",
-          width: function() { return 32 - this.__margin.left - this.__margin.right },
-          height: function() { return 32 - this.__margin.top - this.__margin.bottom },
+          width: function() { return VE_ICON_EVENT_SIZE - this.__margin.left - this.__margin.right },
+          height: function() { return VE_ICON_EVENT_SIZE - this.__margin.top - this.__margin.bottom },
           x: function() { return this.context.nodes.settings.right() },
           margin: { top: 0, left: 0, right: 2, bottom: 2 },
         },
@@ -203,7 +203,7 @@ global.__VELayouts = new Map(String, Callable, {
             - this.context.nodes.remove.width()
             - this.context.nodes.remove.__margin.left
             - this.context.nodes.remove.__margin.right },
-          height: function() { return 30 },
+          height: function() { return VE_ICON_EVENT_SIZE - 2 },
           x: function() { return this.context.nodes.remove.right() },
           propagateHidden: Struct.getIfType(Struct.get(config, "label"), "propagateHidden", Boolean, true),
         },
@@ -804,7 +804,7 @@ global.__VELayouts = new Map(String, Callable, {
           //width: function() { return ((this.context.width() - this.context.nodes.label.right()) / 2.0)
           //  - this.context.nodes.increase.width() - 10 - 7 - this.__margin.left - this.__margin.right },
           width: function() { return this.context.width() - this.context.nodes.label.right()
-            - this.context.nodes.increase.width() - 32 - this.__margin.left - this.__margin.right },
+            - this.context.nodes.increase.width() - VE_ICON_EVENT_SIZE - this.__margin.left - this.__margin.right },
           margin: { top: 2.0000, bottom: 2.0000, left: 5, right: 2 },
           propagateHidden: Struct.getIfType(Struct.get(config, "field"), "propagateHidden", Boolean, true),
         },
@@ -1188,7 +1188,7 @@ global.__VELayouts = new Map(String, Callable, {
           name: "numeric-stick-increase-field.field",
           x: function() { return this.context.nodes.label.right() + this.__margin.left },
           width: function() { return this.context.width() - this.context.nodes.label.right()
-            - this.context.nodes.increase.width() - 32 - this.__margin.left - this.__margin.right },
+            - this.context.nodes.increase.width() - VE_ICON_EVENT_SIZE - this.__margin.left - this.__margin.right },
           margin: { top: 2.0000, bottom: 2.0000, left: 5, right: 2 },
           propagateHidden: Struct.getIfType(Struct.get(config, "field"), "propagateHidden", Boolean, true),
         },

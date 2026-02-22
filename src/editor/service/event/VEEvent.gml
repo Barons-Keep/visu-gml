@@ -68,6 +68,7 @@ function VEEvent(_context, json = null) constructor {
           spriteOff: { name: "visu_texture_checkbox_hide" },
           store: { key: "event-hidden" },
         },
+        input: { }
       },
     },
     {

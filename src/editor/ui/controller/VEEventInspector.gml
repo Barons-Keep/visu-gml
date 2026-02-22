@@ -292,11 +292,17 @@ function VEEventInspector(_editor) constructor {
         onMouseWheelDown: Callable.run(UIUtil.mouseEventTemplates.get("scrollableOnMouseWheelDownY")),
         onInit: function() {
           var container = this
-          this.executor = new TaskExecutor(this, {
-            enableLogger: true,
-            catchException: false,
-          })
-          this.collection = new UICollection(this, { layout: container.layout })
+          this.executor = this.executor == null
+            ? new TaskExecutor(this, {
+                enableLogger: true,
+                catchException: false,
+              })
+            : this.executor.free()
+
+          ///@UICOLLECTION_TEST this.collection = new UICollection(this, { layout: container.layout })
+          this.collection = this.collection == null
+            ? new UICollection(this, { layout: container.layout })
+            : this.collection.clear()
           Beans.get(BeanVisuEditorController).store
             .get("selected-event")
             .addSubscriber({ 
@@ -305,8 +311,8 @@ function VEEventInspector(_editor) constructor {
               callback: function(selectedEvent, data) { 
                 var track = Beans.get(BeanVisuController).trackService.track
                 if (!Optional.is(selectedEvent) || !track.channels.contains(Struct.get(selectedEvent, "channel"))) {
-                  data.items.forEach(function(item) { item.free() }).clear() ///@todo replace with remove lambda
-                  data.collection.components.clear() ///@todo replace with remove lambda
+                  data.items.forEach(Lambda.free).clear() 
+                  data.collection.components.clear() 
                   data.eventInspector.store.get("event").set(null)
                   data.state
                     .set("selectedEvent", null)
@@ -397,7 +403,7 @@ function VEEventInspector(_editor) constructor {
                     
                   data.executor.add(task)
                 } else {
-                  data.items.forEach(function(item) { item.free() }).clear()
+                  data.items.forEach(Lambda.free).clear()
                   data.collection.components.clear()
 
                   data.executor.tasks
@@ -762,8 +768,10 @@ function VEEventInspector(_editor) constructor {
         updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
         render: Callable.run(UIUtil.renderTemplates.get("renderDefaultNoSurface")),
         onInit: function() {
-          var layout = this.layout
-          this.collection = new UICollection(this, { layout: layout })
+          ///@UICOLLECTION_TEST this.collection = new UICollection(this, { layout: this.layout })
+          this.collection = this.collection == null
+            ? new UICollection(this, { layout: this.layout })
+            : this.collection.clear()
           this.state.get("components")
             .forEach(function(component, index, collection) {
               collection.add(new UIComponent(component))
