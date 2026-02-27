@@ -910,12 +910,11 @@ function PlayerHandler(json) constructor {
     var layout = isEditor ? editor.layout.nodes.preview : controller.visuRenderer.layout
     var mouseX = MouseUtil.getMouseX() - layout.x()
     var mouseY = MouseUtil.getMouseY() - layout.y()
-    var mouseShoot = (isEditor ? !editor.renderUI : true)
-      && ((mouseX >= 0 && mouseX <= layout.width() && mouseY >= 0 && mouseY <= layout.height())
+    var mouseShoot = ((mouseX >= 0 && mouseX <= layout.width() && mouseY >= 0 && mouseY <= layout.height())
         ? (keys.action.on || mouseButtons.action.on) && Visu.settings.getValue("visu.developer.mouse-shoot", false)
         : (Struct.forEach(mouseButtons, disableMouseButton) != null && false))
 
-    if (keys.action.on || mouseShoot) {
+    if (keys.action.on || (mouseShoot && (isEditor ? !editor.renderUI : true))) {
       var gunsSize = this.guns.size()
       for (var gunIdx = 0; gunIdx < gunsSize; gunIdx++) {
         updateKeyActionOnEnabled(this.guns.get(gunIdx), player, controller, this.focus, mouseShoot)
