@@ -80,7 +80,7 @@ function Test_VisuMenu_select_track(test) {
             return
           }
           var difficulty = Visu.settings.getValue("visu.difficulty")
-          var play = content.items.get("label_open-track-setup_menu-button-entry_play_menu-button-entry")
+          var play = content.items.get("label_open-track-setup_menu-button-entry_run_menu-button-entry")
           var button = content.items.get(difficulty == Difficulty.LUNATIC
             ? "open-track-setup_menu-spin-select-entry_difficulty_previous"
             : "open-track-setup_menu-spin-select-entry_difficulty_next")
