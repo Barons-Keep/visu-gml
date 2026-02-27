@@ -299,7 +299,7 @@ function VisuRenderer() constructor {
       var g4 = String.format(gridCamera.pitch + (sin(this.gridRenderer.camera.breathTimer1.time) * BREATH_TIMER_FACTOR_1), 4, 2)
       var g5 = String.format(gridCamera.angle + (sin(this.gridRenderer.camera.breathTimer2.time / 4.0) * BREATH_TIMER_FACTOR_2), 4, 2)
       var h1 = String.format(gridService.view.x, 4, 2)
-      var h2 = String.format(gridService.view.x, 4, 2)
+      var h2 = String.format(gridService.view.y, 4, 2)
       gridCameraMessage += ""
         + $"| x:         {g1}\n"
         + $"| y:         {g2}\n"
@@ -398,6 +398,10 @@ function VisuRenderer() constructor {
   }
 
   ///@private
+  ///@type {String}
+  textShowEditor = Language.get("visu.editor.hud.show-editor")
+
+  ///@private
   ///@param {UILayout} layout
   ///@return {VisuRenderer}
   renderMenu = function(layout) {
@@ -435,7 +439,7 @@ function VisuRenderer() constructor {
       var _height = layout.height()
       var xStart = _width * (1.0 - 0.061)
       var yStart = _height * (1.0 - 0.08)
-      var text = "SHOW EDITOR [F5]"
+      var text = this.textShowEditor
       GPU.render.text(_x + xStart, _y + yStart, text, 1.0, 0.0, 0.6, c_white, this.font, HAlign.RIGHT, VAlign.BOTTOM, c_lime, 8.0)
     }
     return this

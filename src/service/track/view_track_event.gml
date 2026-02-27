@@ -94,6 +94,11 @@ global.__view_track_event = {
       var camera = controller.visuRenderer.gridRenderer.camera
       var lock = gridService.targetLocked
       var follow = gridService.view.follow
+
+      if (Struct.get(data, "vw-cam_reset-follow") == true) {
+        gridService.resetViewCamera().resetTargetLocked()
+      }
+
       ///@description feature TODO view.camera.lock.x
       Visu.resolveBooleanTrackEvent(data,
         "vw-cam_use-lock-x",
@@ -109,19 +114,6 @@ global.__view_track_event = {
         "isLockedY",
         lock)
       gridService.targetLocked.lockY = null
-
-      if (Struct.get(data, "vw-cam_reset-follow") == true) {
-        gridService.view.x = (gridService.width - gridService.view.width) / 2.0
-        gridService.view.y = gridService.height - gridService.view.height
-        gridService.view.derivativeX = 0
-        gridService.view.derivativeY = 0
-        gridService.targetLocked.x = gridService.view.x + (gridService.view.width / 2.0)
-        gridService.targetLocked.y = gridService.view.y + (gridService.view.height / 2.0)
-        gridService.targetLocked.snapH = floor(gridService.view.x / (gridService.view.width / 2.0)) * (gridService.view.width / 2.0)
-        gridService.targetLocked.snapV = floor(gridService.view.y / (gridService.view.height / 2.0)) * (gridService.view.height / 2.0)
-        gridService.targetLocked.lockX = null
-        gridService.targetLocked.lockY = null
-      }
 
       ///@description feature TODO view.camera.follow.x
       Visu.resolvePropertyTrackEvent(data,

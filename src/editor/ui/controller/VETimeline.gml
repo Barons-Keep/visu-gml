@@ -739,25 +739,16 @@ function VETimeline(_editor) constructor {
 
         ///@param {String} name
         addChannel: new BindIntent(function(name) {
-          var trackService = Beans.get(BeanVisuController).trackService
+          var controller = Beans.get(BeanVisuController)
+          var trackService = controller.trackService
           if (!Core.isType(trackService.track, Track)) {
-            throw new Exception("Load track before adding new channel")
+            Logger.warn("VETimeline", "Load track before adding new channel")
+            return
           }
 
           var channel = Assert.isType(trackService.track
             .addChannel(name, {
-              parseSettings: function(json) {
-                var difficulty = Struct.get(json, "difficulty")
-                return {
-                  "difficulty": {
-                    "EASY": Struct.getDefault(difficulty, "EASY", true),
-                    "NORMAL": Struct.getDefault(difficulty, "NORMAL", true),
-                    "HARD": Struct.getDefault(difficulty, "HARD", true),
-                    "LUNATIC": Struct.getDefault(difficulty, "LUNATIC", true),
-                  },
-                  "isMouseAim": Struct.getDefault(json, "isMouseAim", null),
-                }
-              },
+              parseSettings: controller.parseTrackChannelSettings,
             }).channels.get(name), TrackChannel)
           this.collection.add(new UIComponent({
             name: name,

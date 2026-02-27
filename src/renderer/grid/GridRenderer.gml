@@ -1862,6 +1862,7 @@ function GridRenderer() constructor {
     var properties = gridService.properties
     var width = layout.width()
     var height = layout.height()
+    var rawMode = Visu.settings.getValue("visu.graphics.raw-mode")
     var enableParticles = Visu.settings.getValue("visu.graphics.particle")
     var enableGlitch = Visu.settings.getValue("visu.graphics.bkt-glitch")
 
@@ -1879,13 +1880,13 @@ function GridRenderer() constructor {
       GPU.reset.surface()
     }
 
-    if (enableGlitch && properties.renderBackgroundGlitch) {
+    if (enableGlitch && properties.renderBackgroundGlitch && !rawMode) {
       this.backgroundGlitchService.renderOn(this.renderBackgroundGlitch, layout)
     } else {
       this.renderBackgroundGlitch(layout)
     }
 
-    if (enableGlitch && properties.renderGridGlitch) {
+    if (enableGlitch && properties.renderGridGlitch && !rawMode) {
       this.gridGlitchService.renderOn(this.renderGridGlitch, layout)
     } else {
       this.renderGridGlitch(layout)
@@ -1949,7 +1950,9 @@ function GridRenderer() constructor {
     var controller = Beans.get(BeanVisuController)
     var properties = controller.gridService.properties
     if (!properties.renderBackgroundShaders 
-        || !Visu.settings.getValue("visu.graphics.bkg-shaders")) {
+        || !Visu.settings.getValue("visu.graphics.bkg-shaders")
+        || Visu.settings.getValue("visu.graphics.raw-mode")) {
+
       return this
     }
 
@@ -2004,7 +2007,9 @@ function GridRenderer() constructor {
     var controller = Beans.get(BeanVisuController)
     var properties = controller.gridService.properties
     if (!properties.renderGridShaders 
-        || !Visu.settings.getValue("visu.graphics.main-shaders")) {
+        || !Visu.settings.getValue("visu.graphics.main-shaders")
+        || Visu.settings.getValue("visu.graphics.raw-mode")) {
+
       return this
     }
 
@@ -2065,7 +2070,9 @@ function GridRenderer() constructor {
     var controller = Beans.get(BeanVisuController)
     var properties = controller.gridService.properties
     if (!properties.renderCombinedShaders
-        || !Visu.settings.getValue("visu.graphics.combined-shaders")) {
+        || !Visu.settings.getValue("visu.graphics.combined-shaders")
+        || Visu.settings.getValue("visu.graphics.raw-mode")) {
+
       return this
     }
 

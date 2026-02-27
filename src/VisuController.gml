@@ -17,6 +17,12 @@ function VisuController(config = null): Service(config) constructor {
   ///@type {Boolean}
   isMouseAim = false
 
+  ///@type {Boolean}
+  isRawMode = false
+
+  ///@type {Boolean}
+  isVisualMode = false
+
   ///@type {?VisuTrack}
   track = null
   
@@ -592,6 +598,8 @@ function VisuController(config = null): Service(config) constructor {
       }
 
       this.isMouseAim = Visu.settings.getValue("visu.developer.mouse-shoot")
+      this.isRawMode = Visu.settings.getValue("visu.graphics.raw-mode")
+      this.isVisualMode = Visu.settings.getValue("visu.graphics.visual-mode")
 
       if (this.trackService.isTrackLoaded()) {
         var ost = this.trackService.track.audio
@@ -695,9 +703,31 @@ function VisuController(config = null): Service(config) constructor {
     }
   }
 
+  ///@param {?Struct} [json]
+  ///@return {Struct}
+  parseTrackChannelSettings = function(json = null) {
+    var difficulty = Struct.get(json, "difficulty")
+    return {
+      "difficulty": {
+        "EASY": Struct.getDefault(difficulty, "EASY", true),
+        "NORMAL": Struct.getDefault(difficulty, "NORMAL", true),
+        "HARD": Struct.getDefault(difficulty, "HARD", true),
+        "LUNATIC": Struct.getDefault(difficulty, "LUNATIC", true),
+      },
+      "isMouseAim": Struct.getDefault(json, "isMouseAim", null),
+      "isVisualMode": Struct.getDefault(json, "isVisualMode", null),
+      "isRawMode": Struct.getDefault(json, "isRawMode", null),
+    }
+  }
+
+  ///@param {?TrackChannel|?Struct} channel
+  ///@return {Boolean}
   validateTrackChannelSettings = function(channel) {
     var settings = Struct.get(channel, "settings")
-    return isChannelDifficultyValid(settings) && isMouseAimValid(settings)
+    return this.isChannelDifficultyValid(settings)
+        && this.isMouseAimValid(settings)
+        && this.isVisualModeValid(settings)
+        && this.isRawModeValid(settings)
   }
 
   ///@param {?Struct} settings
@@ -712,6 +742,20 @@ function VisuController(config = null): Service(config) constructor {
   isMouseAimValid = function(settings) {
     var isMouseAim = Struct.get(settings, "isMouseAim")
     return isMouseAim == null || isMouseAim == this.isMouseAim 
+  }
+
+  ///@param {?Struct} settings
+  ///@return {Boolean}
+  isVisualModeValid = function(settings) {
+    var isVisualMode = Struct.get(settings, "isVisualMode")
+    return isVisualMode == null || isVisualMode == this.isVisualMode
+  }
+
+  ///@param {?Struct} settings
+  ///@return {Boolean}
+  isRawModeValid = function(settings) {
+    var isRawMode = Struct.get(settings, "isRawMode")
+    return isRawMode == null || isRawMode == this.isRawMode
   }
   
   ///@return {Boolean}

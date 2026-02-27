@@ -88,7 +88,7 @@ function VisuStateMachine(context, name) {
               logo: Assert.isType(SpriteUtil.parse({ name: "texture_barons_keep" }), Sprite, 
                 "logo must be type of Sprite"),
               label: new UILabel({
-                text: "Press any key to skip",
+                text: Language.get("visu.menu.splashscreen.skip"),
                 color: "#ffffff",
                 font: "font_inter_24_bold",
                 align: { v: VAlign.CENTER, h: HAlign.CENTER },

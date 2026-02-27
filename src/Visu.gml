@@ -1361,6 +1361,8 @@ function _Visu() constructor {
       .set(new SettingEntry({ name: "visu.mouse.player.focus", type: SettingTypes.NUMBER, defaultValue: MouseButtonType.NONE }))
       .set(new SettingEntry({ name: "visu.difficulty", type: SettingTypes.STRING, defaultValue: Difficulty.NORMAL }))
       .set(new SettingEntry({ name: "visu.developer.mouse-shoot", type: SettingTypes.BOOLEAN, defaultValue: false }))
+      .set(new SettingEntry({ name: "visu.graphics.visual-mode", type: SettingTypes.BOOLEAN, defaultValue: false }))
+      .set(new SettingEntry({ name: "visu.graphics.raw-mode", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ 
           name: "visu.editor.theme",
           type: SettingTypes.STRUCT,

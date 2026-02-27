@@ -319,12 +319,14 @@ function PlayerStats(_player, json) constructor {
             amount: 3,
           }))
         */
-          
+        
+        duration = 5.0
+        interval = 1.0
         var task = new Task("spawn-particle-player-bomb")
           .setTimeout(10.0)
           .setState({
-            timer: new Timer(5.0),
-            cooldown: new Timer(1.0, { loop: Infinity }),
+            timer: new Timer(duration),
+            cooldown: new Timer(interval, { loop: Infinity }),
           })
           .whenUpdate(function() {
             if (this.state.timer.update().finished) {
@@ -342,13 +344,13 @@ function PlayerStats(_player, json) constructor {
               return
             }
 
-            var time = ceil(this.state.timer.finished ? this.state.timer.duration : this.state.timer.time)
+            var time = round(this.state.timer.finished ? this.state.timer.duration : this.state.timer.time)
             var col1 = time mod 2 != 0 ? "#371848" : "#FF00FF"
             var col2 = time mod 2 != 0 ? "#FF00FF" : "#371848"
             controller.subtitleService.send(new Event("add", {
               template: new SubtitleTemplate("sub-bomb", {
                 lines: [
-                  $"DROP THE BOMB"
+                  Language.get("visu.gameplay.bomb", time, ceil(this.state.timer.duration / this.state.cooldown.duration))
                 ],
               }),
               timeout: null,
@@ -449,7 +451,7 @@ function PlayerStats(_player, json) constructor {
         controller.subtitleService.send(new Event("add", {
           template: new SubtitleTemplate("sub-bomb", {
             lines: [
-              $"DROP THE BOMB"
+              Language.get("visu.gameplay.bomb.start")
             ],
           }),
           timeout: null,
@@ -632,10 +634,6 @@ function PlayerStats(_player, json) constructor {
           || (editor != null && editor.renderUI)) {
         /*//@log.level*/ Logger.debug("Player", $"GOD MODE: respawn is possible")
         this.value = 3
-        Beans.get(BeanVisuController)
-          .send(new Event("spawn-popup", { 
-            message: "GOD-MODE: respawning player"
-          }))
       } else {
         /*//@log.level*/ Logger.debug("Player", $"GAME OVER: respawn is impossible")
         var controller = Beans.get(BeanVisuController)
@@ -908,12 +906,14 @@ function PlayerHandler(json) constructor {
     }
 
     var editor = Beans.get(Visu.modules().editor.controller)
-    var layout = editor == null ? controller.visuRenderer.layout : editor.layout.nodes.preview
+    var isEditor = editor != null
+    var layout = isEditor ? editor.layout.nodes.preview : controller.visuRenderer.layout
     var mouseX = MouseUtil.getMouseX() - layout.x()
     var mouseY = MouseUtil.getMouseY() - layout.y()
-    var mouseShoot = (mouseX >= 0 && mouseX <= layout.width() && mouseY >= 0 && mouseY <= layout.height())
-      ? (keys.action.on || mouseButtons.action.on) && Visu.settings.getValue("visu.developer.mouse-shoot", false)
-      : (Struct.forEach(mouseButtons, disableMouseButton) != null && false)
+    var mouseShoot = (isEditor ? !editor.renderUI : true)
+      && ((mouseX >= 0 && mouseX <= layout.width() && mouseY >= 0 && mouseY <= layout.height())
+        ? (keys.action.on || mouseButtons.action.on) && mouseShootSettings
+        : (Struct.forEach(mouseButtons, disableMouseButton) != null && false))
 
     if (keys.action.on || mouseShoot) {
       var gunsSize = this.guns.size()
