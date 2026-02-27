@@ -912,7 +912,7 @@ function PlayerHandler(json) constructor {
     var mouseY = MouseUtil.getMouseY() - layout.y()
     var mouseShoot = (isEditor ? !editor.renderUI : true)
       && ((mouseX >= 0 && mouseX <= layout.width() && mouseY >= 0 && mouseY <= layout.height())
-        ? (keys.action.on || mouseButtons.action.on) && mouseShootSettings
+        ? (keys.action.on || mouseButtons.action.on) && Visu.settings.getValue("visu.developer.mouse-shoot", false)
         : (Struct.forEach(mouseButtons, disableMouseButton) != null && false))
 
     if (keys.action.on || mouseShoot) {
