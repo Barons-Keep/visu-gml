@@ -1095,7 +1095,7 @@ function VETimeline(_editor) constructor {
           "background-color": ColorUtil.fromHex(VETheme.color.side).toGMColor(),
           "store": Beans.get(BeanVisuEditorController).store,
           "chunkService": controller.factoryChunkService(),
-          "viewSize": ((1.0 - (clamp(Beans.get(BeanVisuEditorController).store.getValue("timeline-zoom") - VE_TIMELINE_ZOOM_MIN, 0.0, (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN) / (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN)))) * (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN)) + VE_TIMELINE_ZOOM_MIN,
+          "viewSize": ((1.0 - (clamp(Beans.get(BeanVisuEditorController).store.getValue("timeline-zoom") - VE_TIMELINE_ZOOM_MIN, 0.0, (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN)) / (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN))) * (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN)) + VE_TIMELINE_ZOOM_MIN,
           "speed": 2.0,
           "position": 0,
           "amount": 0,
@@ -1223,8 +1223,8 @@ function VETimeline(_editor) constructor {
             this.state.get("store").get("timeline-zoom")
               .addSubscriber({ 
                 name: this.name,
-                callback: function(zoom, context) { 
-                  context.state.set("viewSize", ((1.0 - (clamp(zoom - VE_TIMELINE_ZOOM_MIN, 0.0, (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN) / (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN)))) * (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN)) + VE_TIMELINE_ZOOM_MIN)
+                callback: function(zoom, context) {                   
+                  context.state.set("viewSize", ((1.0 - (clamp(zoom - VE_TIMELINE_ZOOM_MIN, 0.0, (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN)) / (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN))) * (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN)) + VE_TIMELINE_ZOOM_MIN)
                 },
                 data: container,
                 overrideSubscriber: true,
@@ -2690,7 +2690,7 @@ function VETimeline(_editor) constructor {
         state: new Map(String, any, {
           "background-color": ColorUtil.fromHex(VETheme.color.sideShadow).toGMColor(),
           "store": Beans.get(BeanVisuEditorController).store,
-          "viewSize": ((1.0 - (clamp(Beans.get(BeanVisuEditorController).store.getValue("timeline-zoom")  - VE_TIMELINE_ZOOM_MIN, 0.0, (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN) / (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN)))) * (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN)) + VE_TIMELINE_ZOOM_MIN,
+          "viewSize": ((1.0 - (clamp(Beans.get(BeanVisuEditorController).store.getValue("timeline-zoom") - VE_TIMELINE_ZOOM_MIN, 0.0, (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN)) / (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN))) * (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN)) + VE_TIMELINE_ZOOM_MIN,
           "stepSize": 2,
           "speed": 2.0,
           "position": 0,
@@ -2711,7 +2711,7 @@ function VETimeline(_editor) constructor {
           var trackService = controller.trackService
           var duration = trackService.duration
           var width = this.area.getWidth()
-          var viewSize = ((1.0 - (clamp(this.state.get("store").getValue("timeline-zoom")  - VE_TIMELINE_ZOOM_MIN, 0.0, (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN) / (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN)))) * (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN)) + VE_TIMELINE_ZOOM_MIN
+          var viewSize = ((1.0 - (clamp(this.state.get("store").getValue("timeline-zoom") - VE_TIMELINE_ZOOM_MIN, 0.0, (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN)) / (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN))) * (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN)) + VE_TIMELINE_ZOOM_MIN
           var spd = width / viewSize
           var time = this.state.get("time")
           var mouseX = this.state.get("mouseX")
@@ -2773,7 +2773,7 @@ function VETimeline(_editor) constructor {
           var _x = this.area.x
           var _y = this.area.y
           var width = this.area.getWidth()
-          var viewSize = ((1.0 - (clamp(this.state.get("store").getValue("timeline-zoom")  - VE_TIMELINE_ZOOM_MIN, 0.0, (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN) / (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN)))) * (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN)) + VE_TIMELINE_ZOOM_MIN
+          var viewSize = ((1.0 - (clamp(this.state.get("store").getValue("timeline-zoom") - VE_TIMELINE_ZOOM_MIN, 0.0, (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN)) / (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN))) * (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN)) + VE_TIMELINE_ZOOM_MIN,
           var stepSize = this.state.get("stepSize")
           var spd = this.state.get("speed")
           var position = this.state.get("position")
