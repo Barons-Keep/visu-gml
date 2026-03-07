@@ -196,7 +196,8 @@ function VisuEditorIO(config = null): Service(config) constructor {
       || this.keyboard.keys.numZoomIn.pressed) {
 
       var item = editor.store.get("timeline-zoom")
-      item.set(clamp(item.get() + 1, 5, 30))
+      //item.set(clamp(item.get() + 1, 5, 30))
+      item.set(item.get() + 1)
 
       var ruler = editor.uiService.find("ve-timeline-ruler")
       if (Optional.is(ruler)) {
@@ -213,7 +214,8 @@ function VisuEditorIO(config = null): Service(config) constructor {
       || this.keyboard.keys.numZoomOut.pressed) {
 
       var item = editor.store.get("timeline-zoom")
-      item.set(clamp(item.get() - 1, 5, 30))
+      //item.set(clamp(item.get() - 1, 5, 30))
+      item.set(item.get() - 1)
 
       var ruler = editor.uiService.find("ve-timeline-ruler")
       if (Optional.is(ruler)) {
@@ -764,14 +766,16 @@ function VisuEditorIO(config = null): Service(config) constructor {
         return this
       }
 
-      this.controlTrackKeyboardEvent(controller, editor)
-      this.functionKeyboardEvent(controller, editor)
-      this.titleBarKeyboardEvent(controller, editor)
-      this.modalKeyboardEvent(controller, editor)
-      this.templateToolbarKeyboardEvent(controller, editor)
-      this.brushToolbarKeyboardEvent(controller, editor)
-      this.timelineKeyboardEvent(controller, editor)
-      this.mouseEvent(controller, editor)
+      if (controller.fsm.getStateName() != "scene-close") {
+        this.controlTrackKeyboardEvent(controller, editor)
+        this.functionKeyboardEvent(controller, editor)
+        this.titleBarKeyboardEvent(controller, editor)
+        this.modalKeyboardEvent(controller, editor)
+        this.templateToolbarKeyboardEvent(controller, editor)
+        this.brushToolbarKeyboardEvent(controller, editor)
+        this.timelineKeyboardEvent(controller, editor)
+        this.mouseEvent(controller, editor)
+      }
     } catch (exception) {
       var message = $"'VisuEditorIO::update' fatal error: {exception.message}"
       Logger.error(BeanVisuEditorIO, message)

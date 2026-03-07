@@ -1163,11 +1163,12 @@ function _Visu() constructor {
         executor: executor,
         transformer: new NumberTransformer({
           value: override ? transformer.value : Struct.get(container, containerKey),
-          target: transformer.target,
-          factor: transformer.factor,
-          increase: transformer.increase,
-          ease: transformer.easeType,
-          duration: transformer.duration,
+          target: Struct.get(transformer, "target"),
+          ease: Struct.get(transformer, "easeType"),
+          duration: Struct.get(transformer, "duration"),
+
+          factor: Struct.get(transformer, "factor"),
+          increase: Struct.get(transformer, "increase"),
         })
       }))
     }
@@ -1249,8 +1250,9 @@ function _Visu() constructor {
     VISU_BOOT_UP = true
   }
   
-  static loadProperties = function() {
-    if (VISU_LOAD_PROPERTIES) {
+  ///@param {Boolean} [override]
+  static loadProperties = function(override = false) {
+    if (!override && VISU_LOAD_PROPERTIES) {
       return
     }
     
@@ -1303,6 +1305,7 @@ function _Visu() constructor {
       .set(new SettingEntry({ name: "visu.debug.render-entities-mask", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.debug.render-debug-chunks", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.debug.render-surfaces", type: SettingTypes.BOOLEAN, defaultValue: false }))
+      .set(new SettingEntry({ name: "visu.debug.menu.quit.hidden", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.god-mode", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.optimalization.sort-entities-by-txgroup", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.window.width", type: SettingTypes.NUMBER, defaultValue: 1400 }))
@@ -1360,6 +1363,8 @@ function _Visu() constructor {
       .set(new SettingEntry({ name: "visu.mouse.player.focus", type: SettingTypes.NUMBER, defaultValue: MouseButtonType.NONE }))
       .set(new SettingEntry({ name: "visu.difficulty", type: SettingTypes.STRING, defaultValue: Difficulty.NORMAL }))
       .set(new SettingEntry({ name: "visu.developer.mouse-shoot", type: SettingTypes.BOOLEAN, defaultValue: false }))
+      .set(new SettingEntry({ name: "visu.graphics.visual-mode", type: SettingTypes.BOOLEAN, defaultValue: false }))
+      .set(new SettingEntry({ name: "visu.graphics.raw-mode", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ 
           name: "visu.editor.theme",
           type: SettingTypes.STRUCT,
@@ -1568,6 +1573,7 @@ function _Visu() constructor {
     //display_reset(Visu.settings.getValue("visu.graphics.aa"), Visu.settings.getValue("visu.graphics.vsync"))
     display_reset(display_aa, Visu.settings.getValue("visu.graphics.vsync", true))
     display_set_timing_method(TimingMethod.get(Visu.settings.getValue("visu.graphics.timing-method")))
+    displayService.resize(displayService.windowWidth, displayService.windowHeight)
   }
 
   static initSoundService = function(layerId) {
@@ -1628,6 +1634,7 @@ function _Visu() constructor {
   ///@return {Visu}
   static run = function(layerName = "layer_main", layerDefaultDepth = 100) {
     Logger.info("Visu", "run()")
+    randomise()
 
     var layerId = Scene.fetchLayer(layerName, layerDefaultDepth)
     

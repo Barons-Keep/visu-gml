@@ -87,6 +87,7 @@ function VisuIO(config = null): Service(config) constructor {
           if (menu.enabled) {
             if (controller.visuRenderer.blur.target != 0.0) {
               menu.send(new Event("back"))
+              controller.sfxService.play("menu-select-entry")
             } else {
               menu.send(menu.factoryOpenMainMenuEvent())
             }
@@ -112,6 +113,7 @@ function VisuIO(config = null): Service(config) constructor {
         case "paused":
           if (menu.enabled) {
             menu.send(new Event("back") )
+            controller.sfxService.play("menu-select-entry")
             if (!Optional.is(menu.back)) {
               controller.send(new Event("play"))
             }
@@ -252,9 +254,11 @@ function VisuIO(config = null): Service(config) constructor {
         return this
       }
 
-      this.fullscreenKeyboardEvent(controller)
-      this.functionKeyboardEvent(controller)
-      this.mouseEvent(controller)
+      if (controller.fsm.getStateName() != "scene-close") {
+        this.fullscreenKeyboardEvent(controller)
+        this.functionKeyboardEvent(controller)
+        this.mouseEvent(controller)
+      }
     } catch (exception) {
       var message = $"'{BeanVisuIO}::update()' fatal error: {exception.message}"
       Logger.error(BeanVisuIO, message)

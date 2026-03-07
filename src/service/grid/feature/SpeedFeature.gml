@@ -55,7 +55,7 @@ function DeprecatedSpeedFeature(json): GridItemFeature(json) constructor {
       target: Core.getIfType(GMArray.resolveRandom(Struct.get(data.transform, "target")), Number, 0.0),
       increase: Core.getIfType(GMArray.resolveRandom(Struct.get(data.transform, "increase")), Number, 0.0),
       duration: Core.getIfType(GMArray.resolveRandom(Struct.get(data.transform, "duration")), Number, 0.0),
-      ease: Core.getIfType(GMArray.resolveRandom(Struct.get(data.transform, "ease")), String, EaseType.LEGACY), // todo migrate
+      ease: Core.getIfType(GMArray.resolveRandom(Struct.get(data.transform, "ease")), String, "LEGACY"), // todo migrate
     })
     : null
 
@@ -67,7 +67,7 @@ function DeprecatedSpeedFeature(json): GridItemFeature(json) constructor {
       target: Core.getIfType(GMArray.resolveRandom(Struct.get(data.add, "target")), Number, 0.0),
       increase: Core.getIfType(GMArray.resolveRandom(Struct.get(data.add, "increase")), Number, 0.0),
       duration: Core.getIfType(GMArray.resolveRandom(Struct.get(data.add, "duration")), Number, 0.0),
-      ease: Core.getIfType(GMArray.resolveRandom(Struct.get(data.add, "ease")), String, EaseType.LEGACY), // todo migrate
+      ease: Core.getIfType(GMArray.resolveRandom(Struct.get(data.add, "ease")), String, "LEGACY"), // todo migrate
     })
     : null
 

@@ -559,9 +559,9 @@ function VESceneConfigPreview(_config = null) constructor {
         render: Callable.run(UIUtil.renderTemplates.get("renderDefaultScrollableAlpha")),
         onInit: function() {
           var container = this
-          this.collection = new UICollection(this, { layout: container.layout })
-          this.items.forEach(function(item) { item.free() }).clear() ///@todo replace with remove lambda
-          this.collection.components.clear() ///@todo replace with remove lambda
+          this.items.forEach(Lambda.free).clear() 
+          /*///@UICOLLECTION_1*/ this.collection = new UICollection(this, { layout: container.layout })
+          ///@UICOLLECTION_2 this.collection = this.collection == null ? new UICollection(this, { layout: container.layout }) : this.collection.clear()
           this.updateArea()
           this.addUIComponents(state.get("components")
             .map(function(component) {
@@ -632,9 +632,9 @@ function VESceneConfigPreview(_config = null) constructor {
         onMouseWheelDown: Callable.run(UIUtil.mouseEventTemplates.get("scrollableOnMouseWheelDownY")),
         onInit: function() {
           var container = this
-          this.collection = new UICollection(this, { layout: container.layout })
-          this.items.forEach(function(item) { item.free() }).clear() ///@todo replace with remove lambda
-          this.collection.components.clear() ///@todo replace with remove lambda
+          this.items.forEach(Lambda.free).clear() 
+          /*///@UICOLLECTION_1*/ this.collection = new UICollection(this, { layout: container.layout })
+          ///@UICOLLECTION_2 this.collection = this.collection == null ? new UICollection(this, { layout: container.layout }) : this.collection.clear()
           this.updateArea()
           this.addUIComponents(state.get("components")
             .map(function(component) {

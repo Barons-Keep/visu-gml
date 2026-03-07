@@ -1752,9 +1752,14 @@ function GridRenderer() constructor {
         1, 1, 1
       ))
       var angle = Math.fetchPointsAngle(this.player3DCoords.x, this.player3DCoords.y, this.target3DCoords.x, this.target3DCoords.y)
-      var color = c_white
+      var color = c_blue
       var alpha = player.sprite.getAlpha() * player.fadeIn
-      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, coords[0], coords[1], 0.75, 0.75, angle, color, alpha * 0.75)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, coords[0], coords[1], 1.1, 1.1, angle, c_white, alpha * 0.6)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, coords[0], coords[1], 0.8, 0.8, angle, c_red, alpha * 0.8)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, coords[0], coords[1], 0.9, 0.9, angle, c_fuchsia, alpha * 0.7)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, coords[0], coords[1], 1.0, 1.0, angle, c_blue, alpha * 0.6)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, coords[0], coords[1], 0.7, 0.7, angle, c_yellow, alpha * 0.9)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, coords[0], coords[1], 0.6, 0.6, angle, c_white, alpha * 1.0)
     }
     matrix_set(matrix_world, matrix_build_identity())
 
@@ -1857,6 +1862,7 @@ function GridRenderer() constructor {
     var properties = gridService.properties
     var width = layout.width()
     var height = layout.height()
+    var rawMode = Visu.settings.getValue("visu.graphics.raw-mode")
     var enableParticles = Visu.settings.getValue("visu.graphics.particle")
     var enableGlitch = Visu.settings.getValue("visu.graphics.bkt-glitch")
 
@@ -1874,13 +1880,13 @@ function GridRenderer() constructor {
       GPU.reset.surface()
     }
 
-    if (enableGlitch && properties.renderBackgroundGlitch) {
+    if (enableGlitch && properties.renderBackgroundGlitch && !rawMode) {
       this.backgroundGlitchService.renderOn(this.renderBackgroundGlitch, layout)
     } else {
       this.renderBackgroundGlitch(layout)
     }
 
-    if (enableGlitch && properties.renderGridGlitch) {
+    if (enableGlitch && properties.renderGridGlitch && !rawMode) {
       this.gridGlitchService.renderOn(this.renderGridGlitch, layout)
     } else {
       this.renderGridGlitch(layout)
@@ -1903,9 +1909,9 @@ function GridRenderer() constructor {
       var mouseX = MouseUtil.getMouseX() - layout.x()
       var mouseY = MouseUtil.getMouseY() - layout.y()
       var angle = Math.fetchPointsAngle(this.player3DCoords.x, this.player3DCoords.y, this.target3DCoords.x, this.target3DCoords.y)
-      var color = c_white
       var alpha = player.sprite.getAlpha() * player.fadeIn
-      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, mouseX, mouseY, 0.1, 0.1, angle, color, alpha)
+      //draw_sprite_ext(texture_visu_shroom_spawner, 0.0, mouseX, mouseY, 0.06, 0.06, angle, c_black, alpha * 0.6)
+      //draw_sprite_ext(texture_visu_shroom_spawner, 0.0, mouseX, mouseY, 0.05, 0.05, angle, c_white, alpha * 0.6)
     }
 
     return this
@@ -1944,7 +1950,9 @@ function GridRenderer() constructor {
     var controller = Beans.get(BeanVisuController)
     var properties = controller.gridService.properties
     if (!properties.renderBackgroundShaders 
-        || !Visu.settings.getValue("visu.graphics.bkg-shaders")) {
+        || !Visu.settings.getValue("visu.graphics.bkg-shaders")
+        || Visu.settings.getValue("visu.graphics.raw-mode")) {
+
       return this
     }
 
@@ -1999,7 +2007,9 @@ function GridRenderer() constructor {
     var controller = Beans.get(BeanVisuController)
     var properties = controller.gridService.properties
     if (!properties.renderGridShaders 
-        || !Visu.settings.getValue("visu.graphics.main-shaders")) {
+        || !Visu.settings.getValue("visu.graphics.main-shaders")
+        || Visu.settings.getValue("visu.graphics.raw-mode")) {
+
       return this
     }
 
@@ -2060,7 +2070,9 @@ function GridRenderer() constructor {
     var controller = Beans.get(BeanVisuController)
     var properties = controller.gridService.properties
     if (!properties.renderCombinedShaders
-        || !Visu.settings.getValue("visu.graphics.combined-shaders")) {
+        || !Visu.settings.getValue("visu.graphics.combined-shaders")
+        || Visu.settings.getValue("visu.graphics.raw-mode")) {
+
       return this
     }
 

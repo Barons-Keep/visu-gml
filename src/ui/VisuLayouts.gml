@@ -1,7 +1,7 @@
 ///@package io.alkapivo.visu.ui
 
 ///@type {Number}
-#macro VISU_MENU_ENTRY_HEIGHT 80
+#macro VISU_MENU_ENTRY_HEIGHT 104
 
 ///@type {Map<String, Callable>}
 global.__VisuLayouts = new Map(String, Callable, {
@@ -39,6 +39,38 @@ global.__VisuLayouts = new Map(String, Callable, {
           height: function() { return this.context.height() },
           x: function() { return this.context.x() },
           y: function() { return this.context.y() },
+        }
+      }
+    }
+  },
+
+    ///@param {?Struct} [config]
+  ///@return {Struct}
+  "menu-button-entry-title": function(config = null) {
+    return {
+      name: "menu-button-entry-title",
+      type: Core.isEnum(Struct.get(config, "type"), UILayoutType)
+        ? config.type
+        : UILayoutType.VERTICAL,
+      collection: true,
+      x: function() { return 0 },
+      y: function() { return this.collection.getIndex() * this.height() },
+      width: function() { return this.context.width() },
+      height: function() { return VISU_MENU_ENTRY_HEIGHT },
+      nodes: {
+        title: {
+          name: "menu-button-entry-title.title",
+          width: function() { return this.context.width() },
+          height: function() { return floor(this.context.height() * 0.4) },
+          x: function() { return this.context.x() },
+          y: function() { return this.context.y() },
+        },
+        label: {
+          name: "menu-button-entry-title.label",
+          width: function() { return this.context.width() },
+          height: function() { return ceil(this.context.height() * 0.6) },
+          x: function() { return this.context.x() },
+          y: function() { return this.context.nodes.title.bottom() },
         }
       }
     }
@@ -98,7 +130,7 @@ global.__VisuLayouts = new Map(String, Callable, {
           name: "menu-spin-select.previous",
           x: function() { return this.context.nodes.label.right() },
           y: function() { return this.context.y() },
-          width: function() { return VISU_MENU_ENTRY_HEIGHT * 0.5 },
+          width: function() { return 32 },
         },
         preview: {
           name: "menu-spin-select.preview",
@@ -112,7 +144,7 @@ global.__VisuLayouts = new Map(String, Callable, {
           name: "menu-spin-spin-select.next",
           x: function() { return this.context.nodes.preview.right() },
           y: function() { return this.context.y() },
-          width: function() { return VISU_MENU_ENTRY_HEIGHT * 0.5 },
+          width: function() { return 32 },
         },
       }
     }

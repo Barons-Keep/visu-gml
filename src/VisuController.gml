@@ -17,6 +17,12 @@ function VisuController(config = null): Service(config) constructor {
   ///@type {Boolean}
   isMouseAim = false
 
+  ///@type {Boolean}
+  isRawMode = false
+
+  ///@type {Boolean}
+  isVisualMode = false
+
   ///@type {?VisuTrack}
   track = null
   
@@ -143,6 +149,9 @@ function VisuController(config = null): Service(config) constructor {
 
   ///@type {EventPump}
   dispatcher = new EventPump(this, new Map(String, Callable, {
+    "scene-close": function(event) {
+      this.fsm.transition("scene-close", event.data)
+    },
     "game-over": function(event) {
       this.fsm.transition("game-over")
     },
@@ -201,6 +210,72 @@ function VisuController(config = null): Service(config) constructor {
       if (Optional.is(handler)) {
         handler.run(handler.parse(Struct.get(event.data, "config")))
       }
+    },
+    "run-tests": function(event) {
+      Core.setProperty("visu.manifest.load-on-start", false)
+      Core.setProperty("visu.menu.open-on-start", false)
+      Core.setProperty("visu.splashscreen.skip", true)
+      var testRunner = Beans.get(BeanTestRunner)
+      if (testRunner.testSuites.size() > 0) {
+        Logger.debug("run-tests", "Stop running tests")
+        testRunner.report = null
+        testRunner.testSuite = null
+        testRunner.testSuites.clear()
+        testRunner.uninstallHooks()
+      }
+
+      event.data.forEach(function(path, idx, testRunner) {
+        var test = String.trim(path)
+        if (test == "") {
+          return
+        }
+
+        Logger.debug("CLIParamParser", $"Run --test {test}")
+        testRunner.push(test)
+      }, testRunner)
+
+      if (this.fsm.getStateName() != "idle") {
+        this.fsm.transition("idle")
+      }
+
+      var testSuites = new Array(Struct)
+      testRunner.testSuites.forEach(function(testSuite, idx, testSuites) {
+        var testRunner = Beans.get(BeanTestRunner)
+        if (testSuite.tests.size() mod 2 != 0) {
+          Logger.debug("run-tests", $"Size of testSuites must be even, {testRunner.testSuites.size()}")
+          return
+        }
+
+        var pairs = new Array(Struct)
+        testSuite.tests.forEach(function(test, idx, pairs) {
+          if (idx mod 2 == 0) {
+            pairs.add({ load: test, playback: null })
+          } else {
+            Struct.set(pairs.getLast(), "playback", test)
+          }
+        }, pairs).clear()
+
+        pairs.shuffle().forEach(function(pair, idx, tests) {
+          tests.add(pair.load)
+          tests.add(pair.playback)
+        }, testSuite.tests)
+
+        testSuites.add(testSuite)
+      }, testSuites)
+
+      testSuites.forEach(function(testSuite, idx, testRunner) {
+        testRunner.testSuites.push(testSuite)
+      }, testRunner)
+
+      testRunner.setShutdown(function() {
+        VISU_MANIFEST_LOAD_ON_START_DISPATCHED = false
+        VISU_FORCE_GOD_MODE_DISPATCHED = false
+        VISU_BOOT_UP = false
+        VISU_LOAD_PROPERTIES = false
+        VISU_LOAD_SETTINGS = false
+        VISU_PARSE_CLI = false
+        Scene.open("scene_visu")
+      })
     },
     "transform-property": Callable.run(Struct.get(EVENT_DISPATCHERS, "transform-property")),
     "fade-sprite": Callable.run(Struct.get(EVENT_DISPATCHERS, "fade-sprite")),
@@ -321,23 +396,7 @@ function VisuController(config = null): Service(config) constructor {
   ///@private
   ///@return {VisuController}
   init = function() {
-    var displayService = Beans.get(BeanDisplayService)
-    displayService.setCursor(Cursor.DEFAULT)
-    if (!VISU_DISPLAY_SERVICE_SETUP) {
-      var width = Visu.settings.getValue("visu.window.width"),
-      var height = Visu.settings.getValue("visu.window.height")
-      var fullscreen = Visu.settings.getValue("visu.fullscreen",)
-      var borderlessWindow = Visu.settings.getValue("visu.borderless-window")
-      var timingMethod = TimingMethod.get(Visu.settings.getValue("visu.graphics.timing-method"))
-      displayService
-        .resize(width, height)
-        .setBorderlessWindow(borderlessWindow)
-        .setFullscreen(fullscreen)
-        .setCaption(game_display_name)
-        .setTimingMethod(timingMethod)
-        .center()
-      VISU_DISPLAY_SERVICE_SETUP = true
-    }
+    Beans.get(BeanDisplayService).setCursor(Cursor.DEFAULT)
 
     this.sfxService
       .set("player-collect-bomb", new SFX("sound_sfx_player_collect_bomb"))
@@ -579,6 +638,24 @@ function VisuController(config = null): Service(config) constructor {
   ///@private
   ///@return {VisuController}
   updateWatchdog = function() {
+    if (!VISU_DISPLAY_SERVICE_SETUP) {
+      var displayService = Beans.get(BeanDisplayService)
+      var width = Visu.settings.getValue("visu.window.width"),
+      var height = Visu.settings.getValue("visu.window.height")
+      var fullscreen = Visu.settings.getValue("visu.fullscreen",)
+      var borderlessWindow = Visu.settings.getValue("visu.borderless-window")
+      var timingMethod = TimingMethod.get(Visu.settings.getValue("visu.graphics.timing-method"))
+      displayService
+        .resize(width, height)
+        .setBorderlessWindow(borderlessWindow)
+        .setFullscreen(fullscreen)
+        .setCaption(game_display_name)
+        .setCursor(Cursor.DEFAULT)
+        .setTimingMethod(timingMethod)
+        .center()
+      VISU_DISPLAY_SERVICE_SETUP = true
+    }
+
     try {
       this.difficulty = Visu.settings.getValue("visu.difficulty")
       if (!Core.isEnumKey(this.difficulty, Difficulty)) {
@@ -587,6 +664,8 @@ function VisuController(config = null): Service(config) constructor {
       }
 
       this.isMouseAim = Visu.settings.getValue("visu.developer.mouse-shoot")
+      this.isRawMode = Visu.settings.getValue("visu.graphics.raw-mode")
+      this.isVisualMode = Visu.settings.getValue("visu.graphics.visual-mode")
 
       if (this.trackService.isTrackLoaded()) {
         var ost = this.trackService.track.audio
@@ -690,9 +769,31 @@ function VisuController(config = null): Service(config) constructor {
     }
   }
 
+  ///@param {?Struct} [json]
+  ///@return {Struct}
+  parseTrackChannelSettings = function(json = null) {
+    var difficulty = Struct.get(json, "difficulty")
+    return {
+      "difficulty": {
+        "EASY": Struct.getDefault(difficulty, "EASY", true),
+        "NORMAL": Struct.getDefault(difficulty, "NORMAL", true),
+        "HARD": Struct.getDefault(difficulty, "HARD", true),
+        "LUNATIC": Struct.getDefault(difficulty, "LUNATIC", true),
+      },
+      "isMouseAim": Struct.getDefault(json, "isMouseAim", null),
+      "isVisualMode": Struct.getDefault(json, "isVisualMode", null),
+      "isRawMode": Struct.getDefault(json, "isRawMode", null),
+    }
+  }
+
+  ///@param {?TrackChannel|?Struct} channel
+  ///@return {Boolean}
   validateTrackChannelSettings = function(channel) {
     var settings = Struct.get(channel, "settings")
-    return isChannelDifficultyValid(settings) && isMouseAimValid(settings)
+    return this.isChannelDifficultyValid(settings)
+        && this.isMouseAimValid(settings)
+        && this.isVisualModeValid(settings)
+        && this.isRawModeValid(settings)
   }
 
   ///@param {?Struct} settings
@@ -708,6 +809,20 @@ function VisuController(config = null): Service(config) constructor {
     var isMouseAim = Struct.get(settings, "isMouseAim")
     return isMouseAim == null || isMouseAim == this.isMouseAim 
   }
+
+  ///@param {?Struct} settings
+  ///@return {Boolean}
+  isVisualModeValid = function(settings) {
+    var isVisualMode = Struct.get(settings, "isVisualMode")
+    return isVisualMode == null || isVisualMode == this.isVisualMode
+  }
+
+  ///@param {?Struct} settings
+  ///@return {Boolean}
+  isRawModeValid = function(settings) {
+    var isRawMode = Struct.get(settings, "isRawMode")
+    return isRawMode == null || isRawMode == this.isRawMode
+  }
   
   ///@return {Boolean}
   isGameplayRunning = function() {
@@ -716,6 +831,7 @@ function VisuController(config = null): Service(config) constructor {
     return (!this.menu.enabled) 
         && (state != "splashscreen")
         && (state != "game-over")
+        && (state != "scene-close")
         && (state != "paused" 
         || (Optional.is(editor) && editor.store.getValue("update-services")))
   }

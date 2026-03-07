@@ -213,13 +213,7 @@ function GridService(_config = null): Service(_config) constructor {
   pixelHeight = Struct.getIfType(this.config, "pixelHeight", Number, GRID_SERVICE_PIXEL_HEIGHT)
 
   ///@type {GridView}
-  view = new GridView({
-    worldWidth: this.width, 
-    worldHeight: this.height,
-  })
-  ///@description (set camera on middle bottom)
-  this.view.x = (this.width - this.view.width) / 2.0
-  this.view.y = this.height - this.view.height
+  view = new GridView({ worldWidth: this.width, worldHeight: this.height })
 
   ///@type {TaskExecutor}
   executor = new TaskExecutor(this)
@@ -233,14 +227,14 @@ function GridService(_config = null): Service(_config) constructor {
   
   ///@type {Struct}
   targetLocked = {
-    x: this.view.x + (this.view.width / 2.0),
-    y: this.view.y + (this.view.height / 2.0),
+    x: 0.0,
+    y: 0.0,
     isLockedX: false,
     isLockedY: false,
     lockX: null,
     lockY: null,
-    snapH: floor(this.view.x / (this.view.width / 2.0)) * (this.view.width / 2.0),
-    snapV: floor(this.view.y / (this.view.height / 2.0)) * (this.view.height / 2.0),
+    snapH: 1.0,
+    snapV: 1.0,
     setX: function(x) {
       this.x = x
       return this
@@ -413,6 +407,12 @@ function GridService(_config = null): Service(_config) constructor {
       items.setContainer(GMArray.sort(items.getContainer(), this.compareItems))
     },
   }
+
+  ///@type {String}
+  hechan = choose("tx_bkg_goetia_1", "texture_hechan_3", "texture_hechan_4")
+
+  ///@type {Boolean}
+  replaced = false
   
   ///@type {EventPump}
   dispatcher = new EventPump(this, new Map(String, Callable, {
@@ -420,16 +420,7 @@ function GridService(_config = null): Service(_config) constructor {
     "fade-sprite": Callable.run(Struct.get(EVENT_DISPATCHERS, "fade-sprite")),
     "fade-color": Callable.run(Struct.get(EVENT_DISPATCHERS, "fade-color")),
     "clear-grid": function(event) {
-      this.view.x = (this.width - this.view.width) / 2.0
-      this.view.y = this.height - this.view.height
-
-      this.targetLocked.x = this.view.x + (this.view.width / 2.0)
-      this.targetLocked.y = this.view.y + (this.view.height / 2.0)
-      this.targetLocked.isLockedX = false
-      this.targetLocked.isLockedY = false
-      this.targetLocked.lockX = null
-      this.targetLocked.lockY = null
-
+      this.resetViewCamera().resetTargetLocked()
       this.properties = new GridProperties(Struct.getIfType(this.config, "properties", Struct)).init(this)
     },
   }))
@@ -445,11 +436,29 @@ function GridService(_config = null): Service(_config) constructor {
     return md5_string_utf8(string(this.uidPointer))
   }
 
-  ///@type {String}
-  hechan = choose("tx_bkg_goetia_1", "texture_hechan_3", "texture_hechan_4")
+  ///@return {GridService}
+  resetViewCamera = function() {
+    this.view.x = (this.width - this.view.width) / 2.0
+    this.view.y = this.height - (this.view.height * 4.0) 
+    this.view.derivativeX = 0
+    this.view.derivativeY = 0
 
-  ///@type {Boolean}
-  replaced = false
+    return this
+  }
+
+  ///@return {GridService}
+  resetTargetLocked = function() {
+    this.targetLocked.x = this.view.x + (this.view.width / 2.0)
+    this.targetLocked.y = this.view.y + (this.view.height / 2.0)
+    this.targetLocked.isLockedX = false
+    this.targetLocked.isLockedY = false
+    this.targetLocked.snapH = floor(this.view.x / (this.view.width / 2.0)) * (this.view.width / 2.0)
+    this.targetLocked.snapV = floor(this.view.y / (this.view.height / 2.0)) * (this.view.height / 2.0)
+    this.targetLocked.lockX = null
+    this.targetLocked.lockY = null
+
+    return this
+  }
   
   ///@param {?Number} [duration]
   ///@return {GridService}
@@ -628,7 +637,7 @@ function GridService(_config = null): Service(_config) constructor {
   ///@return {GridService}
   loadingScreen = function(duration = null) {
     var task = new Task("init-foreground")
-      .setTimeout(10.0)
+      .setTimeout(20.0)
       .setState({
         duration: duration,
       })
@@ -945,6 +954,7 @@ function GridService(_config = null): Service(_config) constructor {
       this.fullfill()
     }))
 
+  this.resetViewCamera().resetTargetLocked()
   this.properties.init(this)
 }
 

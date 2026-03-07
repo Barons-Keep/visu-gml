@@ -77,9 +77,35 @@ global.__VisuComponents = new Map(String, Callable, {
           Struct.get(config, "label"),
           false
         )
+      )
+    ])
+  },
+
+  ///@param {String} name
+  ///@param {UILayout} layout
+  ///@param {?Struct} [config]
+  ///@return {Array<UIItem>}
+  "menu-button-entry-title": function(name, layout, config = null) {
+    return new Array(UIItem, [
+      UIText(
+        $"label_{name}_menu-button-entry-title",
+        Struct.appendRecursive(
+          Struct.appendRecursive(
+            { 
+              layout: layout.nodes.title,
+              updateArea: Callable
+                .run(UIUtil.updateAreaTemplates
+                .get("applyCollectionLayout")),
+            }, 
+            VisuStyles.get("menu-button-entry-title").title,
+            false
+          ),
+          Struct.get(config, "title"),
+          false
+        )
       ),
       UIText(
-        $"title_{name}_menu-button-entry",
+        $"title_{name}_menu-button-entry-label",
         Struct.appendRecursive(
           Struct.appendRecursive(
             { 
@@ -88,13 +114,13 @@ global.__VisuComponents = new Map(String, Callable, {
                 .run(UIUtil.updateAreaTemplates
                 .get("applyCollectionLayout")),
             }, 
-            VisuStyles.get("menu-button-entry").title,
+            VisuStyles.get("menu-button-entry-title").label,
             false
           ),
-          Struct.get(config, "title"),
+          Struct.get(config, "label"),
           false
         )
-      ),
+      )
     ])
   },
 

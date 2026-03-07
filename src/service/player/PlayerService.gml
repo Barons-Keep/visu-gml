@@ -104,7 +104,7 @@ function PlayerService(config = null): Service(config) constructor {
       var gridService = controller.gridService
       var view = gridService.view
       var _x = view.x + (view.width / 2.0)
-      var _y = gridService.height - (view.height * 0.25)
+      var _y = gridService.height - (view.height * 3.25)//0.25)
 
       if (Core.isType(this.player, Player)) {
         if (Struct.get(event.data, "reset-position") != true) {

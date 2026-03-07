@@ -9,12 +9,7 @@ function FollowPlayerFeature(json): GridItemFeature(json) constructor {
   type = "FollowPlayerFeature"
 
   ///@type {NumberTransformer}
-  value = new NumberTransformer({
-    value: Core.getIfType(GMArray.resolveRandom(Struct.get(Struct.get(data, "value"), "value")), Number, 0.0),
-    target: Core.getIfType(GMArray.resolveRandom(Struct.get(Struct.get(data, "value"), "target")), Number, 0.0),
-    duration: Core.getIfType(GMArray.resolveRandom(Struct.get(Struct.get(data, "value"), "duration")), Number, 0.0),
-    ease: Core.getIfType(GMArray.resolveRandom(Struct.get(Struct.get(data, "value"), "ease")), String, EaseType.LINEAR),
-  })
+  factor = new NumberTransformer(Struct.get(data, "factor"))
 
   ///@override
   ///@param {GridItem} item
@@ -26,6 +21,6 @@ function FollowPlayerFeature(json): GridItemFeature(json) constructor {
     }
 
     var angle = Math.fetchPointsAngleDiff(item.angle, Math.fetchPointsAngle(item.x, item.y, player.x, player.y))
-    item.setAngle(item.angle - (angle * this.value.update().value))
+    item.setAngle(item.angle - (angle * this.factor.update().value))
   }
 }

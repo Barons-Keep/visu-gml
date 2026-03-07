@@ -64,8 +64,9 @@ function factoryVEContextMenu(root, anchor, json) {
     onMouseWheelDown: Callable.run(UIUtil.mouseEventTemplates.get("scrollableOnMouseWheelDownY")),
     onInit: function() {
       var container = this
-      this.collection = new UICollection(this, { layout: this.layout })
-      this.items.forEach(function(item) { item.free() }).clear()
+      /*///@UICOLLECTION_1*/ this.collection = new UICollection(this, { layout: this.layout })
+      ///@UICOLLECTION_2 this.collection = this.collection == null ? new UICollection(this, { layout: this.layout }) : this.collection.clear()
+      this.items.forEach(Lambda.free).clear()
       this.updateArea()
       this.state.get("components").forEach(function(component, index, collection) {
         collection.add(new UIComponent(component))

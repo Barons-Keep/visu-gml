@@ -190,7 +190,7 @@ function VisuEditorController(config = null): Service(config) constructor {
       type: Number,
       value: Assert.isType(Visu.settings.getValue("visu.editor.timeline-zoom", 10), Number),
       passthrough: function(value) {
-        return clamp(value, 5, 30)
+        return clamp(value, VE_TIMELINE_ZOOM_MIN, VE_TIMELINE_ZOOM_MAX)
       },
     },
     "timeline-follow": {
@@ -517,6 +517,8 @@ function VisuEditorController(config = null): Service(config) constructor {
   ///@private
   ///@return {VisuEditorController}
   init = function() {
+    VE_ICON_EVENT_SIZE = Core.getProperty("visu.editor.ui.icon.event-size", VE_ICON_EVENT_SIZE)
+
     if (Core.getProperty("visu.editor.edit-theme")) {
       Struct.forEach(Visu.settings.getValue("visu.editor.theme"), function(hex, name) {
         Struct.set(VETheme.color, name, hex)

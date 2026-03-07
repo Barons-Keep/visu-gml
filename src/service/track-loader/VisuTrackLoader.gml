@@ -304,18 +304,7 @@ function VisuTrackLoader(config = null): Service(config) constructor {
                           handlers: acc.trackService.handlers,
                           parseAsync: Core.getProperty("visu.manifest.parse-track-async", true),
                           parseTrackEventStep: Core.getProperty("visu.manifest.parse-track-event-step", 32),
-                          parseSettings: function(json) {
-                            var difficulty = Struct.get(json, "difficulty")
-                            return {
-                              "difficulty": {
-                                "EASY": Struct.getDefault(difficulty, "EASY", true),
-                                "NORMAL": Struct.getDefault(difficulty, "NORMAL", true),
-                                "HARD": Struct.getDefault(difficulty, "HARD", true),
-                                "LUNATIC": Struct.getDefault(difficulty, "LUNATIC", true),
-                              },
-                              "isMouseAim": Struct.getDefault(json, "isMouseAim", null),
-                            }
-                          },
+                          parseSettings: acc.parseSettings,
                           parseEvent: (PRELOAD_TRACK_EVENT
                             ? function(event, index, config = null) {
                               var trackEvent = new TrackEvent(event, config)
@@ -336,7 +325,10 @@ function VisuTrackLoader(config = null): Service(config) constructor {
                           ),
                         }))
                       },
-                      acc: { trackService: controller.trackService },
+                      acc: {
+                        trackService: controller.trackService,
+                        parseSettings: controller.parseTrackChannelSettings,
+                      },
                       model: "io.alkapivo.core.service.track.Track",
                     })
                     .whenSuccess(function(result) {
