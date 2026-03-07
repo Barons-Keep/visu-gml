@@ -262,10 +262,8 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
       updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
       render: Callable.run(UIUtil.renderTemplates.get("renderDefault")),
       onInit: function() {
-        ///@UICOLLECTION_TEST this.collection = new UICollection(this, { layout: this.layout })
-        this.collection = this.collection == null
-          ? new UICollection(this, { layout: this.layout })
-          : this.collection.clear()
+        /*///@UICOLLECTION_1*/ this.collection = new UICollection(this, { layout: this.layout })
+        ///@UICOLLECTION_2 this.collection = this.collection == null ? new UICollection(this, { layout: this.layout }) : this.collection.clear()
         this.state
           .set("store", this.templateToolbar.store)
           .get("types")
@@ -813,10 +811,8 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
       render: Callable.run(UIUtil.renderTemplates.get("renderDefault")),
       onInit: function() {
         var container = this
-        ///@UICOLLECTION_TEST this.collection = new UICollection(this, { layout: this.layout })
-        this.collection = this.collection == null
-          ? new UICollection(this, { layout: this.layout })
-          : this.collection.clear()
+        /*///@UICOLLECTION_1*/ this.collection = new UICollection(this, { layout: this.layout })
+        ///@UICOLLECTION_2 this.collection = this.collection == null ? new UICollection(this, { layout: this.layout }) : this.collection.clear()
         this.templateToolbar.store.get("type").addSubscriber({ 
           name: container.name,
           overrideSubscriber: true,
@@ -1507,10 +1503,8 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
           : this.executor.free()
 
         var container = this
-        ///@UICOLLECTION_TEST this.collection = new UICollection(this, { layout: this.layout })
-        this.collection = this.collection == null
-          ? new UICollection(this, { layout: this.layout })
-          : this.collection.clear()
+        /*///@UICOLLECTION_1*/ this.collection = new UICollection(this, { layout: this.layout })
+        ///@UICOLLECTION_2 this.collection = this.collection == null ? new UICollection(this, { layout: this.layout }) : this.collection.clear()
         this.templateToolbar.store.get("type").addSubscriber({ 
           name: container.name,
           overrideSubscriber: true,
@@ -2982,10 +2976,8 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
             })
           : this.executor.free()
 
-        ///@UICOLLECTION_TEST this.collection = new UICollection(this, { layout: container.layout })
-        this.collection = this.collection == null
-          ? new UICollection(this, { layout: container.layout })
-          : this.collection.clear()
+        /*///@UICOLLECTION_1*/ this.collection = new UICollection(this, { layout: container.layout })
+        ///@UICOLLECTION_2 this.collection = this.collection == null ? new UICollection(this, { layout: container.layout }) : this.collection.clear()
         this.templateToolbar.store.get("template").addSubscriber({ 
           name: container.name,
           overrideSubscriber: true,
@@ -3234,10 +3226,8 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
       },
       render: Callable.run(UIUtil.renderTemplates.get("renderDefault")),
       onInit: function() {
-        ///@UICOLLECTION_TEST this.collection = new UICollection(this, { layout: this.layout })
-        this.collection = this.collection == null
-          ? new UICollection(this, { layout: this.layout })
-          : this.collection.clear()
+        /*///@UICOLLECTION_1*/ this.collection = new UICollection(this, { layout: this.layout })
+        ///@UICOLLECTION_2 this.collection = this.collection == null ? new UICollection(this, { layout: this.layout }) : this.collection.clear()
         this.state.get("components")
           .forEach(function(component, index, collection) {
             collection.add(new UIComponent(component))

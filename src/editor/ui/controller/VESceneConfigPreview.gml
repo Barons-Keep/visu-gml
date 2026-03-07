@@ -560,10 +560,8 @@ function VESceneConfigPreview(_config = null) constructor {
         onInit: function() {
           var container = this
           this.items.forEach(Lambda.free).clear() 
-          ///@UICOLLECTION_TEST this.collection = new UICollection(this, { layout: container.layout })
-          this.collection = this.collection == null
-            ? new UICollection(this, { layout: container.layout })
-            : this.collection.clear()
+          /*///@UICOLLECTION_1*/ this.collection = new UICollection(this, { layout: container.layout })
+          ///@UICOLLECTION_2 this.collection = this.collection == null ? new UICollection(this, { layout: container.layout }) : this.collection.clear()
           this.updateArea()
           this.addUIComponents(state.get("components")
             .map(function(component) {
@@ -635,10 +633,8 @@ function VESceneConfigPreview(_config = null) constructor {
         onInit: function() {
           var container = this
           this.items.forEach(Lambda.free).clear() 
-          ///@UICOLLECTION_TEST this.collection = new UICollection(this, { layout: container.layout })
-          this.collection = this.collection == null
-            ? new UICollection(this, { layout: container.layout })
-            : this.collection.clear()
+          /*///@UICOLLECTION_1*/ this.collection = new UICollection(this, { layout: container.layout })
+          ///@UICOLLECTION_2 this.collection = this.collection == null ? new UICollection(this, { layout: container.layout }) : this.collection.clear()
           this.updateArea()
           this.addUIComponents(state.get("components")
             .map(function(component) {

@@ -1250,8 +1250,9 @@ function _Visu() constructor {
     VISU_BOOT_UP = true
   }
   
-  static loadProperties = function() {
-    if (VISU_LOAD_PROPERTIES) {
+  ///@param {Boolean} [override]
+  static loadProperties = function(override = false) {
+    if (!override && VISU_LOAD_PROPERTIES) {
       return
     }
     
@@ -1632,6 +1633,7 @@ function _Visu() constructor {
   ///@return {Visu}
   static run = function(layerName = "layer_main", layerDefaultDepth = 100) {
     Logger.info("Visu", "run()")
+    randomise()
 
     var layerId = Scene.fetchLayer(layerName, layerDefaultDepth)
     

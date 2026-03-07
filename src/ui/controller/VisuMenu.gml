@@ -296,8 +296,6 @@ function VisuMenuEntry(json) constructor {
 
   ///@type {String}
   title = Struct.getIfType(json, "title", String, "")
-  this.name = $"{this.title}\n{this.name}"
-  this.title = ""
 
   ///@type {VisuMenuEntryEvent}
   event = new VisuMenuEntryEvent(json.event)
@@ -401,9 +399,9 @@ function VisuMenu(_config = null) constructor {
       content: new Array(Struct, node.entries
         .map(function(entry, index, nodeName) {
           return {
-            name: $"{nodeName}_menu-button-entry_{index}",
-            template: VisuComponents.get("menu-button-entry"),
-            layout: VisuLayouts.get("menu-button-entry"),
+            name: $"{nodeName}_menu-button-entry-title_{index}",
+            template: VisuComponents.get("menu-button-entry-title"),
+            layout: VisuLayouts.get("menu-button-entry-title"),
             config: {
               layout: { type: UILayoutType.VERTICAL },
               title: {
@@ -625,6 +623,40 @@ function VisuMenu(_config = null) constructor {
           }
         },
         {
+          name: "open-track-setup_menu-button-input-entry_raw-mode",
+          template: VisuComponents.get("menu-button-input-entry"),
+          layout: VisuLayouts.get("menu-button-input-entry"),
+          config: {
+            layout: { type: UILayoutType.VERTICAL },
+            label: { 
+              text: Language.get("visu.menu.raw-mode"),
+              callback: new BindIntent(function() {
+                var value = Visu.settings.getValue("visu.graphics.raw-mode")
+                Visu.settings.setValue("visu.graphics.raw-mode", !value).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              }),
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            },
+            input: {
+              label: { text: VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT },
+              callback: function() {
+                var value = Visu.settings.getValue("visu.graphics.raw-mode")
+                Visu.settings.setValue("visu.graphics.raw-mode", !value).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              },
+              updateCustom: function() {
+                this.label.text = Visu.settings.getValue("visu.graphics.raw-mode") ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+                this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
+              },
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            }
+          }
+        },
+        {
           name: "open-track-setup_menu-button-entry_run",
           template: VisuComponents.get("menu-button-entry"),
           layout: VisuLayouts.get("menu-button-entry"),
@@ -656,7 +688,10 @@ function VisuMenu(_config = null) constructor {
             label: { 
               text: Language.get("visu.menu.run.visual-mode"),
               callback: new BindIntent(function() {
-                Visu.settings.setValue("visu.graphics.visual-mode", true).saveToFile()
+                Visu.settings
+                  .setValue("visu.graphics.raw-mode", false)
+                  .setValue("visu.graphics.visual-mode", true)
+                  .saveToFile()
                 Beans.get(BeanVisuController).send(new Event("load", {
                   manifest: $"{working_directory}{this.callbackData}",
                   autoplay: true,
@@ -1028,7 +1063,8 @@ function VisuMenu(_config = null) constructor {
         break
     }
 
-    if (Core.getRuntimeType() != RuntimeType.GXGAMES) {
+    if (Core.getRuntimeType() != RuntimeType.GXGAMES
+        || !Core.getProperty("visu.menu.quit.hidden", false)) {
       event.data.content.add({
         name: "main-menu_menu-button-entry_quit",
         template: VisuComponents.get("menu-button-entry"),
@@ -2373,40 +2409,6 @@ function VisuMenu(_config = null) constructor {
           }
         },
         {
-          name: "gameplay_menu-button-input-entry_raw-mode",
-          template: VisuComponents.get("menu-button-input-entry"),
-          layout: VisuLayouts.get("menu-button-input-entry"),
-          config: {
-            layout: { type: UILayoutType.VERTICAL },
-            label: { 
-              text: Language.get("visu.menu.raw-mode"),
-              callback: new BindIntent(function() {
-                var value = Visu.settings.getValue("visu.graphics.raw-mode")
-                Visu.settings.setValue("visu.graphics.raw-mode", !value).save()
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-              }),
-              onMouseReleasedLeft: function() {
-                this.callback()
-              },
-            },
-            input: {
-              label: { text: VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT },
-              callback: function() {
-                var value = Visu.settings.getValue("visu.graphics.raw-mode")
-                Visu.settings.setValue("visu.graphics.raw-mode", !value).save()
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-              },
-              updateCustom: function() {
-                this.label.text = Visu.settings.getValue("visu.graphics.raw-mode") ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
-                this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
-              },
-              onMouseReleasedLeft: function() {
-                this.callback()
-              },
-            }
-          }
-        },
-        {
           name: "gameplay_menu-spin-select-entry_dt",
           template: VisuComponents.get("menu-spin-select-entry"),
           layout: VisuLayouts.get("menu-spin-select-entry"),
@@ -2503,7 +2505,7 @@ function VisuMenu(_config = null) constructor {
           config: {
             layout: { type: UILayoutType.VERTICAL },
             label: { 
-              text: Language.get("visu.menu.gui-scale.apply", "Apply GUI Scale"),
+              text: Language.get("visu.menu.gui-scale.apply"),
               callback: new BindIntent(function() {
                 Beans.get(BeanVisuController).sfxService.play("menu-select-entry")
 
@@ -2524,7 +2526,8 @@ function VisuMenu(_config = null) constructor {
                 var displayService = Beans.get(BeanDisplayService)
                 var width = Math.getEvenCeil(displayService.getWidth() / scale)
                 var height = Math.getEvenCeil(displayService.getHeight() / scale)
-                this.label.text = $"Apply GUI Scale\n[ {width} x {height} ]"
+                var label = Language.get("visu.menu.gui-scale.apply")
+                this.label.text = $"{label} [ {width} x {height} ]"
               }
             },
           }
@@ -2931,6 +2934,74 @@ function VisuMenu(_config = null) constructor {
           }
         },
         {
+          name: "developer_menu-button-input-entry_visual-mode",
+          template: VisuComponents.get("menu-button-input-entry"),
+          layout: VisuLayouts.get("menu-button-input-entry"),
+          config: {
+            layout: { type: UILayoutType.VERTICAL },
+            label: { 
+              text: Language.get("visu.menu.visual-mode", "Visual only"),
+              callback: new BindIntent(function() {
+                var value = Visu.settings.getValue("visu.graphics.visual-mode")
+                Visu.settings.setValue("visu.graphics.raw-mode", !value).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              }),
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            },
+            input: {
+              label: { text: VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT },
+              callback: function() {
+                var value = Visu.settings.getValue("visu.graphics.visual-mode")
+                Visu.settings.setValue("visu.graphics.visual-mode", !value).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              },
+              updateCustom: function() {
+                this.label.text = Visu.settings.getValue("visu.graphics.visual-mode") ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+                this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
+              },
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            }
+          }
+        },
+        {
+          name: "developer_menu-button-input-entry_raw-mode",
+          template: VisuComponents.get("menu-button-input-entry"),
+          layout: VisuLayouts.get("menu-button-input-entry"),
+          config: {
+            layout: { type: UILayoutType.VERTICAL },
+            label: { 
+              text: Language.get("visu.menu.raw-mode"),
+              callback: new BindIntent(function() {
+                var value = Visu.settings.getValue("visu.graphics.raw-mode")
+                Visu.settings.setValue("visu.graphics.raw-mode", !value).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              }),
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            },
+            input: {
+              label: { text: VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT },
+              callback: function() {
+                var value = Visu.settings.getValue("visu.graphics.raw-mode")
+                Visu.settings.setValue("visu.graphics.raw-mode", !value).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              },
+              updateCustom: function() {
+                this.label.text = Visu.settings.getValue("visu.graphics.raw-mode") ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+                this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
+              },
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            }
+          }
+        },
+        {
           name: "developer_menu-spin-select-entry_difficulty",
           template: VisuComponents.get("menu-spin-select-entry"),
           layout: VisuLayouts.get("menu-spin-select-entry"),
@@ -3008,37 +3079,47 @@ function VisuMenu(_config = null) constructor {
           },
         },
         {
-          name: "developer_menu-button-input-entry_visual-mode",
-          template: VisuComponents.get("menu-button-input-entry"),
-          layout: VisuLayouts.get("menu-button-input-entry"),
+          name: "developer_menu-button-entry_demo",
+          template: VisuComponents.get("menu-button-entry"),
+          layout: VisuLayouts.get("menu-button-entry"),
           config: {
             layout: { type: UILayoutType.VERTICAL },
             label: { 
-              text: Language.get("visu.menu.visual-mode", "Visual only"),
+              text: Language.get("visu.menu.demo", "Demo mode"),
               callback: new BindIntent(function() {
-                var value = Visu.settings.getValue("visu.graphics.visual-mode")
-                Visu.settings.setValue("visu.graphics.raw-mode", !value).save()
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+                VISU_MANIFEST_LOAD_ON_START_DISPATCHED = false
+                VISU_FORCE_GOD_MODE_DISPATCHED = false
+                VISU_BOOT_UP = false
+                VISU_LOAD_PROPERTIES = false
+                VISU_LOAD_SETTINGS = false
+                VISU_PARSE_CLI = false
+                //VISU_DISPLAY_SERVICE_SETUP = false
+
+                var controller = Beans.get(BeanVisuController)
+                controller.sfxService.play("menu-select-entry")
+                controller.send(new Event("scene-close", {
+                  duration: 1.5,
+                  callback: function() {
+                    var controller = Beans.get(BeanVisuController)
+                    controller.sfxService.play("menu-use-entry")
+                    controller.playerService.remove()
+                    Scene.open("scene_visu", {
+                      VisuController: {
+                        initialState: {
+                          name: "idle",
+                          data: new Event("run-tests", new Array(String, [ "track/demo.json" ])),
+                        },
+                      },
+                    })
+                  },
+                }))
+                controller.menu.send(new Event("close", { fade: true }))
               }),
+              callbackData: config,
               onMouseReleasedLeft: function() {
                 this.callback()
               },
             },
-            input: {
-              label: { text: VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT },
-              callback: function() {
-                var value = Visu.settings.getValue("visu.graphics.visual-mode")
-                Visu.settings.setValue("visu.graphics.visual-mode", !value).save()
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-              },
-              updateCustom: function() {
-                this.label.text = Visu.settings.getValue("visu.graphics.visual-mode") ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
-                this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
-              },
-              onMouseReleasedLeft: function() {
-                this.callback()
-              },
-            }
           }
         },
         {
@@ -3219,22 +3300,32 @@ function VisuMenu(_config = null) constructor {
         nodes: {
           "visu-menu.title": {
             name: "visu-menu.title",
-            x: function() { return this.context.x() },
+            x: function() { return this.context.x() + min((this.context.width() - this.width() ) / 2.0, 180.0) },
             y: function() { return this.context.y() },
-            width: function() { return this.context.width() },
-            height: function() { return min(this.context.height() * 0.16, 100) },
+            width: function() { return clamp(this.context.width() * 0.3, 540, 700) },
+            height: function() { 
+              var minFooterHeight = 72
+              var minTitleHeight = 240
+              var contextHeight = this.context.height()
+              var viewHeight = Struct.get(context.nodes, "visu-menu.content").viewHeight
+              if ((contextHeight / 2.0) - viewHeight - minFooterHeight >= 0) {
+                return contextHeight / 2.0 >= minTitleHeight ? contextHeight / 2.0 : minTitleHeight
+              } else {
+                return contextHeight - viewHeight - minFooterHeight > minTitleHeight
+                  ? contextHeight - viewHeight - minFooterHeight
+                  : minTitleHeight
+              }
+            },
           },
           "visu-menu.content": {
             name: "visu-menu.content",
-            x: function() { return this.context.x() + ((this.context.width() - this.width()) / 2.0) },
+            x: function() { return this.context.x() + min((this.context.width() - this.width() ) / 2.0, 180.0) },
             //x: function() { return this.context.x() + clamp(this.context.width() * 0.15, 80, 384) },
-            y: function() { return Struct.get(this.context.nodes, "visu-menu.title").bottom() 
-              + this.__margin.top 
-              + ((this._height(this.context, this.__margin) - this.height()) / 2.0)
-            },
-            width: function() { return max(this.context.width() * 0.3, 640) },
+            y: function() { return Struct.get(this.context.nodes, "visu-menu.title").bottom() + this.__margin.top },
+            width: function() { return clamp(this.context.width() * 0.3, 540, 700) },
             viewHeight: 0.0,
             height: function() {
+              var contextHeight = this.context.height()
               this.viewHeight = clamp(this.viewHeight, 0.0, this._height(this.context, this.__margin))
               return this.viewHeight
             },
@@ -3250,10 +3341,18 @@ function VisuMenu(_config = null) constructor {
           },
           "visu-menu.footer": {
             name: "visu-menu.footer",
-            x: function() { return this.context.x() },
+            x: function() { return this.context.x() + min((this.context.width() - this.width() ) / 2.0, 180.0) },
             y: function() { return this.context.y() + this.context.height() - this.height() },
-            width: function() { return this.context.width() },
-            height: function() { return min(this.context.height() * 0.16, 100) },
+            width: function() { return clamp(this.context.width() * 0.3, 540, 700) },
+            height: function() {
+              var minFooterHeight = 72
+              return max(
+                context.height()
+                  - Struct.get(context.nodes, "visu-menu.title").height()
+                  - Struct.get(context.nodes, "visu-menu.content").viewHeight,
+                minFooterHeight
+              )
+            },
           },
         }
       },
@@ -3764,10 +3863,8 @@ function VisuMenu(_config = null) constructor {
           .run(UIUtil.mouseEventTemplates
           .get("scrollableOnMouseWheelDownY")),
         onInit: function() {
-          ///@UICOLLECTION_TEST this.collection = new UICollection(this, { layout: this.layout })
-          this.collection = this.collection == null
-            ? new UICollection(this, { layout: this.layout })
-            : this.collection.clear()
+          /*///@UICOLLECTION_1*/ this.collection = new UICollection(this, { layout: this.layout })
+          ///@UICOLLECTION_2 this.collection = this.collection == null ? new UICollection(this, { layout: this.layout }) : this.collection.clear()
           this.state.get("content").forEach(function(template, index, context) {
             context.collection.add(new UIComponent(template))
           }, this)
@@ -3829,20 +3926,24 @@ function VisuMenu(_config = null) constructor {
             layout: VisuLayouts.get("menu-title"),
             config: {
               label: { 
-                text: $"v{Visu.version()}\nBaron's Keep 2026 (c)\n",
+                font: "font_kodeo_mono_10_bold",
+                align: { v: VAlign.BOTTOM, h: HAlign.LEFT },
+                offset: { x: 48, y: -24 },
+                useScale: true,
+                useScaleWithOffset: true,
+                text: $"v{Visu.version()} | Baron's Keep 2026 (c)",
                 updateCustom: function() {
                   var serverVersion = Visu.serverVersion()
-                  if (!Optional.is(serverVersion)) {
+                  if (serverVersion == null) {
                     return this
                   }
 
                   var version = Visu.version()
                   this.label.text = version == serverVersion 
-                    ? $"v{version}\nBaron's Keep 2026 (c)\n"
-                    : $"v{version} (itch.io: v{serverVersion})\nBaron's Keep 2026 (c)\n"
+                    ? $"v{version} | Baron's Keep 2026 (c)"
+                    : $"v{version} (itch.io: v{serverVersion}) | Baron's Keep 2026 (c)"
 
                 },
-                font: "font_kodeo_mono_12_bold",
                 onMouseReleasedLeft: function() {
                   url_open("https://github.com/Barons-Keep/visu-project")
                 }

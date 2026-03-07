@@ -211,6 +211,72 @@ function VisuController(config = null): Service(config) constructor {
         handler.run(handler.parse(Struct.get(event.data, "config")))
       }
     },
+    "run-tests": function(event) {
+      Core.setProperty("visu.manifest.load-on-start", false)
+      Core.setProperty("visu.menu.open-on-start", false)
+      Core.setProperty("visu.splashscreen.skip", true)
+      var testRunner = Beans.get(BeanTestRunner)
+      if (testRunner.testSuites.size() > 0) {
+        Logger.debug("run-tests", "Stop running tests")
+        testRunner.report = null
+        testRunner.testSuite = null
+        testRunner.testSuites.clear()
+        testRunner.uninstallHooks()
+      }
+
+      event.data.forEach(function(path, idx, testRunner) {
+        var test = String.trim(path)
+        if (test == "") {
+          return
+        }
+
+        Logger.debug("CLIParamParser", $"Run --test {test}")
+        testRunner.push(test)
+      }, testRunner)
+
+      if (this.fsm.getStateName() != "idle") {
+        this.fsm.transition("idle")
+      }
+
+      var testSuites = new Array(Struct)
+      testRunner.testSuites.forEach(function(testSuite, idx, testSuites) {
+        var testRunner = Beans.get(BeanTestRunner)
+        if (testSuite.tests.size() mod 2 != 0) {
+          Logger.debug("run-tests", $"Size of testSuites must be even, {testRunner.testSuites.size()}")
+          return
+        }
+
+        var pairs = new Array(Struct)
+        testSuite.tests.forEach(function(test, idx, pairs) {
+          if (idx mod 2 == 0) {
+            pairs.add({ load: test, playback: null })
+          } else {
+            Struct.set(pairs.getLast(), "playback", test)
+          }
+        }, pairs).clear()
+
+        pairs.shuffle().forEach(function(pair, idx, tests) {
+          tests.add(pair.load)
+          tests.add(pair.playback)
+        }, testSuite.tests)
+
+        testSuites.add(testSuite)
+      }, testSuites)
+
+      testSuites.forEach(function(testSuite, idx, testRunner) {
+        testRunner.testSuites.push(testSuite)
+      }, testRunner)
+
+      testRunner.setShutdown(function() {
+        VISU_MANIFEST_LOAD_ON_START_DISPATCHED = false
+        VISU_FORCE_GOD_MODE_DISPATCHED = false
+        VISU_BOOT_UP = false
+        VISU_LOAD_PROPERTIES = false
+        VISU_LOAD_SETTINGS = false
+        VISU_PARSE_CLI = false
+        Scene.open("scene_visu")
+      })
+    },
     "transform-property": Callable.run(Struct.get(EVENT_DISPATCHERS, "transform-property")),
     "fade-sprite": Callable.run(Struct.get(EVENT_DISPATCHERS, "fade-sprite")),
     "fade-color": Callable.run(Struct.get(EVENT_DISPATCHERS, "fade-color")),

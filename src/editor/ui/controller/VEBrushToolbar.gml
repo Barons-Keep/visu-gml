@@ -257,10 +257,8 @@ global.__VisuBrushContainers = new Map(String, Callable, {
       updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
       render: Callable.run(UIUtil.renderTemplates.get("renderDefaultNoSurface")),
       onInit: function() {
-        ///@UICOLLECTION_TEST this.collection = new UICollection(this, { layout: this.layout })
-        this.collection = this.collection == null
-          ? new UICollection(this, { layout: this.layout })
-          : this.collection.clear()
+        /*///@UICOLLECTION_1*/ this.collection = new UICollection(this, { layout: this.layout })
+        ///@UICOLLECTION_2 this.collection = this.collection == null ? new UICollection(this, { layout: this.layout }) : this.collection.clear()
         this.state.get("components")
           .forEach(function(component, index, collection) {
             collection.add(new UIComponent(component))
@@ -407,10 +405,8 @@ global.__VisuBrushContainers = new Map(String, Callable, {
       updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
       render: Callable.run(UIUtil.renderTemplates.get("renderDefault")),
       onInit: function() {
-        ///@UICOLLECTION_TEST this.collection = new UICollection(this, { layout: this.layout })
-        this.collection = this.collection == null
-          ? new UICollection(this, { layout: this.layout })
-          : this.collection.clear()
+        /*///@UICOLLECTION_1*/ this.collection = new UICollection(this, { layout: this.layout })
+        ///@UICOLLECTION_2 this.collection = this.collection == null ? new UICollection(this, { layout: this.layout }) : this.collection.clear()
         var container = this
         var store = this.brushToolbar.store
         
@@ -932,10 +928,8 @@ global.__VisuBrushContainers = new Map(String, Callable, {
         })
 
         var container = this
-        ///@UICOLLECTION_TEST this.collection = new UICollection(this, { layout: this.layout })
-        this.collection = this.collection == null
-          ? new UICollection(this, { layout: this.layout })
-          : this.collection.clear()
+        /*///@UICOLLECTION_1*/ this.collection = new UICollection(this, { layout: this.layout })
+        ///@UICOLLECTION_2 this.collection = this.collection == null ? new UICollection(this, { layout: this.layout }) : this.collection.clear()
         this.brushToolbar.store.get("type").addSubscriber({ 
           name: container.name,
           overrideSubscriber: true,
@@ -1562,10 +1556,8 @@ global.__VisuBrushContainers = new Map(String, Callable, {
         */
       },
       onInit: function() {
-        ///@UICOLLECTION_TEST this.collection = new UICollection(this, { layout: this.layout.nodes.toolbar })
-        this.collection = this.collection == null
-            ? new UICollection(this, { layout: this.layout.nodes.toolbar })
-            : this.collection.clear()
+        /*///@UICOLLECTION_1*/ this.collection = new UICollection(this, { layout: this.layout.nodes.toolbar })
+        ///@UICOLLECTION_2 this.collection = this.collection == null ? new UICollection(this, { layout: this.layout.nodes.toolbar }) : this.collection.clear()
         this.state.get("tools")
           .forEach(function(component, index, collection) {
             collection.add(new UIComponent(component))
@@ -1617,10 +1609,8 @@ global.__VisuBrushContainers = new Map(String, Callable, {
             })
           : this.executor.free()
 
-        ///@UICOLLECTION_TEST this.collection = new UICollection(this, { layout: container.layout })
-        this.collection = this.collection == null
-          ? new UICollection(this, { layout: container.layout })
-          : this.collection.clear()
+        /*///@UICOLLECTION_1*/ this.collection = new UICollection(this, { layout: container.layout })
+        ///@UICOLLECTION_2 this.collection = this.collection == null ? new UICollection(this, { layout: container.layout }) : this.collection.clear()
         this.brushToolbar.store.get("template").addSubscriber({ 
           name: this.name,
           overrideSubscriber: true,
@@ -2049,10 +2039,8 @@ global.__VisuBrushContainers = new Map(String, Callable, {
       updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
       render: Callable.run(UIUtil.renderTemplates.get("renderDefault")),
       onInit: function() {
-        ///@UICOLLECTION_TEST this.collection = new UICollection(this, { layout: this.layout })
-        this.collection = this.collection == null
-          ? new UICollection(this, { layout: this.layout })
-          : this.collection.clear()
+        /*///@UICOLLECTION_1*/ this.collection = new UICollection(this, { layout: this.layout })
+        ///@UICOLLECTION_2 this.collection = this.collection == null ? new UICollection(this, { layout: this.layout }) : this.collection.clear()
         this.state.get("components")
           .forEach(function(component, index, collection) {
             collection.add(new UIComponent(component))

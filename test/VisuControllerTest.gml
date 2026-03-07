@@ -12,6 +12,9 @@ function Test_VisuController_load(test) {
       description: test.description,
       path: Assert.isType(Struct.get(json, "path"), String, "path must be type of String"),
       trackName: Assert.isType(Struct.get(json, "trackName"), String, "trackName must be type of String"),
+      isRawMode: Struct.getIfType(json, "isRawMode", Boolean, false),
+      isVisualMode: Struct.getIfType(json, "isVisualMode", Boolean, false),
+      isMouseAim: Struct.getIfType(json, "isMouseAim", Boolean, false),
       cooldown: new Timer(Struct.getIfType(json, "cooldown", Number, 2.0)),
       stage: "cooldownBefore",
       stages: {
@@ -28,6 +31,12 @@ function Test_VisuController_load(test) {
 
           runner = Beans.get(BeanTestRunner)
           runner.exceptions.clear()
+
+          Visu.settings
+            .setValue("visu.graphics.raw-mode", task.state.isVisualMode ? false : task.state.isRawMode)
+            .setValue("visu.graphics.visual-mode", task.state.isVisualMode)
+            .setValue("visu.developer.mouse-shoot", task.state.isMouseAim)
+            .saveToFile()
           Beans.get(BeanVisuController).send(new Event("load", {
             manifest: task.state.path,
             autoplay: false
@@ -90,6 +99,7 @@ function Test_VisuController_playback(test) {
       cooldown: new Timer(Struct.getDefault(json, "cooldown", 2.0)),
       stage: "cooldownBefore",
       videoLimit: new Timer(Struct.getDefault(json, "videoLimit", 2.0)),
+      isDemoMode: Struct.getIfType(json, "isDemoMode", Boolean, false),
       stages: {
         cooldownBefore: function(task) {
           if (task.state.cooldown.update().finished) {
@@ -171,6 +181,18 @@ function Test_VisuController_playback(test) {
                 return this
               })
             }
+          }
+
+          if ((task.state.isDemoMode) 
+              && (keyboard_check(vk_anykey) || mouse_check_button(mb_any))) {
+
+            VISU_MANIFEST_LOAD_ON_START_DISPATCHED = false
+            VISU_FORCE_GOD_MODE_DISPATCHED = false
+            VISU_BOOT_UP = false
+            VISU_LOAD_PROPERTIES = false
+            VISU_LOAD_SETTINGS = false
+            VISU_PARSE_CLI = false
+            Scene.open("scene_visu")
           }
         },
         pause: function(task) {

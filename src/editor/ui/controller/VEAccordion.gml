@@ -282,10 +282,8 @@ function VEAccordion(_editor, config = null) constructor {
         updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
         render: Callable.run(UIUtil.renderTemplates.get("renderDefaultNoSurface")),
         onInit: function() {
-          ///@UICOLLECTION_TEST this.collection = new UICollection(this, { layout: this.layout })
-          this.collection = this.collection == null
-            ? new UICollection(this, { layout: this.layout })
-            : this.collection.clear()
+          /*///@UICOLLECTION_1*/ this.collection = new UICollection(this, { layout: this.layout })
+          ///@UICOLLECTION_2 this.collection = this.collection == null ? new UICollection(this, { layout: this.layout }) : this.collection.clear()
           this.state.set("store", this.accordion.store)
           this.state.get("components")
             .forEach(function(component, index, collection) {
