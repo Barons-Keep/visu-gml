@@ -115,7 +115,21 @@ function VisuIO(config = null): Service(config) constructor {
             menu.send(new Event("back") )
             controller.sfxService.play("menu-select-entry")
             if (!Optional.is(menu.back)) {
-              controller.send(new Event("play"))
+              if (controller.trackService.isTrackLoaded()
+                  && !controller.trackService.track.audio.isLoaded() 
+                  && 1 > abs(controller.trackService.time - controller.trackService.duration)) {
+                var editor = Beans.get(Visu.modules().editor.controller)
+                if (editor != null) {
+                  controller.send(new Event("rewind", {
+                    resume: true,
+                    timestamp: 0.0,
+                  }))
+                } else {
+                  menu.send(menu.factoryOpenMainMenuEvent())
+                }
+              } else {
+                controller.send(new Event("play"))
+              }
             }
           } else {
             menu.send(menu.factoryOpenMainMenuEvent())

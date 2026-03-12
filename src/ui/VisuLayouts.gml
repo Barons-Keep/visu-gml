@@ -8,12 +8,44 @@ global.__VisuLayouts = new Map(String, Callable, {
 
   ///@param {?Struct} [config]
   ///@return {Struct}
+  "text": function(config = null) {
+    return {
+      name: "text",
+      type: Assert.isEnum(Struct.getDefault(config, "type", UILayoutType.NONE), UILayoutType),
+      margin: Struct.getIfType(config, "margin", Struct),
+      store: { height: 96 },
+      height: function() { return this.store.height },
+      propagateHidden: Struct.getIfType(config, "propagateHidden", Boolean, false),
+      nodes: {
+        label: {
+          name: "label",
+          propagateHidden: Struct.getIfType(Struct.get(config, "label"), "propagateHidden", Boolean, true),
+        }
+      },
+    }
+  },
+
+  ///@param {?Struct} [config]
+  ///@return {Struct}
   "menu-title": function(config = null) {
     return {
       name: "visu-menu.title",
       nodes: {
         label: {
           name: "visu-menu.title.label",
+        }
+      }
+    }
+  },
+
+  ///@param {?Struct} [config]
+  ///@return {Struct}
+  "menu-statistics": function(config = null) {
+    return {
+      name: "visu-menu.statistics",
+      nodes: {
+        label: {
+          name: "visu-menu.statistics.label",
         }
       }
     }

@@ -121,7 +121,7 @@ function GridOverlayRenderer() constructor {
     this.parameters.y = 0.0
     this.backgroundColors.forEach(this.renderColor, this.parameters)
     if (Visu.settings.getValue("visu.graphics.bkg-tx")
-        && !Visu.settings.getValue("visu.graphics.raw-mode")) {
+        && !Beans.get(BeanVisuController).isRawMode) {
 
       this.backgrounds.forEach(this.renderTexture, this.parameters)
     }
@@ -153,7 +153,7 @@ function GridOverlayRenderer() constructor {
     this.parameters.y = 0.0
     this.foregroundColors.forEach(this.renderColor, this.parameters)
     if (Visu.settings.getValue("visu.graphics.frg-tx")
-        && !Visu.settings.getValue("visu.graphics.raw-mode")) {
+        && !Beans.get(BeanVisuController).isRawMode) {
 
       this.foregrounds.forEach(this.renderTexture, this.parameters)
     }

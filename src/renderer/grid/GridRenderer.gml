@@ -2112,10 +2112,13 @@ function GridRenderer() constructor {
       var _x = clamp(this.player2DCoords.x, player.sprite.getWidth() - player.sprite.texture.offsetX, width - player.sprite.getWidth() + player.sprite.texture.offsetX)
       var _y = clamp(this.player2DCoords.y, player.sprite.getHeight() - player.sprite.texture.offsetY, height - player.sprite.getHeight() + player.sprite.texture.offsetY)
       var alpha = player.sprite.getAlpha()
+      var playerAngle = player.sprite.getAngle()
       player.sprite
         .setAlpha(alpha * 0.5)
+        .setAngle(playerAngle - 90.0)
         .render(configX + _x, configY + _y)
         .setAlpha(alpha)
+        .setAngle(playerAngle)
 
       var angle = Math.fetchPointsAngle(_x, _y, this.player2DCoords.x, this.player2DCoords.y)
       this.playerHintPointer

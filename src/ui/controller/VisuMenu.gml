@@ -355,6 +355,9 @@ function VisuMenu(_config = null) constructor {
   ///@type {Boolean}
   enabled = false
 
+  ///@type {Boolean}
+  isMainMenu = false
+
   ///@type {Map<String, Containers>}
   containers = new Map(String, UI)
 
@@ -406,6 +409,40 @@ function VisuMenu(_config = null) constructor {
               layout: { type: UILayoutType.VERTICAL },
               title: {
                 text: Language.get(entry.title),
+                callback: new BindIntent(function() {
+                  var controller = Beans.get(BeanVisuController)
+                  var menu = controller.menu
+                  var event = this.callbackData
+                  switch (event.type) {
+                    case VisuMenuEntryEventType.OPEN_NODE:
+                      menu.send(Core.isType(menu.nodes.get(event.data.node), VisuMenuNode)
+                        ? menu.factoryOpenVisuMenuNode(event.data.node)
+                        : menu.factoryOpenMainMenuEvent())
+                      controller.sfxService.play("menu-select-entry")
+                      break
+                    case VisuMenuEntryEventType.OPEN_TRACK_SETUP:
+                      if (!Optional.is(Struct.getIfType(event.data, "title", String))) {
+                        Struct.set(event.data, "title", this.text)
+                      }
+
+                      menu.send(menu.factoryOpenTrackSetupEvent(event.data))
+                      controller.sfxService.play("menu-select-entry")
+                      break
+                    case VisuMenuEntryEventType.LOAD_TRACK:
+                      controller.send(new Event("load", {
+                        manifest: $"{working_directory}{event.data.path}",
+                        autoplay: true,
+                      }))
+                      controller.sfxService.play("menu-select-entry")
+                      break
+                    default:
+                      throw new Exception("VisuMenuEntryEventType does not support '{this.event.type}'")
+                  }
+                }),
+                callbackData: entry.event,
+                onMouseReleasedLeft: function() {
+                  this.callback()
+                },
               },
               label: { 
                 text: Language.get(entry.name),
@@ -669,6 +706,7 @@ function VisuMenu(_config = null) constructor {
                 Beans.get(BeanVisuController).send(new Event("load", {
                   manifest: $"{working_directory}{this.callbackData}",
                   autoplay: true,
+                  isRawMode: Visu.settings.getValue("visu.graphics.raw-mode"),
                 }))
                 Beans.get(BeanVisuController).sfxService.play("menu-select-entry")
               }),
@@ -689,12 +727,12 @@ function VisuMenu(_config = null) constructor {
               text: Language.get("visu.menu.run.visual-mode"),
               callback: new BindIntent(function() {
                 Visu.settings
-                  .setValue("visu.graphics.raw-mode", false)
                   .setValue("visu.graphics.visual-mode", true)
                   .saveToFile()
                 Beans.get(BeanVisuController).send(new Event("load", {
                   manifest: $"{working_directory}{this.callbackData}",
                   autoplay: true,
+                  rawMode: false,
                 }))
                 Beans.get(BeanVisuController).sfxService.play("menu-select-entry")
               }),
@@ -742,21 +780,25 @@ function VisuMenu(_config = null) constructor {
   ///@param {?Struct} [_config]
   ///@return {Event}
   factoryOpenMainMenuEvent = function(_config = null) {
+    var controller = Beans.get(BeanVisuController)
     var config = Struct.appendUnique(
       _config,
       {
         back: this.factoryOpenMainMenuEvent,
         quit: this.factoryConfirmationDialog,
         titleLabel: Language.get("visu.menu.title"),
-        disableResume: false,
-        isTrackLoaded: Beans.get(BeanVisuController).trackService.isTrackLoaded(),
-        isGameOver: Beans.get(BeanVisuController).fsm.getStateName() == "game-over",
+        disableResume: controller.trackService.isTrackLoaded()
+          && !controller.trackService.track.audio.isLoaded() 
+          && 1 > abs(controller.trackService.time - controller.trackService.duration),
+        isTrackLoaded: controller.trackService.isTrackLoaded(),
+        isGameOver: controller.fsm.getStateName() == "game-over",
       }
     )
 
     var event = new Event("open").setData({
       back: null,
-      layout: Beans.get(BeanVisuController).visuRenderer.layout,
+      isMainMenu: true,
+      layout: controller.visuRenderer.layout,
       title: {
         name: "main-menu_title",
         template: VisuComponents.get("menu-title"),
@@ -840,6 +882,8 @@ function VisuMenu(_config = null) constructor {
             }
           }, counter)
           counter++
+        } else {
+          event.data.title.config.label.text = "Finish"
         }
 
         event.data.content.add({
@@ -955,7 +999,7 @@ function VisuMenu(_config = null) constructor {
       case "game-over":
         var editor = Beans.get(Visu.modules().editor.controller)
         event.data.content.add({
-          name: "main-menu_menu-button-entry_resume",
+          name: "main-menu_menu-button-entry_continue",
           template: VisuComponents.get("menu-button-entry"),
           layout: VisuLayouts.get("menu-button-entry"),
           config: {
@@ -2988,7 +3032,7 @@ function VisuMenu(_config = null) constructor {
                       VisuController: {
                         initialState: {
                           name: "idle",
-                          data: new Event("run-tests", new Array(String, [ "track/demo.json" ])),
+                          data: new Event("run-tests", Core.getProperty("visu.menu.demo.tests", new Array(String))),
                         },
                       },
                     })
@@ -3181,12 +3225,12 @@ function VisuMenu(_config = null) constructor {
         nodes: {
           "visu-menu.title": {
             name: "visu-menu.title",
-            x: function() { return this.context.x() + min((this.context.width() - this.width() ) / 2.0, 240.0) },
+            x: function() { return this.context.x() + min((this.context.width() - this.width() ) / 4.0, 240.0) },
             y: function() { return this.context.y() },
-            width: function() { return clamp(this.context.width() * 0.3, 540, 700) },
+            width: function() { return clamp(this.context.width() * 0.3, 480, 700) },
             height: function() { 
               var minFooterHeight = 72
-              var minTitleHeight = 240
+              var minTitleHeight = 220
               var contextHeight = this.context.height()
               var viewHeight = Struct.get(context.nodes, "visu-menu.content").viewHeight
               if ((contextHeight / 2.0) - viewHeight - minFooterHeight >= 0) {
@@ -3200,10 +3244,10 @@ function VisuMenu(_config = null) constructor {
           },
           "visu-menu.content": {
             name: "visu-menu.content",
-            x: function() { return this.context.x() + min((this.context.width() - this.width() ) / 2.0, 240.0) },
+            x: function() { return this.context.x() + min((this.context.width() - this.width() ) / 4.0, 240.0) },
             //x: function() { return this.context.x() + clamp(this.context.width() * 0.15, 80, 384) },
             y: function() { return Struct.get(this.context.nodes, "visu-menu.title").bottom() + this.__margin.top },
-            width: function() { return clamp(this.context.width() * 0.3, 540, 700) },
+            width: function() { return clamp(this.context.width() * 0.3, 480, 700) },
             viewHeight: 0.0,
             height: function() {
               var contextHeight = this.context.height()
@@ -3222,9 +3266,9 @@ function VisuMenu(_config = null) constructor {
           },
           "visu-menu.footer": {
             name: "visu-menu.footer",
-            x: function() { return this.context.x() + min((this.context.width() - this.width() ) / 2.0, 240.0) },
+            x: function() { return this.context.x() + min((this.context.width() - this.width() ) / 4.0, 240.0) },
             y: function() { return this.context.y() + this.context.height() - this.height() },
-            width: function() { return clamp(this.context.width() * 0.3, 540, 700) },
+            width: function() { return clamp(this.context.width() * 0.3, 480, 700) },
             height: function() {
               var minFooterHeight = 72
               return max(
@@ -3233,6 +3277,22 @@ function VisuMenu(_config = null) constructor {
                   - Struct.get(context.nodes, "visu-menu.content").viewHeight,
                 minFooterHeight
               )
+            },
+          },
+          "visu-menu.statistics": {
+            name: "visu-menu.statistics",
+            margin: { top: 220, bottom: 72, left: 12, right: 4 },
+            x: function() { 
+              return Struct.get(this.context.nodes, "visu-menu.content").right() + this.margin.left
+            },
+            y: function() {
+              return this.context.y() + this.margin.top
+            },
+            width: function() { 
+              return this.context.width() - Struct.get(this.context.nodes, "visu-menu.content").right() - this.margin.left - this.margin.right
+            },
+            height: function() { 
+             return this.context.height() - this.margin.top - this.margin.bottom
             },
           },
         }
@@ -3409,9 +3469,9 @@ function VisuMenu(_config = null) constructor {
 
           var keyboard = this.state.get("keyboard")
           var playerKeyboard = Beans.get(BeanVisuIO).keyboards.get("player")
-          //this.state.get("keyUpdater")
-          //  .updateKeyboard(keyboard.update())
-          keyboard.update()
+          this.state.get("keyUpdater")
+            .updateKeyboard(keyboard.update())
+          //keyboard.update()
           this.state.get("playerKeyUpdater")
             .bindKeyboardKeys(playerKeyboard)
             .updateKeyboard(playerKeyboard.update())
@@ -3832,6 +3892,151 @@ function VisuMenu(_config = null) constructor {
             },
           }
         ))
+      .set(
+        "_1_container_container_visu-menu.statistics",
+        new UI({
+          name: "_container_visu-menu.statistics",
+          state: new Map(String, any, {
+            "surface-alpha": 0.999,
+            "background-alpha": 0.0,
+            "text": "",
+            "components": new Array(Struct, [
+              {
+                name: "_1_text-container_visu-menu.statistics",
+                template: VisuComponents.get("text"),
+                layout: VisuLayouts.get("text"),
+                config: { 
+                  layout: { 
+                    type: UILayoutType.VERTICAL,
+                  },
+                  label: { 
+                    text: "",
+                    useScale: true,
+                    enableColorWrite: false,
+                    align: { v: VAlign.BOTTOM, h: HAlign.LEFT },
+                    font: "font_kodeo_mono_28_bold",
+                    updateCustom: function() {
+                      var controller = Beans.get(BeanVisuController)
+                      if (controller.trackService.track != null) {
+                        this.label.text = $"{controller.trackService.track.name}"
+                      }
+                    },
+                    postRender: function() {
+                      var height = string_height(this.label.text)
+                      var store = Struct.get(Struct.get(Struct.get(this, "layout"), "context"), "store")
+                      if (height == Struct.get(store, "height")) {
+                        return
+                      }
+
+                      Struct.set(store, "height", height)
+                      this.context.areaWatchdog.signal()
+                    },
+                  },
+                },
+              },
+              {
+                name: "_2_text-container_visu-menu.statistics",
+                template: VisuComponents.get("text"),
+                layout: VisuLayouts.get("text"),
+                config: { 
+                  layout: { 
+                    type: UILayoutType.VERTICAL,
+                  },
+                  label: { 
+                    text: "",
+                    useScale: true ,
+                    enableColorWrite: false,
+                    align: { v: VAlign.TOP, h: HAlign.LEFT },
+                    font: "font_kodeo_mono_18_regular",
+                    updateCustom: function() {
+                      var statisticsText = ""
+                      var controller = Beans.get(BeanVisuController)
+                      if (controller.statistics != null) {
+                        var trackService = controller.trackService
+                        var playerReport = controller.statistics.playerReport
+                        var coinReport = controller.statistics.coinReport
+                        var shroomReport = controller.statistics.shroomReport
+                        var bulletReport = controller.statistics.bulletReport
+                        statisticsText = $"\n"
+                          + $"\nDifficulty:            {Language.get(controller.difficulty)}"
+                          + $"\nDuration:              {String.formatTimestampMilisecond(trackService.duration)}"
+                          + $"\nLongest Life Streak:   {String.formatTimestampMilisecond(playerReport.maxAliveTime)}"
+                          + $"\nFocus Mode Time:       {String.formatTimestampMilisecond(playerReport.focusedTime)}"
+                          + "\n"
+                          + $"\nPoints Collected:      {String.format(coinReport.collectedByPointValue, 8, 0)}" 
+                          + $"\nForce Collected:       {String.format(coinReport.collectedByForceValue, 8, 0)}"
+                          + "\n"
+                          + $"\nLives Remaining:       {String.format(playerReport.lives, 8, 0)}"
+                          + $"\nExtra Lives Collected: {String.format(coinReport.collectedByLifeValue, 8, 0)}"
+                          + $"\nLives Lost:            {String.format(playerReport.usedLives, 8, 0)}"
+                          + "\n"
+                          + $"\nBombs Remaining:       {String.format(playerReport.bombs, 8, 0)}"
+                          + $"\nBombs Collected:       {String.format(coinReport.collectedByBombValue, 8, 0)}"
+                          + $"\nBombs Used:            {String.format(playerReport.usedBombs, 8, 0)}"
+                          + "\n"
+                          + $"\nShots Fired:           {String.format(bulletReport.spawnedByPlayer, 8, 0)}"
+                          + $"\nTotal Enemies:         {String.format(shroomReport.spawned, 8, 0)}"
+                          + $"\nEnemies Bombed:        {String.format(shroomReport.nuked, 8, 0)}"
+                          + $"\nEnemies Hit:           {String.format(shroomReport.shooted, 8, 0)}"
+                      }
+
+                      this.context.state.set("text", statisticsText)
+                    },
+                    postRender: function() {
+                      var text = this.context.state.get("text")
+                      if (this.label.text == text) {
+                        return
+                      }
+                        
+                      this.label.text = text
+                      var height = string_height(this.label.text)
+                      var store = Struct.get(Struct.get(Struct.get(this, "layout"), "context"), "store")
+                      if (height == Struct.get(store, "height")) {
+                        return
+                      }
+
+                      Struct.set(store, "height", height)
+                      this.context.areaWatchdog.signal()
+                    },
+                  },
+                },
+              },
+            ])
+          }),
+          layout: Struct.get(this.layout.nodes, "visu-menu.statistics"),
+          propagate: true,
+          scrollbarY: { align: HAlign.RIGHT },
+          updateTimer: new Timer(FRAME_MS * Core.getProperty("visu.menu.statistics.updateTimer", 4.0), { loop: Infinity, shuffle: true }),
+          updateArea: Callable.run(UIUtil.updateAreaTemplates.get("scrollableY")),
+          renderItem: Callable.run(UIUtil.renderTemplates.get("renderItemDefaultScrollable")),
+          __render: new BindIntent(Callable.run(UIUtil.renderTemplates.get("renderDefaultScrollableAlpha"))),
+          render: function() {
+            if (this.state.get("text") != "" && Beans.get(BeanVisuController).menu.isMainMenu) {
+              this.__render()
+            }
+          },
+          onMousePressedLeft: Callable.run(UIUtil.mouseEventTemplates.get("onMouseScrollbarY")),
+          onMouseWheelUp: Callable.run(UIUtil.mouseEventTemplates.get("scrollableOnMouseWheelUpY")),
+          onMouseWheelDown: Callable.run(UIUtil.mouseEventTemplates.get("scrollableOnMouseWheelDownY")),
+          onInit: function() {
+            var container = this
+            this.items.forEach(Lambda.free).clear() 
+            /*///@UICOLLECTION_1*/ this.collection = new UICollection(this, { layout: container.layout })
+            ///@UICOLLECTION_2 this.collection = this.collection == null ? new UICollection(this, { layout: container.layout }) : this.collection.clear()
+            this.updateArea()
+            this.addUIComponents(state.get("components")
+              .map(function(component) {
+                return new UIComponent(component)
+              }),
+              new UILayout({
+                area: container.area,
+                width: function() { return this.area.getWidth() },
+              })
+            )
+          },
+        })
+      )
+
 
     return this.containers
   }
@@ -3855,6 +4060,7 @@ function VisuMenu(_config = null) constructor {
       this.dispatcher.execute(new Event("close"))
       this.back = Struct.getIfType(event.data, "back", Callable)
       this.backData = Struct.get(event.data, "backData")
+      this.isMainMenu = Struct.getIfType(event.data, "isMainMenu", Boolean, false)
       this.enabled = true
       this.containers = this.factoryContainers(event.data.title, event.data.content, event.data.layout)
       this.containers.forEach(function(container, key, uiService) {
@@ -3866,6 +4072,7 @@ function VisuMenu(_config = null) constructor {
       }, controller.uiService)
     },
     "close": function(event) {    
+      this.isMainMenu = false
       var controller = Beans.get(BeanVisuController)
       if (Struct.getIfType(event.data, "fade", Boolean, false)) {
         var blur = controller.visuRenderer.blur
@@ -3873,15 +4080,16 @@ function VisuMenu(_config = null) constructor {
         blur.startValue = blur.value
         blur.reset()
 
-        this.containers.forEach(function (container) {
+        this.containers.forEach(function(container) {
           Struct.set(container, "onMousePressedLeft", method(container, function(event) { }))
           Struct.set(container, "onMouseWheelUp", method(container, function(event) { }))
           Struct.set(container, "onMouseWheelDown", method(container, function(event) { }))
           Struct.set(container, "updateCustom", method(container, function() {
+            var controller = Beans.get(BeanVisuController)
             this.state.set("uiAlphaFactor", -0.05)
-            var blur = Beans.get(BeanVisuController).visuRenderer.blur
+            var blur = controller.visuRenderer.blur
             if (blur.value == 0.0) {
-              this.controller.send(new Event("close"))
+              controller.menu.send(new Event("close"))
             }
           }))
         })
@@ -3908,6 +4116,7 @@ function VisuMenu(_config = null) constructor {
       this.dispatcher.execute(new Event("close", { fade: true }))
     },
     "game-end": function(event) {
+      this.isMainMenu = false
       var controller = Beans.get(BeanVisuController)
       controller.playerService.remove()
       controller.sfxService.play("menu-select-entry")

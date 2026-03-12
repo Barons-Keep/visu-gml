@@ -7,6 +7,30 @@ global.__VisuComponents = new Map(String, Callable, {
   ///@param {UILayout} layout
   ///@param {?Struct} [config]
   ///@return {Array<UIItem>}
+  "text": function(name, layout, config = null) {
+    return new Array(UIItem, [
+      UIText(
+        $"text_{name}", 
+        Struct.appendRecursive(
+          Struct.appendRecursive(
+            { 
+              layout: layout.nodes.label,
+              updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
+            },
+            VEStyles.get("text").label,
+            false
+          ),
+          Struct.get(config, "label"),
+          false
+        )
+      )
+    ])
+  },
+
+  ///@param {String} name
+  ///@param {UILayout} layout
+  ///@param {?Struct} [config]
+  ///@return {Array<UIItem>}
   "menu-title": function(name, layout, config = null) {
     return new Array(UIItem, [
       UIText(
@@ -20,6 +44,32 @@ global.__VisuComponents = new Map(String, Callable, {
                 .get("applyLayout")),
             }, 
             VisuStyles.get("menu-title").label,
+            false
+          ),
+          Struct.get(config, "label"),
+          false
+        )
+      ),
+    ])
+  },
+
+    ///@param {String} name
+  ///@param {UILayout} layout
+  ///@param {?Struct} [config]
+  ///@return {Array<UIItem>}
+  "menu-statistics": function(name, layout, config = null) {
+    return new Array(UIItem, [
+      UIText(
+        $"label_{name}_menu-statistics",
+        Struct.appendRecursive(
+          Struct.appendRecursive(
+            { 
+              layout: layout.nodes.label,
+              updateArea: Callable
+                .run(UIUtil.updateAreaTemplates
+                .get("applyLayout")),
+            }, 
+            VisuStyles.get("menu-statistics").label,
             false
           ),
           Struct.get(config, "label"),

@@ -1561,8 +1561,8 @@ function _Visu() constructor {
     }
 
     var displayService = Beans.get(BeanDisplayService)
-    displayService.minWidth = 800
-    displayService.minHeight = 480
+    displayService.minWidth = 960
+    displayService.minHeight = 540
     displayService.windowWidth = Visu.settings.getValue("visu.window.width", 1440)
     displayService.windowHeight = Visu.settings.getValue("visu.window.height", 900)
     displayService.scale = Visu.settings.getValue("visu.interface.scale")

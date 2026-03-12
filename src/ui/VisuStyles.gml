@@ -50,6 +50,17 @@ global.__VisuStyles = new Map(String, Callable, {
       enableColorWrite: false,
     },
   },
+  "menu-statistics": {
+    label: {
+      align: { v: VAlign.CENTER, h: HAlign.LEFT },
+      font: "font_kodeo_mono_12_bold",
+      offset: { x: 0, y: 0 },
+      useScale: true,
+      useScaleWithOffset: true,
+      color: VisuTheme.color.text,
+      enableColorWrite: false,
+    },
+  },
   "menu-button-entry": {
     label: {
       align: { v: VAlign.CENTER, h: HAlign.LEFT },

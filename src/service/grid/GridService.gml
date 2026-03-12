@@ -459,6 +459,42 @@ function GridService(_config = null): Service(_config) constructor {
 
     return this
   }
+
+  ///@return {String}
+  generateRandomSpriteBlend = function() {
+    /*
+    return GMArray.getRandom([
+      "#FFFFFF",
+      "#b6fdcf",
+      "#a5abe0",
+      "#fb83a5"
+    ])
+    */
+   return GMArray.getRandom([
+      "#FFFFFF",
+      "#b6fdcf",
+      "#a5abe0",
+      "#fb83a5"
+    ])
+  }
+
+  ///@return {String}
+  generateRandomBackgroundBlend = function() {
+    /*
+    return GMArray.getRandom([
+      "#FFFFFF",
+      "#2c5375",
+      "#240b20"
+    ])
+    */
+
+    return GMArray.getRandom([
+      "#FFFFFF",
+      "#1374c8",
+      "#2c5375",
+      "#f817d2"
+    ])
+  }
   
   ///@param {?Number} [duration]
   ///@return {GridService}
@@ -495,11 +531,7 @@ function GridService(_config = null): Service(_config) constructor {
           sprite: SpriteUtil.parse({
             name: "texture_abstract_2",
             alpha: 0.5,
-            blend: GMArray.getRandom([
-              "#FFFFFF",
-              "#2c5375",
-              "#240b20"
-            ]),
+            blend: controller.gridService.generateRandomBackgroundBlend(),
           }),
           collection: controller.visuRenderer.gridRenderer.overlayRenderer.backgrounds,
           type: WallpaperType.BACKGROUND,
@@ -524,11 +556,7 @@ function GridService(_config = null): Service(_config) constructor {
           sprite: SpriteUtil.parse({
             name: "texture_hechan_3_background",
             alpha: 0.5,
-            blend: GMArray.getRandom([
-              "#FFFFFF",
-              "#2c5375",
-              "#240b20"
-            ]),
+            blend: controller.gridService.generateRandomBackgroundBlend(),
           }),
           collection: controller.visuRenderer.gridRenderer.overlayRenderer.backgrounds,
           type: WallpaperType.BACKGROUND,
@@ -553,12 +581,7 @@ function GridService(_config = null): Service(_config) constructor {
           sprite: SpriteUtil.parse({
             name: controller.gridService.hechan,
             alpha: 0.75 + random(1.0) * 0.25,
-            blend: GMArray.getRandom([
-              "#FFFFFF",
-              "#b6fdcf",
-              "#a5abe0",
-              "#fb83a5"
-            ]),
+            blend: controller.gridService.generateRandomSpriteBlend(),
           }),
           collection: controller.visuRenderer.gridRenderer.overlayRenderer.foregrounds,
           type: WallpaperType.FOREGROUND,
@@ -585,11 +608,7 @@ function GridService(_config = null): Service(_config) constructor {
           sprite: SpriteUtil.parse({
             name: "tx_bkg_magic",
             alpha: 0.6,
-            blend: GMArray.getRandom([
-              "#FFFFFF",
-              "#2c5375",
-              "#240b20"
-            ]),
+            blend: controller.gridService.generateRandomBackgroundBlend(),
           }),
           collection: controller.visuRenderer.gridRenderer.overlayRenderer.grids,
           type: WallpaperType.GRID,
@@ -663,12 +682,7 @@ function GridService(_config = null): Service(_config) constructor {
           sprite: SpriteUtil.parse({
             name: "texture_abstract_2",
             alpha: 0.4,
-            blend: GMArray.getRandom([
-              "#FFFFFF",
-              "#b6fdcf",
-              "#a5abe0",
-              "#fb83a5"
-            ]),
+            blend: controller.gridService.generateRandomSpriteBlend(),
           }),
           collection: controller.visuRenderer.gridRenderer.overlayRenderer.backgrounds,
           type: WallpaperType.BACKGROUND,
@@ -689,15 +703,13 @@ function GridService(_config = null): Service(_config) constructor {
           yScale: scale,
         }))
 
+        
+
         controller.send(new Event("fade-sprite", {
           sprite: SpriteUtil.parse({
             name: "texture_hechan_3_background",
             alpha: 0.75,
-            blend: GMArray.getRandom([
-              "#FFFFFF",
-              "#2c5375",
-              "#240b20"
-            ]),
+            blend: controller.gridService.generateRandomBackgroundBlend(),
           }),
           collection: controller.visuRenderer.gridRenderer.overlayRenderer.backgrounds,
           type: WallpaperType.BACKGROUND,
@@ -722,12 +734,7 @@ function GridService(_config = null): Service(_config) constructor {
           sprite: SpriteUtil.parse({
             name: choose("tx_bkg_goetia_1", "texture_hechan_3", "texture_hechan_4"),//"texture_hechan_3",
             alpha: 0.75 + random(1.0) * 0.25,
-            blend: GMArray.getRandom([
-              "#FFFFFF",
-              "#b6fdcf",
-              "#a5abe0",
-              "#fb83a5"
-            ]),
+            blend: controller.gridService.generateRandomSpriteBlend(),
           }),
           collection: controller.visuRenderer.gridRenderer.overlayRenderer.foregrounds,
           type: WallpaperType.FOREGROUND,

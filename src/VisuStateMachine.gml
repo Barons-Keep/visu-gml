@@ -390,8 +390,10 @@ function VisuStateMachine(context, name) {
           onStart: function(fsm, fsmState, data) {
             var controller = Beans.get(BeanVisuController)
             controller.menu.send(new Event("close"))
+            controller.isRawMode = false
             controller.loader.fsm.transition("clear-state", data.manifest)
-            fsmState.state.set("autoplay", Struct.getDefault(data, "autoplay", false))
+            fsmState.state.set("autoplay", Struct.getIfType(data, "autoplay", Boolean, false))
+            fsmState.state.set("isRawMode", Struct.getIfType(data, "isRawMode", Boolean, false))
             
             if (Optional.is(controller.ostSound)) {
               controller.ostSound.stop()
@@ -412,19 +414,21 @@ function VisuStateMachine(context, name) {
           },
         },
         update: function(fsm) {
+          var controller = Beans.get(BeanVisuController)
           try {
             var loaderState = fsm.context.loader.fsm.getStateName()
             Assert.areEqual(loaderState != null && loaderState != "idle", true, $"Invalid loader state: {loaderState}")
             if (loaderState == "loaded") {
+              controller.isRawMode = this.state.get("isRawMode") == true
               fsm.transition(this.state.get("autoplay") ? "play" : "pause")
             }
           } catch (exception) {
             var message = $"'fsm::update' (state: 'load') fatal error: {exception.message}"
             Logger.error(BeanVisuController, message)
             Core.printStackTrace().printException(exception)
-            Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
+            controller.send(new Event("spawn-popup", { message: message }))
+            controller.loader.fsm.transition("idle")
             fsm.transition("idle")
-            Beans.get(BeanVisuController).loader.fsm.transition("idle")
           }
         },
         transitions: { 
@@ -561,13 +565,82 @@ function VisuStateMachine(context, name) {
               controller.menu.send(data)
             }
 
+            controller.visuRenderer.gridRenderer.camera.breathTimer1.reset()
+            controller.visuRenderer.gridRenderer.camera.breathTimer2.reset()
+            fsmState.state.set("bkgTimer", new Timer(6.0 + random(10.0), { loop: Infinity }))
+            fsmState.state.set("bkgColorTimer", new Timer(6.0 + random(10.0), { loop: Infinity }))
+            fsmState.state.set("glitchTimer", new Timer(6.0 + random(10.0), { loop: Infinity }))
+
             Logger.info(fsm.displayName, $"'{fsmState.name}::onStart' at track time {controller.trackService.time}")
           },
           onFinish: function(fsm, fsmState, data) {
             Beans.get(BeanVisuController).menu.send(new Event("close", { fade: true }))
           },
         },
-        update: function(fsm) { },
+        update: function(fsm) {
+          var controller = Beans.get(BeanVisuController)
+          if (controller.statistics != null) {
+            var gridService = controller.gridService
+            var bkgTimer = this.state.get("bkgTimer")
+            if (bkgTimer.update().finished) {
+              bkgTimer.setDuration(6.0 + random(10.0))
+              gridService.init(bkgTimer.duration * (0.75 + random(0.75)))
+            }
+
+            var bkgColorTimer = this.state.get("bkgColorTimer")
+            if (bkgColorTimer.update().finished) {
+              bkgColorTimer.setDuration(6.0 + random(10.0))
+              var properties = gridService.properties
+              var pump = controller.dispatcher
+              var executor = controller.executor
+              var color = ColorUtil.parse(GMArray.getRandom([
+                "#000000ff",
+                "#081179ff",
+                "#000000",
+                "#480564ff",
+                "#0e1e1bff",
+                "#8e0a0aff",
+                "#000000",
+                //"#21670eff",
+                "#1a1748ff",
+                //"#c70a68ff",
+                "#000000",
+                //"#d31c44ff",
+                "#000000",
+                "#570e4eff"
+              ]))
+              Visu.resolveColorTransformerTrackEvent(
+                {
+                  use: true,
+                  col: color,
+                  spd: bkgColorTimer.duration * 0.9,
+                }, 
+                "use",
+                "col",
+                "spd",
+                "gridClearColor",
+                properties,
+                pump,
+                executor
+              )
+            }
+
+            var glitchTimer = this.state.get("glitchTimer")
+            if (glitchTimer.update().finished) {
+              glitchTimer.setDuration(6.0 + random(10.0))
+              var factor = 0.08 + random(1.0) * 0.08
+              effect_track_event.brush_effect_glitch.run({
+                "ef-glt_use-config": false,
+                "ef-glt_use-fade-out": true,
+                "ef-glt_fade-out": factor,
+                "ef-glt_glitch": choose(GlitchType.GRID, GlitchType.GRID, GlitchType.BACKGROUND),
+              })
+            }
+
+            controller.visuRenderer.gridRenderer.camera.breathTimer1.update()
+            controller.visuRenderer.gridRenderer.camera.breathTimer2.update()
+          }
+        },
         transitions: {
           "idle": null, 
           "load": null,

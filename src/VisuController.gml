@@ -23,6 +23,9 @@ function VisuController(config = null): Service(config) constructor {
   ///@type {Boolean}
   isVisualMode = false
 
+  ///@type {?Struct}
+  statistics = null
+
   ///@type {?VisuTrack}
   track = null
   
@@ -156,6 +159,7 @@ function VisuController(config = null): Service(config) constructor {
       this.fsm.transition("game-over")
     },
     "load": function(event) {
+      this.statistics = null
       this.fsm.transition("load", event.data)
     },
     "play": function(event) {
@@ -664,7 +668,7 @@ function VisuController(config = null): Service(config) constructor {
       }
 
       this.isMouseAim = Visu.settings.getValue("visu.developer.mouse-shoot")
-      this.isRawMode = Visu.settings.getValue("visu.graphics.raw-mode")
+      //this.isRawMode = Visu.settings.getValue("visu.graphics.raw-mode")
       this.isVisualMode = Visu.settings.getValue("visu.graphics.visual-mode")
 
       if (this.trackService.isTrackLoaded()) {
@@ -686,6 +690,8 @@ function VisuController(config = null): Service(config) constructor {
             }
           }
         }
+      } else {
+        this.statistics = null
       }
 
       var sfxVolume = Visu.settings.getValue("visu.audio.sfx-volume")
@@ -703,23 +709,35 @@ function VisuController(config = null): Service(config) constructor {
           && 1 > abs(this.trackService.time - this.trackService.duration)
           && this.fsm.getStateName() == "play") {
         
+        this.statistics = {
+          playerReport: this.playerService.statistics.report(),
+          coinReport: this.coinService.statistics.report(),
+          shroomReport: this.shroomService.statistics.report(),
+          bulletReport: this.bulletService.statistics.report(),
+        }
+        
         Logger.info(BeanVisuController, $"Track finished at {this.trackService.time}")
         this.watchdogPromise = this.send(new Event("pause").setPromise(new Promise()))
         this.shroomService.dispatcher.execute(new Event("clear-shrooms"))
-        Logger.debug(BeanVisuController, $"ShroomService statistics:\n{JSON.stringify(this.shroomService.statistics.report(), true)}")
+        Logger.debug(BeanVisuController, $"ShroomService statistics:\n{JSON.stringify(this.statistics.shroomReport, true)}")
         this.bulletService.dispatcher.execute(new Event("clear-bullets"))
-        Logger.debug(BeanVisuController, $"BulletService statistics:\n{JSON.stringify(this.bulletService.statistics.report(), true)}")
+        Logger.debug(BeanVisuController, $"BulletService statistics:\n{JSON.stringify(this.statistics.bulletReport, true)}")
         this.coinService.dispatcher.execute(new Event("clear-coins"))
-        Logger.debug(BeanVisuController, $"CoinService statistics:\n{JSON.stringify(this.coinService.statistics.report(), true)}")
+        Logger.debug(BeanVisuController, $"CoinService statistics:\n{JSON.stringify(this.statistics.coinReport, true)}")
         if (this.playerService.player != null) {
           this.playerService.statistics.freePlayer(this.playerService.player)
         }
-        Logger.debug(BeanVisuController, $"PlayerService statistics:\n{JSON.stringify(this.playerService.statistics.report(), true)}")
+        Logger.debug(BeanVisuController, $"PlayerService statistics:\n{JSON.stringify(this.statistics.playerReport, true)}")
         this.menu.send(this.menu.factoryOpenMainMenuEvent({ disableResume: true }))
         this.shroomService.statistics.validate()
         this.bulletService.statistics.validate()
         this.coinService.statistics.validate()
         this.playerService.statistics.validate()
+      }
+
+      if (this.trackService.isTrackLoaded()
+          && 1 < abs(this.trackService.time - this.trackService.duration)) {
+        this.statistics = null
       }
 
       if (this.fsm.getStateName() != "idle" && Optional.is(this.ostSound)) {

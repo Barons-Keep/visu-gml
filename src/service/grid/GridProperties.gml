@@ -81,7 +81,7 @@ function GridProperties(config = null) constructor {
   #region borders
   ///@type {Color}
   borderVerticalColor = Assert.isType(ColorUtil.fromHex(Struct
-    .getDefault(config, "borderVerticalColor ", "#ff0000")), Color)
+    .getDefault(config, "borderVerticalColor ", "#ac1142")), Color)
 
   ///@type {Number}
   borderVerticalAlpha = Assert.isType(Struct
@@ -93,7 +93,7 @@ function GridProperties(config = null) constructor {
 
   ///@type {Color}
   borderHorizontalColor = Assert.isType(ColorUtil.fromHex(Struct
-    .getDefault(config, "borderHorizontalColor ", "#ff0000")), Color)
+    .getDefault(config, "borderHorizontalColor ", "#ac1142")), Color)
 
   ///@type {Number}
   borderHorizontalAlpha = Assert.isType(Struct
@@ -197,12 +197,12 @@ function GridProperties(config = null) constructor {
 
   ///@type {Color}
   supportColor = Assert.isType(ColorUtil.fromHex(Struct
-    .getDefault(config, "supportColor", "#ffffff")), Color)
+    .getDefault(config, "supportColor", "#ed1dce")), Color)
   #endregion
 
   ///@type {Color}
   gridClearColor = Assert.isType(ColorUtil.fromHex(Struct
-    .getDefault(config, "gridClearColor", "#400421")), Color)
+    .getDefault(config, "gridClearColor", "#000000")), Color)
 
   ///@type {Boolean}
   gridClearFrame = Assert.isType(Struct
