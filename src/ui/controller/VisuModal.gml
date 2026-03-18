@@ -96,7 +96,7 @@ function VisuModal(_config = null) constructor {
               text: modal.config.message.text,
               updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
             },
-            VEStyles.get("visu-modal").message,
+            VisuStyles.get("visu-modal").message,
             false
           ),
           "visu-modal.accept": Struct.appendRecursiveUnique(
@@ -115,7 +115,7 @@ function VisuModal(_config = null) constructor {
                 this.backgroundColor = ColorUtil.fromHex(this.colorHoverOut).toGMColor()
               },
             },
-            VEStyles.get("visu-modal").accept,
+            VisuStyles.get("visu-modal").accept,
             false
           ),
           "visu-modal.deny": Struct.appendRecursiveUnique(
@@ -134,7 +134,7 @@ function VisuModal(_config = null) constructor {
                 this.backgroundColor = ColorUtil.fromHex(this.colorHoverOut).toGMColor()
               },
             },
-            VEStyles.get("visu-modal").deny,
+            VisuStyles.get("visu-modal").deny,
             false
           ),
         },

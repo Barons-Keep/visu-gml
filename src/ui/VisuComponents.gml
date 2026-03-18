@@ -17,7 +17,7 @@ global.__VisuComponents = new Map(String, Callable, {
               layout: layout.nodes.label,
               updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
             },
-            VEStyles.get("text").label,
+            VisuStyles.get("text").label,
             false
           ),
           Struct.get(config, "label"),

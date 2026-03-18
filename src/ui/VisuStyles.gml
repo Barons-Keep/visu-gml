@@ -276,5 +276,37 @@ global.__VisuStyles = new Map(String, Callable, {
       },
     },
   },
+  "visu-modal": {
+    message: {
+      color: VisuTheme.color.textFocus,
+      font: "font_inter_10_regular",
+      align: { v: VAlign.CENTER, h: HAlign.CENTER },
+    },
+    accept: {
+      backgroundColor: VisuTheme.color.acceptShadow,
+      label: {
+        color: VisuTheme.color.textFocus,
+        font: "font_inter_10_regular",
+        align: { v: VAlign.CENTER, h: HAlign.CENTER },
+      }
+    },
+    deny: {
+      backgroundColor: VisuTheme.color.denyShadow,
+      label: {
+        color: VisuTheme.color.textFocus,
+        font: "font_inter_10_regular",
+        align: { v: VAlign.CENTER, h: HAlign.CENTER },
+      }
+    },
+  },
+  "text": {
+    label: {
+      align: { v: VAlign.BOTTOM, h: HAlign.LEFT },
+      font: "font_consolas_10_bold",
+      color: VisuTheme.color.textFocus,
+      outline: true,
+      outlineColor: VisuTheme.color.accent,
+    },
+  },
 })
 #macro VisuStyles global.__VisuStyles
