@@ -3032,7 +3032,7 @@ function VisuMenu(_config = null) constructor {
                       VisuController: {
                         initialState: {
                           name: "idle",
-                          data: new Event("run-tests", Core.getProperty("visu.menu.demo.tests", new Array(String))),
+                          data: new Event("run-tests", Core.getProperty("visu.menu.demo.files", new Array(String))),
                         },
                       },
                     })
