@@ -3442,7 +3442,7 @@ function VisuMenu(_config = null) constructor {
             width: function() { return clamp(this.context.width() * 0.3, 480, 700) },
             height: function() { 
               var minFooterHeight = 48
-              var minTitleHeight = 168
+              var minTitleHeight = 208
               var contextHeight = this.context.height()
               var viewHeight = Struct.get(context.nodes, "visu-menu.content").viewHeight
               if ((contextHeight / 2.0) - viewHeight - minFooterHeight >= 0) {
@@ -4353,7 +4353,7 @@ function VisuMenu(_config = null) constructor {
 
   ///@return {VETrackControl}
   update = function() { 
-    VISU_MENU_ENTRY_HEIGHT = clamp((((GuiHeight() - 540) / 540) * 24) + 80, 48, 104)
+    VISU_MENU_ENTRY_HEIGHT = ceil(clamp((((GuiHeight() - 540) / 540) * 44) + 60, 60, 104))
     this.dispatcher.update()
     return this
   }

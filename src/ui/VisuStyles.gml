@@ -43,7 +43,7 @@ global.__VisuStyles = new Map(String, Callable, {
     label: {
       align: { v: VAlign.BOTTOM, h: HAlign.LEFT },
       font: "font_kodeo_mono_48_bold",
-      offset: { x: 48, y: -48 },
+      offset: { x: 48, y: -18 },
       useScale: true,
       useScaleWithOffset: true,
       color: VisuTheme.color.text,
@@ -73,7 +73,7 @@ global.__VisuStyles = new Map(String, Callable, {
       colorHoverOver: VisuTheme.color.accentLight,
       colorHoverOut: VisuTheme.color.sideDark,
       //backgroundColor: VisuTheme.color.side,
-      backgroundMargin: { top: 6, left: 6, bottom: 6, right: 6 },
+      backgroundMargin: { top: 4, left: 4, bottom: 4, right: 4 },
       backgroundAlpha: 0.75,
     },
   },
@@ -89,7 +89,7 @@ global.__VisuStyles = new Map(String, Callable, {
       colorHoverOver: VisuTheme.color.accentLight,
       colorHoverOut: VisuTheme.color.sideDark,
       //backgroundColor: VisuTheme.color.side,
-      backgroundMargin: { top: 8, left: 8, bottom: 0, right: 8 },
+      backgroundMargin: { top: 4, left: 4, bottom: 0, right: 4 },
       backgroundAlpha: 0.75,
     },
     label: {
@@ -103,7 +103,7 @@ global.__VisuStyles = new Map(String, Callable, {
       colorHoverOver: VisuTheme.color.accentLight,
       colorHoverOut: VisuTheme.color.sideDark,
       //backgroundColor: VisuTheme.color.side,
-      backgroundMargin: { top: 0, left: 8, bottom: 8, right: 8 },
+      backgroundMargin: { top: 0, left: 4, bottom: 4, right: 4 },
       backgroundAlpha: 0.75,
     },
   },
@@ -118,7 +118,7 @@ global.__VisuStyles = new Map(String, Callable, {
       //backgroundColor: VisuTheme.color.side,
       colorHoverOver: VisuTheme.color.accentLight,
       colorHoverOut: VisuTheme.color.accentShadow,
-      backgroundMargin: { top: 8, left: 8, bottom: 8, right: 8},
+      backgroundMargin: { top: 4, left: 4, bottom: 4, right: 4 },
       backgroundAlpha: 0.05,
     },
   },
@@ -136,7 +136,7 @@ global.__VisuStyles = new Map(String, Callable, {
       //colorHoverOut: VisuTheme.color.sideDark,
       //backgroundColor: VisuTheme.color.side,
       backgroundAlpha: 0.75,
-      backgroundMargin: { top: 6, left: 6, bottom: 6, right: 6 },
+      backgroundMargin: { top: 4, left: 4, bottom: 4, right: 4 },
     },
     input: {
       label: {
@@ -148,13 +148,13 @@ global.__VisuStyles = new Map(String, Callable, {
         colorHoverOut: VisuTheme.color.sideDark,
         //backgroundColor: VisuTheme.color.side,
         backgroundAlpha: 0.75,
-        backgroundMargin: { top: 6, left: 6, bottom: 6, right: 6 },
+        backgroundMargin: { top: 4, left: 4, bottom: 4, right: 4 },
       },
       colorHoverOver: VisuTheme.color.accentLight,
       colorHoverOut: VisuTheme.color.sideDark,
       //backgroundColor: VisuTheme.color.side,
       backgroundAlpha: 0.75,
-      backgroundMargin: { top: 6, left: 6, bottom: 6, right: 6 },
+      backgroundMargin: { top: 4, left: 4, bottom: 4, right: 4 },
     },
   },
   "menu-spin-select-entry": {
@@ -171,7 +171,7 @@ global.__VisuStyles = new Map(String, Callable, {
       //colorHoverOut: VisuTheme.color.sideDark,
       //backgroundColor: VisuTheme.color.side,
       backgroundAlpha: 0.75,
-      backgroundMargin: { top: 6, left: 6, bottom: 6, right: 6 },
+      backgroundMargin: { top: 4, left: 4, bottom: 4, right: 4 },
     },
     previous: {
       sprite: {
@@ -181,7 +181,7 @@ global.__VisuStyles = new Map(String, Callable, {
       colorHoverOver: VisuTheme.color.accentLight,
       colorHoverOut: VisuTheme.color.sideDark,
       backgroundAlpha: 0.75,
-      backgroundMargin: { top: 8, left: 8, bottom: 8, right: 0 },
+      backgroundMargin: { top: 4, left: 4, bottom: 4, right: 0 },
     },
     preview: {
       label: {
@@ -192,7 +192,7 @@ global.__VisuStyles = new Map(String, Callable, {
       },
       colorHoverOver: VisuTheme.color.accentLight,
       colorHoverOut: VisuTheme.color.sideDark,
-      backgroundMargin: { top: 8, left: 0, bottom: 8, right: 0 },
+      backgroundMargin: { top: 4, left: 0, bottom: 4, right: 0 },
       backgroundAlpha: 0.75,
     },
     next: {
@@ -202,7 +202,7 @@ global.__VisuStyles = new Map(String, Callable, {
       },
       colorHoverOver: VisuTheme.color.accentLight,
       colorHoverOut: VisuTheme.color.sideDark,
-      backgroundMargin: { top: 8, left: 0, bottom: 8, right: 8 },
+      backgroundMargin: { top: 4, left: 0, bottom: 4, right: 4 },
       backgroundAlpha: 0.75,
     },
   },
@@ -220,7 +220,7 @@ global.__VisuStyles = new Map(String, Callable, {
       //colorHoverOut: VisuTheme.color.sideDark,
       //backgroundColor: VisuTheme.color.side,
       backgroundAlpha: 0.75,
-      backgroundMargin: { top: 6, left: 6, bottom: 6, right: 6 },
+      backgroundMargin: { top: 4, left: 4, bottom: 4, right: 4 },
     },
     preview: {
       align: { v: VAlign.CENTER, h: HAlign.CENTER },
@@ -231,7 +231,7 @@ global.__VisuStyles = new Map(String, Callable, {
       colorHoverOut: VisuTheme.color.sideDark,
       //backgroundColor: VisuTheme.color.side,
       backgroundAlpha: 0.75,
-      backgroundMargin: { top: 6, left: 6, bottom: 6, right: 6 },
+      backgroundMargin: { top: 4, left: 4, bottom: 4, right: 4 },
     }
   },
   "menu-slider-entry": {
@@ -248,11 +248,11 @@ global.__VisuStyles = new Map(String, Callable, {
       //colorHoverOut: VisuTheme.color.sideDark,
       //backgroundColor: VisuTheme.color.side,
       backgroundAlpha: 0.75,
-      backgroundMargin: { top: 6, left: 6, bottom: 6, right: 6 },
+      backgroundMargin: { top: 4, left: 4, bottom: 4, right: 4 },
     },
     slider: {
       backgroundColor: VisuTheme.color.side,
-      backgroundMargin: { top: 8, bottom: 8, left: -10, right: -8 },
+      backgroundMargin: { top: 4, bottom: 4, left: -10, right: -8 },
       backgroundAlpha: 0.75,
       pointer: {
         name: "texture_empty",

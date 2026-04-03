@@ -427,7 +427,7 @@ function VisuRenderer() constructor {
       var keyboard = Beans.get(BeanVisuIO).keyboards.get("player")
       var up = keyboard.keys.up.pressed || keyboard_check_pressed(vk_up)
       var down = keyboard.keys.down.pressed || keyboard_check_pressed(vk_down)
-      var action = keyboard.keys.action.pressed || keyboard_check_pressed(vk_enter) || keyboard_check_pressed(vk_space)
+      var action = keyboard.keys.action.pressed || keyboard_check_pressed(vk_enter) || keyboard_check_pressed(vk_space) || mouse_check_button_pressed(mb_left)
       this.dialogueRenderer.render(layout, up, down, action)
     }
 
