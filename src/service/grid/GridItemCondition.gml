@@ -34,6 +34,27 @@ global.__VISU_GRID_CONDITIONS = {
       }
     }
   },
+  "fact": function() {
+    return function(item, controller) {
+      return controller.getFact(this.data.fact) == Struct.getIfType(this.data, "value", Boolean, true)
+    }
+  },
+  "fact-logic-gate": function() {
+    return function(item, controller) {
+      var a = controller.getFact(this.data.factA)
+      var b = controller.getFact(this.data.factB)
+      switch (this.data.operator) {
+        case "and": return a && b
+        case "or": return a || b
+        case "not": return !a
+        case "nor": return !(a || b)
+        case "nand": return !(a && b)
+        case "xor": return (a || b) && !(a && b)
+        case "xnor": return (a && b) || (!a && !b)
+        default: throw new Exception($"Found unsupported operator for 'fact-logic-gate': {this.data.operator}")
+      }
+    }
+  },
   "numeric": function() {
     return function(item, controller) {
       var value = Struct.get(item, this.data.field)

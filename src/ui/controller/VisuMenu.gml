@@ -225,7 +225,7 @@ function factoryPlayerKeyboardKeyEntryConfig(name, text) {
           mouseText = mouseCode == MouseButtonType.NONE ? "" : $" | Mouse: {mouseText}"
         }
 
-        mouseText = Visu.settings.getValue("visu.developer.mouse-shoot") ? mouseText : ""
+        //mouseText = Visu.settings.getValue("visu.developer.mouse-shoot") ? mouseText : ""
         this.label.text = $"{keyboardText}{mouseText}"
       },
       remapKeyTimer: new Timer(TAU, { loop: Infinity }),
@@ -709,6 +709,7 @@ function VisuMenu(_config = null) constructor {
                   isRawMode: Visu.settings.getValue("visu.graphics.raw-mode"),
                 }))
                 Beans.get(BeanVisuController).sfxService.play("menu-select-entry")
+                Beans.get(BeanDialogueDesignerService).close()
               }),
               callbackData: config.path,
               onMouseReleasedLeft: function() {
@@ -735,6 +736,7 @@ function VisuMenu(_config = null) constructor {
                   rawMode: false,
                 }))
                 Beans.get(BeanVisuController).sfxService.play("menu-select-entry")
+                Beans.get(BeanDialogueDesignerService).close()
               }),
               callbackData: config.path,
               onMouseReleasedLeft: function() {
@@ -781,6 +783,7 @@ function VisuMenu(_config = null) constructor {
   ///@return {Event}
   factoryOpenMainMenuEvent = function(_config = null) {
     var controller = Beans.get(BeanVisuController)
+    var dialogueDesignerService = Beans.get(BeanDialogueDesignerService)
     var config = Struct.appendUnique(
       _config,
       {
@@ -883,51 +886,88 @@ function VisuMenu(_config = null) constructor {
           }, counter)
           counter++
         } else {
-          event.data.title.config.label.text = "Finish"
+          event.data.title.config.label.text = Language.get("visu.menu.finish")
+          if (dialogueDesignerService.dialog != null) {
+            event.data.content.add({
+              name: "main-menu_menu-button-entry_continue_story",
+              template: VisuComponents.get("menu-button-entry"),
+              layout: VisuLayouts.get("menu-button-entry"),
+              config: {
+                layout: { type: UILayoutType.VERTICAL },
+                label: { 
+                  text: Language.get("visu.menu.continue-story"),
+                  callback: new BindIntent(function() {
+                    var controller = Beans.get(BeanVisuController)
+                    if (controller.ostSound != null) {
+                      controller.ostSound.stop()
+                      controller.ostSound = null
+                    }
+                    Beans.get(BeanSoundService).free(GMArray.toMap(VISU_SFX_AUDIO_NAMES, String, Boolean, Lambda.returnTrue, null, Lambda.passthrough))
+                    audio_stop_all()
+
+                    controller.menu.send(new Event("close", { fade: true }))
+                    controller.loader.fsm.transition("clear-state")
+                    controller.fsm.transition("idle")
+                    controller.trackService.dispatcher.execute(new Event("close-track"))
+                    controller.sfxService.play("menu-select-entry")
+                    controller.visuRenderer.gridRenderer.clear()
+                    //Beans.get(BeanTextureService).free()
+                  }),
+                  callbackData: config,
+                  onMouseReleasedLeft: function() {
+                    this.callback()
+                  },
+                },
+              }
+            }, counter)
+            counter++
+          }
         }
 
-        event.data.content.add({
-          name: "main-menu_menu-button-entry_retry",
-          template: VisuComponents.get("menu-button-entry"),
-          layout: VisuLayouts.get("menu-button-entry"),
-          config: {
-            layout: { type: UILayoutType.VERTICAL },
-            label: { 
-              text: Language.get("visu.menu.retry"),
-              callback: new BindIntent(function() {
-                var controller = Beans.get(BeanVisuController)
-                controller.sfxService.play("menu-select-entry")
-                controller.menu.send(Callable
-                  .run(this.callbackData.quit, {
-                    back: this.callbackData.back,
-                    accept: function() {
-                      var controller = Beans.get(BeanVisuController)
-                      controller.send(new Event("scene-close", {
-                        duration: 1.5,
-                        event: new Event("load", {
-                          manifest: $"{controller.track.path}manifest.visu",
-                          autoplay: true,
-                        }),
-                        callback: function() {
-                          var controller = Beans.get(BeanVisuController)
-                          Assert.isType(controller.track, VisuTrack, "VisuController.track must be type of VisuTrack")
-                          controller.send(this.event)
-                          controller.sfxService.play("menu-use-entry")
-                        },
-                      }))
-                      return new Event("close", { fade: true })
-                    },
-                    decline: this.callbackData.back,
-                  }))
-              }),
-              callbackData: config,
-              onMouseReleasedLeft: function() {
-                this.callback()
+        if (dialogueDesignerService.dialog == null) {
+          event.data.content.add({
+            name: "main-menu_menu-button-entry_retry",
+            template: VisuComponents.get("menu-button-entry"),
+            layout: VisuLayouts.get("menu-button-entry"),
+            config: {
+              layout: { type: UILayoutType.VERTICAL },
+              label: { 
+                text: Language.get("visu.menu.retry"),
+                callback: new BindIntent(function() {
+                  var controller = Beans.get(BeanVisuController)
+                  controller.sfxService.play("menu-select-entry")
+                  controller.menu.send(Callable
+                    .run(this.callbackData.quit, {
+                      back: this.callbackData.back,
+                      accept: function() {
+                        var controller = Beans.get(BeanVisuController)
+                        controller.send(new Event("scene-close", {
+                          duration: 1.5,
+                          event: new Event("load", {
+                            manifest: $"{controller.track.path}manifest.visu",
+                            autoplay: true,
+                          }),
+                          callback: function() {
+                            var controller = Beans.get(BeanVisuController)
+                            Assert.isType(controller.track, VisuTrack, "VisuController.track must be type of VisuTrack")
+                            controller.send(this.event)
+                            controller.sfxService.play("menu-use-entry")
+                          },
+                        }))
+                        return new Event("close", { fade: true })
+                      },
+                      decline: this.callbackData.back,
+                    }))
+                }),
+                callbackData: config,
+                onMouseReleasedLeft: function() {
+                  this.callback()
+                },
               },
-            },
-          }
-        }, counter)
-        counter++
+            }
+          }, counter)
+          counter++
+        }
   
         event.data.content.add({
           name: "main-menu_menu-button-entry_restart",
@@ -979,7 +1019,7 @@ function VisuMenu(_config = null) constructor {
           config: {
             layout: { type: UILayoutType.VERTICAL },
             label: { 
-              text: Language.get("visu.menu.play", "Play"),
+              text: Language.get("visu.menu.play"),
               callback: new BindIntent(function() {
                 var controller = Beans.get(BeanVisuController)
                 var menu = controller.menu
@@ -995,6 +1035,30 @@ function VisuMenu(_config = null) constructor {
           }
         }, counter)
         counter++
+
+        if (Core.getProperty("visu.story.dialog") != null) {
+          event.data.content.add({
+            name: "main-menu_menu-button-entry_story",
+            template: VisuComponents.get("menu-button-entry"),
+            layout: VisuLayouts.get("menu-button-entry"),
+            config: {
+              layout: { type: UILayoutType.VERTICAL },
+              label: { 
+                text: Language.get("visu.menu.story"),
+                callback: new BindIntent(function() {
+                  var menu = Beans.get(BeanVisuController).menu
+                  menu.send(menu.factoryOpenStoryMenuEvent(this.callbackData))
+                  Beans.get(BeanVisuController).sfxService.play("menu-select-entry")
+                }),
+                callbackData: config,
+                onMouseReleasedLeft: function() {
+                  this.callback()
+                },
+              },
+            }
+          }, counter)
+          counter++
+        }
         break
       case "game-over":
         var editor = Beans.get(Visu.modules().editor.controller)
@@ -1034,41 +1098,43 @@ function VisuMenu(_config = null) constructor {
         }, counter)
         counter++
 
-        event.data.content.add({
-          name: "main-menu_menu-button-entry_retry",
-          template: VisuComponents.get("menu-button-entry"),
-          layout: VisuLayouts.get("menu-button-entry"),
-          config: {
-            layout: { type: UILayoutType.VERTICAL },
-            label: { 
-              text: Language.get("visu.menu.retry"),
-              callback: new BindIntent(function() {
-                var controller = Beans.get(BeanVisuController)
-                controller.playerService.remove()
-                controller.sfxService.play("menu-select-entry")
-                controller.menu.send(new Event("close", { fade: true }))
-                controller.dispatcher.execute(new Event("scene-close", {
-                  duration: 1.5,
-                  event: new Event("load", {
-                    manifest: $"{controller.track.path}manifest.visu",
-                    autoplay: true,
-                  }),
-                  callback: function() {
-                    var controller = Beans.get(BeanVisuController)
-                    Assert.isType(controller.track, VisuTrack, "VisuController.track must be type of VisuTrack")
-                    controller.send(this.event)
-                    controller.sfxService.play("menu-use-entry")
-                  },
-                }))
-              }),
-              callbackData: config,
-              onMouseReleasedLeft: function() {
-                this.callback()
+        if (dialogueDesignerService.dialog == null) {
+          event.data.content.add({
+            name: "main-menu_menu-button-entry_retry",
+            template: VisuComponents.get("menu-button-entry"),
+            layout: VisuLayouts.get("menu-button-entry"),
+            config: {
+              layout: { type: UILayoutType.VERTICAL },
+              label: { 
+                text: Language.get("visu.menu.retry"),
+                callback: new BindIntent(function() {
+                  var controller = Beans.get(BeanVisuController)
+                  controller.playerService.remove()
+                  controller.sfxService.play("menu-select-entry")
+                  controller.menu.send(new Event("close", { fade: true }))
+                  controller.dispatcher.execute(new Event("scene-close", {
+                    duration: 1.5,
+                    event: new Event("load", {
+                      manifest: $"{controller.track.path}manifest.visu",
+                      autoplay: true,
+                    }),
+                    callback: function() {
+                      var controller = Beans.get(BeanVisuController)
+                      Assert.isType(controller.track, VisuTrack, "VisuController.track must be type of VisuTrack")
+                      controller.send(this.event)
+                      controller.sfxService.play("menu-use-entry")
+                    },
+                  }))
+                }),
+                callbackData: config,
+                onMouseReleasedLeft: function() {
+                  this.callback()
+                },
               },
-            },
-          }
-        }, counter)
-        counter++
+            }
+          }, counter)
+          counter++
+        }
   
         event.data.content.add({
           name: "main-menu_menu-button-entry_restart",
@@ -1132,6 +1198,152 @@ function VisuMenu(_config = null) constructor {
         }
       })
     }
+
+    return event
+  }
+
+    ///@param {?Struct} [_config]
+  ///@return {Event}
+  factoryOpenStoryMenuEvent = function(_config = null) {
+    var config = Struct.appendUnique(
+      _config,
+      {
+        back: this.factoryOpenMainMenuEvent, 
+      }
+    )
+
+    var event = new Event("open").setData({
+      back: config.back,
+      layout: Beans.get(BeanVisuController).visuRenderer.layout,
+      title: {
+        name: "open-story_title",
+        template: VisuComponents.get("menu-title"),
+        layout: VisuLayouts.get("menu-title"),
+        config: {
+          label: { 
+            text: Language.get("visu.menu.select-difficulty"),
+          },
+        },
+      },
+      content: new Array(Struct, [
+        {
+          name: "open-story_difficulty-easy_menu-button-entry",
+          template: VisuComponents.get("menu-button-entry"),
+          layout: VisuLayouts.get("menu-button-entry"),
+          config: {
+            layout: { type: UILayoutType.VERTICAL },
+            label: { 
+              text: Language.get("visu.menu.difficulty.easy"),
+              callback: new BindIntent(function() {
+                Visu.settings.setValue("visu.difficulty", Difficulty.EASY)
+                  .save()
+                Beans.get(BeanVisuController).menu.dispatcher
+                  .execute(new Event("close", { fade: true }))
+                Beans.get(BeanDialogueDesignerService)
+                  .open(Core.getProperty("visu.story.dialog")).facts
+                  .clear()
+              }),
+              callbackData: config.back,
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            },
+          }
+        },
+        {
+          name: "open-story_difficulty-normal_menu-button-entry",
+          template: VisuComponents.get("menu-button-entry"),
+          layout: VisuLayouts.get("menu-button-entry"),
+          config: {
+            layout: { type: UILayoutType.VERTICAL },
+            label: { 
+              text: Language.get("visu.menu.difficulty.normal"),
+              callback: new BindIntent(function() {
+                Visu.settings.setValue("visu.difficulty", Difficulty.NORMAL)
+                  .save()
+                Beans.get(BeanVisuController).menu.dispatcher
+                  .execute(new Event("close", { fade: true }))
+                Beans.get(BeanDialogueDesignerService)
+                  .open(Core.getProperty("visu.story.dialog")).facts
+                  .clear()
+              }),
+              callbackData: config.back,
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            },
+          }
+        },
+        {
+          name: "open-story_difficulty-hard_menu-button-entry",
+          template: VisuComponents.get("menu-button-entry"),
+          layout: VisuLayouts.get("menu-button-entry"),
+          config: {
+            layout: { type: UILayoutType.VERTICAL },
+            label: { 
+              text: Language.get("visu.menu.difficulty.hard"),
+              callback: new BindIntent(function() {
+                Visu.settings.setValue("visu.difficulty", Difficulty.HARD)
+                  .save()
+                Beans.get(BeanVisuController).menu.dispatcher
+                  .execute(new Event("close", { fade: true }))
+                Beans.get(BeanDialogueDesignerService)
+                  .open(Core.getProperty("visu.story.dialog")).facts
+                  .clear()
+              }),
+              callbackData: config.back,
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            },
+          }
+        },
+        {
+          name: "open-story_difficulty-lunatic_menu-button-entry",
+          template: VisuComponents.get("menu-button-entry"),
+          layout: VisuLayouts.get("menu-button-entry"),
+          config: {
+            layout: { type: UILayoutType.VERTICAL },
+            label: { 
+              text: Language.get("visu.menu.difficulty.lunatic"),
+              callback: new BindIntent(function() {
+                Visu.settings.setValue("visu.difficulty", Difficulty.LUNATIC)
+                  .save()
+                Beans.get(BeanVisuController).menu.dispatcher
+                  .execute(new Event("close", { fade: true }))
+                Beans.get(BeanDialogueDesignerService)
+                  .open(Core.getProperty("visu.story.dialog")).facts
+                  .clear()
+              }),
+              callbackData: config.back,
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            },
+          }
+        },
+        {
+          name: "open-story_menu-button-entry_back",
+          template: VisuComponents.get("menu-button-entry"),
+          layout: VisuLayouts.get("menu-button-entry"),
+          config: {
+            layout: { type: UILayoutType.VERTICAL },
+            label: { 
+              text: Language.get("visu.menu.back"),
+              callback: new BindIntent(function() {
+                Beans.get(BeanVisuController).menu.send(Callable.run(this.callbackData))
+                Beans.get(BeanVisuController).sfxService.play("menu-select-entry")
+              }),
+              callbackData: config.back,
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+              colorHoverOut: VisuTheme.color.deny,
+            },
+          }
+        }
+      ])
+    })
 
     return event
   }
@@ -3229,8 +3441,8 @@ function VisuMenu(_config = null) constructor {
             y: function() { return this.context.y() },
             width: function() { return clamp(this.context.width() * 0.3, 480, 700) },
             height: function() { 
-              var minFooterHeight = 72
-              var minTitleHeight = 220
+              var minFooterHeight = 48
+              var minTitleHeight = 168
               var contextHeight = this.context.height()
               var viewHeight = Struct.get(context.nodes, "visu-menu.content").viewHeight
               if ((contextHeight / 2.0) - viewHeight - minFooterHeight >= 0) {
@@ -3270,7 +3482,7 @@ function VisuMenu(_config = null) constructor {
             y: function() { return this.context.y() + this.context.height() - this.height() },
             width: function() { return clamp(this.context.width() * 0.3, 480, 700) },
             height: function() {
-              var minFooterHeight = 72
+              var minFooterHeight = 48
               return max(
                 context.height()
                   - Struct.get(context.nodes, "visu-menu.title").height()
@@ -3869,7 +4081,7 @@ function VisuMenu(_config = null) constructor {
               label: { 
                 font: "font_kodeo_mono_10_bold",
                 align: { v: VAlign.BOTTOM, h: HAlign.LEFT },
-                offset: { x: 48, y: -24 },
+                offset: { x: 48, y: -12 },
                 useScale: true,
                 useScaleWithOffset: true,
                 text: $"v{Visu.version()} | Baron's Keep 2026 (c)",
@@ -4141,6 +4353,7 @@ function VisuMenu(_config = null) constructor {
 
   ///@return {VETrackControl}
   update = function() { 
+    VISU_MENU_ENTRY_HEIGHT = clamp((((GuiHeight() - 540) / 540) * 24) + 80, 48, 104)
     this.dispatcher.update()
     return this
   }

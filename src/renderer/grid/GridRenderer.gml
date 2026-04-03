@@ -99,7 +99,7 @@ function GridRenderer() constructor {
 
   ///@private
   ///@type {?PathTrack}
-  pathTrack = null;//new PathTrack().build(3.0 * GAME_FPS)
+  pathTrack = null//new PathTrack().build(3.0 * GAME_FPS)//
 
   ///@private
   ///@return {VisuHUDRenderer}

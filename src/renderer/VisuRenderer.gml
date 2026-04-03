@@ -422,10 +422,16 @@ function VisuRenderer() constructor {
       this.hudRenderer.renderGUI(layout)
     }
 
-    this.dialogueRenderer.render(layout)
+    var state = controller.fsm.getStateName() 
+    if (state == "idle") {
+      var keyboard = Beans.get(BeanVisuIO).keyboards.get("player")
+      var up = keyboard.keys.up.pressed || keyboard_check_pressed(vk_up)
+      var down = keyboard.keys.down.pressed || keyboard_check_pressed(vk_down)
+      var action = keyboard.keys.action.pressed || keyboard_check_pressed(vk_enter) || keyboard_check_pressed(vk_space)
+      this.dialogueRenderer.render(layout, up, down, action)
+    }
 
     var editor = Beans.get(Visu.modules().editor.controller)
-    var state = controller.fsm.getStateName() 
     if (this.renderEditorMode 
         && editor != null 
         && !editor.renderUI 

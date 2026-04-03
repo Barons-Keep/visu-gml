@@ -1,7 +1,8 @@
 ///@package io.alkapivo.visu.ui
 
 ///@type {Number}
-#macro VISU_MENU_ENTRY_HEIGHT 104
+global.__VISU_MENU_ENTRY_HEIGHT = 104
+#macro VISU_MENU_ENTRY_HEIGHT global.__VISU_MENU_ENTRY_HEIGHT
 
 ///@type {Map<String, Callable>}
 global.__VisuLayouts = new Map(String, Callable, {

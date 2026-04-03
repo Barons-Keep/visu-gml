@@ -1599,11 +1599,26 @@ function _Visu() constructor {
                 autoplay: true,
               }))
             },
+            "ON_VISU_TRACK_FINISH": function(data) {
+              var controller = Beans.get(BeanVisuController)
+              var state = controller.fsm.getStateName()
+              return (!controller.trackService.isTrackLoaded()
+                || controller.trackService.track.audio.isLoaded()
+                || 1 < abs(controller.trackService.time - controller.trackService.duration)
+                || (state != "play" && state != "pause" && state != "paused"))
+            },
             "GAME_END": function(data) {
               game_end()
             },
           }),
         })))
+
+      var dialog = Core.getProperty("visu.story.dialog")
+      if (dialog != null) {
+        var dialogue = FileUtil.readFileSync(dialog).getData()
+        Beans.get(BeanDialogueDesignerService).templates.set(dialog, dialogue)
+      }
+      
     }
   }
 

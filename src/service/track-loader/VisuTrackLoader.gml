@@ -100,7 +100,9 @@ function VisuTrackLoader(config = null): Service(config) constructor {
             var clearQueue = this.state.get("clearQueue")
             //printFPS($"clear-state::update, clearQueue.size(): {clearQueue.size()}")
             if (clearQueue.size() == 0) {
-              fsm.transition("parse-manifest", this.state.get("path"))
+              var data = this.state.get("path")
+              var stateName = Core.isType(data, String) ? "parse-manifest" : "idle"
+              fsm.transition(stateName, data)              
             } else {
               //Callable.run(clearQueue.pop())
               clearQueue.forEach(Callable.run)

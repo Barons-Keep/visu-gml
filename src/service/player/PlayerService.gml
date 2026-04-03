@@ -121,7 +121,8 @@ function PlayerService(config = null): Service(config) constructor {
       Struct.set(template, "y", _y)
       Struct.set(template, "uid", controller.gridService.generateUID())
 
-      this.set(new Player(template))
+      var visuPlayer = new Player(template)
+      this.set(visuPlayer)
     },
     "clear-player": function(event) {
       this.remove()

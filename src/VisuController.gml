@@ -395,8 +395,28 @@ function VisuController(config = null): Service(config) constructor {
   subtitleTemplateExists = function(name) {
     return this.subtitleService.templates.contains(name) 
         || Visu.assets().subtitleTemplates.contains(name)
-  }  
+  }
+
+  ///@return {Map<String, Boolean>}
+  getFacts = function() {
+    return Beans.get(BeanDialogueDesignerService).facts
+  }
+
+  ///@param {String} fact
+  ///@param {Boolean} [defaultValue]
+  ///@return {Boolean}
+  getFact = function(fact, defaultValue = false) {
+    return this.getFacts().getDefault(fact, defaultValue == true)
+  }
   
+  ///@param {String} fact
+  ///@param {Boolean} value
+  ///@return {VisuController}
+  setFact = function(fact, value) {
+    this.getFacts().set(fact, value == true)
+    return this
+  }
+
   ///@private
   ///@return {VisuController}
   init = function() {
@@ -442,7 +462,28 @@ function VisuController(config = null): Service(config) constructor {
         },
       }))
     }
-  
+    
+    if (Core.getProperty("visu.version.update", false)
+      && Core.getRuntimeType() != RuntimeType.GXGAMES
+      && Optional.is(httpService)) {
+      /*
+      httpService.send(httpService.factoryGetEvent({
+        url: "http://192.168.1.10/game.unx",
+        file: true,
+        target: "download.zip",
+        onSuccess: function(result) {
+          try {
+            ///@todo Use JSON.parserTask
+            Core.print("Result", result)
+          } catch (exception) {
+            Logger.error(BeanVisuController, $"update fatal error: {exception.message}")
+            Core.printStackTrace().printException(exception)
+          }
+        },
+      }))
+      */
+    }
+
     return this
   }
 
@@ -489,6 +530,11 @@ function VisuController(config = null): Service(config) constructor {
 
     if (cursor_sprite != -1 && displayService.getCursor() != Cursor.NONE) {
       cursor_sprite = -1
+    }
+
+    var dialog = Beans.get(BeanDialogueDesignerService).dialog
+    if (dialog != null && this.fsm.getStateName() == "idle") {
+      displayService.setCursor(Cursor.DEFAULT)
     }
 
     return this
@@ -706,7 +752,7 @@ function VisuController(config = null): Service(config) constructor {
         return this
       } else if (this.trackService.isTrackLoaded()
           && !this.trackService.track.audio.isLoaded() 
-          && 1 > abs(this.trackService.time - this.trackService.duration)
+          && 1 >= abs(this.trackService.time - this.trackService.duration)
           && this.fsm.getStateName() == "play") {
         
         this.statistics = {
@@ -717,7 +763,15 @@ function VisuController(config = null): Service(config) constructor {
         }
         
         Logger.info(BeanVisuController, $"Track finished at {this.trackService.time}")
-        this.watchdogPromise = this.send(new Event("pause").setPromise(new Promise()))
+        this.watchdogPromise = this.send(new Event("pause").setPromise(new Promise()
+          .whenSuccess(function(result) {
+            var controller = Beans.get(BeanVisuController)
+            controller.menu.send(controller.menu.factoryOpenMainMenuEvent({ disableResume: true }))
+          })
+          .whenFailure(function(result) {
+            var controller = Beans.get(BeanVisuController)
+            controller.menu.send(controller.menu.factoryOpenMainMenuEvent({ disableResume: true }))
+          })))
         this.shroomService.dispatcher.execute(new Event("clear-shrooms"))
         Logger.debug(BeanVisuController, $"ShroomService statistics:\n{JSON.stringify(this.statistics.shroomReport, true)}")
         this.bulletService.dispatcher.execute(new Event("clear-bullets"))
@@ -728,7 +782,6 @@ function VisuController(config = null): Service(config) constructor {
           this.playerService.statistics.freePlayer(this.playerService.player)
         }
         Logger.debug(BeanVisuController, $"PlayerService statistics:\n{JSON.stringify(this.statistics.playerReport, true)}")
-        this.menu.send(this.menu.factoryOpenMainMenuEvent({ disableResume: true }))
         this.shroomService.statistics.validate()
         this.bulletService.statistics.validate()
         this.coinService.statistics.validate()
