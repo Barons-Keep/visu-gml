@@ -2,24 +2,45 @@
 
 ///@param {String} _name
 ///@param {Struct} json
-function SubtitleTemplate(_name, json) constructor {
+function SubtitleTemplate(_name, _json) constructor {
 
   ///@type {String}
   name = Assert.isType(_name, String)
 
-  ///@type {Array<String>}
-  lines = Optional.is(Struct.get(json, "lines"))
-    ? new Array(String, GMArray
-      .map(json.lines, function(line) {
-        return Assert.isType(line, String)
-      }))
-    : new Array(String)
+  /* migrate to multilang */
+  var json = (Struct.get(_json, "lines") != null && Struct.get(_json, LanguageType.en_EN) == null) 
+    ? LanguageType.keys().toStruct(
+      function(langCode, idx, lines) {
+        return {
+          lines: langCode == LanguageType.en_EN ? lines : [],
+          enable: langCode == LanguageType.en_EN,
+        }
+      },
+      _json.lines,
+      function(langCode) {
+        return langCode
+      }
+    )
+    : _json
+
+  ///@type {Map<String, Struct>}
+  data = new Map(String, Struct, Core.isType(json, Struct)
+    ? Struct.map(json, function(item) {
+      return {
+        lines: new Array(String, Struct.getIfType(item, "lines", GMArray, [])),
+        enable: Struct.getIfType(item, "enable", Boolean, true),
+      }
+    })
+    : {})
 
   ///@return {Struct}
   serialize = function() {
-    return {
-      lines: this.lines.getContainer(),
-    }
+    return data.toStruct(function(item) {
+      return {
+        lines: Struct.getIfType(item, "lines", Array, new Array(String)).getContainer(),
+        enable: Struct.getIfType(item, "enable", Boolean, true),
+      }
+    })
   }
 }
 
@@ -28,10 +49,12 @@ function SubtitleTemplate(_name, json) constructor {
 function Subtitle(json) constructor {
 
   ///@type {String}
-  template = Assert.isType(json.template, String)
+  template = Assert.isType(Struct.get(json, "template"), String,
+    "Subtitle::template must be type of String")
 
   ///@type {Array<String>}
-  lines = Assert.isType(json.lines, Array)
+  lines = Assert.isType(Struct.get(json, "lines"), Array,
+    "Subtitle::lines must be type of String")
 
   ///@type {Font}
   font = Core.isType(Struct.get(json, "font"), Font)

@@ -18,13 +18,17 @@ function SubtitleService(config = null): Service(config) constructor {
   ///@type {EventPump}
   dispatcher = new EventPump(this, new Map(String, Callable, {
     "add": function(event) {
-      var lines = new Array(String)
       var template = Core.isType(event.data.template, SubtitleTemplate)
         ? event.data.template
         : Assert.isType(this.getTemplate(event.data.template), SubtitleTemplate)
 
+      var _lines = template.data.get(Language.getCode())
+      var lines = Assert.isType(Struct.get(Struct.get(_lines, "enable") ? _lines : template.data.get(LanguageType.en_EN), "lines"), Array,
+        "SubtitleTemplate::data.get(langCode) must be type of Array<String>")
+      
       GPU.set.font(event.data.font.asset)
-      template.lines.forEach(function(line, index, acc) {
+      var parsedLines = new Array(String)
+      lines.forEach(function(line, index, acc) {
         var text = String.wrapText(line, acc.width, "%NEW_LINE%")
         if (String.contains(text, "%NEW_LINE%")) {
           String.split(text, "%NEW_LINE%")
@@ -36,12 +40,12 @@ function SubtitleService(config = null): Service(config) constructor {
         }
       }, {
         width: event.data.area.getWidth() * GuiWidth(),
-        lines: lines
+        lines: parsedLines
       })
 
       var subtitle = new Subtitle({
         template: template.name,
-        lines: lines,
+        lines: parsedLines,
         font: event.data.font,
         fontHeight: event.data.fontHeight,
         charSpeed: event.data.charSpeed,

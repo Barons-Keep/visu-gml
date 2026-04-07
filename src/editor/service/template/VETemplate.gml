@@ -290,10 +290,21 @@ function VETemplate(json) constructor {
   ///@private
   ///@return {SubtitleTemplate}
   toSubtitleTemplate = function() {
-    var store = this.store
+
     return new SubtitleTemplate(
       store.getValue("template-name"), 
-      { lines: String.split(store.getValue("lines"), "\n").getContainer() }
+      LanguageType.keys().toStruct(
+        function(langCode, idx, store) {
+          return {
+            lines: String.split(store.getValue($"lines_{langCode}"), "\n").getContainer(),
+            enable: langCode != LanguageType.en_EN ? store.getValue($"enable_{langCode}") : true,
+          }
+        },
+        this.store,
+        function(langCode) {
+          return langCode
+        }
+      )
     )
   }
 
