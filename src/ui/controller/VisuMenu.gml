@@ -585,7 +585,8 @@ function VisuMenu(_config = null) constructor {
                 text: Visu.settings.getValue("visu.difficulty"),
               },
               updateCustom: function() { 
-                this.label.text = Visu.settings.getValue("visu.difficulty")
+                var difficulty = String.toLowerCase(Visu.settings.getValue("visu.difficulty"))
+                this.label.text = Language.get($"visu.menu.difficulty.{difficulty}")
               },
             },
             next: { 
@@ -1359,7 +1360,7 @@ function VisuMenu(_config = null) constructor {
         acceptLabel: Language.get("visu.menu.confirmation.accept"),
         decline: context.factoryOpenMainMenuEvent, 
         declineLabel: Language.get("visu.menu.confirmation.decline"),
-        message: Language.get("visu.menu.confirmation.message"),
+        message: Language.get("visu.menu.confirmation.message"), 
       }
     )
 
@@ -1647,16 +1648,10 @@ function VisuMenu(_config = null) constructor {
       content: new Array(Struct, [
         this.factoryMenuButtonEntryTitle(generator.run(), "Game design"),
         factoryCreditsEntry(generator.run(), "Alkapivo", "https://github.com/Alkapivo"),
-        factoryCreditsEntry(generator.run(), "GOETIA", "https://github.com/ArsAzoetia"),
         factoryCreditsEntry(generator.run(), "kattybratt", "https://github.com/kattybratt"),
-        factoryCreditsEntry(generator.run(), "Nekomantikku", "https://github.com/Nekomantikku"),
         this.factoryMenuButtonEntryTitle(generator.run(), "Level design"),
         factoryCreditsEntry(generator.run(), "Alkapivo", "https://github.com/Alkapivo"),
         factoryCreditsEntry(generator.run(), "kattybratt", "https://github.com/kattybratt"),
-        this.factoryMenuButtonEntryTitle(generator.run(), "QA"),
-        factoryCreditsEntry(generator.run(), "maister_kapli", "https://www.youtube.com/@maister_kapli8184"),
-        factoryCreditsEntry(generator.run(), "kattybratt", "https://github.com/kattybratt"),
-        factoryCreditsEntry(generator.run(), "XieXie", "https://forum.marianabay.com/members/xiexie.171/"),
         this.factoryMenuButtonEntryTitle(generator.run(), "Music"),
         factoryCreditsEntry(generator.run(), "GOETIA - Death of the Muse - Create and Yet Fate's Faw Avoid", "https://sigillumazoetia.bandcamp.com/track/create-and-yet-fates-faw-avoid"),
         factoryCreditsEntry(generator.run(), "GOETIA - Cerecloth", "https://www.youtube.com/watch?v=-l4Q5X8Kj6I"),
@@ -1668,14 +1663,20 @@ function VisuMenu(_config = null) constructor {
         factoryCreditsEntry(generator.run(), "Sewerslvt - Psychosis", "https://www.youtube.com/watch?v=oT-0HHd-9Fw"),
         factoryCreditsEntry(generator.run(), "Sewerslvt - Purple Hearts In Her Eyes", "https://www.youtube.com/watch?v=dTh4cp_ypu4"),
         factoryCreditsEntry(generator.run(), "zoogies - digitalshadow", "https://zmuda.dev"),
-        this.factoryMenuButtonEntryTitle(generator.run(), "CODE"),
+        factoryCreditsEntry(generator.run(), "4evrx - life.delete", "https://www.youtube.com/watch?v=yO3uw8h_rR4"),
+        this.factoryMenuButtonEntryTitle(generator.run(), "Code"),
         factoryCreditsEntry(generator.run(), "Alkapivo - visu-project", "https://github.com/Barons-Keep/visu-project"),
         factoryCreditsEntry(generator.run(), "Alkapivo - visu-gml", "https://github.com/Barons-Keep/visu-gml"),
         factoryCreditsEntry(generator.run(), "Alkapivo - core-gml", "https://github.com/Alkapivo/core-gml"),
         factoryCreditsEntry(generator.run(), "Alkapivo - gm-cli", "https://github.com/Alkapivo/gm-cli"),
         factoryCreditsEntry(generator.run(), "Alkapivo, maras_cz - mh-cz.gmtf-gml", "https://github.com/Alkapivo/mh-cz.gmtf-gml"),
         factoryCreditsEntry(generator.run(), "Alkapivo, blokatt - fyi.odditica.bktGlitch-gml", "https://github.com/Alkapivo/fyi.odditica.bktGlitch-gml"),
+        factoryCreditsEntry(generator.run(), "Alkapivo, LAGameStudio - com.la-game-studio.input-candy-gml", "https://github.com/Alkapivo/com.la-game-studio.input-candy-gml"),
         //factoryCreditsEntry(generator.run(), "Alkapivo, Pixelated_Pope - com.pixelatedpope.tdmc-gml", "https://github.com/Alkapivo/com.pixelatedpope.tdmc-gml"),
+        this.factoryMenuButtonEntryTitle(generator.run(), "QA"),
+        factoryCreditsEntry(generator.run(), "maister_kapli", "https://www.youtube.com/@maister_kapli8184"),
+        factoryCreditsEntry(generator.run(), "kattybratt", "https://github.com/kattybratt"),
+        factoryCreditsEntry(generator.run(), "XieXie", "https://forum.marianabay.com/members/xiexie.171/"),
         this.factoryMenuButtonEntryTitle(generator.run(), "Shaders"),
         factoryCreditsEntry(generator.run(), "Alkapivo - Arc Runner", "https://github.com/Alkapivo/core-gml"),
         factoryCreditsEntry(generator.run(), "Alkapivo - Astral Flow", "https://github.com/Alkapivo/core-gml"),
@@ -2671,6 +2672,139 @@ function VisuMenu(_config = null) constructor {
           },
         },
         {
+          name: "gameplay_menu-spin-select-entry_lang",
+          template: VisuComponents.get("menu-spin-select-entry"),
+          layout: VisuLayouts.get("menu-spin-select-entry"),
+          config: { 
+            layout: { type: UILayoutType.VERTICAL },
+            label: {
+              text: Language.get("visu.menu.lang"),
+            },
+            previous: { 
+              callback: function() {
+                var controller = Beans.get(BeanVisuController)
+                var map = new Map(String, Number)
+                  .set(LanguageType.en_EN, 0)
+                  .set(LanguageType.pl_PL, 1)
+
+                var langIntent = Struct.getDefault(this.context, "langIntent", Visu.settings.getValue("visu.language"))
+                var pointer = map.getDefault(langIntent, 0)
+                var target = clamp(int64(pointer - 1), -1, 2)
+                target = target == -1 ? 1 : (target == 2 ? 0 : target)
+                var value = map.findKey(Lambda.equal, target)
+
+                if (!Optional.is(value)) {
+                  return
+                }
+
+                Struct.set(this.context, "langIntent", value)
+                controller.sfxService.play("menu-use-entry")
+              },
+            },
+            preview: {
+              label: {
+                text: Language.get(Language.getCode()),
+              },
+              updateCustom: function() { 
+                var langIntent = Struct.getIfType(this.context, "langIntent", String, Visu.settings.getValue("visu.language"))
+                this.label.text = Language.get(langIntent)
+              },
+            },
+            next: { 
+              callback: function() {
+                var controller = Beans.get(BeanVisuController)
+                var map = new Map(String, Number)
+                  .set(LanguageType.en_EN, 0)
+                  .set(LanguageType.pl_PL, 1)
+
+                var langIntent = Struct.getDefault(this.context, "langIntent", Visu.settings.getValue("visu.language"))
+                var pointer = map.getDefault(langIntent, 0)
+                var target = clamp(int64(pointer + 1), -1, 2)
+                target = target == -1 ? 1 : (target == 2 ? 0 : target)
+                var value = map.findKey(Lambda.equal, target)
+
+                if (!Optional.is(value)) {
+                  return
+                }
+
+                Struct.set(this.context, "langIntent", value)
+                controller.sfxService.play("menu-use-entry")
+              },
+            },
+          },
+        },
+        {
+          name: "gameplay_menu-button-entry_lang-apply",
+          template: VisuComponents.get("menu-button-entry"),
+          layout: VisuLayouts.get("menu-button-entry"),
+          config: {
+            layout: { type: UILayoutType.VERTICAL },
+            label: { 
+              text: Language.get("visu.menu.lang.apply"),
+              enable: { value: true },
+              updateCustom: function() {
+                var lang = Visu.settings.getValue("visu.language")
+                var langIntent = Struct.getIfType(this.context, "langIntent", String, lang)
+                this.enable.value = lang != langIntent
+              },
+              callback: new BindIntent(function() {
+                var controller = Beans.get(BeanVisuController)
+                var lang = Visu.settings.getValue("visu.language")
+                var langIntent = Struct.getIfType(this.context, "langIntent", String, lang)
+                Struct.set(controller, "langIntent", langIntent)
+                if (lang == langIntent) {
+                  return
+                }
+
+                var event = controller.menu.factoryConfirmationDialog({
+                  accept: function() {
+                    var controller = Beans.get(BeanVisuController)
+                    var langIntent = Struct.get(controller, "langIntent")
+                    Visu.settings.setValue("visu.language", langIntent).save()
+                    VISU_MANIFEST_LOAD_ON_START_DISPATCHED = false
+                    VISU_FORCE_GOD_MODE_DISPATCHED = false
+                    VISU_BOOT_UP = false
+                    VISU_LOAD_PROPERTIES = false
+                    VISU_LOAD_SETTINGS = false
+                    VISU_PARSE_CLI = false
+                    //VISU_DISPLAY_SERVICE_SETUP = false
+                    controller.send(new Event("scene-close", {
+                      duration: 1.0,
+                      callback: function() {
+                        var controller = Beans.get(BeanVisuController)
+                        controller.sfxService.play("menu-use-entry")
+                        controller.playerService.remove()
+                        Scene.open("scene_visu", {
+                          VisuController: {
+                            initialState: {
+                              name: Core.getProperty("visu.splashscreen.skip")
+                                ? "idle" 
+                                : "splashscreen",
+                            },
+                          },
+                        })
+                      },
+                    }))
+                    return new Event("close", { fade: true })
+                  },
+                  decline: function() {
+                    var controller = Beans.get(BeanVisuController)
+                    return controller.menu.factoryOpenGameplaySettingsMenuEvent()
+                  },
+                  message: Language.get("visu.menu.lang.reload"), 
+                })
+
+                Struct.set(event.data, "back", controller.menu.factoryOpenSettingsMenuEvent)
+                controller.menu.send(event)
+                controller.sfxService.play("menu-select-entry")
+              }),
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            },
+          }
+        },
+        {
           name: "gameplay_menu-button-entry_back",
           template: VisuComponents.get("menu-button-entry"),
           layout: VisuLayouts.get("menu-button-entry"),
@@ -3246,7 +3380,8 @@ function VisuMenu(_config = null) constructor {
                 text: Visu.settings.getValue("visu.difficulty")
               },
               updateCustom: function() { 
-                this.label.text = Visu.settings.getValue("visu.difficulty")
+                var difficulty = String.toLowerCase(Visu.settings.getValue("visu.difficulty"))
+                this.label.text = Language.get($"visu.menu.difficulty.{difficulty}")
               },
             },
             next: { 

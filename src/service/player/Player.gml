@@ -937,8 +937,8 @@ function PlayerHandler(json) constructor {
     var axisValueY = 1.0
     var axis = Struct.get(Struct.get(player.keyboard, "gamepad"), "axis")
     if (axis != null) {
-      axisValueX = (axis.left || axis.right) ? axis.H : axisValueX
-      axisValueY = (axis.up || axis.down) ? axis.V : axisValueY
+      axisValueX = clamp((axis.left || axis.right) ? (1.4142 * abs(axis.H)) : axisValueX, 0.0, 1.0)
+      axisValueY = clamp((axis.up || axis.down) ? (1.4142 * abs(axis.V)) : axisValueY, 0.0, 1.0)
     }
 
     var up = keyboard_check(vk_up)
@@ -951,7 +951,7 @@ function PlayerHandler(json) constructor {
         left || keys.left.on || mouseButtons.left.on,
         right || keys.right.on || mouseButtons.right.on,
         keys.focus.on || mouseButtons.focus.on,
-        abs(axisValueX)
+        axisValueX
       ),
       0.0,
       controller.gridService.width
@@ -962,7 +962,7 @@ function PlayerHandler(json) constructor {
         up || keys.up.on || mouseButtons.up.on,
         down || keys.down.on || mouseButtons.down.on,
         keys.focus.on || mouseButtons.focus.on,
-        abs(axisValueY)
+        axisValueY
       ), 
       0.0, 
       controller.gridService.height
