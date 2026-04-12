@@ -37,6 +37,7 @@ function VisuIO(config = null): Service(config) constructor {
                   "right"
                 ],
               }),
+              axis: null,
               up: IC_GetAction("up"),
               down: IC_GetAction("down"),
               left: IC_GetAction("left"),
@@ -103,6 +104,7 @@ function VisuIO(config = null): Service(config) constructor {
 
         var inputCandyLoader = Beans.get(BeanInputCandyLoader)
         if (inputCandyLoader == null || !inputCandyLoader.enabled || !inputCandyLoader.initialized) {
+          Struct.set(Struct.get(this, "gamepad"), "axis", null)
           return this
         }
 
@@ -133,6 +135,8 @@ function VisuIO(config = null): Service(config) constructor {
         gamepad.previous.right = updateAxisKeyboardKey(axis.right, keys.right, gamepad.previous.right)
 
         gamepad.keyUpdater.updateKeyboard(this)
+
+        gamepad.axis = axis
 
         return this
       },

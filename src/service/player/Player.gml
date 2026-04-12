@@ -812,31 +812,27 @@ function PlayerHandler(json) constructor {
   ///@param {VisuController} controller
   ///@return {PlayerHandler}
   update = function(player, controller) {
-    static calcSpeed = function(config, player, keyA, keyB, keyFocus) {
-      var spdMax = config.speedMax
+    static calcSpeed = function(config, player, keyA, keyB, keyFocus, axisValue = 1.0) {
+      var keys = keyA || keyB
+      var keysValue = keys ? axisValue : 1.0
+      var spdMax = config.speedMax * keysValue
       if (keyFocus) {
-        var factor = DELTA_TIME * (abs(config.speedMax - config.speedMaxFocus) / 15.0)
+        var factor = DELTA_TIME * (abs((config.speedMax * keysValue) - (config.speedMaxFocus * keysValue)) / 15.0)
         //var factor = DeltaTime.apply(abs(config.speedMax - config.speedMaxFocus) / 15.0)
-        spdMax = clamp(abs(config.speed) - factor, config.speedMaxFocus, config.speedMax)
+        spdMax = clamp(abs(config.speed) - factor, config.speedMaxFocus * keysValue, config.speedMax * keysValue)
       }
 
       var spd = 0.0
       if (keyA || keyB) {
-        var dir = keyA ? -1.0 : 1.0
+        var dir = axisValue * (keyA ? -1.0 : 1.0)
         config.speed += dir * DELTA_TIME * config.acceleration * 0.5
         spd = DELTA_TIME * config.speed
         config.speed += dir * DELTA_TIME * config.acceleration * 0.5
-        //config.speed += dir * DeltaTime.apply(config.acceleration) * 0.5
-        //spd = DeltaTime.apply(config.speed)
-        //config.speed += dir * DeltaTime.apply(config.acceleration) * 0.5
       } else if (abs(config.speed) - (DeltaTime.apply(config.friction) * 0.5) >= 0) {
         var dir = sign(config.speed)
         config.speed -= dir * DELTA_TIME * config.friction * 0.5
         spd = DELTA_TIME * config.speed
         config.speed -= dir * DELTA_TIME * config.friction * 0.5
-        //config.speed -= dir * DeltaTime.apply(config.friction) * 0.5
-        //spd = DeltaTime.apply(config.speed)
-        //config.speed -= dir * DeltaTime.apply(config.friction) * 0.5
         if (sign(config.speed) != dir) {
           config.speed = 0.0
         }
@@ -937,15 +933,25 @@ function PlayerHandler(json) constructor {
       player.stats.dispatchDeath()
     }
 
+    var axisValueX = 1.0
+    var axisValueY = 1.0
+    var axis = Struct.get(Struct.get(player.keyboard, "gamepad"), "axis")
+    if (axis != null) {
+      axisValueX = (axis.left || axis.right) ? axis.H : axisValueX
+      axisValueY = (axis.up || axis.down) ? axis.V : axisValueY
+    }
+
     var up = keyboard_check(vk_up)
     var down = keyboard_check(vk_down)
     var left = keyboard_check(vk_left)
     var right = keyboard_check(vk_right)
+    
     player.x = clamp(
       player.x + calcSpeed(this.x, player, 
         left || keys.left.on || mouseButtons.left.on,
         right || keys.right.on || mouseButtons.right.on,
-        keys.focus.on || mouseButtons.focus.on
+        keys.focus.on || mouseButtons.focus.on,
+        abs(axisValueX)
       ),
       0.0,
       controller.gridService.width
@@ -955,7 +961,8 @@ function PlayerHandler(json) constructor {
       player.y + calcSpeed(this.y, player,
         up || keys.up.on || mouseButtons.up.on,
         down || keys.down.on || mouseButtons.down.on,
-        keys.focus.on || mouseButtons.focus.on
+        keys.focus.on || mouseButtons.focus.on,
+        abs(axisValueY)
       ), 
       0.0, 
       controller.gridService.height
