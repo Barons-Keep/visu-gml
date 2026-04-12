@@ -5,70 +5,72 @@
 function VisuEditorIO(config = null): Service(config) constructor {
 
   ///@type {Keyboard}
-  keyboard = new Keyboard({ 
-    controlLeft: KeyboardKeyType.CONTROL_LEFT,
-    shiftLeft: KeyboardKeyType.SHIFT_LEFT,
+  keyboard = new Keyboard({
+    keys: { 
+      controlLeft: KeyboardKeyType.CONTROL_LEFT,
+      shiftLeft: KeyboardKeyType.SHIFT_LEFT,
 
-    undo: "Z",
+      undo: "Z",
 
-    exitModal: KeyboardKeyType.ESC,
+      exitModal: KeyboardKeyType.ESC,
 
-    newProject: "N", // + ctrl
-    editProject: "E", // + ctrl
-    openProject: "O", // + ctrl
-    saveProject: "S", // + ctrl
+      newProject: "N", // + ctrl
+      editProject: "E", // + ctrl
+      openProject: "O", // + ctrl
+      saveProject: "S", // + ctrl
 
-    previewEvent: "A", // + ctrl
-    saveTemplate: "A", // + ctrl + shift
-    toBrush: "B", // + ctrl
+      previewEvent: "A", // + ctrl
+      saveTemplate: "A", // + ctrl + shift
+      toBrush: "B", // + ctrl
 
-    previewBrush: "D", // + ctrl
-    saveBrush: "D", // + ctrl + shift
+      previewBrush: "D", // + ctrl
+      saveBrush: "D", // + ctrl + shift
 
-    selectTool: "V",
-    eraseTool: "E",
-    brushTool: "B",
-    cloneTool: "C",
-    snapToGrid: "Q",
+      selectTool: "V",
+      eraseTool: "E",
+      brushTool: "B",
+      cloneTool: "C",
+      snapToGrid: "Q",
 
-    reloadSFX: "R", // + ctrl
-    autosaveTrack: "L", // + ctrl
-    timelineFollow: "F", // + ctrl
-    timelineUpdate: "U", // + ctrl
+      reloadSFX: "R", // + ctrl
+      autosaveTrack: "L", // + ctrl
+      timelineFollow: "F", // + ctrl
+      timelineUpdate: "U", // + ctrl
 
-    zoomIn: KeyboardKeyType.PLUS,
-    zoomOut: KeyboardKeyType.MINUS,
-    numZoomIn: KeyboardKeyType.NUM_PLUS,
-    numZoomOut: KeyboardKeyType.NUM_MINUS,
+      zoomIn: KeyboardKeyType.PLUS,
+      zoomOut: KeyboardKeyType.MINUS,
+      numZoomIn: KeyboardKeyType.NUM_PLUS,
+      numZoomOut: KeyboardKeyType.NUM_MINUS,
 
-    controlTrack: KeyboardKeyType.SPACE,
-    controlTrackBackward: 188, // + ctrl
-    controlTrackForward: 190, // + ctrl
+      controlTrack: KeyboardKeyType.SPACE,
+      controlTrackBackward: 188, // + ctrl
+      controlTrackForward: 190, // + ctrl
 
-    removeTimelineSelectedEvents: KeyboardKeyType.BACKSPACE,
-    removeTimelineSelectedEvents2: KeyboardKeyType.DELETE,
-    
-    renderLeftPane: KeyboardKeyType.F1,
-    renderBottomPane: KeyboardKeyType.F2,
-    renderRightPane: KeyboardKeyType.F3,
-    renderTrackControl: KeyboardKeyType.F4,
-    renderSceneConfigPreview: KeyboardKeyType.F12,
-    renderUI: KeyboardKeyType.F5,
-    renderEventInspector: KeyboardKeyType.F6,
-    renderTemplateToolbar: KeyboardKeyType.F7,
-    cameraKeyboardLook: KeyboardKeyType.F8,
-    cameraMouseLook: KeyboardKeyType.F9,
+      removeTimelineSelectedEvents: KeyboardKeyType.BACKSPACE,
+      removeTimelineSelectedEvents2: KeyboardKeyType.DELETE,
+      
+      renderLeftPane: KeyboardKeyType.F1,
+      renderBottomPane: KeyboardKeyType.F2,
+      renderRightPane: KeyboardKeyType.F3,
+      renderTrackControl: KeyboardKeyType.F4,
+      renderSceneConfigPreview: KeyboardKeyType.F12,
+      renderUI: KeyboardKeyType.F5,
+      renderEventInspector: KeyboardKeyType.F6,
+      renderTemplateToolbar: KeyboardKeyType.F7,
+      cameraKeyboardLook: KeyboardKeyType.F8,
+      cameraMouseLook: KeyboardKeyType.F9,
 
-    clearGridShaders: ord("1"), // + ctrl
-    clearBackgroundShaders: ord("2"), // + ctrl
-    clearCombinedShaders: ord("3"), // + ctrl
-    clearBackgroundTextures: ord("4"), // + ctrl
-    clearGridTextures: ord("5"), // + ctrl
-    clearForegroundTextures: ord("6"), // + ctrl
-    clearShrooms: ord("7"), // + ctrl
-    clearBullets: ord("8"), // + ctrl
-    clearCoins: ord("9"), // + ctrl
-    clearParticles: ord("0"), // + ctrl
+      clearGridShaders: ord("1"), // + ctrl
+      clearBackgroundShaders: ord("2"), // + ctrl
+      clearCombinedShaders: ord("3"), // + ctrl
+      clearBackgroundTextures: ord("4"), // + ctrl
+      clearGridTextures: ord("5"), // + ctrl
+      clearForegroundTextures: ord("6"), // + ctrl
+      clearShrooms: ord("7"), // + ctrl
+      clearBullets: ord("8"), // + ctrl
+      clearCoins: ord("9"), // + ctrl
+      clearParticles: ord("0"), // + ctrl
+    },
   })
 
   ///@type {Mouse}

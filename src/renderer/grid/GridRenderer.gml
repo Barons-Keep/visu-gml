@@ -1173,8 +1173,6 @@ function GridRenderer() constructor {
       return this
     }
 
-    
-    
     var supportColor = gridService.properties.supportColor
     var luminance = (0.2126 * supportColor.red * 255.0) + (0.7152 * supportColor.green * 255.0) + (0.0722 * supportColor.blue * 255.0)
     var contrastGMColor = luminance > 128 ? c_black : c_white
@@ -1651,7 +1649,7 @@ function GridRenderer() constructor {
         && player.sprite.texture.asset != texture_empty
         && Visu.settings.getValue("visu.developer.mouse-shoot", false)
   
-    if (isMouseShoot) {
+    if (isMouseShoot && !controller.menu.enabled) {
       this.target3DCoords.x = coords[0] - (GRID_SERVICE_PIXEL_WIDTH * 1.5)
       this.target3DCoords.y = coords[1] - (GRID_SERVICE_PIXEL_HEIGHT * 1.5)
       this.target3DCoords.z = gridService.properties.depths.playerZ
@@ -1669,8 +1667,22 @@ function GridRenderer() constructor {
         var scaleX = ((player.sprite.texture.width * player.sprite.scaleX) / sprite_get_width(texture_player_shadow)) * (4.0 + (0.0 * focusFactor)) * (scaleFactor + swing)
         var scaleY = ((player.sprite.texture.height * player.sprite.scaleY) / sprite_get_height(texture_player_shadow)) * (4.0 + (0.0 * focusFactor)) * (scaleFactor + swing)
         var alpha = player.sprite.getAlpha() * player.fadeIn
-        draw_sprite_ext(texture_player_shadow, 0, coords[0], coords[1], scaleX * 0.625, scaleY * 0.625, 0.0, contrastGMColor, alpha * 1.0)
-        draw_sprite_ext(texture_player_shadow, 0, coords[0], coords[1], scaleX * 1.25, scaleY * 1.25, 0.0, supportColor.toGMColor(), alpha * 0.85)
+        if (global.gamepadPlayerAimMouse) {
+          draw_sprite_ext(texture_player_shadow, 0, coords[0], coords[1], scaleX * 0.625, scaleY * 0.625, 0.0, contrastGMColor, alpha * 1.0)
+          draw_sprite_ext(texture_player_shadow, 0, coords[0], coords[1], scaleX * 1.25, scaleY * 1.25, 0.0, supportColor.toGMColor(), alpha * 0.85)
+        } else if (global.gamepadPlayerAim) {
+          matrix_set(matrix_world, matrix_build(
+            baseX, baseY, depths.playerZ, 
+            global.cameraRollSpeed, global.cameraPitchSpeed, global.cameraYawSpeed,
+            1, 1, 1
+          ))
+
+          var shadowX = this.player3DCoords.x + Math.fetchCircleX(GAMEPAD_PLAYER_AIM_OFFSET, global.gamepadPlayerAimAngle)
+          var shadowY = this.player3DCoords.y + Math.fetchCircleY(GAMEPAD_PLAYER_AIM_OFFSET, global.gamepadPlayerAimAngle)
+          alpha = alpha * global.gamepadPlayerAimAlphaDefault
+          draw_sprite_ext(texture_player_shadow, 0, shadowX, shadowY, scaleX * 0.625, scaleY * 0.625, 0.0, contrastGMColor, alpha * 1.0)
+          draw_sprite_ext(texture_player_shadow, 0, shadowX, shadowY, scaleX * 1.25, scaleY * 1.25, 0.0, supportColor.toGMColor(), alpha * 0.85)
+        }
       }
     }
 
@@ -1743,23 +1755,41 @@ function GridRenderer() constructor {
       1, 1, 1
     ))
     //this.gridRenderBorders(gridService)
+    if (isMouseShoot && !controller.menu.enabled && global.gamepadPlayerAim && !global.gamepadPlayerAimMouse) {
+      global.gamepadPlayerAimAlpha = clamp(global.gamepadPlayerAimAlpha - GAMEPAD_PLAYER_AIM_ALPHA_FADE, 0.0, global.gamepadPlayerAimAlphaDefault)
+      var angle = global.gamepadPlayerAimAngle        
+      var color = c_blue
+      var alpha = player.sprite.getAlpha() * player.fadeIn * global.gamepadPlayerAimAlpha
+      var spawnerX = this.player3DCoords.x + Math.fetchCircleX(GAMEPAD_PLAYER_AIM_OFFSET, angle)
+      var spawnerY = this.player3DCoords.y + Math.fetchCircleY(GAMEPAD_PLAYER_AIM_OFFSET, angle)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 1.1, 1.1, angle, c_white, alpha * 0.6)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 0.8, 0.8, angle, c_red, alpha * 0.8)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 0.9, 0.9, angle, c_fuchsia, alpha * 0.7)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 1.0, 1.0, angle, c_blue, alpha * 0.6)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 0.7, 0.7, angle, c_yellow, alpha * 0.9)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 0.6, 0.6, angle, c_white, alpha * 1.0)
+    }
+
     _renderPlayer(gridService, playerService, baseX, baseY)
 
-    if (isMouseShoot && !controller.menu.enabled) {
+    if (isMouseShoot && !controller.menu.enabled && global.gamepadPlayerAimMouse) {
       matrix_set(matrix_world, matrix_build(
         0, 0, depths.playerZ + 1,
         global.cameraRollSpeed, global.cameraPitchSpeed, global.cameraYawSpeed,
         1, 1, 1
       ))
+
       var angle = Math.fetchPointsAngle(this.player3DCoords.x, this.player3DCoords.y, this.target3DCoords.x, this.target3DCoords.y)
       var color = c_blue
       var alpha = player.sprite.getAlpha() * player.fadeIn
-      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, coords[0], coords[1], 1.1, 1.1, angle, c_white, alpha * 0.6)
-      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, coords[0], coords[1], 0.8, 0.8, angle, c_red, alpha * 0.8)
-      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, coords[0], coords[1], 0.9, 0.9, angle, c_fuchsia, alpha * 0.7)
-      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, coords[0], coords[1], 1.0, 1.0, angle, c_blue, alpha * 0.6)
-      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, coords[0], coords[1], 0.7, 0.7, angle, c_yellow, alpha * 0.9)
-      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, coords[0], coords[1], 0.6, 0.6, angle, c_white, alpha * 1.0)
+      var spawnerX = coords[0]
+      var spawnerY = coords[1]
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 1.1, 1.1, angle, c_white, alpha * 0.6)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 0.8, 0.8, angle, c_red, alpha * 0.8)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 0.9, 0.9, angle, c_fuchsia, alpha * 0.7)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 1.0, 1.0, angle, c_blue, alpha * 0.6)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 0.7, 0.7, angle, c_yellow, alpha * 0.9)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 0.6, 0.6, angle, c_white, alpha * 1.0)
     }
     matrix_set(matrix_world, matrix_build_identity())
 

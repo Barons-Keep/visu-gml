@@ -859,10 +859,14 @@ function PlayerHandler(json) constructor {
 
       var angle = gun.angle
       if (isMouseShoot) {
-        var gridRenderer = controller.visuRenderer.gridRenderer
-        var player3DCoords = gridRenderer.player3DCoords
-        var target3DCoords = gridRenderer.target3DCoords
-        angle = gun.angle - 90 + Math.fetchPointsAngle(player3DCoords.x, player3DCoords.y, target3DCoords.x, target3DCoords.y)
+        if (global.gamepadPlayerAim && !global.gamepadPlayerAimMouse) {
+          angle = gun.angle - 90 + global.gamepadPlayerAimAngle
+        } else {
+          var gridRenderer = controller.visuRenderer.gridRenderer
+          var player3DCoords = gridRenderer.player3DCoords
+          var target3DCoords = gridRenderer.target3DCoords
+          angle = gun.angle - 90 + Math.fetchPointsAngle(player3DCoords.x, player3DCoords.y, target3DCoords.x, target3DCoords.y)
+        }
       }
       
       controller.bulletService.spawnBullet(

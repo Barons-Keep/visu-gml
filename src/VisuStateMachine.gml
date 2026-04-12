@@ -177,6 +177,11 @@ function VisuStateMachine(context, name) {
 
                 return this
               },
+              getKey: function(task) {
+                return keyboard_check_pressed(vk_anykey)
+                    || mouse_check_button_pressed(mb_any)
+                    || Beans.get(BeanVisuIO).keyboard.keys.anykey.pressed
+              },
             })
 
             controller.visuRenderer.executor.add(task)

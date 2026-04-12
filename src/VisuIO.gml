@@ -7,13 +7,135 @@ function VisuIO(config = null): Service(config) constructor {
   ///@type {Map}
   keyboards = new Map(String, Keyboard, {
     "player": new Keyboard({
-      up: Visu.settings.getValue("visu.keyboard.player.up", KeyboardKeyType.ARROW_UP),
-      down: Visu.settings.getValue("visu.keyboard.player.down", KeyboardKeyType.ARROW_DOWN),
-      left: Visu.settings.getValue("visu.keyboard.player.left", KeyboardKeyType.ARROW_LEFT),
-      right: Visu.settings.getValue("visu.keyboard.player.right", KeyboardKeyType.ARROW_RIGHT),
-      action: Visu.settings.getValue("visu.keyboard.player.action", ord("Z")),
-      bomb: Visu.settings.getValue("visu.keyboard.player.bomb", ord("X")),
-      focus: Visu.settings.getValue("visu.keyboard.player.focus", KeyboardKeyType.SHIFT),
+      keys: {
+        up: Visu.settings.getValue("visu.keyboard.player.up", KeyboardKeyType.ARROW_UP),
+        down: Visu.settings.getValue("visu.keyboard.player.down", KeyboardKeyType.ARROW_DOWN),
+        left: Visu.settings.getValue("visu.keyboard.player.left", KeyboardKeyType.ARROW_LEFT),
+        right: Visu.settings.getValue("visu.keyboard.player.right", KeyboardKeyType.ARROW_RIGHT),
+        action: Visu.settings.getValue("visu.keyboard.player.action", ord("Z")),
+        bomb: Visu.settings.getValue("visu.keyboard.player.bomb", ord("X")),
+        focus: Visu.settings.getValue("visu.keyboard.player.focus", KeyboardKeyType.SHIFT),
+        openMenu: KeyboardKeyType.ESC,
+      },
+      updateEnd: function() {
+        static initGamepad = function(context) {
+          var gamepad = Struct.get(context, "gamepad")
+          if (gamepad == null) {
+            gamepad = {
+              index: 1,
+              previous: {
+                up: false,
+                down: false,
+                left: false,
+                right: false,
+              },
+              keyUpdater: new PrioritizedPressedVirtualKeyUpdater({
+                keys: [
+                  "up",
+                  "down",
+                  "left",
+                  "right"
+                ],
+              }),
+              up: IC_GetAction("up"),
+              down: IC_GetAction("down"),
+              left: IC_GetAction("left"),
+              right: IC_GetAction("right"),
+              action: IC_GetAction("action"),
+              focus: IC_GetAction("focus"),
+              bomb: IC_GetAction("bomb"),
+              openMenu: IC_GetAction("openMenu"),
+            }
+
+            Struct.set(context, "gamepad", gamepad)
+          }
+
+          return gamepad
+        }
+
+        static updateKeyboardKey = function(index, action, key) {
+          var _action = __INPUTCANDY.actions[action]
+          var _actionOn = key.on
+          var _actionPressed = key.pressed
+          var _actionReleased = key.released
+          if (is_array(_action.gamepad)) {
+            for (var idx = 0; idx < array_length(_action.gamepad); idx++) {
+              var ic_code = _action.gamepad[idx]
+              var signal = __IC.GetSignal(index, ic_code)
+              if (signal != null) {
+                _actionOn = _actionOn || signal.is_held
+                _actionPressed = _actionPressed || (signal.is_held && !signal.was_held)
+                _actionReleased = _actionReleased || (!signal.is_held && signal.was_held)
+              }
+            }
+          } else {
+            var ic_code = _action.gamepad
+            var signal = __IC.GetSignal(index, ic_code)
+            if (signal != null) {
+              _actionOn = _actionOn || signal.is_held
+              _actionPressed = _actionPressed || (signal.is_held && !signal.was_held)
+              _actionReleased = _actionReleased || (!signal.is_held && signal.was_held)
+            }
+          }
+
+          if (_actionPressed || _actionReleased) {
+            keyboard_lastkey = vk_nokey
+          }
+
+          key.on = _actionOn
+          key.pressed = _actionPressed
+          key.released = _actionReleased
+        }
+
+        static updateAxisKeyboardKey = function(axis, key, previous) {
+          if (axis) {
+            key.on = true
+            key.pressed = !previous
+            key.released = false
+          } else if (previous) {
+            key.on = false
+            key.pressed = false
+            key.released = true
+          }
+
+          return axis
+        }
+
+        var inputCandyLoader = Beans.get(BeanInputCandyLoader)
+        if (inputCandyLoader == null || !inputCandyLoader.enabled || !inputCandyLoader.initialized) {
+          return this
+        }
+
+        var keys = this.keys
+        var gamepad = initGamepad(this)
+        var index = gamepad.index
+        var axis = __IC.GetAxisSignal(index, 0)
+        if (axis.rValue > 0.3) {
+          global.gamepadPlayerAimMouse = false
+          global.gamepadPlayerAimAngle = axis.rAngle
+          global.gamepadPlayerAimAlpha = global.gamepadPlayerAimAlphaDefault
+        } else if (!global.gamepadPlayerAimMouse) {
+          global.gamepadPlayerAimMouse = MouseUtil.hasMoved()
+        }
+
+        updateKeyboardKey(index, gamepad.up, keys.up)
+        updateKeyboardKey(index, gamepad.down, keys.down)
+        updateKeyboardKey(index, gamepad.left, keys.left)
+        updateKeyboardKey(index, gamepad.right, keys.right)
+        updateKeyboardKey(index, gamepad.action, keys.action)
+        updateKeyboardKey(index, gamepad.focus, keys.focus)
+        updateKeyboardKey(index, gamepad.bomb, keys.bomb)
+        updateKeyboardKey(index, gamepad.openMenu, keys.openMenu)
+
+        gamepad.previous.up = updateAxisKeyboardKey(axis.up, keys.up, gamepad.previous.up)
+        gamepad.previous.down = updateAxisKeyboardKey(axis.down, keys.down, gamepad.previous.down)
+        gamepad.previous.left = updateAxisKeyboardKey(axis.left, keys.left, gamepad.previous.left)
+        gamepad.previous.right = updateAxisKeyboardKey(axis.right, keys.right, gamepad.previous.right)
+
+        gamepad.keyUpdater.updateKeyboard(this)
+
+        return this
+      },
     })
   })
 
@@ -30,9 +152,76 @@ function VisuIO(config = null): Service(config) constructor {
   })
 
   ///@type {Keyboard}
-  keyboard = new Keyboard({ 
-    fullscreen: KeyboardKeyType.F11,
-    openMenu: KeyboardKeyType.ESC,
+  keyboard = new Keyboard({
+    keys: { 
+      fullscreen: KeyboardKeyType.F11,
+      openMenu: KeyboardKeyType.ESC,
+      anykey: KeyboardKeyType.SHIFT,
+    },
+    updateEnd: function() {
+      static initGamepad = function(context) {
+        var gamepad = Struct.get(context, "gamepad")
+        if (gamepad == null) {
+          gamepad = {
+            index: 1,
+            openMenu: IC_GetAction("openMenu"),
+            anykey: IC_GetAction("anykey"),
+          }
+
+          Struct.set(context, "gamepad", gamepad)
+        }
+
+        return gamepad
+      }
+
+      static updateKeyboardKey = function(index, action, key) {
+        var _action = __INPUTCANDY.actions[action]
+        var _actionOn = key.on
+        var _actionPressed = key.pressed
+        var _actionReleased = key.released
+        if (is_array(_action.gamepad)) {
+          for (var idx = 0; idx < array_length(_action.gamepad); idx++) {
+            var ic_code = _action.gamepad[idx]
+            var signal = __IC.GetSignal(index, ic_code)
+            if (signal != null) {
+              _actionOn = _actionOn || signal.is_held
+              _actionPressed = _actionPressed || (signal.is_held && !signal.was_held)
+              _actionReleased = _actionReleased || (!signal.is_held && signal.was_held)
+            }
+          }
+        } else {
+          var ic_code = _action.gamepad
+          var signal = __IC.GetSignal(index, ic_code)
+          if (signal != null) {
+            _actionOn = _actionOn || signal.is_held
+            _actionPressed = _actionPressed || (signal.is_held && !signal.was_held)
+            _actionReleased = _actionReleased || (!signal.is_held && signal.was_held)
+          }
+        }
+
+        if (_actionPressed || _actionReleased) {
+          keyboard_lastkey = vk_nokey
+        }
+
+        key.on = _actionOn
+        key.pressed = _actionPressed
+        key.released = _actionReleased
+      }
+
+      var inputCandyLoader = Beans.get(BeanInputCandyLoader)
+      if (inputCandyLoader == null || !inputCandyLoader.enabled || !inputCandyLoader.initialized) {
+        return this
+      }
+
+      var keys = this.keys
+      var gamepad = initGamepad(this)
+      var index = gamepad.index
+
+      updateKeyboardKey(index, gamepad.openMenu, keys.openMenu)
+      updateKeyboardKey(index, gamepad.anykey, keys.anykey)
+
+      return this
+    },
   })
 
   ///@type {Mouse}

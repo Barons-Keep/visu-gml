@@ -65,6 +65,34 @@ global.__VISU_DISPLAY_SERVICE_SETUP = false
 #macro VISU_DISPLAY_SERVICE_SETUP global.__VISU_DISPLAY_SERVICE_SETUP
 
 
+///@type {Number}
+global.gamepadPlayerAimMouse = false
+
+
+///@type {Number}
+global.gamepadPlayerAimAngle = 90
+
+
+///@type {Boolean}
+global.gamepadPlayerAim = true
+
+
+///@type {Number}
+global.gamepadPlayerAimAlphaDefault = 2.0
+
+
+///@type {Number}
+global.gamepadPlayerAimAlpha = global.gamepadPlayerAimAlphaDefault
+
+
+///@type {Number}
+#macro GAMEPAD_PLAYER_AIM_OFFSET 512
+
+
+///@type {Number}
+#macro GAMEPAD_PLAYER_AIM_ALPHA_FADE 0.01
+
+
 ///@hack
 #macro TEMPLATE_ENTRY_STEP global.__BRUSH_ENTRY_STEP
 #macro TEMPLATE_TOOLBAR_ENTRY_STEP global.__BRUSH_TOOLBAR_ENTRY_STEP
@@ -1365,6 +1393,7 @@ function _Visu() constructor {
       .set(new SettingEntry({ name: "visu.developer.mouse-shoot", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.graphics.visual-mode", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.graphics.raw-mode", type: SettingTypes.BOOLEAN, defaultValue: false }))
+      .set(new SettingEntry({ name: "visu.gamepad", type: SettingTypes.BOOLEAN, defaultValue: true }))
       .set(new SettingEntry({ 
           name: "visu.editor.theme",
           type: SettingTypes.STRUCT,
@@ -1630,6 +1659,35 @@ function _Visu() constructor {
     }
   }
 
+  static initInputCandyLoader = function(layerId) {
+    //Logger.info("Visu", "run::initInputCandyLoader()")
+    if (!Beans.exists(BeanInputCandyLoader)) {
+      Beans.add(Beans.factory(BeanInputCandyLoader, GMServiceInstance, layerId,
+        new InputCandyLoader({
+          eventPump: {
+            enableLogger: true,
+          },
+          executor: {
+            enableLogger: true,
+          }
+        })))
+    }
+
+    Beans.get(BeanInputCandyLoader).send(new Event("init", {
+      init: function() {
+        __IC.Action("up", IC_padu, IC_key_arrow_U)
+        __IC.Action("down", IC_padd, IC_key_arrow_D)
+        __IC.Action("left", IC_padl, IC_key_arrow_L)
+        __IC.Action("right", IC_padr, IC_key_arrow_R)
+        __IC.Action("action", [ IC_Ltrigger, IC_Lshoulder, IC_A ], IC_key_Z)
+        __IC.Action("focus", [ IC_Rtrigger, IC_Rshoulder, IC_B ], IC_any_shift)
+        __IC.Action("bomb", IC_X, IC_key_X)
+        __IC.Action("openMenu", IC_back_select, IC_key_escape)
+        __IC.Action("anykey", [ IC_A, IC_B, IC_X, IC_Y, IC_start, IC_back_select ], IC_any_shift)
+      },
+    }))
+  }
+
   static initDebug = function() {
     Core.debugOverlay(Visu.settings.getValue("visu.debug", false))
   }
@@ -1669,6 +1727,7 @@ function _Visu() constructor {
     this.initDebugSFX()
     this.initDebug()
     this.initTestRunner(layerId)
+    this.initInputCandyLoader(layerId)
     this.parseCli()
 
     return this

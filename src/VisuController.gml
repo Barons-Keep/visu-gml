@@ -716,6 +716,13 @@ function VisuController(config = null): Service(config) constructor {
       this.isMouseAim = Visu.settings.getValue("visu.developer.mouse-shoot")
       //this.isRawMode = Visu.settings.getValue("visu.graphics.raw-mode")
       this.isVisualMode = Visu.settings.getValue("visu.graphics.visual-mode")
+      
+      var inputCandyLoader = Beans.get(BeanInputCandyLoader)
+      var gamepad = Visu.settings.getValue("visu.gamepad")
+      global.gamepadPlayerAim = gamepad && (inputCandyLoader != null ? inputCandyLoader.isGamepadConnected() : false)
+      if (inputCandyLoader != null) {
+        inputCandyLoader.enabled = gamepad 
+      }
 
       if (this.trackService.isTrackLoaded()) {
         var ost = this.trackService.track.audio

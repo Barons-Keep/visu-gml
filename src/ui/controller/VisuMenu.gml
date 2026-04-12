@@ -2721,6 +2721,18 @@ function VisuMenu(_config = null) constructor {
       },
       content: new Array(Struct, [
         {
+          name: $"settings_menu-button-entry_controls.keyboard-and-mouse.title",
+          template: VisuComponents.get("menu-button-entry"),
+          layout: VisuLayouts.get("menu-button-entry"),
+          config: {
+            layout: { type: UILayoutType.VERTICAL },
+            label: {
+              text: Language.get("visu.menu.controls.keyboard-and-mouse"),
+              font: "font_kodeo_mono_28_bold",
+            },
+          },
+        },
+        {
           name: $"settings_menu-keyboard-key-entry_up",
           template: VisuComponents.get("menu-keyboard-key-entry"),
           layout: VisuLayouts.get("menu-keyboard-key-entry"),
@@ -2761,6 +2773,59 @@ function VisuMenu(_config = null) constructor {
           template: VisuComponents.get("menu-keyboard-key-entry"),
           layout: VisuLayouts.get("menu-keyboard-key-entry"),
           config: factoryPlayerKeyboardKeyEntryConfig("focus", Language.get("visu.menu.key.focus-mode")),
+        },
+        {
+          name: $"settings_menu-button-entry_gamepad-title",
+          template: VisuComponents.get("menu-button-entry"),
+          layout: VisuLayouts.get("menu-button-entry"),
+          config: {
+            layout: { type: UILayoutType.VERTICAL },
+            label: {
+              text: Language.get("visu.menu.gamepad.title.disconnected"),
+              font: "font_kodeo_mono_28_bold",
+              preRender: function() {
+                var loader = Beans.get(BeanInputCandyLoader)
+                var label = (loader != null && loader.isGamepadConnected())
+                  ? "visu.menu.gamepad.title.connected"
+                  : "visu.menu.gamepad.title.disconnected"
+                this.label.text = Language.get(label)
+              },
+            },
+          },
+        },
+        {
+          name: "settings_menu-button-input-entry_gamepad",
+          template: VisuComponents.get("menu-button-input-entry"),
+          layout: VisuLayouts.get("menu-button-input-entry"),
+          config: {
+            layout: { type: UILayoutType.VERTICAL },
+            label: { 
+              text: Language.get("visu.menu.gamepad"),
+              callback: new BindIntent(function() {
+                var value = Visu.settings.getValue("visu.gamepad")
+                Visu.settings.setValue("visu.gamepad", !value).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              }),
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            },
+            input: {
+              label: { text: VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT },
+              callback: function() {
+                var value = Visu.settings.getValue("visu.gamepad")
+                Visu.settings.setValue("visu.gamepad", !value).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              },
+              updateCustom: function() {
+                this.label.text = Visu.settings.getValue("visu.gamepad") ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+                this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
+              },
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            }
+          }
         },
         {
           name: "settings_menu-button-entry_back",
@@ -3621,12 +3686,14 @@ function VisuMenu(_config = null) constructor {
           "uiAlphaFactor": 0.05,
           "breath": new Timer(16 * pi, { loop: Infinity, amount: FRAME_MS * 8 }),
           "keyboard": new Keyboard({
-            up: KeyboardKeyType.ARROW_UP,
-            down: KeyboardKeyType.ARROW_DOWN,
-            left: KeyboardKeyType.ARROW_LEFT,
-            right: KeyboardKeyType.ARROW_RIGHT,
-            space: KeyboardKeyType.SPACE,
-            enter: KeyboardKeyType.ENTER,
+            keys: {
+              up: KeyboardKeyType.ARROW_UP,
+              down: KeyboardKeyType.ARROW_DOWN,
+              left: KeyboardKeyType.ARROW_LEFT,
+              right: KeyboardKeyType.ARROW_RIGHT,
+              space: KeyboardKeyType.SPACE,
+              enter: KeyboardKeyType.ENTER,
+            },
           }),
           "keyUpdater": new PrioritizedPressedKeyUpdater({ cooldown: 0.05 }),
           "playerKeyUpdater": new PrioritizedPressedKeyUpdater({ cooldown: 0.05 }),
