@@ -275,17 +275,14 @@ function VisuIO(config = null): Service(config) constructor {
         && menu.remapKey == null) {
 
       var state = controller.fsm.getStateName()
+      var factory = menu.factories.get("menu-main")
       switch (state) {
         case "idle":
-          if (menu.enabled) {
-            if (controller.visuRenderer.blur.target != 0.0) {
-              menu.send(new Event("back"))
-              controller.sfxService.play("menu-select-entry")
-            } else {
-              menu.send(menu.factoryOpenMainMenuEvent())
-            }
+          if (menu.enabled && controller.visuRenderer.blur.target != 0.0) {
+            menu.send(new Event("back"))
+            controller.sfxService.play("menu-select-entry")
           } else {
-            menu.send(menu.factoryOpenMainMenuEvent())
+            menu.send(factory())
           }
           break
         case "game-over":
@@ -301,7 +298,7 @@ function VisuIO(config = null): Service(config) constructor {
             break
           }
 
-          controller.send(new Event("pause", menu.factoryOpenMainMenuEvent()))
+          controller.send(new Event("pause", factory()))
           break
         case "paused":
           if (menu.enabled) {
@@ -318,14 +315,14 @@ function VisuIO(config = null): Service(config) constructor {
                     timestamp: 0.0,
                   }))
                 } else {
-                  menu.send(menu.factoryOpenMainMenuEvent())
+                  menu.send(factory())
                 }
               } else {
                 controller.send(new Event("play"))
               }
             }
           } else {
-            menu.send(menu.factoryOpenMainMenuEvent())
+            menu.send(factory())
           }
           break
       }

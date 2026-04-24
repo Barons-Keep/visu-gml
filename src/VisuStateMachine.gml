@@ -361,22 +361,17 @@ function VisuStateMachine(context, name) {
                 .execute(new Event("pause-video")))
             }
 
+            var factory = controller.menu.factories.get("menu-main")
             fsmState.state.set("promises", promises)
-            controller.menu.send(controller.menu
-              .factoryOpenMainMenuEvent({ 
-                titleLabel: "Game over"
-              }))
+            controller.menu.send(factory({ titleLabel: Language.get("visu.menu.gameover") }))
             
-              
             Logger.info(fsm.displayName, $"'{fsmState.name}::onStart' at track time {controller.trackService.time}")
           },
         },
         update: function(fsm) {
           if (!fsm.context.menu.enabled) {
-            fsm.context.menu.send(fsm.context.menu
-              .factoryOpenMainMenuEvent({ 
-                titleLabel: "Game over"
-              }))
+            var factory = fsm.context.menu.factories.get("menu-main")
+            fsm.context.menu.send(factory({ titleLabel: Language.get("visu.menu.gameover") }))
           }
         },
         transitions: { 

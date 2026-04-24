@@ -773,11 +773,13 @@ function VisuController(config = null): Service(config) constructor {
         this.watchdogPromise = this.send(new Event("pause").setPromise(new Promise()
           .whenSuccess(function(result) {
             var controller = Beans.get(BeanVisuController)
-            controller.menu.send(controller.menu.factoryOpenMainMenuEvent({ disableResume: true }))
+            var factory = controller.menu.factories.get("menu-main")
+            controller.menu.send(factory({ disableResume: true }))
           })
           .whenFailure(function(result) {
             var controller = Beans.get(BeanVisuController)
-            controller.menu.send(controller.menu.factoryOpenMainMenuEvent({ disableResume: true }))
+            var factory = controller.menu.factories.get("menu-main")
+            controller.menu.send(factory({ disableResume: true }))
           })))
         this.shroomService.dispatcher.execute(new Event("clear-shrooms"))
         Logger.debug(BeanVisuController, $"ShroomService statistics:\n{JSON.stringify(this.statistics.shroomReport, true)}")
@@ -1047,7 +1049,8 @@ function VisuController(config = null): Service(config) constructor {
       VISU_MANIFEST_LOAD_ON_START_DISPATCHED = true
 
     } else if (Core.getProperty("visu.menu.open-on-start", false)) {
-      var event = this.menu.factoryOpenMainMenuEvent()
+      var factory = this.menu.factories.get("menu-main")
+      var event = factory()
       var task = new Task("load-manifest")
         .setTimeout(60.0)
         .setState({

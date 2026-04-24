@@ -46,8 +46,8 @@ function VisuEditorController(config = null): Service(config) constructor {
   ///@type {VEProjectModal}
   projectModal = new VEProjectModal()
 
-  ///@type {VisuModal}
-  exitModal = new VisuModal({
+  ///@type {VEModal}
+  exitModal = new VEModal({
     message: { text: "Changes you made may not be saved." },
     accept: {
       text: "Leave",

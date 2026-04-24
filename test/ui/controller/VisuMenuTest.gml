@@ -40,7 +40,8 @@ function Test_VisuMenu_select_track(test) {
         },
         open: function(task) {
           var controller = Beans.get(BeanVisuController)
-          controller.menu.send(controller.menu.factoryOpenMainMenuEvent())
+          var factory = controller.menu.factories.get("menu-main")
+          controller.menu.send(factory())
           task.state.stage = "select_new_game"
         },
         select_new_game: function(task) {

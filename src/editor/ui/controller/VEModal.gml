@@ -1,8 +1,8 @@
 
-///@package io.alkapivo.visu.ui.controller
+///@package fun.barons-keep.visu.editor.ui.controller
 
 ///@param {?Struct} [_config]
-function VisuModal(_config = null) constructor {
+function VEModal(_config = null) constructor {
 
   ///@type {?Struct}
   config = Optional.is(_config) ? Assert.isType(_config, Struct) : null
