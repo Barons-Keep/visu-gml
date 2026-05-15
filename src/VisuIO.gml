@@ -125,7 +125,7 @@ function VisuIO(config = null): Service(config) constructor {
           case VisuGamepadAnalogActions.AIM:
             if (axis.value > 0.3) {
               global.gamepadPlayerAimMouse = false
-              global.gamepadPlayerAimAngle = axis.angle
+              global.gamepadPlayerAimAngle = Math.lerpAngle(global.gamepadPlayerAimAngle, axis.angle, 0.2)
               global.gamepadPlayerAimAlpha = global.gamepadPlayerAimAlphaDefault
             } else if (!global.gamepadPlayerAimMouse) {
               global.gamepadPlayerAimMouse = MouseUtil.hasMoved()
@@ -144,7 +144,7 @@ function VisuIO(config = null): Service(config) constructor {
           case VisuGamepadAnalogActions.AIM:
             if (axis.rValue > 0.3) {
               global.gamepadPlayerAimMouse = false
-              global.gamepadPlayerAimAngle = axis.rAngle
+              global.gamepadPlayerAimAngle = Math.lerpAngle(global.gamepadPlayerAimAngle, axis.rAngle, 0.2)
               global.gamepadPlayerAimAlpha = global.gamepadPlayerAimAlphaDefault
             } else if (!global.gamepadPlayerAimMouse) {
               global.gamepadPlayerAimMouse = global.gamepadPlayerAimMouse || MouseUtil.hasMoved()
@@ -271,6 +271,9 @@ function VisuIO(config = null): Service(config) constructor {
 
   ///@type {Number}
   mouseMovedCooldown = Core.getProperty("visu.io.mouse-moved.cooldown", 4.0)
+
+  ///@type {Boolean}
+  hideCursor = false
   
   ///@private
   ///@param {VisuController} controller
@@ -407,12 +410,25 @@ function VisuIO(config = null): Service(config) constructor {
       controller.uiService.send(generateMouseEvent("MouseWheelDown"))
     }
 
-    if (MouseUtil.hasMoved() && this.mouseMoved == 0) {  
-      this.mouseMoved = this.mouseMovedCooldown
-      //controller.uiService.send(generateMouseEvent("MouseHoverOver"))
-      controller.uiService.mouseEventHandler("MouseHoverOver", _x, _y)
-    } else if (this.mouseMoved > 0) {
-      this.mouseMoved = clamp(this.mouseMoved - 1, 0, this.mouseMovedCooldown)
+    if (MouseUtil.hasMoved()) {  
+      this.hideCursor = false
+      if (this.mouseMoved == 0) {
+        this.mouseMoved = this.mouseMovedCooldown
+        controller.uiService.mouseEventHandler("MouseHoverOver", _x, _y)
+      }
+    } else {
+      if (this.mouseMoved > 0) {
+        this.mouseMoved = clamp(this.mouseMoved - 1, 0, this.mouseMovedCooldown)
+      }
+
+      var inputCandyLoader = Beans.get(BeanInputCandyLoader)
+      if (!this.hideCursor
+          && inputCandyLoader != null
+          && inputCandyLoader.enabled 
+          && inputCandyLoader.initialized
+          && inputCandyLoader.anykey()) {
+        this.hideCursor = true
+      }
     }
 
     return this
@@ -462,11 +478,25 @@ function VisuIO(config = null): Service(config) constructor {
       controller.uiService.send(generateMouseEvent("MouseWheelDown"))
     }
 
-    if (MouseUtil.hasMoved() && this.mouseMoved == 0) {  
-      this.mouseMoved = this.mouseMovedCooldown
-      controller.uiService.send(generateMouseEvent("MouseHoverOver"))
-    } else if (this.mouseMoved > 0) {
-      this.mouseMoved = clamp(this.mouseMoved - 1, 0, this.mouseMovedCooldown)
+    if (MouseUtil.hasMoved()) {  
+      this.hideCursor = false
+      if (this.mouseMoved == 0) {
+        this.mouseMoved = this.mouseMovedCooldown
+        controller.uiService.send(generateMouseEvent("MouseHoverOver"))
+      }
+    } else {
+      if (this.mouseMoved > 0) {
+        this.mouseMoved = clamp(this.mouseMoved - 1, 0, this.mouseMovedCooldown)
+      }
+
+      var inputCandyLoader = Beans.get(BeanInputCandyLoader)
+      if (!this.hideCursor
+          && inputCandyLoader != null
+          && inputCandyLoader.enabled 
+          && inputCandyLoader.initialized
+          && inputCandyLoader.anykey()) {
+        this.hideCursor = true
+      }
     }
 
     return this

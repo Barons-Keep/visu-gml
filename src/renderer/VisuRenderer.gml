@@ -460,11 +460,12 @@ function VisuRenderer() constructor {
     }
 
     var blur = this.blur.update().value
+    var enableBlur = Visu.settings.getValue("visu.graphics.menu-blur")
     var renderBlur = Visu.settings.getValue("visu.debug.render-surfaces")
       ? this.gridRenderer.renderDebugSurfaces
       : this.gridRenderer.renderGUIGameSurface
 
-    if (blur > 0.0) {
+    if (enableBlur && blur > 0.0) {
       GPU.set.shader(this.shaderGaussianBlur)
       var uniform = this.shaderGaussianBlur.uniforms.get("u_resolution")
       uniform.setter(uniform.asset, layout.width(), layout.height())

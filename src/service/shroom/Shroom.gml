@@ -240,6 +240,12 @@ function Shroom(template): GridItem(template) constructor {
   ///@type {Array<GridItemFeature>}
   features = parseFeatures(template.features)
 
+  ///@type {Number}
+  damageCooldown = 0.0
+
+  ///@type {Number}
+  damageChannel = 0;
+
   ///@private
   ///@param {GridItem} item
   ///@param {VisuController} controller
@@ -288,6 +294,11 @@ function Shroom(template): GridItem(template) constructor {
     if (this.signals.damage && !this.signals.kill) {
       this.updateGridItemFeatures(this, controller, this.onDamage)
       controller.sfxService.play("shroom-damage")
+      this.damageCooldown = 1.0
+      this.damageChannel = this.damageChannel + choose(1, 2)
+      if (this.damageChannel > 4) {
+        this.damageChannel = 1
+      }
     }
 
     if (this.signals.kill && (this.signals.bulletCollision 
@@ -298,6 +309,21 @@ function Shroom(template): GridItem(template) constructor {
 
     this.updateGridItemFeatures(this, controller, this.features)
     this.updateGridItemFeatureQueue(this, controller, this.queue)
+
+    if (this.damageCooldown > 0.0) {
+      this.damageCooldown -= FRAME_MS * 1.25 * DELTA_TIME
+      var value = ((cos((8.0 * this.damageCooldown * PI) + PI) + 1.0) / 2.0) * 255
+      if (this.damageCooldown <= 0.0) {
+        this.sprite.setBlend(c_white)
+      } else {
+        switch(this.damageChannel) {
+          case 1: this.sprite.setBlend(make_color_rgb(255, value, value)) break
+          case 2: this.sprite.setBlend(make_color_rgb(value, value, 255)) break
+          case 3: this.sprite.setBlend(make_color_rgb(255, value, 255)) break
+          default: this.sprite.setBlend(make_color_rgb(255, 255, value)) break
+        }
+      }
+    }
 
     #region @Implement component Lifespan
     this.lifespan += DELTA_TIME * FRAME_MS

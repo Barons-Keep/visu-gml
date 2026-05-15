@@ -497,15 +497,17 @@ function VisuController(config = null): Service(config) constructor {
   ///@private
   ///@return {VisuController}
   updateCursor = function() {
+    var visuIO = Beans.get(BeanVisuIO)
+    var hideCursor = visuIO.hideCursor
     var displayService = Beans.get(BeanDisplayService)
     var cursor = displayService.getCursor()
     var editor = Beans.get(Visu.modules().editor.controller)
     if (editor != null) {
-      if (editor.renderUI && cursor == Cursor.NONE && cursor_sprite == -1) {
+      if (editor.renderUI && cursor == Cursor.NONE && cursor_sprite == -1 && !hideCursor) {
         displayService.setCursor(Cursor.DEFAULT)
       } else if (!editor.renderUI && !this.menu.enabled && cursor != Cursor.NONE) {
         displayService.setCursor(Cursor.NONE)
-      } else if (!editor.renderUI && this.menu.enabled && cursor == Cursor.NONE) {
+      } else if (!editor.renderUI && this.menu.enabled && cursor == Cursor.NONE && !hideCursor) {
         displayService.setCursor(Cursor.DEFAULT)
       }
 
@@ -519,12 +521,12 @@ function VisuController(config = null): Service(config) constructor {
       
       if (!this.menu.enabled && cursor != Cursor.NONE) {
         displayService.setCursor(Cursor.NONE)
-      } else if (this.menu.enabled && cursor == Cursor.NONE) {
+      } else if (this.menu.enabled && cursor == Cursor.NONE && !hideCursor) {
         displayService.setCursor(Cursor.DEFAULT)
       }
     }
 
-    if (cursor_sprite == -1 && is_debug_overlay_open() && displayService.getCursor() == Cursor.NONE) {
+    if (cursor_sprite == -1 && is_debug_overlay_open() && displayService.getCursor() == Cursor.NONE && !hideCursor) {
       displayService.setCursor(Cursor.DEFAULT)
     }
 
@@ -533,8 +535,13 @@ function VisuController(config = null): Service(config) constructor {
     }
 
     var dialog = Beans.get(BeanDialogueDesignerService).dialog
-    if (dialog != null && this.fsm.getStateName() == "idle") {
+    if (dialog != null && this.fsm.getStateName() == "idle" && !hideCursor) {
       displayService.setCursor(Cursor.DEFAULT)
+    }
+
+    if (hideCursor && displayService.getCursor() != Cursor.NONE) {
+      displayService.setCursor(Cursor.NONE)
+      cursor_sprite = -1
     }
 
     return this

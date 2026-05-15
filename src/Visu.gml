@@ -1382,6 +1382,7 @@ function _Visu() constructor {
       .set(new SettingEntry({ name: "visu.graphics.vsync", type: SettingTypes.BOOLEAN, defaultValue: true }))
       .set(new SettingEntry({ name: "visu.graphics.timing-method", type: SettingTypes.STRING, defaultValue: timingMethodKey }))
       .set(new SettingEntry({ name: "visu.graphics.aa", type: SettingTypes.NUMBER, defaultValue: 0 }))
+      .set(new SettingEntry({ name: "visu.graphics.menu-blur", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.audio.ost-volume", type: SettingTypes.NUMBER, defaultValue: 1.0 }))
       .set(new SettingEntry({ name: "visu.audio.sfx-volume", type: SettingTypes.NUMBER, defaultValue: 1.0 }))
       .set(new SettingEntry({ name: "visu.editor.enable", type: SettingTypes.BOOLEAN, defaultValue: false }))
