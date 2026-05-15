@@ -131,6 +131,31 @@ global.__Difficulty = new _Difficulty()
 #macro Difficulty global.__Difficulty
 
 
+///@enum
+function _VisuGamepadButtonActions(): Enum() constructor {
+  NONE = "none"
+  UP = "up"
+  DOWN = "down"
+  LEFT = "left"
+  RIGHT = "right"
+  ACTION = "action"
+  FOCUS = "focus"
+  BOMB = "bomb"
+}
+global.__VisuGamepadButtonActions = new _VisuGamepadButtonActions()
+#macro VisuGamepadButtonActions global.__VisuGamepadButtonActions
+
+
+///@enum
+function _VisuGamepadAnalogActions(): Enum() constructor {
+  NONE = "none"
+  MOVE = "move"
+  AIM = "aim"
+}
+global.__VisuGamepadAnalogActions = new _VisuGamepadAnalogActions()
+#macro VisuGamepadAnalogActions global.__VisuGamepadAnalogActions
+
+
 ///@param {Struct} json
 function VisuSave(json) constructor {
   
@@ -1323,7 +1348,8 @@ function _Visu() constructor {
     //Logger.info("Visu", "run::loadSettings()")
     var timingMethodKey = Core.getProperty("core.display-service.timing-method", "COUNTSYNC")
     timingMethodKey = TimingMethod.containsKey(timingMethodKey) ? timingMethodKey : "COUNTSYNC"
-    this.settings.set(new SettingEntry({ name: "visu.editor.autosave", type: SettingTypes.BOOLEAN, defaultValue: false }))
+    this.settings
+      .set(new SettingEntry({ name: "visu.editor.autosave", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.language", type: SettingTypes.STRING, defaultValue: LanguageType.en_EN }))
       .set(new SettingEntry({ name: "visu.fullscreen", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.borderless-window", type: SettingTypes.BOOLEAN, defaultValue: false }))
@@ -1394,40 +1420,113 @@ function _Visu() constructor {
       .set(new SettingEntry({ name: "visu.graphics.visual-mode", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.graphics.raw-mode", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.gamepad", type: SettingTypes.BOOLEAN, defaultValue: true }))
-      .set(new SettingEntry({ 
-          name: "visu.editor.theme",
-          type: SettingTypes.STRUCT,
-          defaultValue: { 
-            accentLight: "#7742b8",
-            accent: "#5f398e",
-            accentShadow: "#462f63",
-            accentDark: "#231832",
-            primaryLight: "#455f82",
-            primary: "#3B3B53",
-            primaryShadow: "#2B2B35",
-            primaryDark: "#222227",
-            sideLight: "#212129",
-            side: "#1B1B20",
-            sideShadow: "#141418",
-            sideDark: "#0D0D0F",
-            button: "#3B3B53",
-            buttonHover: "#3c4e66",
-            text: "#D9D9D9",
-            textShadow: "#878787",
-            textFocus: "#ededed",
-            textSelected: "#7742b8",
-            accept: "#3d9e87",
-            acceptShadow: "#368b77",
-            deny: "#9e3d54",
-            denyShadow: "#6d3c54",
-            ruler: "#E64B3D",
-            header: "#963271",
-            stick: "#3B3B53",
-            stickHover: "#878787",
-            stickBackground: "#0D0D0F",
+      .set(new SettingEntry({
+        name: "visu.gamepad.controls",
+        type: SettingTypes.STRUCT,
+        validate: function(value) {
+          return {
+            "BTN_A": VisuGamepadButtonActions
+              .contains(Struct.get(value, "BTN_A"))
+                ? value.BTN_A
+                : VisuGamepadButtonActions.ACTION,
+            "BTN_B": VisuGamepadButtonActions
+              .contains(Struct.get(value, "BTN_B"))
+                ? value.BTN_B
+                : VisuGamepadButtonActions.FOCUS,
+            "BTN_X": VisuGamepadButtonActions
+              .contains(Struct.get(value, "BTN_X"))
+                ? value.BTN_X
+                : VisuGamepadButtonActions.BOMB,
+            "BTN_Y": VisuGamepadButtonActions
+              .contains(Struct.get(value, "BTN_Y"))
+                ? value.BTN_Y
+                : VisuGamepadButtonActions.NONE,
+            "BTN_PAD_U": VisuGamepadButtonActions
+              .contains(Struct.get(value, "BTN_PAD_U"))
+                ? value.BTN_PAD_U
+                : VisuGamepadButtonActions.UP,
+            "BTN_PAD_D": VisuGamepadButtonActions
+              .contains(Struct.get(value, "BTN_PAD_D"))
+                ? value.BTN_PAD_D
+                : VisuGamepadButtonActions.DOWN,
+            "BTN_PAD_L": VisuGamepadButtonActions
+              .contains(Struct.get(value, "BTN_PAD_L"))
+                ? value.BTN_PAD_L
+                : VisuGamepadButtonActions.LEFT,
+            "BTN_PAD_R": VisuGamepadButtonActions
+              .contains(Struct.get(value, "BTN_PAD_R"))
+                ? value.BTN_PAD_R
+                : VisuGamepadButtonActions.RIGHT,
+            "BTN_L_TRIGGER": VisuGamepadButtonActions
+              .contains(Struct.get(value, "BTN_L_TRIGGER"))
+                ? value.BTN_L_TRIGGER
+                : VisuGamepadButtonActions.ACTION,
+            "BTN_R_TRIGGER": VisuGamepadButtonActions
+              .contains(Struct.get(value, "BTN_R_TRIGGER"))
+                ? value.BTN_R_TRIGGER
+                : VisuGamepadButtonActions.FOCUS,
+            "BTN_L_SHOULDER": VisuGamepadButtonActions
+              .contains(Struct.get(value, "BTN_L_SHOULDER"))
+                ? value.BTN_L_SHOULDER
+                : VisuGamepadButtonActions.ACTION,
+            "BTN_R_SHOULDER": VisuGamepadButtonActions
+              .contains(Struct.get(value, "BTN_R_SHOULDER"))
+                ? value.BTN_R_SHOULDER
+                : VisuGamepadButtonActions.FOCUS,
+            "BTN_L_STICK": VisuGamepadButtonActions
+              .contains(Struct.get(value, "BTN_L_STICK"))
+                ? value.BTN_L_STICK
+                : VisuGamepadButtonActions.NONE,
+            "BTN_R_STICK": VisuGamepadButtonActions
+              .contains(Struct.get(value, "BTN_R_STICK"))
+                ? value.BTN_R_STICK
+                : VisuGamepadButtonActions.NONE,
+            "ANALOG_L": VisuGamepadAnalogActions
+              .contains(Struct.get(value, "ANALOG_L"))
+                ? value.ANALOG_L
+                : VisuGamepadAnalogActions.MOVE,
+            "ANALOG_R": VisuGamepadAnalogActions
+              .contains(Struct.get(value, "ANALOG_R"))
+                ? value.ANALOG_R
+                : VisuGamepadAnalogActions.AIM,
           }
-        }))
-      .load()
+        }
+      }))
+      .set(new SettingEntry({ 
+        name: "visu.editor.theme",
+        type: SettingTypes.STRUCT,
+        defaultValue: { 
+          accentLight: "#7742b8",
+          accent: "#5f398e",
+          accentShadow: "#462f63",
+          accentDark: "#231832",
+          primaryLight: "#455f82",
+          primary: "#3B3B53",
+          primaryShadow: "#2B2B35",
+          primaryDark: "#222227",
+          sideLight: "#212129",
+          side: "#1B1B20",
+          sideShadow: "#141418",
+          sideDark: "#0D0D0F",
+          button: "#3B3B53",
+          buttonHover: "#3c4e66",
+          text: "#D9D9D9",
+          textShadow: "#878787",
+          textFocus: "#ededed",
+          textSelected: "#7742b8",
+          accept: "#3d9e87",
+          acceptShadow: "#368b77",
+          deny: "#9e3d54",
+          denyShadow: "#6d3c54",
+          ruler: "#E64B3D",
+          header: "#963271",
+          stick: "#3B3B53",
+          stickHover: "#878787",
+          stickBackground: "#0D0D0F",
+        }
+      }))
+    
+    this.settings.load()
 
     if (Core.getProperty("visu.player.force-god-mode", false) && !VISU_FORCE_GOD_MODE_DISPATCHED) {
       this.settings.setValue("visu.god-mode", true).save()
@@ -1675,15 +1774,84 @@ function _Visu() constructor {
 
     Beans.get(BeanInputCandyLoader).send(new Event("init", {
       init: function() {
-        __IC.Action("up", IC_padu, IC_key_arrow_U)
-        __IC.Action("down", IC_padd, IC_key_arrow_D)
-        __IC.Action("left", IC_padl, IC_key_arrow_L)
-        __IC.Action("right", IC_padr, IC_key_arrow_R)
-        __IC.Action("action", [ IC_Ltrigger, IC_Lshoulder, IC_A ], IC_key_Z)
-        __IC.Action("focus", [ IC_Rtrigger, IC_Rshoulder, IC_B ], IC_any_shift)
-        __IC.Action("bomb", IC_X, IC_key_X)
-        __IC.Action("openMenu", IC_back_select, IC_key_escape)
-        __IC.Action("anykey", [ IC_A, IC_B, IC_X, IC_Y, IC_start, IC_back_select ], IC_any_shift)
+        static fillActions = function(action, button, actions) {
+          if (!Struct.contains(actions, action)
+              || !InputCandyButtons.containsKey(button)) {
+            return
+          }
+
+          Struct.get(actions, action).add(InputCandyButtons.get(button))
+        }
+
+        var controls = Visu.settings.getValue("visu.gamepad.controls")
+        var actions = {
+          up: new Array(Number),
+          down: new Array(Number),
+          left: new Array(Number),
+          right: new Array(Number),
+          action: new Array(Number),
+          focus: new Array(Number),
+          bomb: new Array(Number),
+        }
+        
+        Struct.forEach(controls, fillActions, actions)
+
+        Struct.forEach(actions, function(buttons, action) {
+          Core.print("action", action, "buttons", buttons.getContainer())
+        })
+
+        __IC.ClearActions()
+
+        var visuIO = Beans.get(BeanVisuIO)
+        if (visuIO != null) {
+          Struct.set(visuIO.keyboards.get("player"), "gamepad", null)
+          Struct.set(visuIO.keyboard, "gamepad", null)
+        }
+
+        if (actions.up.size() > 0) {
+          __IC.Action(VisuGamepadButtonActions.UP, actions.up.size() == 1
+            ? actions.up.getFirst()
+            : actions.up.getContainer())
+        }
+        
+        if (actions.down.size() > 0) {
+          __IC.Action(VisuGamepadButtonActions.DOWN, actions.down.size() == 1
+            ? actions.down.getFirst()
+            : actions.down.getContainer())
+        }
+        
+        if (actions.left.size() > 0) {
+          __IC.Action(VisuGamepadButtonActions.LEFT, actions.left.size() == 1
+            ? actions.left.getFirst()
+            : actions.left.getContainer())
+        }
+        
+        if (actions.right.size() > 0) {
+          __IC.Action(VisuGamepadButtonActions.RIGHT, actions.right.size() == 1
+            ? actions.right.getFirst()
+            : actions.right.getContainer())
+        }
+        
+        if (actions.action.size() > 0) {
+          __IC.Action(VisuGamepadButtonActions.ACTION, actions.action.size() == 1
+            ? actions.action.getFirst()
+            : actions.action.getContainer())
+        }
+
+        if (actions.focus.size() > 0) {
+          __IC.Action(VisuGamepadButtonActions.FOCUS, actions.focus.size() == 1
+            ? actions.focus.getFirst()
+            : actions.focus.getContainer())
+        }
+        
+        if (actions.bomb.size() > 0) {
+          __IC.Action(VisuGamepadButtonActions.BOMB, actions.bomb.size() == 1
+            ? actions.bomb.getFirst()
+            : actions.bomb.getContainer())
+        }
+        
+        __IC.Action("openMenu", IC_start)
+        __IC.Action("anykey", [ IC_A, IC_B, IC_X, IC_Y, IC_start, IC_start ])
       },
     }))
   }

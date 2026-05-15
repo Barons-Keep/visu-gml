@@ -130,6 +130,102 @@ function factoryVisuMenuOpenControlsEvent(_config = null) {
         }
       },
       {
+        name: "settings_menu-spin-select-entry_gamepad_BTN_A",
+        template: VisuComponents.get("menu-spin-select-entry"),
+        layout: VisuLayouts.get("menu-spin-select-entry"),
+        config: factoryPlayerGamepadButtonEntryConfig("BTN_A", Language.get("visu.menu.gamepad.button.a"))
+      },
+      {
+        name: "settings_menu-spin-select-entry_gamepad_BTN_B",
+        template: VisuComponents.get("menu-spin-select-entry"),
+        layout: VisuLayouts.get("menu-spin-select-entry"),
+        config: factoryPlayerGamepadButtonEntryConfig("BTN_B", Language.get("visu.menu.gamepad.button.b"))
+      },
+      {
+        name: "settings_menu-spin-select-entry_gamepad_BTN_X",
+        template: VisuComponents.get("menu-spin-select-entry"),
+        layout: VisuLayouts.get("menu-spin-select-entry"),
+        config: factoryPlayerGamepadButtonEntryConfig("BTN_X", Language.get("visu.menu.gamepad.button.x"))
+      },
+      {
+        name: "settings_menu-spin-select-entry_gamepad_BTN_Y",
+        template: VisuComponents.get("menu-spin-select-entry"),
+        layout: VisuLayouts.get("menu-spin-select-entry"),
+        config: factoryPlayerGamepadButtonEntryConfig("BTN_Y", Language.get("visu.menu.gamepad.button.y"))
+      },
+      {
+        name: "settings_menu-spin-select-entry_gamepad_BTN_PAD_U",
+        template: VisuComponents.get("menu-spin-select-entry"),
+        layout: VisuLayouts.get("menu-spin-select-entry"),
+        config: factoryPlayerGamepadButtonEntryConfig("BTN_PAD_U", Language.get("visu.menu.gamepad.d-pad.up"))
+      },
+      {
+        name: "settings_menu-spin-select-entry_gamepad_BTN_PAD_D",
+        template: VisuComponents.get("menu-spin-select-entry"),
+        layout: VisuLayouts.get("menu-spin-select-entry"),
+        config: factoryPlayerGamepadButtonEntryConfig("BTN_PAD_D", Language.get("visu.menu.gamepad.d-pad.down"))
+      },
+      {
+        name: "settings_menu-spin-select-entry_gamepad_BTN_PAD_L",
+        template: VisuComponents.get("menu-spin-select-entry"),
+        layout: VisuLayouts.get("menu-spin-select-entry"),
+        config: factoryPlayerGamepadButtonEntryConfig("BTN_PAD_L", Language.get("visu.menu.gamepad.d-pad.left"))
+      },
+      {
+        name: "settings_menu-spin-select-entry_gamepad_BTN_PAD_R",
+        template: VisuComponents.get("menu-spin-select-entry"),
+        layout: VisuLayouts.get("menu-spin-select-entry"),
+        config: factoryPlayerGamepadButtonEntryConfig("BTN_PAD_R", Language.get("visu.menu.gamepad.d-pad.right"))
+      },
+      {
+        name: "settings_menu-spin-select-entry_gamepad_BTN_L_TRIGGER",
+        template: VisuComponents.get("menu-spin-select-entry"),
+        layout: VisuLayouts.get("menu-spin-select-entry"),
+        config: factoryPlayerGamepadButtonEntryConfig("BTN_L_TRIGGER", Language.get("visu.menu.gamepad.left-shoulder"))
+      },
+      {
+        name: "settings_menu-spin-select-entry_gamepad_BTN_R_TRIGGER",
+        template: VisuComponents.get("menu-spin-select-entry"),
+        layout: VisuLayouts.get("menu-spin-select-entry"),
+        config: factoryPlayerGamepadButtonEntryConfig("BTN_R_TRIGGER", Language.get("visu.menu.gamepad.left-trigger"))
+      },
+      {
+        name: "settings_menu-spin-select-entry_gamepad_BTN_L_SHOULDER",
+        template: VisuComponents.get("menu-spin-select-entry"),
+        layout: VisuLayouts.get("menu-spin-select-entry"),
+        config: factoryPlayerGamepadButtonEntryConfig("BTN_L_SHOULDER", Language.get("visu.menu.gamepad.right-shoulder"))
+      },
+      {
+        name: "settings_menu-spin-select-entry_gamepad_BTN_R_SHOULDER",
+        template: VisuComponents.get("menu-spin-select-entry"),
+        layout: VisuLayouts.get("menu-spin-select-entry"),
+        config: factoryPlayerGamepadButtonEntryConfig("BTN_R_SHOULDER", Language.get("visu.menu.gamepad.right-trigger"))
+      },
+      {
+        name: "settings_menu-spin-select-entry_gamepad_BTN_L_STICK",
+        template: VisuComponents.get("menu-spin-select-entry"),
+        layout: VisuLayouts.get("menu-spin-select-entry"),
+        config: factoryPlayerGamepadButtonEntryConfig("BTN_L_STICK", Language.get("visu.menu.gamepad.left-stick"))
+      },
+      {
+        name: "settings_menu-spin-select-entry_gamepad_BTN_R_STICK",
+        template: VisuComponents.get("menu-spin-select-entry"),
+        layout: VisuLayouts.get("menu-spin-select-entry"),
+        config: factoryPlayerGamepadButtonEntryConfig("BTN_R_STICK", Language.get("visu.menu.gamepad.right-stick"      ))
+      },
+      {
+        name: "settings_menu-spin-select-entry_gamepad_ANALOG_L",
+        template: VisuComponents.get("menu-spin-select-entry"),
+        layout: VisuLayouts.get("menu-spin-select-entry"),
+        config: factoryPlayerGamepadAnalogEntryConfig("ANALOG_L", Language.get("visu.menu.gamepad.analog-l"))
+      },
+      {
+        name: "settings_menu-spin-select-entry_gamepad_ANALOG_R",
+        template: VisuComponents.get("menu-spin-select-entry"),
+        layout: VisuLayouts.get("menu-spin-select-entry"),
+        config: factoryPlayerGamepadAnalogEntryConfig("ANALOG_R", Language.get("visu.menu.gamepad.analog-r"))
+      },
+      {
         name: "settings_menu-button-entry_back",
         template: VisuComponents.get("menu-button-entry"),
         layout: VisuLayouts.get("menu-button-entry"),

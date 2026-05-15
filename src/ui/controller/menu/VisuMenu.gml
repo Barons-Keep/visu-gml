@@ -275,6 +275,177 @@ function factoryPlayerKeyboardKeyEntryConfig(name, text) {
 }
 
 
+///@param {String} name
+///@param {String} text
+///@return {Struct}
+function factoryPlayerGamepadButtonEntryConfig(name, text) {
+  return { 
+    layout: { type: UILayoutType.VERTICAL },
+    label: {
+      key: name,
+      text: text,
+    },
+    previous: {
+      key: name,
+      callback: function() {
+        var controller = Beans.get(BeanVisuController)
+        var config = Visu.settings.getValue("visu.gamepad.controls")
+        var map = new Map(String, Number)
+          .set(VisuGamepadButtonActions.NONE, 0)
+          .set(VisuGamepadButtonActions.UP, 1)
+          .set(VisuGamepadButtonActions.DOWN, 2)
+          .set(VisuGamepadButtonActions.LEFT, 3)
+          .set(VisuGamepadButtonActions.RIGHT, 4)
+          .set(VisuGamepadButtonActions.ACTION, 5)
+          .set(VisuGamepadButtonActions.FOCUS, 6)
+          .set(VisuGamepadButtonActions.BOMB, 7)
+        var pointer = map.getDefault(Struct.get(config, this.key), 0)
+        var target = int64(pointer - 1)
+        target = target < 0 ? 7 : (target > 7 ? 0 : target)
+        var value = map.findKey(Lambda.equal, target)
+        if (!Optional.is(value)) {
+          return
+        }
+
+        Struct.set(config, this.key, value)
+        Visu.settings.setValue("visu.gamepad.controls", config).save()
+        Visu.initInputCandyLoader(controller.layerId)
+        controller.sfxService.play("menu-use-entry")
+      },
+    },
+    preview: {
+      key: name,
+      label: {
+        key: name,
+        text: "None",
+      },
+      updateCustom: function() { 
+        var action = String.toLowerCase(Struct.get(Visu.settings.getValue("visu.gamepad.controls"), this.key)),
+        this.label.text = Language.get($"visu.menu.gamepad.action.{action}")
+      },
+    },
+    next: {
+      key: name,
+      callback: function() {
+        var controller = Beans.get(BeanVisuController)
+        var config = Visu.settings.getValue("visu.gamepad.controls")
+        var map = new Map(String, Number)
+          .set(VisuGamepadButtonActions.NONE, 0)
+          .set(VisuGamepadButtonActions.UP, 1)
+          .set(VisuGamepadButtonActions.DOWN, 2)
+          .set(VisuGamepadButtonActions.LEFT, 3)
+          .set(VisuGamepadButtonActions.RIGHT, 4)
+          .set(VisuGamepadButtonActions.ACTION, 5)
+          .set(VisuGamepadButtonActions.FOCUS, 6)
+          .set(VisuGamepadButtonActions.BOMB, 7)
+        var pointer = map.getDefault(Struct.get(config, this.key), 0)
+        var target = int64(pointer + 1)
+        target = target < 0 ? 7 : (target > 7 ? 0 : target)
+        var value = map.findKey(Lambda.equal, target)
+        if (!Optional.is(value)) {
+          return
+        }
+
+        Struct.set(config, this.key, value)
+        Visu.settings.setValue("visu.gamepad.controls", config).save()
+        Visu.initInputCandyLoader(controller.layerId)
+        controller.sfxService.play("menu-use-entry")
+      },
+    },
+  }
+}
+
+
+
+///@param {String} name
+///@param {String} text
+///@return {Struct}
+function factoryPlayerGamepadAnalogEntryConfig(name, text) {
+  return { 
+    layout: { type: UILayoutType.VERTICAL },
+    label: {
+      key: name,
+      text: text,
+    },
+    previous: {
+      key: name,
+      callback: function() {
+        var controller = Beans.get(BeanVisuController)
+        var config = Visu.settings.getValue("visu.gamepad.controls")
+        var map = new Map(String, Number)
+          .set(VisuGamepadAnalogActions.NONE, 0)
+          .set(VisuGamepadAnalogActions.MOVE, 1)
+          .set(VisuGamepadAnalogActions.AIM, 2)
+        var pointer = map.getDefault(Struct.get(config, this.key), 0)
+        var target = int64(pointer - 1)
+        target = target < 0 ? 2 : (target > 2 ? 0 : target)
+        var value = map.findKey(Lambda.equal, target)
+        if (!Optional.is(value)) {
+          return
+        }
+
+        Struct.set(config, this.key, value)
+        var oppositeKey = this.key == "ANALOG_L" ? "ANALOG_R" : "ANALOG_L"
+        var oppositeValue = Struct.get(config, oppositeKey)
+        if (value != VisuGamepadAnalogActions.NONE && value == oppositeValue) {
+          oppositeValue = value == VisuGamepadAnalogActions.MOVE
+            ? VisuGamepadAnalogActions.AIM
+            : VisuGamepadAnalogActions.MOVE
+          Struct.set(config, oppositeKey, oppositeValue)
+        }
+
+        Visu.settings.setValue("visu.gamepad.controls", config).save()
+        controller.sfxService.play("menu-use-entry")
+      },
+    },
+    preview: {
+      key: name,
+      label: {
+        key: name,
+        text: "None",
+      },
+      updateCustom: function() { 
+        var controls = Visu.settings.getValue("visu.gamepad.controls")
+        var value = Struct.get(controls, this.key)
+        var action = String.toLowerCase(value)
+        this.label.text = Language.get($"visu.menu.gamepad.action.{action}")
+      },
+    },
+    next: {
+      key: name,
+      callback: function() {
+        var controller = Beans.get(BeanVisuController)
+        var config = Visu.settings.getValue("visu.gamepad.controls")
+        var map = new Map(String, Number)
+          .set(VisuGamepadAnalogActions.NONE, 0)
+          .set(VisuGamepadAnalogActions.MOVE, 1)
+          .set(VisuGamepadAnalogActions.AIM, 2)
+        var pointer = map.getDefault(Struct.get(config, this.key), 0)
+        var target = int64(pointer + 1)
+        target = target < 0 ? 2 : (target > 2 ? 0 : target)
+        var value = map.findKey(Lambda.equal, target)
+        if (!Optional.is(value)) {
+          return
+        }
+
+        Struct.set(config, this.key, value)
+        var oppositeKey = this.key == "ANALOG_L" ? "ANALOG_R" : "ANALOG_L"
+        var oppositeValue = Struct.get(config, oppositeKey)
+        if (value != VisuGamepadAnalogActions.NONE && value == oppositeValue) {
+          oppositeValue = value == VisuGamepadAnalogActions.MOVE
+            ? VisuGamepadAnalogActions.AIM
+            : VisuGamepadAnalogActions.MOVE
+          Struct.set(config, oppositeKey, oppositeValue)
+        }
+
+        Visu.settings.setValue("visu.gamepad.controls", config).save()
+        controller.sfxService.play("menu-use-entry")
+      },
+    },
+  }
+}
+
+
 ///@param {Number} index
 ///@param {String} text
 ///@return {Struct}

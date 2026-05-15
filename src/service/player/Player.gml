@@ -936,9 +936,17 @@ function PlayerHandler(json) constructor {
     var axisValueX = 1.0
     var axisValueY = 1.0
     var axis = Struct.get(Struct.get(player.keyboard, "gamepad"), "axis")
+    var controls = Visu.settings.getValue("visu.gamepad.controls")
     if (axis != null) {
-      axisValueX = clamp((axis.left || axis.right) ? (1.4142 * abs(axis.H)) : axisValueX, 0.0, 1.0)
-      axisValueY = clamp((axis.up || axis.down) ? (1.4142 * abs(axis.V)) : axisValueY, 0.0, 1.0)
+      if (controls.ANALOG_L == VisuGamepadAnalogActions.MOVE) {
+        axisValueX = clamp((axis.left || axis.right) ? (1.4142 * abs(axis.H)) : axisValueX, 0.0, 1.0)
+        axisValueY = clamp((axis.up || axis.down) ? (1.4142 * abs(axis.V)) : axisValueY, 0.0, 1.0)
+      }
+
+      if (controls.ANALOG_R == VisuGamepadAnalogActions.MOVE) {
+        axisValueX = clamp((axis.rLeft || axis.rRight) ? (1.4142 * abs(axis.rH)) : axisValueX, 0.0, 1.0)
+        axisValueY = clamp((axis.rUp || axis.rDown) ? (1.4142 * abs(axis.rV)) : axisValueY, 0.0, 1.0)
+      }
     }
 
     var up = keyboard_check(vk_up)

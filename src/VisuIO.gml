@@ -112,12 +112,48 @@ function VisuIO(config = null): Service(config) constructor {
         var gamepad = initGamepad(this)
         var index = gamepad.index
         var axis = __IC.GetAxisSignal(index, 0)
-        if (axis.rValue > 0.3) {
-          global.gamepadPlayerAimMouse = false
-          global.gamepadPlayerAimAngle = axis.rAngle
-          global.gamepadPlayerAimAlpha = global.gamepadPlayerAimAlphaDefault
-        } else if (!global.gamepadPlayerAimMouse) {
-          global.gamepadPlayerAimMouse = MouseUtil.hasMoved()
+        var controls = Visu.settings.getValue("visu.gamepad.controls")
+        var updatePrevious = false
+        switch (Struct.get(controls, "ANALOG_L")) {
+          case VisuGamepadAnalogActions.MOVE:
+            gamepad.previous.up = updateAxisKeyboardKey(axis.up, keys.up, gamepad.previous.up)
+            gamepad.previous.down = updateAxisKeyboardKey(axis.down, keys.down, gamepad.previous.down)
+            gamepad.previous.left = updateAxisKeyboardKey(axis.left, keys.left, gamepad.previous.left)
+            gamepad.previous.right = updateAxisKeyboardKey(axis.right, keys.right, gamepad.previous.right)
+            updatePrevious = true
+            break
+          case VisuGamepadAnalogActions.AIM:
+            if (axis.value > 0.3) {
+              global.gamepadPlayerAimMouse = false
+              global.gamepadPlayerAimAngle = axis.angle
+              global.gamepadPlayerAimAlpha = global.gamepadPlayerAimAlphaDefault
+            } else if (!global.gamepadPlayerAimMouse) {
+              global.gamepadPlayerAimMouse = MouseUtil.hasMoved()
+            }
+            break
+        }
+
+        switch (Struct.get(controls, "ANALOG_R")) {
+          case VisuGamepadAnalogActions.MOVE:
+            gamepad.previous.up = updateAxisKeyboardKey(axis.rUp, keys.up, gamepad.previous.up)
+            gamepad.previous.down = updateAxisKeyboardKey(axis.rDown, keys.down, gamepad.previous.down)
+            gamepad.previous.left = updateAxisKeyboardKey(axis.rLeft, keys.left, gamepad.previous.left)
+            gamepad.previous.right = updateAxisKeyboardKey(axis.rRight, keys.right, gamepad.previous.right)
+            updatePrevious = true
+            break
+          case VisuGamepadAnalogActions.AIM:
+            if (axis.rValue > 0.3) {
+              global.gamepadPlayerAimMouse = false
+              global.gamepadPlayerAimAngle = axis.rAngle
+              global.gamepadPlayerAimAlpha = global.gamepadPlayerAimAlphaDefault
+            } else if (!global.gamepadPlayerAimMouse) {
+              global.gamepadPlayerAimMouse = global.gamepadPlayerAimMouse || MouseUtil.hasMoved()
+            }
+            break
+        }
+
+        if (!updatePrevious) {
+
         }
 
         updateKeyboardKey(index, gamepad.up, keys.up)
@@ -129,13 +165,7 @@ function VisuIO(config = null): Service(config) constructor {
         updateKeyboardKey(index, gamepad.bomb, keys.bomb)
         updateKeyboardKey(index, gamepad.openMenu, keys.openMenu)
 
-        gamepad.previous.up = updateAxisKeyboardKey(axis.up, keys.up, gamepad.previous.up)
-        gamepad.previous.down = updateAxisKeyboardKey(axis.down, keys.down, gamepad.previous.down)
-        gamepad.previous.left = updateAxisKeyboardKey(axis.left, keys.left, gamepad.previous.left)
-        gamepad.previous.right = updateAxisKeyboardKey(axis.right, keys.right, gamepad.previous.right)
-
         gamepad.keyUpdater.updateKeyboard(this)
-
         gamepad.axis = axis
 
         return this

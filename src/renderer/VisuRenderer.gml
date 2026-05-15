@@ -459,17 +459,21 @@ function VisuRenderer() constructor {
       return this
     }
 
+    var blur = this.blur.update().value
     var renderBlur = Visu.settings.getValue("visu.debug.render-surfaces")
       ? this.gridRenderer.renderDebugSurfaces
       : this.gridRenderer.renderGUIGameSurface
 
-    GPU.set.shader(this.shaderGaussianBlur)
-    var uniform = this.shaderGaussianBlur.uniforms.get("u_resolution")
-    uniform.setter(uniform.asset, layout.width(), layout.height())
-    this.shaderGaussianBlur.uniforms.get("u_size").set(this.blur.update().value)
-    renderBlur(layout)
-    GPU.reset.shader()
-
+    if (blur > 0.0) {
+      GPU.set.shader(this.shaderGaussianBlur)
+      var uniform = this.shaderGaussianBlur.uniforms.get("u_resolution")
+      uniform.setter(uniform.asset, layout.width(), layout.height())
+      this.shaderGaussianBlur.uniforms.get("u_size").set(blur)
+      renderBlur(layout)
+      GPU.reset.shader()
+    } else {
+      renderBlur(layout)
+    }
     return this
   }
 
