@@ -187,13 +187,13 @@ function factoryVisuMenuOpenControlsEvent(_config = null) {
         name: "settings_menu-spin-select-entry_gamepad_BTN_R_TRIGGER",
         template: VisuComponents.get("menu-spin-select-entry"),
         layout: VisuLayouts.get("menu-spin-select-entry"),
-        config: factoryPlayerGamepadButtonEntryConfig("BTN_R_TRIGGER", Language.get("visu.menu.gamepad.left-trigger"))
+        config: factoryPlayerGamepadButtonEntryConfig("BTN_R_TRIGGER", Language.get("visu.menu.gamepad.right-trigger"))
       },
       {
         name: "settings_menu-spin-select-entry_gamepad_BTN_L_SHOULDER",
         template: VisuComponents.get("menu-spin-select-entry"),
         layout: VisuLayouts.get("menu-spin-select-entry"),
-        config: factoryPlayerGamepadButtonEntryConfig("BTN_L_SHOULDER", Language.get("visu.menu.gamepad.right-shoulder"))
+        config: factoryPlayerGamepadButtonEntryConfig("BTN_L_SHOULDER", Language.get("visu.menu.gamepad.left-shoulder"))
       },
       {
         name: "settings_menu-spin-select-entry_gamepad_BTN_R_SHOULDER",
@@ -211,7 +211,7 @@ function factoryVisuMenuOpenControlsEvent(_config = null) {
         name: "settings_menu-spin-select-entry_gamepad_BTN_R_STICK",
         template: VisuComponents.get("menu-spin-select-entry"),
         layout: VisuLayouts.get("menu-spin-select-entry"),
-        config: factoryPlayerGamepadButtonEntryConfig("BTN_R_STICK", Language.get("visu.menu.gamepad.right-stick"      ))
+        config: factoryPlayerGamepadButtonEntryConfig("BTN_R_STICK", Language.get("visu.menu.gamepad.right-stick"))
       },
       {
         name: "settings_menu-spin-select-entry_gamepad_ANALOG_L",
