@@ -86,6 +86,9 @@ function VisuController(config = null): Service(config) constructor {
   ///@type {ParticleService}
   particleService = new ParticleService({ 
     layerName: this.layerName,
+    systems: {
+      hud: this.layerName,
+    },
     getStaticTemplates: function() {
       return Visu.assets().particleTemplates
     },

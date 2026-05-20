@@ -183,9 +183,14 @@ function Test_VisuController_playback(test) {
             }
           }
 
-          if ((task.state.isDemoMode) 
-              && (keyboard_check(vk_anykey) || mouse_check_button(mb_any))) {
-
+          var inputCandyLoader = Beans.get(BeanInputCandyLoader)
+          if (task.state.isDemoMode
+            && (keyboard_check(vk_anykey)
+              || mouse_check_button(mb_any)
+              || (inputCandyLoader != null
+                && inputCandyLoader.enabled 
+                && inputCandyLoader.initialized
+                && inputCandyLoader.anykey()))) {
             VISU_MANIFEST_LOAD_ON_START_DISPATCHED = false
             VISU_FORCE_GOD_MODE_DISPATCHED = false
             VISU_BOOT_UP = false

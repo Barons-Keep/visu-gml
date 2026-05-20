@@ -14,7 +14,7 @@ global.__VisuLayouts = new Map(String, Callable, {
       name: "text",
       type: Assert.isEnum(Struct.getDefault(config, "type", UILayoutType.NONE), UILayoutType),
       margin: Struct.getIfType(config, "margin", Struct),
-      store: { height: 96 },
+      store: { height: VISU_MENU_ENTRY_HEIGHT - 8 },
       height: function() { return this.store.height },
       propagateHidden: Struct.getIfType(config, "propagateHidden", Boolean, false),
       nodes: {

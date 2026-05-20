@@ -51,28 +51,7 @@ function factoryVisuMenuOpenMainEvent(_config = null) {
             },
           },
         }
-      },
-      {
-        name: "main-menu_menu-button-entry_credits",
-        template: VisuComponents.get("menu-button-entry"),
-        layout: VisuLayouts.get("menu-button-entry"),
-        config: {
-          layout: { type: UILayoutType.VERTICAL },
-          label: { 
-            text: Language.get("visu.menu.credits", "Credits"),
-            callback: new BindIntent(function() {
-              var controller = Beans.get(BeanVisuController)
-              var factory = controller.menu.factories.get("menu-credits")
-              controller.menu.send(factory(this.callbackData))
-              controller.sfxService.play("menu-select-entry")
-            }),
-            callbackData: config,
-            onMouseReleasedLeft: function() {
-              this.callback()
-            },
-          },
-        }
-      },
+      }
     ])
   })
 
@@ -91,7 +70,7 @@ function factoryVisuMenuOpenMainEvent(_config = null) {
           config: {
             layout: { type: UILayoutType.VERTICAL },
             label: { 
-              text: Language.get("visu.menu.resume", "Resume"),
+              text: Language.get("visu.menu.resume"),
               callback: new BindIntent(function() {
                 var controller = Beans.get(BeanVisuController)
                 controller.fsm.transition("play")
@@ -101,6 +80,7 @@ function factoryVisuMenuOpenMainEvent(_config = null) {
               onMouseReleasedLeft: function() {
                 this.callback()
               },
+              //colorHoverOut: VisuTheme.color.accept,
             },
           }
         }, counter)
@@ -137,6 +117,7 @@ function factoryVisuMenuOpenMainEvent(_config = null) {
                 onMouseReleasedLeft: function() {
                   this.callback()
                 },
+                //colorHoverOut: VisuTheme.color.accept,
               },
             }
           }, counter)
@@ -158,7 +139,6 @@ function factoryVisuMenuOpenMainEvent(_config = null) {
                 controller.sfxService.play("menu-select-entry")
                 controller.menu.send(Callable
                   .run(this.callbackData.quit, {
-                    back: this.callbackData.back,
                     accept: function() {
                       var controller = Beans.get(BeanVisuController)
                       controller.send(new Event("scene-close", {
@@ -183,6 +163,7 @@ function factoryVisuMenuOpenMainEvent(_config = null) {
               onMouseReleasedLeft: function() {
                 this.callback()
               },
+              //colorHoverOut: VisuTheme.color.deny,
             },
           }
         }, counter)
@@ -190,7 +171,7 @@ function factoryVisuMenuOpenMainEvent(_config = null) {
       }
 
       event.data.content.add({
-        name: "main-menu_menu-button-entry_restart",
+        name: "main-menu_menu-button-entry_main-menu",
         template: VisuComponents.get("menu-button-entry"),
         layout: VisuLayouts.get("menu-button-entry"),
         config: {
@@ -202,7 +183,6 @@ function factoryVisuMenuOpenMainEvent(_config = null) {
               controller.sfxService.play("menu-select-entry")
               controller.menu.send(Callable
                 .run(this.callbackData.quit, {
-                  back: this.callbackData.back,
                   accept: function() {
                     Beans.get(BeanVisuController).send(new Event("scene-close", {
                       duration: 1.5,
@@ -226,10 +206,12 @@ function factoryVisuMenuOpenMainEvent(_config = null) {
             onMouseReleasedLeft: function() {
               this.callback()
             },
+            //colorHoverOut: VisuTheme.color.deny,
           },
         }
-      }, counter)
-      counter++
+      })//, counter)
+      //counter++
+
       break
     case "main-menu":
       event.data.content.add({
@@ -251,6 +233,7 @@ function factoryVisuMenuOpenMainEvent(_config = null) {
             onMouseReleasedLeft: function() {
               this.callback()
             },
+            //colorHoverOut: VisuTheme.color.accept,
           },
         }
       }, counter)
@@ -275,10 +258,58 @@ function factoryVisuMenuOpenMainEvent(_config = null) {
               onMouseReleasedLeft: function() {
                 this.callback()
               },
+              //colorHoverOut: VisuTheme.color.accept,
             },
           }
         }, counter)
         counter++
+      }
+
+      event.data.content.add({
+        name: "main-menu_menu-button-entry_credits",
+        template: VisuComponents.get("menu-button-entry"),
+        layout: VisuLayouts.get("menu-button-entry"),
+        config: {
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: Language.get("visu.menu.credits", "Credits"),
+            callback: new BindIntent(function() {
+              var controller = Beans.get(BeanVisuController)
+              var factory = controller.menu.factories.get("menu-credits")
+              controller.menu.send(factory(this.callbackData))
+              controller.sfxService.play("menu-select-entry")
+            }),
+            callbackData: config,
+            onMouseReleasedLeft: function() {
+              this.callback()
+            },
+          },
+        }
+      })
+
+      if (Core.getRuntimeType() != RuntimeType.GXGAMES
+          && !Visu.settings.getValue("visu.debug.menu.quit.hidden")) {
+        event.data.content.add({
+          name: "main-menu_menu-button-entry_quit",
+          template: VisuComponents.get("menu-button-entry"),
+          layout: VisuLayouts.get("menu-button-entry"),
+          config: {
+            layout: { type: UILayoutType.VERTICAL },
+            label: { 
+              text: Language.get("visu.menu.quit", "Quit"),
+              callback: new BindIntent(function() {
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+                Beans.get(BeanVisuController).menu.send(Callable
+                  .run(this.callbackData.quit, { back: this.callbackData.back }))
+              }),
+              callbackData: config,
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+              colorHoverOut: VisuTheme.color.deny,
+            },
+          }
+        })
       }
       break
     case "game-over":
@@ -293,27 +324,26 @@ function factoryVisuMenuOpenMainEvent(_config = null) {
             text: Language.get("visu.menu.continue"),
             callback: new BindIntent(function() {
               var controller = Beans.get(BeanVisuController)
-              controller.menu.dispatcher.execute(new Event("close"))
+              //controller.menu.dispatcher.execute(new Event("close"))
               controller.fsm.transition("play")
               controller.sfxService.play("menu-select-entry")
 
               var player = controller.playerService.player
               if (player != null) {
                 player.stats.life.set(4.0)
-                return
               }
 
               var editor = Beans.get(BeanVisuEditorController)
               if (editor != null) {
                 editor.renderUI = true
                 editor.send(new Event("open"))
-                return
               }
             }),
             callbackData: config,
             onMouseReleasedLeft: function() {
               this.callback()
             },
+            //colorHoverOut: VisuTheme.color.accept,
           },
         }
       }, counter)
@@ -330,27 +360,34 @@ function factoryVisuMenuOpenMainEvent(_config = null) {
               text: Language.get("visu.menu.retry"),
               callback: new BindIntent(function() {
                 var controller = Beans.get(BeanVisuController)
-                controller.playerService.remove()
                 controller.sfxService.play("menu-select-entry")
-                controller.menu.send(new Event("close", { fade: true }))
-                controller.dispatcher.execute(new Event("scene-close", {
-                  duration: 1.5,
-                  event: new Event("load", {
-                    manifest: $"{controller.track.path}manifest.visu",
-                    autoplay: true,
-                  }),
-                  callback: function() {
-                    var controller = Beans.get(BeanVisuController)
-                    Assert.isType(controller.track, VisuTrack, "VisuController.track must be type of VisuTrack")
-                    controller.send(this.event)
-                    controller.sfxService.play("menu-use-entry")
-                  },
-                }))
+                controller.menu.send(Callable
+                  .run(this.callbackData.quit, {
+                    accept: function() {
+                      var controller = Beans.get(BeanVisuController)
+                      controller.send(new Event("scene-close", {
+                        duration: 1.5,
+                        event: new Event("load", {
+                          manifest: $"{controller.track.path}manifest.visu",
+                          autoplay: true,
+                        }),
+                        callback: function() {
+                          var controller = Beans.get(BeanVisuController)
+                          Assert.isType(controller.track, VisuTrack, "VisuController.track must be type of VisuTrack")
+                          controller.send(this.event)
+                          controller.sfxService.play("menu-use-entry")
+                        },
+                      }))
+                      return new Event("close", { fade: true })
+                    },
+                    decline: this.callbackData.back,
+                  }))
               }),
               callbackData: config,
               onMouseReleasedLeft: function() {
                 this.callback()
               },
+              //colorHoverOut: VisuTheme.color.deny,
             },
           }
         }, counter)
@@ -358,7 +395,7 @@ function factoryVisuMenuOpenMainEvent(_config = null) {
       }
 
       event.data.content.add({
-        name: "main-menu_menu-button-entry_restart",
+        name: "main-menu_menu-button-entry_main-menu",
         template: VisuComponents.get("menu-button-entry"),
         layout: VisuLayouts.get("menu-button-entry"),
         config: {
@@ -368,56 +405,38 @@ function factoryVisuMenuOpenMainEvent(_config = null) {
             callback: new BindIntent(function() {
               var controller = Beans.get(BeanVisuController)
               controller.sfxService.play("menu-select-entry")
-              controller.send(new Event("scene-close", {
-                duration: 1.5,
-                callback: function() {
-                  var controller = Beans.get(BeanVisuController)
-                  controller.playerService.remove()
-                  controller.sfxService.play("menu-use-entry")
-                  Scene.open("scene_visu", {
-                    VisuController: {
-                      initialState: { name: "idle" },
-                    },
-                  })
-                },
-              }))
-              controller.menu.send(new Event("close", { fade: true }))
+              controller.menu.send(Callable
+                .run(this.callbackData.quit, {
+                  accept: function() {
+                    Beans.get(BeanVisuController).send(new Event("scene-close", {
+                      duration: 1.5,
+                      callback: function() {
+                        var controller = Beans.get(BeanVisuController)
+                        controller.playerService.remove()
+                        controller.sfxService.play("menu-use-entry")
+                        Scene.open("scene_visu", {
+                          VisuController: {
+                            initialState: { name: "idle" },
+                          },
+                        })
+                      },
+                    }))
+                    return new Event("close", { fade: true })
+                  },
+                  decline: this.callbackData.back,
+                }))
             }),
             callbackData: config,
             onMouseReleasedLeft: function() {
               this.callback()
             },
+            //colorHoverOut: VisuTheme.color.deny,
           },
         }
-      }, counter)
-      counter++
-      break
-  }
+      })//, counter)
+      //counter++
 
-  
-  if (Core.getRuntimeType() != RuntimeType.GXGAMES
-      && !Visu.settings.getValue("visu.debug.menu.quit.hidden")) {
-    event.data.content.add({
-      name: "main-menu_menu-button-entry_quit",
-      template: VisuComponents.get("menu-button-entry"),
-      layout: VisuLayouts.get("menu-button-entry"),
-      config: {
-        layout: { type: UILayoutType.VERTICAL },
-        label: { 
-          text: Language.get("visu.menu.quit", "Quit"),
-          callback: new BindIntent(function() {
-            Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-            Beans.get(BeanVisuController).menu.send(Callable
-              .run(this.callbackData.quit, { back: this.callbackData.back }))
-          }),
-          callbackData: config,
-          onMouseReleasedLeft: function() {
-            this.callback()
-          },
-          colorHoverOut: VisuTheme.color.deny,
-        },
-      }
-    })
+      break
   }
 
   return event

@@ -102,21 +102,43 @@ function VisuStateMachine(context, name) {
                 var displayService = Beans.get(BeanDisplayService)
                 var width = layout.width()
                 var height = layout.height()
+                var spawnParticles = Core.getProperty("visu.splashscreen.spawn-particles", false)
+                if (!task.state.initTimer.update().finished) {
+                  if (spawnParticles) {
+                    controller.particleService.update().systems.get("main").render()
+                  }
+                  
+                  GPU.set.shader(task.state.shaderDissolve)
+                  task.state.shaderDissolve.uniforms
+                    .get("u_time")
+                    .set(0.0)
+                  task.state.logo
+                    .scaleToFit(width, height)
+                    .setAlpha(0.0)
+                    .render(width / 2.0, height / 2.0)
+                  GPU.reset.shader()
+
+                  task.state.label
+                    .setAlpha(0.0)
+                    .render(width / 2.0, height * 0.925, width * 0.9, height * 0.2)
+                }
+                
+                GPU.render.rectangle(0, 0, GuiWidth(), GuiHeight(), false, c_black, c_black, c_black, c_black, 1.0)
+
                 task.state.bkgFactor += DELTA_TIME * (FRAME_MS / 48.0)
-                //task.state.bkgFactor += DeltaTime.apply(FRAME_MS / 48.0)
                 task.state.bkg
                   .scaleToFill(GuiWidth() + 400, GuiHeight() + 400)
                   .setScaleX(task.state.bkg.getScaleX() + task.state.bkgFactor)
                   .setScaleY(task.state.bkg.getScaleY() + task.state.bkgFactor)
                   //.setBlend(ColorUtil.parse("#ff00f7ff").toGMColor())
                   .setAlpha(clamp(5.0 * task.state.bkgFactor * (1.0 - task.state.fadeOut.getProgress()), 0.0, 1.0))
-                  .setAngle(45.0 * task.state.bkgFactor)
+                  .setAngle(30.0 * task.state.bkgFactor)
                   .render(
                     ((GuiWidth() - (task.state.bkg.getWidth() * task.state.bkg.getScaleX())) / 2.0) - 200,
                     ((GuiHeight() - (task.state.bkg.getHeight() * task.state.bkg.getScaleY())) / 2.0) - 200
                   )
 
-                if (!task.state.initTimer.update().finished) {
+                if (!task.state.initTimer.finished) {
                   return
                 }
 
@@ -141,22 +163,25 @@ function VisuStateMachine(context, name) {
                 var interval = 5
                 var duration = 3
                 var amount = 3
-                if (!task.state.fadeInEmitt && Core.getProperty("visu.splashscreen.spawn-particles", false)) {
-                  task.state.fadeInEmitt = true
-                  controller.particleService.spawnParticleEmitter(
-                    "main",
-                    "particle-splashscreen",
-                    GuiWidth() / 2.0,
-                    GuiHeight() / 2.0,
-                    GuiWidth() / 2.0,
-                    GuiHeight() / 2.0,
-                    FRAME_MS * interval * duration,
-                    amount,
-                    FRAME_MS * interval
-                  )
-                }
-                controller.particleService.update().systems.get("main").render()
+                if (spawnParticles) {
+                  if (!task.state.fadeInEmitt) {
+                    task.state.fadeInEmitt = true
+                    controller.particleService.spawnParticleEmitter(
+                      "main",
+                      "particle-splashscreen",
+                      GuiWidth() / 2.0,
+                      GuiHeight() / 2.0,
+                      GuiWidth() / 2.0,
+                      GuiHeight() / 2.0,
+                      FRAME_MS * interval * duration,
+                      amount,
+                      FRAME_MS * interval
+                    )
+                  }
 
+                  controller.particleService.update().systems.get("main").render()
+                }
+                
                 var shaderDissolve = task.state.shaderDissolve
                 var time = (0.75 * task.state.fadeIn.getProgress())
                   + (2.5 * task.state.duration.getProgress())

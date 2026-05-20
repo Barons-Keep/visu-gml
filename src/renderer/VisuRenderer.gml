@@ -138,6 +138,14 @@ function VisuRenderer() constructor {
   renderEditorMode = Core.getProperty("visu.editor.renderEditorMode", false)
 
   ///@private
+  ///@type {Boolean}
+  menuInitialized = false
+
+  ///@private
+  ///@type {Boolean}
+  menuOpen = false
+
+  ///@private
   ///@param {UILayout} layout
   ///@return {VisuRenderer}
   renderSpinner = function(layout) {
@@ -507,6 +515,21 @@ function VisuRenderer() constructor {
       this.gridRenderer.update(layout)
       this.hudRenderer.update(layout)
       this.dialogueRenderer.update()
+    }
+
+    if (!this.menuInitialized) {
+      if (!this.menuOpen) {
+        var factory = controller.menu.factories.get("menu-main")
+        controller.menu.send(factory())
+        controller.menu.update()
+        controller.updateUIService()
+        this.menuOpen = true
+      } else {
+        controller.menu.send(new Event("close"))
+        controller.menu.update()
+        controller.updateUIService()
+        this.menuInitialized = true
+      }
     }
 
     this.executor.update()

@@ -117,7 +117,7 @@ global.__VisuStyles = new Map(String, Callable, {
       enableColorWrite: false,
       //backgroundColor: VisuTheme.color.side,
       colorHoverOver: VisuTheme.color.accentLight,
-      colorHoverOut: VisuTheme.color.accentShadow,
+      colorHoverOut: VisuTheme.color.sideDark,
       backgroundMargin: { top: 4, left: 4, bottom: 4, right: 4 },
       backgroundAlpha: 0.05,
     },

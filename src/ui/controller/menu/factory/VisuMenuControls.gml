@@ -31,6 +31,7 @@ function factoryVisuMenuOpenControlsEvent(_config = null) {
           label: {
             text: Language.get("visu.menu.controls.keyboard-and-mouse"),
             font: "font_kodeo_mono_28_bold",
+            colorHoverOut: VisuTheme.color.accentShadow,
           },
         },
       },
@@ -92,6 +93,7 @@ function factoryVisuMenuOpenControlsEvent(_config = null) {
                 : "visu.menu.gamepad.title.disconnected"
               this.label.text = Language.get(label)
             },
+            colorHoverOut: VisuTheme.color.accentShadow,
           },
         },
       },

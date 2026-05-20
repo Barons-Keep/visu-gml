@@ -200,6 +200,7 @@ function PlayerStats(_player, json) constructor {
       var value = this.get()
       if (previous < value) {
         controller.sfxService.play("player-collect-point-or-force")
+        controller.visuRenderer.hudRenderer.sendForceParticleEvent()
         //Core.print("Force incremented from", previous, "to", value)
       } else if (previous > value) {
         //Core.print("Force decremented from", previous, "to", value)
@@ -243,6 +244,7 @@ function PlayerStats(_player, json) constructor {
       var value = this.get()
       if (previous < value) {
         controller.sfxService.play("player-collect-point-or-force")
+        controller.visuRenderer.hudRenderer.sendPointParticleEvent()
         //Core.print("Points incremented from", previous, "to", value)
       } else if (previous > value) {
         //Core.print("Points decremented from", previous, "to", value)
@@ -285,6 +287,7 @@ function PlayerStats(_player, json) constructor {
       var value = this.get()
       if (previous < value) {
         /*//@log.level*/ Logger.debug("Player", $"Bombs increased from {previous} to {value}")
+        controller.visuRenderer.hudRenderer.sendBombParticleEvent()
         controller.visuRenderer.hudRenderer.sendGlitchEvent()
         controller.sfxService.play("player-collect-bomb")
         //Core.print("Bomb added from", previous, "to", value)
@@ -513,6 +516,7 @@ function PlayerStats(_player, json) constructor {
       var value = this.get()
       if (previous < value) {
         /*//@log.level*/ Logger.debug("Player", $"Life increased from {previous} to {value}")
+        controller.visuRenderer.hudRenderer.sendLifeParticleEvent()
         controller.visuRenderer.hudRenderer.sendGlitchEvent()
         controller.sfxService.play("player-collect-life")
       } else if (previous > value) {
@@ -770,6 +774,15 @@ function PlayerHandler(json) constructor {
     },
   }
 
+  ///@type {Number}
+  focusAngle = 0.0
+
+  ///@type {Number}
+  focusTarget = 0.0
+
+  ///@type {Boolean}
+  previousFocus = this.focus
+
   ///@type {Array<Struct>}
   guns = new Array(Struct, Core.isType(Struct.get(json, "guns"), GMArray)
     ? GMArray.map(json.guns, function(gun) {
@@ -901,6 +914,17 @@ function PlayerHandler(json) constructor {
       ? this.focusCooldown.increment().finished
       : this.focusCooldown.decrement().finished
 
+    if (this.focusAngle > 360.0 && this.focusAngle == this.focusTarget) {
+      this.focusTarget = Math.normalizeAngle(this.focusTarget)
+      this.focusAngle = Math.normalizeAngle(this.focusAngle)
+    }
+
+    if (this.previousFocus != this.focus) {
+      this.focusTarget = this.focusTarget + 180.0
+      this.previousFocus = this.focus
+    }
+    
+    this.focusAngle = lerp(this.focusAngle, this.focusTarget, 0.2)
     if (GMTFContext.isFocused()) {
       Struct.forEach(keys, updateGMTFContextFocused)
     }

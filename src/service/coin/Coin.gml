@@ -161,7 +161,7 @@ function Coin(config) constructor {
     var sourceY = this.y * GRID_SERVICE_PIXEL_HEIGHT
     var targetX = target.x * GRID_SERVICE_PIXEL_WIDTH
     var targetY = target.y * GRID_SERVICE_PIXEL_HEIGHT
-    return Math.ellipseOverlaps(
+    return Math.rectangleOverlaps(
       sourceX - ((this.sprite.getWidth() * this.sprite.scaleX) / 2.0) + (this.mask.x * this.sprite.scaleX),
       sourceY - ((this.sprite.getHeight() * this.sprite.scaleY) / 2.0) + (this.mask.y * this.sprite.scaleY),
       this.mask.z * this.sprite.scaleX,

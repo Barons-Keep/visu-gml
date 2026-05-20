@@ -3186,7 +3186,7 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
         
         var interval = template.store.getValue("particle_interval-preview")
         if (this.particleTimer.duration != interval) {
-          this.particleTimer.setDuration(interval)
+          this.particleTimer.setDuration(interval).reset()
         }
 
         var preview = template.store.getValue("particle_use-preview")

@@ -319,6 +319,10 @@ function VisuIO(config = null): Service(config) constructor {
           }
           break
         case "game-over":
+          if (menu.enabled && Optional.is(menu.back)) {
+            menu.send(new Event("back") )
+            controller.sfxService.play("menu-select-entry")
+          }
           break
         case "play":
           var fsmState = controller.fsm.currentState

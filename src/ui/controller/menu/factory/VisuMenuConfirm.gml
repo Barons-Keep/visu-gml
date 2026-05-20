@@ -14,6 +14,7 @@ function factoryVisuMenuOpenConfirmEvent(_config = null) {
   })
 
   var event = new Event("open").setData({
+    back: config.decline,
     accept: config.accept,
     decline: config.decline,
     layout: controller.visuRenderer.layout,
@@ -45,6 +46,7 @@ function factoryVisuMenuOpenConfirmEvent(_config = null) {
             onMouseReleasedLeft: function() {
               this.callback()
             },
+            //colorHoverOut: VisuTheme.color.acceptShadow,
           },
         }
       },

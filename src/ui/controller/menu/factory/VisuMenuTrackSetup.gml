@@ -198,6 +198,7 @@ function factoryVisuMenuOpenTrackSetupEvent(_config = null) {
             onMouseReleasedLeft: function() {
               this.callback()
             },
+            //colorHoverOut: VisuTheme.color.accentShadow,
           },
         }
       },
@@ -225,6 +226,7 @@ function factoryVisuMenuOpenTrackSetupEvent(_config = null) {
             onMouseReleasedLeft: function() {
               this.callback()
             },
+            //colorHoverOut: VisuTheme.color.accentShadow,
           },
         }
       },

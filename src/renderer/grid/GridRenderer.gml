@@ -211,6 +211,7 @@ function GridRenderer() constructor {
       return this
     }
 
+    var godModeCooldown = player.stats.godModeCooldown
     var useBlendAsZ = false
     if (useBlendAsZ) {
       var _x = (player.x - (player.sprite.texture.width / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) + ((player.sprite.texture.offsetX * player.sprite.scaleX) / GRID_SERVICE_PIXEL_WIDTH)  - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH
@@ -222,7 +223,7 @@ function GridRenderer() constructor {
       shader_set_uniform_f(shader_get_uniform(shader_gml_use_blend_as_z, "size"), 1024.0)
         player.sprite
           .setBlend((sin(this.playerZTimer.update().time) * 0.5 + 0.5) * 255)
-          .setAlpha(alpha * ((cos(player.stats.godModeCooldown * 15.0) + 2.0) / 3.0))
+          .setAlpha(alpha * ((cos(godModeCooldown * 15.0) + 2.0) / 3.0))
           .setAngle(angle - 90)
           .render(_x, _y)
           .setBlend(blend)
@@ -244,7 +245,7 @@ function GridRenderer() constructor {
       var alpha = player.sprite.getAlpha()
       var angle = player.sprite.getAngle()
       player.sprite
-        .setAlpha(alpha * ((cos(player.stats.godModeCooldown * 15.0) + 2.0) / 3.0))
+        .setAlpha(alpha * ((cos(godModeCooldown * 15.0) + 2.0) / 3.0))
         .setAngle(angle - 90.0)
         .render(_x, _y)
         .setAlpha(alpha)
@@ -347,7 +348,7 @@ function GridRenderer() constructor {
       var _y = ((coin.y - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT) - ((coin.sprite.getHeight() * coin.sprite.scaleY) / 2.0) + (coin.mask.y * coin.sprite.scaleY)
       var _width = coin.mask.z * coin.sprite.scaleX
       var _height = coin.mask.a * coin.sprite.scaleY
-      GPU.render.ellipse(_x, _y, _x + _width, _y + _height, false, c_fuchsia)
+      GPU.render.rectangle(_x, _y, _x + _width, _y + _height, false, c_fuchsia)
     }
     
     if (!gridService.properties.renderElements
@@ -1213,7 +1214,9 @@ function GridRenderer() constructor {
     var angle = player.sprite.getAngle()
     var scaleX = player.sprite.getScaleX()
     var scaleY = player.sprite.getScaleY()
-    var scaleFactor = clamp(player.stats.godModeCooldown, 1.0, 10.0)
+    var godModeCooldown = player.stats.godModeCooldown
+    var focusAngle = Struct.get(player.handler, "focusAngle")
+    var scaleFactor = clamp(godModeCooldown * 1.5, 1.0, 15.0)
     var useBlendAsZ = false
     if (useBlendAsZ) {
       shader_set(shader_gml_use_blend_as_z)
@@ -1223,8 +1226,8 @@ function GridRenderer() constructor {
       var blend = player.sprite.getBlend()
       player.sprite
         .setBlend((sin(this.playerZTimer.update().time) * 0.5 + 0.5) * 255)
-        .setAlpha(alpha * ((cos(player.stats.godModeCooldown * 15.0) + 2.0) / 3.0) * player.fadeIn)
-        .setAngle(angle - 90.0 - (360.0 * player.stats.godModeCooldown))
+        .setAlpha(alpha * ((cos(godModeCooldown * 15.0) + 2.0) / 3.0) * player.fadeIn)
+        .setAngle(angle - focusAngle - 90.0 - (30.0 * sin(2.0 * TAU * godModeCooldown)))// - (360.0 * godModeCooldown))
         .setScaleX(scaleX * scaleFactor)
         .setScaleY(scaleY * scaleFactor)
         .render(_x, _y)
@@ -1241,8 +1244,8 @@ function GridRenderer() constructor {
       var _x = (player.x - ((player.sprite.texture.width * player.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) + ((player.sprite.texture.offsetX * player.sprite.scaleX) / GRID_SERVICE_PIXEL_WIDTH) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH,
       var _y = (player.y - ((player.sprite.texture.height * player.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) + ((player.sprite.texture.offsetY * player.sprite.scaleY) / GRID_SERVICE_PIXEL_HEIGHT) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT
       player.sprite
-        .setAlpha(alpha * ((cos(player.stats.godModeCooldown * 15.0) + 2.0) / 3.0) * player.fadeIn)
-        .setAngle(angle - 90.0 - (360.0 * player.stats.godModeCooldown))
+        .setAlpha(alpha * ((cos(godModeCooldown * 15.0) + 2.0) / 3.0) * player.fadeIn)
+        .setAngle(angle - focusAngle - 90.0 - (30.0 * sin(2.0 * TAU * godModeCooldown)))// - (360.0 * godModeCooldown))
         .setScaleX(scaleX * scaleFactor)
         .setScaleY(scaleY * scaleFactor)
         .render(_x, _y)
@@ -1749,6 +1752,26 @@ function GridRenderer() constructor {
     ))
     _renderBullets(gridService, bulletService)
     
+    if (isMouseShoot && !controller.menu.enabled && global.gamepadPlayerAimMouse) {
+      matrix_set(matrix_world, matrix_build(
+        0, 0, depths.playerZ + 1,
+        global.cameraRollSpeed, global.cameraPitchSpeed, global.cameraYawSpeed,
+        1, 1, 1
+      ))
+
+      var angle = Math.fetchPointsAngle(this.player3DCoords.x, this.player3DCoords.y, this.target3DCoords.x, this.target3DCoords.y)
+      var color = c_blue
+      var alpha = player.sprite.getAlpha() * player.fadeIn
+      var spawnerX = coords[0]
+      var spawnerY = coords[1]
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 1.1, 1.1, angle, c_white, alpha * 0.6)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 0.8, 0.8, angle, c_red, alpha * 0.8)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 0.9, 0.9, angle, c_fuchsia, alpha * 0.7)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 1.0, 1.0, angle, c_blue, alpha * 0.6)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 0.7, 0.7, angle, c_yellow, alpha * 0.9)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 0.6, 0.6, angle, c_white, alpha * 1.0)
+    }
+    
     matrix_set(matrix_world, matrix_build(
       baseX, baseY, depths.playerZ, 
       global.cameraRollSpeed, global.cameraPitchSpeed, global.cameraYawSpeed,
@@ -1772,25 +1795,6 @@ function GridRenderer() constructor {
 
     _renderPlayer(gridService, playerService, baseX, baseY)
 
-    if (isMouseShoot && !controller.menu.enabled && global.gamepadPlayerAimMouse) {
-      matrix_set(matrix_world, matrix_build(
-        0, 0, depths.playerZ + 1,
-        global.cameraRollSpeed, global.cameraPitchSpeed, global.cameraYawSpeed,
-        1, 1, 1
-      ))
-
-      var angle = Math.fetchPointsAngle(this.player3DCoords.x, this.player3DCoords.y, this.target3DCoords.x, this.target3DCoords.y)
-      var color = c_blue
-      var alpha = player.sprite.getAlpha() * player.fadeIn
-      var spawnerX = coords[0]
-      var spawnerY = coords[1]
-      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 1.1, 1.1, angle, c_white, alpha * 0.6)
-      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 0.8, 0.8, angle, c_red, alpha * 0.8)
-      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 0.9, 0.9, angle, c_fuchsia, alpha * 0.7)
-      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 1.0, 1.0, angle, c_blue, alpha * 0.6)
-      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 0.7, 0.7, angle, c_yellow, alpha * 0.9)
-      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 0.6, 0.6, angle, c_white, alpha * 1.0)
-    }
     matrix_set(matrix_world, matrix_build_identity())
 
     return this

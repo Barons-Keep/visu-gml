@@ -459,6 +459,7 @@ function factoryMenuButtonEntryTitle(index, text) {
       label: {
         text: text,
         font: "font_kodeo_mono_28_bold",
+        colorHoverOut: VisuTheme.color.accentShadow,
       },
     }
   }
@@ -1261,7 +1262,7 @@ function VisuMenu(_config = null) constructor {
 
                 },
                 onMouseReleasedLeft: function() {
-                  url_open("https://github.com/Barons-Keep/visu-project")
+                  url_open("https://barons-keep.fun")
                 }
               },
             },
