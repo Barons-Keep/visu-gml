@@ -55,6 +55,10 @@ function VisuIO(config = null): Service(config) constructor {
         }
 
         static updateKeyboardKey = function(index, action, key) {
+          if (action < 0.0 || action >= array_length(__INPUTCANDY.actions)) {
+            return
+          }
+
           var _action = __INPUTCANDY.actions[action]
           var _actionOn = key.on
           var _actionPressed = key.pressed
@@ -209,6 +213,10 @@ function VisuIO(config = null): Service(config) constructor {
       }
 
       static updateKeyboardKey = function(index, action, key) {
+        if (action < 0.0 || action >= array_length(__INPUTCANDY.actions)) {
+          return
+        }
+        
         var _action = __INPUTCANDY.actions[action]
         var _actionOn = key.on
         var _actionPressed = key.pressed
