@@ -1096,7 +1096,6 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                   break
                 default:
                   throw new Exception($"Remove dispatcher for type '{template.type}' wasn't found")
-                  break
               }
 
               if (!Core.isType(templates, Collection)) {
@@ -1243,6 +1242,7 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                 .setPromise(new Promise())
               
               var controller = Beans.get(BeanVisuController)
+              var isSupported = true
               switch (type) {
                 case VETemplateType.SHADER:
                   event.data.filename = "shader"
@@ -1438,15 +1438,17 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                   break
                 case VETemplateType.TEXTURE:
                   Logger.warn("VETemplate", $"Load type '{VETemplateType.TEXTURE}' is not supported")
-                  return
+                  isSupported = false
+                  break
                 default:
                   var message = $"Load dispatcher for type '{type}' wasn't found"
                   Logger.error("VETemplate", message)
                   throw new Exception(message)
-                  break
               }
 
-              var promise = Beans.get(BeanFileService).send(event)
+              if (isSupported) {
+                var promise = Beans.get(BeanFileService).send(event)
+              }
             }
           },
           VEStyles.get("bar-button"),

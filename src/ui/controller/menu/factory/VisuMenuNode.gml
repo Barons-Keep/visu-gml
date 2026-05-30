@@ -1,5 +1,22 @@
 ///@package fun.barons-keep.visu.ui.controller.menu
 
+
+///@param {Struct} json
+function VisuMenuNode(json) constructor {
+
+  ///@type {String}
+  title = Assert.isType(json.title, String)
+
+  ///@type {?String}
+  back = Core.isType(json.back, String) ? json.back : null
+
+  ///@type {Array<VisuMenuEntry>}
+  entries = new Array(VisuMenuEntry, Core.isType(Struct.get(json, "entries"), GMArray) 
+    ? GMArray.map(json.entries, function(json) { return new VisuMenuEntry(json) }) 
+    : [])
+}
+
+
 ///@param {String} nodeName
 ///@return {Event}
 function factoryVisuMenuOpenNodeEvent(nodeName) {
@@ -15,7 +32,7 @@ function factoryVisuMenuOpenNodeEvent(nodeName) {
     : controller.menu.factories.get("menu-main")
   var backData = back == controller.menu.factories.get("menu-node")
     ? node.back
-    : null,
+    : null
   var event = new Event("open").setData({
     back: back,
     backData: backData,

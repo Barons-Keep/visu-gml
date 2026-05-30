@@ -320,7 +320,7 @@ function factoryPlayerGamepadButtonEntryConfig(name, text) {
         text: "None",
       },
       updateCustom: function() { 
-        var action = String.toLowerCase(Struct.get(Visu.settings.getValue("visu.gamepad.controls"), this.key)),
+        var action = String.toLowerCase(Struct.get(Visu.settings.getValue("visu.gamepad.controls"), this.key))
         this.label.text = Language.get($"visu.menu.gamepad.action.{action}")
       },
     },
@@ -467,18 +467,13 @@ function factoryMenuButtonEntryTitle(index, text) {
 
 
 ///@param {Struct} json
-function VisuMenuNode(json) constructor {
+function VisuMenuEntryEvent(json) constructor {
 
   ///@type {String}
-  title = Assert.isType(json.title, String)
+  type = Assert.isEnum(json.type, VisuMenuEntryEventType)
 
-  ///@type {?String}
-  back = Core.isType(json.back, String) ? json.back : null
-
-  ///@type {Array<VisuMenuEntry>}
-  entries = new Array(VisuMenuEntry, Core.isType(Struct.get(json, "entries"), GMArray) 
-    ? GMArray.map(json.entries, function(json) { return new VisuMenuEntry(json) }) 
-    : [])
+  ///@type {?Struct}
+  data = Core.isType(Struct.get(json, "data"), Struct) ? json.data : null
 }
 
 
@@ -496,28 +491,19 @@ function VisuMenuEntry(json) constructor {
 }
 
 
-///@param {Struct} json
-function VisuMenuEntryEvent(json) constructor {
-
-  ///@type {String}
-  type = Assert.isEnum(json.type, VisuMenuEntryEventType)
-
-  ///@type {?Struct}
-  data = Core.isType(Struct.get(json, "data"), Struct) ? json.data : null
-}
-
-
 ///@param {?Struct} [_config]
 function VisuMenu(_config = null) constructor {
 
   ///@return {Map<String, VisuMenuNode>}
   static parseNodes = function() {
     var nodes = new Map(String, VisuMenuNode)
+    var manifestPath = "undefined"
     try {
-      var manifest = FileUtil
-        .readFileSync(FileUtil.get(Core.getRuntimeType() != RuntimeType.GXGAMES
+      manifestPath = Core.getRuntimeType() != RuntimeType.GXGAMES
           ? $"{working_directory}track/manifest.json"
-          : $"{working_directory}track/manifest-wasm.json"))
+          : $"{working_directory}track/manifest-wasm.json"
+      var manifest = FileUtil
+        .readFileSync(FileUtil.get(manifestPath))
         .getData()
       var parserTask = JSON.parserTask(manifest, {
         callback: function(prototype, json, key, acc) {
@@ -536,7 +522,7 @@ function VisuMenu(_config = null) constructor {
         Assert.isTrue(index++ <= MAX_INDEX, $"Exceed MAX_INDEX={MAX_INDEX}")
       }
     } catch (exception) {
-      Logger.error("VisuMenu", $"Exception throwed while parsing track/manifest.json: {exception.message}")
+      Logger.error("VisuMenu", $"Exception throwed while parsing {manifestPath}: {exception.message}")
       Core.printStackTrace().printException(exception)
     }
 
