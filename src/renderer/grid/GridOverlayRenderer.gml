@@ -1,4 +1,6 @@
 ///@package com.alkapivo.visu.renderer.grid
+show_debug_message("init GridOverlayRenderer.gml")
+
 
 ///@todo rename to sth that reflects video, background and foreground renderer
 function GridOverlayRenderer() constructor {

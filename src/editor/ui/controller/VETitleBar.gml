@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.editor.ui.controller
+show_debug_message("init VETitleBar.gml")
+
 
 function factoryVEContextMenu(root, anchor, json) {
   static factoryComponent = function(config, index, size) {

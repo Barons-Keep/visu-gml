@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.editor.service.brush.view
+show_debug_message("init brush_view_layer.gml")
+
 
 ///@param {?Struct} [json]
 ///@return {Struct}

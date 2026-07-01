@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.service.track
+show_debug_message("init grid_track_event.gml")
+
 
 
 ///@enum

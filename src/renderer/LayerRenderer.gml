@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.renderer
+show_debug_message("init LayerRenderer.gml")
+
 
 ///@param {?Struct} [config]
 function LayerRenderer(config = null) {

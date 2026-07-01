@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.editor.renderer
+show_debug_message("init VisuEditorRenderer.gml")
+
 
 function VisuEditorRenderer() constructor {
   

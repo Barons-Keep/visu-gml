@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.service.grid.feature
+show_debug_message("init FollowPlayerFeature.gml")
+
 
 ///@param {Struct} json
 function FollowPlayerFeature(json): GridItemFeature(json) constructor {

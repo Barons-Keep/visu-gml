@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.service.grid.feature
+show_debug_message("init FactFeature.gml")
+
 
 function FactFeature(json): GridItemFeature(json) constructor {
   var data = Struct.get(json, "data")

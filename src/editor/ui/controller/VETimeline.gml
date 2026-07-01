@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.editor.ui.controller
+show_debug_message("init VETimeline.gml")
+
 
 ///@type {Number}
 #macro VE_TIMELINE_ZOOM_MIN 5
@@ -2771,7 +2773,7 @@ function VETimeline(_editor) constructor {
           var _x = this.area.x
           var _y = this.area.y
           var width = this.area.getWidth()
-          var viewSize = ((1.0 - (clamp(this.state.get("store").getValue("timeline-zoom") - VE_TIMELINE_ZOOM_MIN, 0.0, (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN)) / (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN))) * (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN)) + VE_TIMELINE_ZOOM_MIN,
+          var viewSize = ((1.0 - (clamp(this.state.get("store").getValue("timeline-zoom") - VE_TIMELINE_ZOOM_MIN, 0.0, (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN)) / (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN))) * (VE_TIMELINE_ZOOM_MAX - VE_TIMELINE_ZOOM_MIN)) + VE_TIMELINE_ZOOM_MIN
           var stepSize = this.state.get("stepSize")
           var spd = this.state.get("speed")
           var position = this.state.get("position")

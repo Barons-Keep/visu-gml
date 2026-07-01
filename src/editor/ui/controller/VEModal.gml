@@ -1,3 +1,5 @@
+show_debug_message("init VEModal.gml")
+
 
 ///@package fun.barons-keep.visu.editor.ui.controller
 

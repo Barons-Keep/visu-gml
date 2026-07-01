@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.editor.ui.controller
+show_debug_message("init VEAccordion.gml")
+
 
 ///@param {VisuEditorController} _editor
 ///@param {?Struct} [config]

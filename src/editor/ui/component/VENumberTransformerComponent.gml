@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.editor.ui.component
+show_debug_message("init VENumberTransformerComponent.gml")
+
 
 //@param {String} name
 //@param {?Struct} [config]
@@ -6,7 +8,7 @@ function VENumberTransformerComponent(name, config = null) {
   var layout = Struct.getIfType(config, "layout", String, "number-transformer-increase-checkbox")
   var fieldLayout = Struct.getIfType(config, "fieldLayout", String, "text-field-increase-stick-checkbox")
   var enableConfig = Struct.get(config, "enable")
-  var storeConfig = Struct.get(config, "store"),
+  var storeConfig = Struct.get(config, "store")
   var valueConfig = Struct.get(config, "value")
   var targetConfig = Struct.get(config, "target")
   var durationConfig = Struct.get(config, "duration")

@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.service.grid.feature
+show_debug_message("init AngleFeature.gml")
+
 
 ///@param {Struct} json
 function AngleFeature(json): GridItemFeature(json) constructor {

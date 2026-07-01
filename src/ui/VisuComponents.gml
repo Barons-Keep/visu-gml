@@ -1,413 +1,420 @@
 ///@package io.alkapivo.visu.ui
+show_debug_message("init VisuComponents.gml")
 
-///@type {Map<String, Callable>}
-global.__VisuComponents = new Map(String, Callable, {
 
-  ///@param {String} name
-  ///@param {UILayout} layout
-  ///@param {?Struct} [config]
-  ///@return {Array<UIItem>}
-  "text": function(name, layout, config = null) {
-    return new Array(UIItem, [
-      UIText(
-        $"text_{name}", 
-        Struct.appendRecursive(
-          Struct.appendRecursive(
-            { 
-              layout: layout.nodes.label,
-              updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
-            },
-            VisuStyles.get("text").label,
-            false
-          ),
-          Struct.get(config, "label"),
-          false
-        )
-      )
-    ])
-  },
-
-  ///@param {String} name
-  ///@param {UILayout} layout
-  ///@param {?Struct} [config]
-  ///@return {Array<UIItem>}
-  "menu-title": function(name, layout, config = null) {
-    return new Array(UIItem, [
-      UIText(
-        $"label_{name}_menu-title",
-        Struct.appendRecursive(
-          Struct.appendRecursive(
-            { 
-              layout: layout.nodes.label,
-              updateArea: Callable
-                .run(UIUtil.updateAreaTemplates
-                .get("applyLayout")),
-            }, 
-            VisuStyles.get("menu-title").label,
-            false
-          ),
-          Struct.get(config, "label"),
-          false
-        )
-      ),
-    ])
-  },
-
-    ///@param {String} name
-  ///@param {UILayout} layout
-  ///@param {?Struct} [config]
-  ///@return {Array<UIItem>}
-  "menu-statistics": function(name, layout, config = null) {
-    return new Array(UIItem, [
-      UIText(
-        $"label_{name}_menu-statistics",
-        Struct.appendRecursive(
-          Struct.appendRecursive(
-            { 
-              layout: layout.nodes.label,
-              updateArea: Callable
-                .run(UIUtil.updateAreaTemplates
-                .get("applyLayout")),
-            }, 
-            VisuStyles.get("menu-statistics").label,
-            false
-          ),
-          Struct.get(config, "label"),
-          false
-        )
-      ),
-    ])
-  },
-
-    ///@param {String} name
-  ///@param {UILayout} layout
-  ///@param {?Struct} [config]
-  ///@return {Array<UIItem>}
-  "menu-label-entry": function(name, layout, config = null) {
-    return new Array(UIItem, [
-      UIText(
-        $"label_{name}_menu-label-entry",
-        Struct.appendRecursive(
-          Struct.appendRecursive(
-            { 
-              layout: layout.nodes.label,
-              updateArea: Callable
-                .run(UIUtil.updateAreaTemplates
-                .get("applyCollectionLayout")),
-            }, 
-            VisuStyles.get("menu-label-entry").label,
-            false
-          ),
-          Struct.get(config, "label"),
-          false
-        )
-      ),
-    ])
-  },
-
-  ///@param {String} name
-  ///@param {UILayout} layout
-  ///@param {?Struct} [config]
-  ///@return {Array<UIItem>}
-  "menu-button-entry": function(name, layout, config = null) {
-    return new Array(UIItem, [
-      UIText(
-        $"label_{name}_menu-button-entry",
-        Struct.appendRecursive(
-          Struct.appendRecursive(
-            { 
-              layout: layout.nodes.label,
-              updateArea: Callable
-                .run(UIUtil.updateAreaTemplates
-                .get("applyCollectionLayout")),
-            }, 
-            VisuStyles.get("menu-button-entry").label,
-            false
-          ),
-          Struct.get(config, "label"),
-          false
-        )
-      )
-    ])
-  },
-
-  ///@param {String} name
-  ///@param {UILayout} layout
-  ///@param {?Struct} [config]
-  ///@return {Array<UIItem>}
-  "menu-button-entry-title": function(name, layout, config = null) {
-    return new Array(UIItem, [
-      UIText(
-        $"label_{name}_menu-button-entry-title",
-        Struct.appendRecursive(
-          Struct.appendRecursive(
-            { 
-              layout: layout.nodes.title,
-              updateArea: Callable
-                .run(UIUtil.updateAreaTemplates
-                .get("applyCollectionLayout")),
-            }, 
-            VisuStyles.get("menu-button-entry-title").title,
-            false
-          ),
-          Struct.get(config, "title"),
-          false
-        )
-      ),
-      UIText(
-        $"title_{name}_menu-button-entry-label",
-        Struct.appendRecursive(
-          Struct.appendRecursive(
-            { 
-              layout: layout.nodes.label,
-              updateArea: Callable
-                .run(UIUtil.updateAreaTemplates
-                .get("applyCollectionLayout")),
-            }, 
-            VisuStyles.get("menu-button-entry-title").label,
-            false
-          ),
-          Struct.get(config, "label"),
-          false
-        )
-      )
-    ])
-  },
-
-  ///@param {String} name
-  ///@param {UILayout} layout
-  ///@param {?Struct} [config]
-  ///@return {Array<UIItem>}
-  "menu-button-input-entry": function(name, layout, config = null) {
-    return new Array(UIItem, [
-      UIText(
-        $"label_{name}_menu-button-input-entry",
-        Struct.appendRecursive(
-          Struct.appendRecursive(
-            { 
-              layout: layout.nodes.label,
-              updateArea: Callable
-                .run(UIUtil.updateAreaTemplates
-                .get("applyCollectionLayout")),
-            }, 
-            VisuStyles.get("menu-button-input-entry").label,
-            false
-          ),
-          Struct.get(config, "label"),
-          false
-        )
-      ),
-      UIButton(
-        $"checkbox_{name}_menu-button-input-entry",
-        Struct.appendRecursive(
-          Struct.appendRecursive(
-            { 
-              layout: layout.nodes.input,
-              updateArea: Callable
-                .run(UIUtil.updateAreaTemplates
-                .get("applyCollectionLayout")),
-            }, 
-            VisuStyles.get("menu-button-input-entry").input,
-            false
-          ),
-          Struct.get(config, "input"),
-          false
-        )
-      )
-    ])
-  },
-
-  ///@param {String} name
-  ///@param {UILayout} layout
-  ///@param {?Struct} [config]
-  ///@return {Array<UIItem>}
-  "menu-spin-select-entry": function(name, layout, config = null) {
-    static factoryButton = function(name, layout, config) {
-      return UIButton(
-        name, 
-        Struct.appendRecursive(
-          {
-            layout: layout,
-            updateArea: Callable
-              .run(UIUtil.updateAreaTemplates
-              .get("applyCollectionLayout")),
-          }, 
-          config, 
-          false
-        )
-      )
-    }
+///@static
+///@type {?Map<String, Callable>}
+global.__VisuComponents = null///@GMRT
+#macro VisuComponents global.__VisuComponents
+function init_VisuComponents() {
+  Core.print("init_VisuComponents")
+  VisuComponents = new Map(String, Callable, {
 
     ///@param {String} name
     ///@param {UILayout} layout
     ///@param {?Struct} [config]
     ///@return {Array<UIItem>}
-    static factoryPreview = function(name, layout, config) {
-      return UIImage(
-        name, 
-        Struct.appendRecursive(
-          {
-            layout: layout,
-            updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyCollectionLayout")),
-          }, 
-          config, 
-          false
-        )
-      )
-    }
-
-    return new Array(UIItem, [
-      UIText(
-        $"{name}_label", 
-        Struct.appendRecursive(
+    "text": function(name, layout, config = null) {
+      return new Array(UIItem, [
+        UIText(
+          $"text_{name}", 
           Struct.appendRecursive(
-            { 
-              layout: layout.nodes.label,
-              updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyCollectionLayout")),
-            },
-            Struct.get(VisuStyles.get("menu-spin-select-entry"), "label"),
-            false
-          ),
-          Struct.get(config, "label"),
-          false
-        )
-      ),
-      factoryButton(
-        $"{name}_previous",
-        layout.nodes.previous,
-        Struct.appendRecursive(
-          Struct.appendRecursive(
-            { 
-              increment: -1,
-              onMouseHoverOver: function(event) {
-                this.sprite.setBlend(ColorUtil.fromHex("#ffffff").toGMColor())
+            Struct.appendRecursive(
+              { 
+                layout: layout.nodes.label,
+                updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
               },
-              onMouseHoverOut: function(event) {
-                this.sprite.setBlend(ColorUtil.fromHex(VisuTheme.color.textFocus).toGMColor())
-              },            
-            },
-            Struct.get(config, "previous"), 
+              VisuStyles.get("text").label,
+              false
+            ),
+            Struct.get(config, "label"),
             false
-          ), 
-          Struct.get(VisuStyles.get("menu-spin-select-entry"), "previous"),
-          false
+          )
         )
-      ),
-      factoryPreview(
-        $"{name}_preview",
-        layout.nodes.preview,
-        Struct.appendRecursive(
-          Struct.get(config, "preview"),
-          Struct.get(VisuStyles.get("menu-spin-select-entry"), "preview"),
-          false
-        )
-      ),
-      factoryButton(
-        $"{name}_next",
-        layout.nodes.next,
-        Struct.appendRecursive(
-          Struct.appendRecursive(
-            { 
-              increment: 1,
-              onMouseHoverOver: function(event) {
-                this.sprite.setBlend(ColorUtil.fromHex("#ffffff").toGMColor())
-              },
-              onMouseHoverOut: function(event) {
-                this.sprite.setBlend(ColorUtil.fromHex(VisuTheme.color.textFocus).toGMColor())
-              },            
-            },
-            Struct.get(config, "next"),
-            false
-          ),
-          Struct.get(VisuStyles.get("menu-spin-select-entry"), "next"),
-          false
-        )
-      ),
-    ])
-  },
+      ])
+    },
 
-  ///@param {String} name
-  ///@param {UILayout} layout
-  ///@param {?Struct} [config]
-  ///@return {Array<UIItem>}
-  "menu-keyboard-key-entry": function(name, layout, config = null) {
-    return new Array(UIItem, [
-      UIText(
-        $"{name}_label", 
-        Struct.appendRecursive(
+    ///@param {String} name
+    ///@param {UILayout} layout
+    ///@param {?Struct} [config]
+    ///@return {Array<UIItem>}
+    "menu-title": function(name, layout, config = null) {
+      return new Array(UIItem, [
+        UIText(
+          $"label_{name}_menu-title",
           Struct.appendRecursive(
-            { 
-              layout: layout.nodes.label,
-              updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyCollectionLayout")),
-            },
-            Struct.get(VisuStyles.get("menu-keyboard-key-entry"), "label"),
+            Struct.appendRecursive(
+              { 
+                layout: layout.nodes.label,
+                updateArea: Callable
+                  .run(UIUtil.updateAreaTemplates
+                  .get("applyLayout")),
+              }, 
+              VisuStyles.get("menu-title").label,
+              false
+            ),
+            Struct.get(config, "label"),
             false
-          ),
-          Struct.get(config, "label"),
-          false
-        )
-      ),
-      UIText(
-        $"{name}_preview", 
-        Struct.appendRecursive(
-          Struct.appendRecursive(
-            { 
-              layout: layout.nodes.preview,
-              updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyCollectionLayout")),
-            },
-            Struct.get(VisuStyles.get("menu-keyboard-key-entry"), "preview"),
-            false
-          ),
-          Struct.get(config, "preview"),
-          false
-        )
-      ),
-    ])
-  },
+          )
+        ),
+      ])
+    },
 
-  ///@param {String} name
-  ///@param {UILayout} layout
-  ///@param {?Struct} [config]
-  ///@return {Array<UIItem>}
-  "menu-slider-entry": function(name, layout, config = null) {
-    return new Array(UIItem, [
-      UIText(
-        $"label_{name}", 
-        Struct.appendRecursive(
+      ///@param {String} name
+    ///@param {UILayout} layout
+    ///@param {?Struct} [config]
+    ///@return {Array<UIItem>}
+    "menu-statistics": function(name, layout, config = null) {
+      return new Array(UIItem, [
+        UIText(
+          $"label_{name}_menu-statistics",
           Struct.appendRecursive(
-            { 
-              layout: layout.nodes.label,
+            Struct.appendRecursive(
+              { 
+                layout: layout.nodes.label,
+                updateArea: Callable
+                  .run(UIUtil.updateAreaTemplates
+                  .get("applyLayout")),
+              }, 
+              VisuStyles.get("menu-statistics").label,
+              false
+            ),
+            Struct.get(config, "label"),
+            false
+          )
+        ),
+      ])
+    },
+
+      ///@param {String} name
+    ///@param {UILayout} layout
+    ///@param {?Struct} [config]
+    ///@return {Array<UIItem>}
+    "menu-label-entry": function(name, layout, config = null) {
+      return new Array(UIItem, [
+        UIText(
+          $"label_{name}_menu-label-entry",
+          Struct.appendRecursive(
+            Struct.appendRecursive(
+              { 
+                layout: layout.nodes.label,
+                updateArea: Callable
+                  .run(UIUtil.updateAreaTemplates
+                  .get("applyCollectionLayout")),
+              }, 
+              VisuStyles.get("menu-label-entry").label,
+              false
+            ),
+            Struct.get(config, "label"),
+            false
+          )
+        ),
+      ])
+    },
+
+    ///@param {String} name
+    ///@param {UILayout} layout
+    ///@param {?Struct} [config]
+    ///@return {Array<UIItem>}
+    "menu-button-entry": function(name, layout, config = null) {
+      return new Array(UIItem, [
+        UIText(
+          $"label_{name}_menu-button-entry",
+          Struct.appendRecursive(
+            Struct.appendRecursive(
+              { 
+                layout: layout.nodes.label,
+                updateArea: Callable
+                  .run(UIUtil.updateAreaTemplates
+                  .get("applyCollectionLayout")),
+              }, 
+              VisuStyles.get("menu-button-entry").label,
+              false
+            ),
+            Struct.get(config, "label"),
+            false
+          )
+        )
+      ])
+    },
+
+    ///@param {String} name
+    ///@param {UILayout} layout
+    ///@param {?Struct} [config]
+    ///@return {Array<UIItem>}
+    "menu-button-entry-title": function(name, layout, config = null) {
+      return new Array(UIItem, [
+        UIText(
+          $"label_{name}_menu-button-entry-title",
+          Struct.appendRecursive(
+            Struct.appendRecursive(
+              { 
+                layout: layout.nodes.title,
+                updateArea: Callable
+                  .run(UIUtil.updateAreaTemplates
+                  .get("applyCollectionLayout")),
+              }, 
+              VisuStyles.get("menu-button-entry-title").title,
+              false
+            ),
+            Struct.get(config, "title"),
+            false
+          )
+        ),
+        UIText(
+          $"title_{name}_menu-button-entry-label",
+          Struct.appendRecursive(
+            Struct.appendRecursive(
+              { 
+                layout: layout.nodes.label,
+                updateArea: Callable
+                  .run(UIUtil.updateAreaTemplates
+                  .get("applyCollectionLayout")),
+              }, 
+              VisuStyles.get("menu-button-entry-title").label,
+              false
+            ),
+            Struct.get(config, "label"),
+            false
+          )
+        )
+      ])
+    },
+
+    ///@param {String} name
+    ///@param {UILayout} layout
+    ///@param {?Struct} [config]
+    ///@return {Array<UIItem>}
+    "menu-button-input-entry": function(name, layout, config = null) {
+      return new Array(UIItem, [
+        UIText(
+          $"label_{name}_menu-button-input-entry",
+          Struct.appendRecursive(
+            Struct.appendRecursive(
+              { 
+                layout: layout.nodes.label,
+                updateArea: Callable
+                  .run(UIUtil.updateAreaTemplates
+                  .get("applyCollectionLayout")),
+              }, 
+              VisuStyles.get("menu-button-input-entry").label,
+              false
+            ),
+            Struct.get(config, "label"),
+            false
+          )
+        ),
+        UIButton(
+          $"checkbox_{name}_menu-button-input-entry",
+          Struct.appendRecursive(
+            Struct.appendRecursive(
+              { 
+                layout: layout.nodes.input,
+                updateArea: Callable
+                  .run(UIUtil.updateAreaTemplates
+                  .get("applyCollectionLayout")),
+              }, 
+              VisuStyles.get("menu-button-input-entry").input,
+              false
+            ),
+            Struct.get(config, "input"),
+            false
+          )
+        )
+      ])
+    },
+
+    ///@param {String} name
+    ///@param {UILayout} layout
+    ///@param {?Struct} [config]
+    ///@return {Array<UIItem>}
+    "menu-spin-select-entry": function(name, layout, config = null) {
+      static factoryButton = function(name, layout, config) {
+        return UIButton(
+          name, 
+          Struct.appendRecursive(
+            {
+              layout: layout,
               updateArea: Callable
                 .run(UIUtil.updateAreaTemplates
                 .get("applyCollectionLayout")),
             }, 
-            VisuStyles.get("menu-slider-entry").label,
+            config, 
             false
-          ),
-          Struct.get(config, "label"),
-          false
+          )
         )
-      ),
-      UISliderHorizontal(
-        $"slider_{name}",
-        Struct.appendRecursive(
+      }
+
+      ///@param {String} name
+      ///@param {UILayout} layout
+      ///@param {?Struct} [config]
+      ///@return {Array<UIItem>}
+      static factoryPreview = function(name, layout, config) {
+        return UIImage(
+          name, 
           Struct.appendRecursive(
-            { 
-              layout: Assert.isType(Struct.get(layout.nodes, "slider"), Struct),
-              updateArea: Callable
-                .run(UIUtil.updateAreaTemplates
-                .get("applyCollectionLayout")),
-              getClipboard: Beans.get(BeanVisuIO).mouse.getClipboard,
-              setClipboard: Beans.get(BeanVisuIO).mouse.setClipboard,
-            },
-            VisuStyles.get("menu-slider-entry").slider,
+            {
+              layout: layout,
+              updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyCollectionLayout")),
+            }, 
+            config, 
             false
-          ),
-          Struct.get(config, "slider"),
-          false
+          )
         )
-      ),
-    ])
-  },
-})
-#macro VisuComponents global.__VisuComponents
+      }
+
+      return new Array(UIItem, [
+        UIText(
+          $"{name}_label", 
+          Struct.appendRecursive(
+            Struct.appendRecursive(
+              { 
+                layout: layout.nodes.label,
+                updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyCollectionLayout")),
+              },
+              Struct.get(VisuStyles.get("menu-spin-select-entry"), "label"),
+              false
+            ),
+            Struct.get(config, "label"),
+            false
+          )
+        ),
+        factoryButton(
+          $"{name}_previous",
+          layout.nodes.previous,
+          Struct.appendRecursive(
+            Struct.appendRecursive(
+              { 
+                increment: -1,
+                onMouseHoverOver: function(event) {
+                  this.sprite.setBlend(ColorUtil.fromHex("#ffffff").toGMColor())
+                },
+                onMouseHoverOut: function(event) {
+                  this.sprite.setBlend(ColorUtil.fromHex(VisuTheme.color.textFocus).toGMColor())
+                },            
+              },
+              Struct.get(config, "previous"), 
+              false
+            ), 
+            Struct.get(VisuStyles.get("menu-spin-select-entry"), "previous"),
+            false
+          )
+        ),
+        factoryPreview(
+          $"{name}_preview",
+          layout.nodes.preview,
+          Struct.appendRecursive(
+            Struct.get(config, "preview"),
+            Struct.get(VisuStyles.get("menu-spin-select-entry"), "preview"),
+            false
+          )
+        ),
+        factoryButton(
+          $"{name}_next",
+          layout.nodes.next,
+          Struct.appendRecursive(
+            Struct.appendRecursive(
+              { 
+                increment: 1,
+                onMouseHoverOver: function(event) {
+                  this.sprite.setBlend(ColorUtil.fromHex("#ffffff").toGMColor())
+                },
+                onMouseHoverOut: function(event) {
+                  this.sprite.setBlend(ColorUtil.fromHex(VisuTheme.color.textFocus).toGMColor())
+                },            
+              },
+              Struct.get(config, "next"),
+              false
+            ),
+            Struct.get(VisuStyles.get("menu-spin-select-entry"), "next"),
+            false
+          )
+        ),
+      ])
+    },
+
+    ///@param {String} name
+    ///@param {UILayout} layout
+    ///@param {?Struct} [config]
+    ///@return {Array<UIItem>}
+    "menu-keyboard-key-entry": function(name, layout, config = null) {
+      return new Array(UIItem, [
+        UIText(
+          $"{name}_label", 
+          Struct.appendRecursive(
+            Struct.appendRecursive(
+              { 
+                layout: layout.nodes.label,
+                updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyCollectionLayout")),
+              },
+              Struct.get(VisuStyles.get("menu-keyboard-key-entry"), "label"),
+              false
+            ),
+            Struct.get(config, "label"),
+            false
+          )
+        ),
+        UIText(
+          $"{name}_preview", 
+          Struct.appendRecursive(
+            Struct.appendRecursive(
+              { 
+                layout: layout.nodes.preview,
+                updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyCollectionLayout")),
+              },
+              Struct.get(VisuStyles.get("menu-keyboard-key-entry"), "preview"),
+              false
+            ),
+            Struct.get(config, "preview"),
+            false
+          )
+        ),
+      ])
+    },
+
+    ///@param {String} name
+    ///@param {UILayout} layout
+    ///@param {?Struct} [config]
+    ///@return {Array<UIItem>}
+    "menu-slider-entry": function(name, layout, config = null) {
+      return new Array(UIItem, [
+        UIText(
+          $"label_{name}", 
+          Struct.appendRecursive(
+            Struct.appendRecursive(
+              { 
+                layout: layout.nodes.label,
+                updateArea: Callable
+                  .run(UIUtil.updateAreaTemplates
+                  .get("applyCollectionLayout")),
+              }, 
+              VisuStyles.get("menu-slider-entry").label,
+              false
+            ),
+            Struct.get(config, "label"),
+            false
+          )
+        ),
+        UISliderHorizontal(
+          $"slider_{name}",
+          Struct.appendRecursive(
+            Struct.appendRecursive(
+              { 
+                layout: Assert.isType(Struct.get(layout.nodes, "slider"), Struct),
+                updateArea: Callable
+                  .run(UIUtil.updateAreaTemplates
+                  .get("applyCollectionLayout")),
+                getClipboard: Beans.get(BeanVisuIO).mouse.getClipboard,
+                setClipboard: Beans.get(BeanVisuIO).mouse.setClipboard,
+              },
+              VisuStyles.get("menu-slider-entry").slider,
+              false
+            ),
+            Struct.get(config, "slider"),
+            false
+          )
+        ),
+      ])
+    },
+  })
+}

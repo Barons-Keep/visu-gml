@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.service.brush
+show_debug_message("init BrushService.gml")
+
 
 function VEBrushService(): Service() constructor {
 

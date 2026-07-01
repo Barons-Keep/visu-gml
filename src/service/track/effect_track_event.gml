@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.service.track
+show_debug_message("init effect_track_event.gml")
+
 
 ///@enum
 function _ShaderPipelineType(): Enum() constructor {

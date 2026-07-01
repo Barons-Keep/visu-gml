@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.renderer
+show_debug_message("init GridCamera.gml")
+
 
 ///@type {Number}
 #macro BREATH_TIMER_FACTOR_1 6.88

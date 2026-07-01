@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.editor.ui.controller
+show_debug_message("init VEProjectModal.gml")
+
 
 global.__THEME_COLOR_ORDER = [
   "accentLight",

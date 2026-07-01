@@ -1,4 +1,6 @@
 ///@package com.alkapivo.visu.service.grid.GridView
+show_debug_message("init GridView.gml")
+
 
 ///@param {Struct} [config]
 function GridView(config = {}) constructor {

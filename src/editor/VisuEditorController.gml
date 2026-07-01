@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.editor
+show_debug_message("init VisuEditorController.gml")
+
 
 ///@return {Struct}
 function VisuEditorModule() {

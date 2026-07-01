@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.service.player
+show_debug_message("init Player.gml")
+
 
 ///@param {Struct} json
 function PlayerTemplate(json) constructor {

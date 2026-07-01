@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.renderer
+show_debug_message("init VisuRenderer.gml")
+
 
 ///@enum
 function _WallpaperType(): Enum() constructor {
