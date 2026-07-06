@@ -2207,5 +2207,6 @@ function init_Visu() {
     init_VEComponents()
     init_VEBrushToolbar()
     init_VETemplateToolbar()
+    init_SHADER_UNIFORM_TEMPLATES()
   }
 }
