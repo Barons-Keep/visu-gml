@@ -1616,6 +1616,14 @@ function _Visu() constructor {
     FLIP_VALUE = Core.getProperty("visu.const.FLIP_VALUE", FLIP_VALUE)
     PRELOAD_TRACK_EVENT = Core.getProperty("visu.manifest.parse-track-event-preload", PRELOAD_TRACK_EVENT)
     VISU_LOAD_PROPERTIES = true
+
+    var exceptionHandler = Core.getProperty("core.exception.unhandled.handler", false)
+      ? function(exception) {
+        Core.printException(exception)
+        return 1
+      }
+      : null
+    exception_unhandled_handler(exceptionHandler)
   }
 
   static initFileService = function(layerId) {
