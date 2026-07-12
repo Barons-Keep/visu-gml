@@ -2194,6 +2194,22 @@ function _Visu() constructor {
 }
 
 
+function init_VisuEditor() {
+  if (Callable.run("VisuEditorModule") == null) {
+    return
+  }
+
+  Core.print("init_VisuEditor")
+
+  init_VETemplate()
+  init_VELayouts()
+  init_VEStyles()
+  init_VEComponents()
+  init_VEBrushToolbar()
+  init_VETemplateToolbar()
+  init_SHADER_UNIFORM_TEMPLATES()
+}
+
 ///@static
 global.__Visu = null///@GMRT//new _Visu()
 #macro Visu global.__Visu
@@ -2203,16 +2219,8 @@ function init_Visu() {
   init_VisuComponents()
   init_VisuLayouts()
   init_VisuStyles()
+  init_VisuEditor()
 
   Visu = new _Visu()
-  var editor = Beans.get(Visu.modules().editor.controller)
-  if (editor != null) {
-    init_VETemplate()
-    init_VELayouts()
-    init_VEStyles()
-    init_VEComponents()
-    init_VEBrushToolbar()
-    init_VETemplateToolbar()
-    init_SHADER_UNIFORM_TEMPLATES()
-  }
 }
+
