@@ -1618,10 +1618,7 @@ function _Visu() constructor {
     VISU_LOAD_PROPERTIES = true
 
     var exceptionHandler = Core.getProperty("core.exception.unhandled.handler", false)
-      ? function(exception) {
-        Core.printException(exception)
-        return 1
-      }
+      ? defaultExceptionUnhandledHandler
       : null
     exception_unhandled_handler(exceptionHandler)
   }
@@ -2208,7 +2205,8 @@ function init_Visu() {
   init_VisuStyles()
 
   Visu = new _Visu()
-  if (Visu.modules().editor != null) {
+  var editor = Beans.get(Visu.modules().editor.controller)
+  if (editor != null) {
     init_VETemplate()
     init_VELayouts()
     init_VEStyles()
