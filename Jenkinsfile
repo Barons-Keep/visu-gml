@@ -10,22 +10,24 @@ pipeline {
     stage('Verify visu-gml') {
       steps {
         script {
-          String revision = "main"
-          String overrideDependencies = """
-          {
-            "visu": {
-              "revision": "${env.GIT_COMMIT}"
-            }
-          }
-          """.stripIndent()
-
           def buildJob = build(
             job: 'visu-project/verify',
             propagate: true,
             wait: true,
             parameters: [
-              string(name: 'GIT_REVISION', value: revision),
-              string(name: 'OVERRIDE_DEPENDENCIES', value: overrideDependencies),
+              string(name: 'GIT_REVISION', value: "main"),
+              string(name: 'GMS_RUNTIME', value: "VM"),
+              string(
+                name: 'OVERRIDE_DEPENDENCIES',
+                value: """
+                {
+                  "visu": {
+                    "revision": "${env.GIT_COMMIT}"
+                  }
+                }
+                """.stripIndent()
+              ),
+              booleanParam(name: 'EDITOR', value: false),
             ]
           )
         }
