@@ -408,10 +408,6 @@ function VisuRenderer() constructor {
   }
 
   ///@private
-  ///@type {String}
-  textShowEditor = Language.get("visu.editor.hud.show-editor")
-
-  ///@private
   ///@param {UILayout} layout
   ///@return {VisuRenderer}
   renderMenu = function(layout) {
@@ -460,9 +456,60 @@ function VisuRenderer() constructor {
       var _height = layout.height()
       var xStart = _width * (1.0 - 0.061)
       var yStart = _height * (1.0 - 0.08)
-      var text = this.textShowEditor
+      var text = Language.get("visu.editor.hud.show-editor")
       GPU.render.text(_x + xStart, _y + yStart, text, 1.0, 0.0, 0.6, c_white, this.font, HAlign.RIGHT, VAlign.BOTTOM, c_lime, 8.0)
     }
+    return this
+  }
+
+  ///@private
+  ///@return {GrindRenderer}
+  renderDebugSurfaces = function() {
+    var width = round(GuiWidth() / 2.0)
+    var height = round(GuiHeight() / 2.0)
+    var marginX = 28
+    var marginY = 28
+    var alpha = 1.0
+    var angle = 0.0
+    var scale = 1.0
+    var color = c_white
+    var font = GPU_DEFAULT_FONT_BOLD
+    var alignH = HAlign.LEFT
+    var alignV = VAlign.TOP
+    var outlineColor = c_black
+    var outlineFactor = 1.0
+
+    this.gridRenderer.gridItemSurface
+      .renderStretched(width, height, width * 0.0, height * 0.0)
+    this.gridRenderer.backgroundSurface
+      .renderStretched(width, height, width * 1.0, height * 0.0)
+    
+    this.gridRenderer.gridSurface
+      .renderStretched(width, height, width * 0.0, height * 1.0)
+    this.gridRenderer.gameSurface
+      .renderStretched(width, height, width * 1.0, height * 1.0)
+
+    GPU.render.text(marginX + (width * 0.0), marginY + (height * 0.0), "gridItemSurface",
+      scale, angle, alpha, color, font, alignH, alignV, outlineColor, outlineFactor)
+    GPU.render.text(marginX + (width * 1.0), marginY + (height * 0.0), "backgroundSurface",
+      scale, angle, alpha, color, font, alignH, alignV, outlineColor, outlineFactor)
+    
+    GPU.render.text(marginX + (width * 0.0), marginY + (height * 1.0), "gridSurface",
+      scale, angle, alpha, color, font, alignH, alignV, outlineColor, outlineFactor)
+    GPU.render.text(marginX + (width * 1.0), marginY + (height * 1.0), "gameSurface",
+      scale, angle, alpha, color, font, alignH, alignV, outlineColor, outlineFactor)
+    
+    return this
+  }
+
+  ///@param {UILayout} layout
+  ///@return {GridRenderer}
+  renderGUIGameSurface = function(layout) {
+    var _width = layout.width()
+    var _height = layout.height()
+    var _x = layout.x()
+    var _y = layout.y()
+    this.gridRenderer.gameSurface.renderStretched(_width, _height, _x, _y)
     return this
   }
 
@@ -477,8 +524,8 @@ function VisuRenderer() constructor {
     var blur = this.blur.update().value
     var enableBlur = Visu.settings.getValue("visu.graphics.menu-blur")
     var renderBlur = Visu.settings.getValue("visu.debug.render-surfaces")
-      ? this.gridRenderer.renderDebugSurfaces
-      : this.gridRenderer.renderGUIGameSurface
+      ? this.renderDebugSurfaces
+      : this.renderGUIGameSurface
 
     if (enableBlur && blur > 0.0) {
       GPU.set.shader(this.shaderGaussianBlur)

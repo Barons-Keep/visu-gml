@@ -1385,6 +1385,71 @@ function _Visu() constructor {
             },
           }),
           new CLIParam({
+            name: "-f",
+            fullName: "--fullscreen",
+            description: "Force fullscreen mode",
+            handler: function(args) {
+              Logger.debug("CLIParamParser", $"Run --fullscreen")
+              Visu.settings.setValue("visu.fullscreen", true).save()
+              Beans.get(BeanDisplayService).setFullscreen(true)
+            },
+          }),
+          new CLIParam({
+            name: "-w",
+            fullName: "--window",
+            description: "Force window mode",
+            handler: function(args) {
+              Logger.debug("CLIParamParser", $"Run --window")
+              Visu.settings
+                .setValue("visu.fullscreen", false)
+                .setValue("visu.borderless-window", false)
+                .save()
+
+              Beans.get(BeanDisplayService)
+                .setFullscreen(false)
+                .setBorderlessWindow(false)
+                .center()
+            },
+          }),
+          new CLIParam({
+            name: "-r",
+            fullName: "--reset",
+            description: "Reset settings",
+            handler: function(args) {
+              Logger.debug("CLIParamParser", $"Run --reset")
+              if (FileUtil.fileExists(Visu.settings.path)) {
+                file_delete(Visu.settings.path)
+              }
+
+              VISU_LOAD_SETTINGS = false
+              Visu.settings.container.clear()
+              Visu.loadSettings()
+            },
+          }),
+          new CLIParam({
+            name: "-L",
+            fullName: "--language",
+            description: "Force language",
+            args: [
+              {
+                name: "langCode",
+                type: "String",
+                descritpion: "Language type"
+              }
+            ],
+            handler: function(args) {
+              var langType = args.get(0)
+              Logger.debug("CLIParamParser", $"Run --language {langType}")
+              if (!LanguageType.contains(langType)) {
+                Logger.error("Visu", $"Language type not supported: {langType}")
+                return
+              }
+
+              Visu.settings.setValue("visu.language", langType).save()
+              Visu.loadLanguage()
+            },
+          }),
+          new CLIParam({
             name: "-l",
             fullName: "--load",
             description: "Load track from file",
@@ -1980,15 +2045,25 @@ function _Visu() constructor {
     //Logger.info("Visu", "run::initDisplayService()")
     if (!Beans.exists(BeanDisplayService)) {
       Beans.add(Beans.factory(BeanDisplayService, GMServiceInstance, layerId,
-        new DisplayService()))
+        new DisplayService({
+          windowWidth: Visu.settings.getValue("visu.window.width", 1440),
+          windowHeight: Visu.settings.getValue("visu.window.height", 900),
+          scale: Visu.settings.getValue("visu.interface.scale", 1.0),
+        })))
     }
 
     var displayService = Beans.get(BeanDisplayService)
-    displayService.minWidth = 960
-    displayService.minHeight = 540
+    displayService.scale = Visu.settings.getValue("visu.interface.scale")
     displayService.windowWidth = Visu.settings.getValue("visu.window.width", 1440)
     displayService.windowHeight = Visu.settings.getValue("visu.window.height", 900)
-    displayService.scale = Visu.settings.getValue("visu.interface.scale")
+    displayService.minWidth = 960
+    displayService.minHeight = 540
+    displayService.beforeFullscreenWidth = displayService.windowWidth
+    displayService.beforeFullscreenHeight = displayService.windowHeight
+    displayService.previousWidth = displayService.beforeFullscreenWidth
+    displayService.previousHeight = displayService.beforeFullscreenHeight
+    displayService.previousGuiWidth = displayService.windowWidth / displayService.scale
+    displayService.previousGuiHeight = displayService.windowHeight / displayService.scale
 
     //if (!Optional.is(Core.fetchAARange().find(Lambda.equal, Visu.settings.getValue("visu.graphics.aa")))) {
     //  Visu.settings.setValue("visu.graphics.aa", 0).save()

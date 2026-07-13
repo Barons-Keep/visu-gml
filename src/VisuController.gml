@@ -707,6 +707,11 @@ function VisuController(config = null): Service(config) constructor {
       var fullscreen = Visu.settings.getValue("visu.fullscreen")
       var borderlessWindow = Visu.settings.getValue("visu.borderless-window")
       var timingMethod = TimingMethod.get(Visu.settings.getValue("visu.graphics.timing-method"))
+      if (fullscreen) {
+        width = Math.getEvenCeil(max(displayService.minWidth, displayService.getDisplayWidth()) / displayService.scale)
+        height = Math.getEvenCeil(max(displayService.minHeight, displayService.getDisplayHeight()) / displayService.scale)
+      }
+
       displayService
         .resize(width, height)
         .setBorderlessWindow(borderlessWindow)

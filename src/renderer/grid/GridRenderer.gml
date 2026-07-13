@@ -2185,66 +2185,6 @@ function GridRenderer() constructor {
     return this
   }
 
-  ///@private
-  ///@return {GrindRenderer}
-  renderDebugSurfaces = function() {
-    var width = round(GuiWidth() / 2.0)
-    var height = round(GuiHeight() / 2.0)
-    var marginX = 28
-    var marginY = 28
-    var alpha = 1.0
-    var color = c_white
-    var font = GPU_DEFAULT_FONT_BOLD
-    var alignH = HAlign.LEFT
-    var alignV = VAlign.TOP
-    var outlineColor = c_black
-    var outlineFactor = 1.0
-
-    this.gridItemSurface
-      .renderStretched(width, height, width * 0.0, height * 0.0)
-    this.backgroundSurface
-      .renderStretched(width, height, width * 1.0, height * 0.0)
-    
-    this.gridSurface
-      .renderStretched(width, height, width * 0.0, height * 1.0)
-    this.gameSurface
-      .renderStretched(width, height, width * 1.0, height * 1.0)
-
-    GPU.render.text(marginX + (width * 0.0), marginY + (height * 0.0), "gridItemSurface", 1.0, 0.0, alpha, color, font, alignH, alignV, outlineColor, outlineFactor)
-    GPU.render.text(marginX + (width * 1.0), marginY + (height * 0.0), "backgroundSurface", 1.0, 0.0, alpha, color, font, alignH, alignV, outlineColor, outlineFactor)
-    
-    GPU.render.text(marginX + (width * 0.0), marginY + (height * 1.0), "gridSurface", 1.0, 0.0, alpha, color, font, alignH, alignV, outlineColor, outlineFactor)
-    GPU.render.text(marginX + (width * 1.0), marginY + (height * 1.0), "gameSurface", 1.0, 0.0, alpha, color, font, alignH, alignV, outlineColor, outlineFactor)
-    
-    return this
-  }
-
-  ///@param {UILayout} layout
-  ///@return {GridRenderer}
-  renderGUIGameSurface = function(layout) {
-    var controller = Beans.get(BeanVisuController)
-    var properties = controller.gridService.properties
-    var _width = layout.width()
-    var _height = layout.height()
-    var _x = layout.x()
-    var _y = layout.y()
-    this.gameSurface.renderStretched(_width, _height, _x, _y)
-
-    /*
-    var coords = $"coords:\n"
-      + $"  player.xyz: [ {this.player3DCoords.x}, {this.player3DCoords.y}, {this.player3DCoords.z} ]\n"
-      + $"  target.xyz: [ {this.target3DCoords.x}, {this.target3DCoords.y}, {this.target3DCoords.z} ]\n"
-      + $"  angle: {Math.fetchPointsAngle(this.player3DCoords.x, this.player3DCoords.y, this.target3DCoords.x, this.target3DCoords.y)}\n"
-    draw_set_font(font_basic)
-    draw_set_alpha(1.0)
-    draw_set_colour(c_white)
-    draw_set_halign(fa_left)
-    draw_set_valign(fa_top)
-    draw_text(_x + 200, _y + 100, coords)
-    */
-    return this
-  }
-
   ///@return {GridRenderer}
   init = function() {
     application_surface_enable(false)
@@ -2339,17 +2279,18 @@ function GridRenderer() constructor {
   ///@param {UILayout} layout
   ///@return {GridRenderer}
   renderGUI = function(layout) {
+    var controller = Beans.get(BeanVisuController)
     if (Visu.settings.getValue("visu.debug.render-surfaces")) {
-      this.renderDebugSurfaces(layout)
+      controller.visuRenderer.renderDebugSurfaces(layout)
       return this
     }
 
-    var controller = Beans.get(BeanVisuController)
     var properties = controller.gridService.properties
-    if (properties.renderCombinedGlitch && Visu.settings.getValue("visu.graphics.bkt-glitch")) {
-      this.combinedGlitchService.renderOn(this.renderGUIGameSurface, layout)
+    if (properties.renderCombinedGlitch
+        && Visu.settings.getValue("visu.graphics.bkt-glitch")) {
+      this.combinedGlitchService.renderOn(controller.visuRenderer.renderGUIGameSurface, layout)
     } else {
-      this.renderGUIGameSurface(layout)
+      controller.visuRenderer.renderGUIGameSurface(layout)
     }
 
     if (Visu.settings.getValue("visu.interface.player-hint")) {
