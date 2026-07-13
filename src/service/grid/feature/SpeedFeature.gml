@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.service.grid.feature
+show_debug_message("init SpeedFeature.gml")
+
 
 ///@param {Struct} json
 function SpeedFeature(json): GridItemFeature(json) constructor {

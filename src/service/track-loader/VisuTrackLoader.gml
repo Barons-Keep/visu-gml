@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu
+show_debug_message("init VisuTrackLoader.gml")
+
 
 function printFPS(message) {
   var log = $"{message}, fps: {round(fps)}, fps_real: {round(fps_real)}"

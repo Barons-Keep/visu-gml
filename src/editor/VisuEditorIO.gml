@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.editor
+show_debug_message("init VisuEditorIO.gml")
+
 
 #macro BeanVisuEditorIO "VisuEditorIO"
 ///@param {?Struct} [config]

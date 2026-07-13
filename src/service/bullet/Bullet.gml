@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.service.bullet
+show_debug_message("init Bullet.gml")
+
 
 ///@type {Number}
 #macro BULLET_FADE_IN_TIME 0.125

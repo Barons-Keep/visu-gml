@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.editor.ui.controller
+show_debug_message("init VETrackControl.gml")
+
 
 ///@param {VisuEditorController} _editor
 function VETrackControl(_editor) constructor {

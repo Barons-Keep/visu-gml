@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.ui.controller
+show_debug_message("init VisuMenuTest.gml")
+
 
 ///@param {Test} test
 ///@return {Task}

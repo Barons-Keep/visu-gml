@@ -1,3 +1,5 @@
+show_debug_message("init VENewProjectModal.gml")
+
 
 ///@package io.alkapivo.visu.editor.ui.controller
 

@@ -1,4 +1,6 @@
 ///@package com.alkapivo.visu.service.grid.GridItem
+show_debug_message("init GridItem.gml")
+
 
 ///@type {Struct}
 global.__GRID_ITEM_DEFAULT_SPRITE = { name: "texture_missing" }

@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.editor.ui.controller
+show_debug_message("init VESceneConfigPreview.gml")
+
 
 ///@param {?Struct} [_config]
 function VESceneConfigPreview(_config = null) constructor {

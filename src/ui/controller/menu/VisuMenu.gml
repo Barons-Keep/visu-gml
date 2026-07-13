@@ -1,4 +1,6 @@
 ///@package fun.barons-keep.visu.ui.controller
+show_debug_message("init VisuMenu.gml")
+
 
 ///@type {String}
 #macro VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT " ON "

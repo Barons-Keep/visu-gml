@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.service.grid.feature
+show_debug_message("init CounterFeature.gml")
+
 
 ///@param {Struct} json 
 function CounterFeature(json): GridItemFeature(json) constructor {

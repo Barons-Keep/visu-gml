@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.editor.ui
+show_debug_message("init VEComponents.gml")
+
 
 ///@static
 ///@type {Boolean}
@@ -391,6 +393,7 @@ global.__VEComponentsUtil = {
 
 ///@static
 ///@type {Map<String, Callable>}
+function init_VEComponents() {
 global.__VEComponents = new Map(String, Callable, {
   
   ///@param {String} name
@@ -5570,7 +5573,7 @@ global.__VEComponents = new Map(String, Callable, {
                 var from = -1.0 * floor(size / 2.0)
                 var to = abs(from)
                 var beginX = round(this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2.0) - (width / 2.0))
-                var beginY = this.context.area.getY() + this.area.getY(),
+                var beginY = this.context.area.getY() + this.area.getY()
                 var color = ColorUtil.parse(VETheme.color.primaryLight).toGMColor()
                 var color2 = ColorUtil.parse("#d1a1ff").toGMColor()
                 var enableFactor = Struct.get(this.enable, "value") == false ? 0.5 : 1.0
@@ -6151,7 +6154,7 @@ global.__VEComponents = new Map(String, Callable, {
                 var from = -1.0 * floor(size / 2.0)
                 var to = abs(from)
                 var beginX = round(this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2.0) - (width / 2.0))
-                var beginY = this.context.area.getY() + this.area.getY(),
+                var beginY = this.context.area.getY() + this.area.getY()
                 var color = ColorUtil.parse(VETheme.color.primaryLight).toGMColor()
                 var color2 = ColorUtil.parse("#d1a1ff").toGMColor()
                 var enableFactor = Struct.get(this.enable, "value") == false ? 0.5 : 1.0
@@ -6639,7 +6642,7 @@ global.__VEComponents = new Map(String, Callable, {
                 var from = -1.0 * floor(size / 2.0)
                 var to = abs(from)
                 var beginX = round(this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2.0) - (width / 2.0))
-                var beginY = this.context.area.getY() + this.area.getY(),
+                var beginY = this.context.area.getY() + this.area.getY()
                 var color = ColorUtil.parse(VETheme.color.primaryLight).toGMColor()
                 var color2 = ColorUtil.parse("#d1a1ff").toGMColor()
                 var enableFactor = Struct.get(this.enable, "value") == false ? 0.5 : 1.0
@@ -7363,7 +7366,7 @@ global.__VEComponents = new Map(String, Callable, {
                 var from = -1.0 * floor(size / 2.0)
                 var to = abs(from)
                 var beginX = round(this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2.0) - (width / 2.0))
-                var beginY = this.context.area.getY() + this.area.getY(),
+                var beginY = this.context.area.getY() + this.area.getY()
                 var color = ColorUtil.parse(VETheme.color.primaryLight).toGMColor()
                 var color2 = ColorUtil.parse("#d1a1ff").toGMColor()
                 var enableFactor = Struct.get(this.enable, "value") == false ? 0.5 : 1.0
@@ -8176,6 +8179,8 @@ global.__VEComponents = new Map(String, Callable, {
     return items
   },
 })
+}
+global.__VEComponents = null//@GMRT
 #macro VEComponents global.__VEComponents
 
 

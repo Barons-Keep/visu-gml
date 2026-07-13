@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.test.component.player
+show_debug_message("init PlayerServiceTest.gml")
+
 
 ///@static
 global.__PlayerServiceTestUtil = {

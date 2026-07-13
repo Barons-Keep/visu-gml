@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.editor.api.tilemap_get_cell_x_at_pixel
+show_debug_message("init VETemplate.gml")
+
 
 ///@enum
 function _VETemplateType(): Enum() constructor {
@@ -15,17 +17,20 @@ global.__VETemplateType = new _VETemplateType()
 
 
 ///@static
-///@type {Map<VETemplateType, String>}
-global.__VETemplateTypeNames = new Map(String, String)
-  .set(VETemplateType.SHADER, "Shader template")
-  .set(VETemplateType.SHROOM, "Shroom template")
-  .set(VETemplateType.BULLET, "Bullet template")
-  .set(VETemplateType.COIN, "Coin template")
-  .set(VETemplateType.SUBTITLE, "Subtitle template")
-  .set(VETemplateType.PARTICLE, "Particle template")
-  .set(VETemplateType.TEXTURE, "Texture template")
-#macro VETemplateTypeNames global.__VETemplateTypeNames
-
+///@type {?Map<VETemplateType, String>}
+global.__VE_TEMPLATE_TYPE_NAMES = null///@GMRT
+#macro VE_TEMPLATE_TYPE_NAMES global.__VE_TEMPLATE_TYPE_NAMES
+function init_VETemplate() {
+  Core.print("init_VETemplate")
+  VE_TEMPLATE_TYPE_NAMES = new Map(String, String)
+    .set(VETemplateType.SHADER, "Shader template")
+    .set(VETemplateType.SHROOM, "Shroom template")
+    .set(VETemplateType.BULLET, "Bullet template")
+    .set(VETemplateType.COIN, "Coin template")
+    .set(VETemplateType.SUBTITLE, "Subtitle template")
+    .set(VETemplateType.PARTICLE, "Particle template")
+    .set(VETemplateType.TEXTURE, "Texture template")
+}
 
 ///@param {Struct} json
 function VETemplate(json) constructor {
@@ -77,7 +82,7 @@ function VETemplate(json) constructor {
       layout: VELayouts.get("property"),
       config: { 
         layout: { type: UILayoutType.VERTICAL },
-        label: { text: $"{VETemplateTypeNames.get(json.type)}" },
+        label: { text: $"{VE_TEMPLATE_TYPE_NAMES.get(json.type)}" },
         //label: { text: "Properties" },
         checkbox: {
           spriteOn: { name: "visu_texture_checkbox_show" },

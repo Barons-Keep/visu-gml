@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.service.coin
+show_debug_message("init Coin.gml")
+
 
 function _CoinCategory(): Enum() constructor {
   FORCE = "force"

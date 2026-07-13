@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu
+show_debug_message("init VisuTrack.gml")
+
 
 ///@todo missing absolute path validation
 ///@param {Struct} json

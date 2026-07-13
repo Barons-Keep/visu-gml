@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.service.grid.feature
+show_debug_message("init PathFeature.gml")
+
 
 ///@param {Struct} json 
 function PathFeature(json): GridItemFeature(json) constructor {

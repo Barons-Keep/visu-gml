@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.editor.ui.controller
+show_debug_message("init VEPopupQueue.gml")
+
 
 ///@param {VisuEditorController} _editor
 function VEPopupQueue(_editor) constructor {

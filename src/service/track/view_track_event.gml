@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.service.track
+show_debug_message("init view_track_event.gml")
+
 
 ///@static
 ///@type {Struct}

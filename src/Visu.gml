@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu
+show_debug_message("init Visu.gml")
+
 
 ///@type {Number}
 global.__MAGIC_NUMBER_TASK = 12
@@ -164,7 +166,6 @@ function VisuSave(json) constructor {
 }
 
 
-///@static
 function _Visu() constructor {
 
   ///@type {Settings}
@@ -1384,6 +1385,71 @@ function _Visu() constructor {
             },
           }),
           new CLIParam({
+            name: "-f",
+            fullName: "--fullscreen",
+            description: "Force fullscreen mode",
+            handler: function(args) {
+              Logger.debug("CLIParamParser", $"Run --fullscreen")
+              Visu.settings.setValue("visu.fullscreen", true).save()
+              Beans.get(BeanDisplayService).setFullscreen(true)
+            },
+          }),
+          new CLIParam({
+            name: "-w",
+            fullName: "--window",
+            description: "Force window mode",
+            handler: function(args) {
+              Logger.debug("CLIParamParser", $"Run --window")
+              Visu.settings
+                .setValue("visu.fullscreen", false)
+                .setValue("visu.borderless-window", false)
+                .save()
+
+              Beans.get(BeanDisplayService)
+                .setFullscreen(false)
+                .setBorderlessWindow(false)
+                .center()
+            },
+          }),
+          new CLIParam({
+            name: "-r",
+            fullName: "--reset",
+            description: "Reset settings",
+            handler: function(args) {
+              Logger.debug("CLIParamParser", $"Run --reset")
+              if (FileUtil.fileExists(Visu.settings.path)) {
+                file_delete(Visu.settings.path)
+              }
+
+              VISU_LOAD_SETTINGS = false
+              Visu.settings.container.clear()
+              Visu.loadSettings()
+            },
+          }),
+          new CLIParam({
+            name: "-L",
+            fullName: "--language",
+            description: "Force language",
+            args: [
+              {
+                name: "langCode",
+                type: "String",
+                descritpion: "Language type"
+              }
+            ],
+            handler: function(args) {
+              var langType = args.get(0)
+              Logger.debug("CLIParamParser", $"Run --language {langType}")
+              if (!LanguageType.contains(langType)) {
+                Logger.error("Visu", $"Language type not supported: {langType}")
+                return
+              }
+
+              Visu.settings.setValue("visu.language", langType).save()
+              Visu.loadLanguage()
+            },
+          }),
+          new CLIParam({
             name: "-l",
             fullName: "--load",
             description: "Load track from file",
@@ -1588,9 +1654,6 @@ function _Visu() constructor {
 
     Logger.info("Visu", "run::boot()")
     randomize()
-    initBeans()
-    initGPU()
-    initGMTF()
     this.initShaders()
     VISU_BOOT_UP = true
   }
@@ -1618,6 +1681,11 @@ function _Visu() constructor {
     FLIP_VALUE = Core.getProperty("visu.const.FLIP_VALUE", FLIP_VALUE)
     PRELOAD_TRACK_EVENT = Core.getProperty("visu.manifest.parse-track-event-preload", PRELOAD_TRACK_EVENT)
     VISU_LOAD_PROPERTIES = true
+
+    var exceptionHandler = Core.getProperty("core.exception.unhandled.handler", false)
+      ? defaultExceptionUnhandledHandler
+      : null
+    exception_unhandled_handler(exceptionHandler)
   }
 
   static initFileService = function(layerId) {
@@ -1640,82 +1708,81 @@ function _Visu() constructor {
     //Logger.info("Visu", "run::loadSettings()")
     var timingMethodKey = Core.getProperty("core.display-service.timing-method", "COUNTSYNC")
     timingMethodKey = TimingMethod.containsKey(timingMethodKey) ? timingMethodKey : "COUNTSYNC"
-    this.settings
-      .set(new SettingEntry({ name: "visu.editor.autosave", type: SettingTypes.BOOLEAN, defaultValue: false }))
-      .set(new SettingEntry({ name: "visu.language", type: SettingTypes.STRING, defaultValue: LanguageType.en_EN }))
-      .set(new SettingEntry({ name: "visu.fullscreen", type: SettingTypes.BOOLEAN, defaultValue: false }))
-      .set(new SettingEntry({ name: "visu.borderless-window", type: SettingTypes.BOOLEAN, defaultValue: false }))
-      .set(new SettingEntry({ name: "visu.server.enable", type: SettingTypes.BOOLEAN, defaultValue: false }))
-      .set(new SettingEntry({ name: "visu.delta-time", type: SettingTypes.STRING, defaultValue: DeltaTimeMode.DEFAULT }))
-      .set(new SettingEntry({ name: "visu.debug", type: SettingTypes.BOOLEAN, defaultValue: false }))
-      .set(new SettingEntry({ name: "visu.debug.render-entities-mask", type: SettingTypes.BOOLEAN, defaultValue: false }))
-      .set(new SettingEntry({ name: "visu.debug.render-debug-chunks", type: SettingTypes.BOOLEAN, defaultValue: false }))
-      .set(new SettingEntry({ name: "visu.debug.render-surfaces", type: SettingTypes.BOOLEAN, defaultValue: false }))
-      .set(new SettingEntry({ name: "visu.debug.menu.quit.hidden", type: SettingTypes.BOOLEAN, defaultValue: false }))
-      .set(new SettingEntry({ name: "visu.god-mode", type: SettingTypes.BOOLEAN, defaultValue: false }))
-      .set(new SettingEntry({ name: "visu.optimalization.sort-entities-by-txgroup", type: SettingTypes.BOOLEAN, defaultValue: false }))
-      .set(new SettingEntry({ name: "visu.window.width", type: SettingTypes.NUMBER, defaultValue: 1400 }))
-      .set(new SettingEntry({ name: "visu.window.height", type: SettingTypes.NUMBER, defaultValue: 900 }))
-      .set(new SettingEntry({ name: "visu.interface.scale", type: SettingTypes.NUMBER, defaultValue: 1 }))
-      .set(new SettingEntry({ name: "visu.interface.render-hud", type: SettingTypes.BOOLEAN, defaultValue: true }))
-      .set(new SettingEntry({ name: "visu.interface.hud-position", type: SettingTypes.STRING, defaultValue: "bottom-left" }))
-      .set(new SettingEntry({ name: "visu.interface.player-hint", type: SettingTypes.BOOLEAN, defaultValue: true }))
-      .set(new SettingEntry({ name: "visu.graphics.auto-resize", type: SettingTypes.BOOLEAN, defaultValue: true }))
-      .set(new SettingEntry({ name: "visu.graphics.resolution", type: SettingTypes.STRING, defaultValue: "1440x900" }))
-      .set(new SettingEntry({ name: "visu.graphics.bkg-tx", type: SettingTypes.BOOLEAN, defaultValue: true }))
-      .set(new SettingEntry({ name: "visu.graphics.frg-tx", type: SettingTypes.BOOLEAN, defaultValue: true }))
-      .set(new SettingEntry({ name: "visu.graphics.main-shaders", type: SettingTypes.BOOLEAN, defaultValue: true }))
-      .set(new SettingEntry({ name: "visu.graphics.bkg-shaders", type: SettingTypes.BOOLEAN, defaultValue: true }))
-      .set(new SettingEntry({ name: "visu.graphics.combined-shaders", type: SettingTypes.BOOLEAN, defaultValue: true }))
-      .set(new SettingEntry({ name: "visu.graphics.shaders-limit", type: SettingTypes.NUMBER, defaultValue: 5 }))
-      .set(new SettingEntry({ name: "visu.graphics.bkt-glitch", type: SettingTypes.BOOLEAN, defaultValue: true }))
-      .set(new SettingEntry({ name: "visu.graphics.particle", type: SettingTypes.BOOLEAN, defaultValue: true }))
-      .set(new SettingEntry({ name: "visu.graphics.shader-quality", type: SettingTypes.NUMBER, defaultValue: 0.5 }))
-      .set(new SettingEntry({ name: "visu.graphics.vsync", type: SettingTypes.BOOLEAN, defaultValue: true }))
-      .set(new SettingEntry({ name: "visu.graphics.timing-method", type: SettingTypes.STRING, defaultValue: timingMethodKey }))
-      .set(new SettingEntry({ name: "visu.graphics.aa", type: SettingTypes.NUMBER, defaultValue: 0 }))
-      .set(new SettingEntry({ name: "visu.graphics.menu-blur", type: SettingTypes.BOOLEAN, defaultValue: false }))
-      .set(new SettingEntry({ name: "visu.audio.ost-volume", type: SettingTypes.NUMBER, defaultValue: 1.0 }))
-      .set(new SettingEntry({ name: "visu.audio.sfx-volume", type: SettingTypes.NUMBER, defaultValue: 1.0 }))
-      .set(new SettingEntry({ name: "visu.editor.enable", type: SettingTypes.BOOLEAN, defaultValue: false }))
-      .set(new SettingEntry({ name: "visu.editor.bpm", type: SettingTypes.NUMBER, defaultValue: 120 }))
-      .set(new SettingEntry({ name: "visu.editor.bpm-count", type: SettingTypes.NUMBER, defaultValue: 0 }))
-      .set(new SettingEntry({ name: "visu.editor.bpm-sub", type: SettingTypes.NUMBER, defaultValue: 2 }))
-      .set(new SettingEntry({ name: "visu.editor.snap", type: SettingTypes.BOOLEAN, defaultValue: true }))
-      .set(new SettingEntry({ name: "visu.editor.render", type: SettingTypes.BOOLEAN, defaultValue: false }))
-      .set(new SettingEntry({ name: "visu.editor.render-event", type: SettingTypes.BOOLEAN, defaultValue: false }))
-      .set(new SettingEntry({ name: "visu.editor.render-timeline", type: SettingTypes.BOOLEAN, defaultValue: false }))
-      .set(new SettingEntry({ name: "visu.editor.render-track-control", type: SettingTypes.BOOLEAN, defaultValue: false }))
-      .set(new SettingEntry({ name: "visu.editor.render-scene-config-preview", type: SettingTypes.BOOLEAN, defaultValue: false }))
-      .set(new SettingEntry({ name: "visu.editor.render-brush", type: SettingTypes.BOOLEAN, defaultValue: false }))
-      .set(new SettingEntry({ name: "visu.editor.accordion.render-event-inspector", type: SettingTypes.BOOLEAN, defaultValue: false }))
-      .set(new SettingEntry({ name: "visu.editor.accordion.render-template-toolbar", type: SettingTypes.BOOLEAN, defaultValue: false }))
-      .set(new SettingEntry({ name: "visu.editor.timeline-zoom", type: SettingTypes.NUMBER, defaultValue: 10 }))
-      .set(new SettingEntry({ name: "visu.editor.timeline-follow", type: SettingTypes.BOOLEAN, defaultValue: false }))
-      .set(new SettingEntry({ name: "visu.editor.update-services", type: SettingTypes.BOOLEAN, defaultValue: false }))
-      .set(new SettingEntry({ name: "visu.keyboard.player.up", type: SettingTypes.NUMBER, defaultValue: ord("W") }))
-      .set(new SettingEntry({ name: "visu.keyboard.player.down", type: SettingTypes.NUMBER, defaultValue: ord("S") }))
-      .set(new SettingEntry({ name: "visu.keyboard.player.left", type: SettingTypes.NUMBER, defaultValue: ord("A") }))
-      .set(new SettingEntry({ name: "visu.keyboard.player.right", type: SettingTypes.NUMBER, defaultValue: ord("D") }))
-      .set(new SettingEntry({ name: "visu.keyboard.player.action", type: SettingTypes.NUMBER, defaultValue: ord("Z") }))
-      .set(new SettingEntry({ name: "visu.keyboard.player.bomb", type: SettingTypes.NUMBER, defaultValue: ord("X") }))
-      .set(new SettingEntry({ name: "visu.260214.keyboard.wasd", type: SettingTypes.BOOLEAN, defaultValue: false }))
-      .set(new SettingEntry({ name: "visu.keyboard.player.focus", type: SettingTypes.NUMBER, defaultValue: KeyboardKeyType.SHIFT }))
-      .set(new SettingEntry({ name: "visu.mouse.player.up", type: SettingTypes.NUMBER, defaultValue: MouseButtonType.NONE }))
-      .set(new SettingEntry({ name: "visu.mouse.player.down", type: SettingTypes.NUMBER, defaultValue: MouseButtonType.NONE }))
-      .set(new SettingEntry({ name: "visu.mouse.player.left", type: SettingTypes.NUMBER, defaultValue: MouseButtonType.NONE }))
-      .set(new SettingEntry({ name: "visu.mouse.player.right", type: SettingTypes.NUMBER, defaultValue: MouseButtonType.NONE }))
-      .set(new SettingEntry({ name: "visu.mouse.player.action", type: SettingTypes.NUMBER, defaultValue: MouseButtonType.LEFT }))
-      .set(new SettingEntry({ name: "visu.mouse.player.bomb", type: SettingTypes.NUMBER, defaultValue: MouseButtonType.RIGHT }))
-      .set(new SettingEntry({ name: "visu.mouse.player.focus", type: SettingTypes.NUMBER, defaultValue: MouseButtonType.NONE }))
-      .set(new SettingEntry({ name: "visu.difficulty", type: SettingTypes.STRING, defaultValue: Difficulty.NORMAL }))
-      .set(new SettingEntry({ name: "visu.developer.mouse-shoot", type: SettingTypes.BOOLEAN, defaultValue: false }))
-      .set(new SettingEntry({ name: "visu.graphics.visual-mode", type: SettingTypes.BOOLEAN, defaultValue: false }))
-      .set(new SettingEntry({ name: "visu.graphics.raw-mode", type: SettingTypes.BOOLEAN, defaultValue: false }))
-      .set(new SettingEntry({ name: "visu.gamepad", type: SettingTypes.BOOLEAN, defaultValue: true }))
-      .set(new SettingEntry({
-        name: "visu.gamepad.controls",
-        type: SettingTypes.STRUCT,
+    this.settings.set(new SettingEntry({ name: "visu.editor.autosave", type: SettingTypes.BOOLEAN, defaultValue: false }))
+    this.settings.set(new SettingEntry({ name: "visu.language", type: SettingTypes.STRING, defaultValue: LanguageType.en_EN }))
+    this.settings.set(new SettingEntry({ name: "visu.fullscreen", type: SettingTypes.BOOLEAN, defaultValue: false }))
+    this.settings.set(new SettingEntry({ name: "visu.borderless-window", type: SettingTypes.BOOLEAN, defaultValue: false }))
+    this.settings.set(new SettingEntry({ name: "visu.server.enable", type: SettingTypes.BOOLEAN, defaultValue: false }))
+    this.settings.set(new SettingEntry({ name: "visu.delta-time", type: SettingTypes.STRING, defaultValue: DeltaTimeMode.DEFAULT }))
+    this.settings.set(new SettingEntry({ name: "visu.debug", type: SettingTypes.BOOLEAN, defaultValue: false }))
+    this.settings.set(new SettingEntry({ name: "visu.debug.render-entities-mask", type: SettingTypes.BOOLEAN, defaultValue: false }))
+    this.settings.set(new SettingEntry({ name: "visu.debug.render-debug-chunks", type: SettingTypes.BOOLEAN, defaultValue: false }))
+    this.settings.set(new SettingEntry({ name: "visu.debug.render-surfaces", type: SettingTypes.BOOLEAN, defaultValue: false }))
+    this.settings.set(new SettingEntry({ name: "visu.debug.menu.quit.hidden", type: SettingTypes.BOOLEAN, defaultValue: false }))
+    this.settings.set(new SettingEntry({ name: "visu.god-mode", type: SettingTypes.BOOLEAN, defaultValue: false }))
+    this.settings.set(new SettingEntry({ name: "visu.optimalization.sort-entities-by-txgroup", type: SettingTypes.BOOLEAN, defaultValue: false }))
+    this.settings.set(new SettingEntry({ name: "visu.window.width", type: SettingTypes.NUMBER, defaultValue: 1400 }))
+    this.settings.set(new SettingEntry({ name: "visu.window.height", type: SettingTypes.NUMBER, defaultValue: 900 }))
+    this.settings.set(new SettingEntry({ name: "visu.interface.scale", type: SettingTypes.NUMBER, defaultValue: 1 }))
+    this.settings.set(new SettingEntry({ name: "visu.interface.render-hud", type: SettingTypes.BOOLEAN, defaultValue: true }))
+    this.settings.set(new SettingEntry({ name: "visu.interface.hud-position", type: SettingTypes.STRING, defaultValue: "bottom-left" }))
+    this.settings.set(new SettingEntry({ name: "visu.interface.player-hint", type: SettingTypes.BOOLEAN, defaultValue: true }))
+    this.settings.set(new SettingEntry({ name: "visu.graphics.auto-resize", type: SettingTypes.BOOLEAN, defaultValue: true }))
+    this.settings.set(new SettingEntry({ name: "visu.graphics.resolution", type: SettingTypes.STRING, defaultValue: "1440x900" }))
+    this.settings.set(new SettingEntry({ name: "visu.graphics.bkg-tx", type: SettingTypes.BOOLEAN, defaultValue: true }))
+    this.settings.set(new SettingEntry({ name: "visu.graphics.frg-tx", type: SettingTypes.BOOLEAN, defaultValue: true }))
+    this.settings.set(new SettingEntry({ name: "visu.graphics.main-shaders", type: SettingTypes.BOOLEAN, defaultValue: true }))
+    this.settings.set(new SettingEntry({ name: "visu.graphics.bkg-shaders", type: SettingTypes.BOOLEAN, defaultValue: true }))
+    this.settings.set(new SettingEntry({ name: "visu.graphics.combined-shaders", type: SettingTypes.BOOLEAN, defaultValue: true }))
+    this.settings.set(new SettingEntry({ name: "visu.graphics.shaders-limit", type: SettingTypes.NUMBER, defaultValue: 5 }))
+    this.settings.set(new SettingEntry({ name: "visu.graphics.bkt-glitch", type: SettingTypes.BOOLEAN, defaultValue: true }))
+    this.settings.set(new SettingEntry({ name: "visu.graphics.particle", type: SettingTypes.BOOLEAN, defaultValue: true }))
+    this.settings.set(new SettingEntry({ name: "visu.graphics.shader-quality", type: SettingTypes.NUMBER, defaultValue: 0.5 }))
+    this.settings.set(new SettingEntry({ name: "visu.graphics.vsync", type: SettingTypes.BOOLEAN, defaultValue: true }))
+    this.settings.set(new SettingEntry({ name: "visu.graphics.timing-method", type: SettingTypes.STRING, defaultValue: timingMethodKey }))
+    this.settings.set(new SettingEntry({ name: "visu.graphics.aa", type: SettingTypes.NUMBER, defaultValue: 0 }))
+    this.settings.set(new SettingEntry({ name: "visu.graphics.menu-blur", type: SettingTypes.BOOLEAN, defaultValue: false }))
+    this.settings.set(new SettingEntry({ name: "visu.audio.ost-volume", type: SettingTypes.NUMBER, defaultValue: 1.0 }))
+    this.settings.set(new SettingEntry({ name: "visu.audio.sfx-volume", type: SettingTypes.NUMBER, defaultValue: 1.0 }))
+    this.settings.set(new SettingEntry({ name: "visu.editor.enable", type: SettingTypes.BOOLEAN, defaultValue: false }))
+    this.settings.set(new SettingEntry({ name: "visu.editor.bpm", type: SettingTypes.NUMBER, defaultValue: 120 }))
+    this.settings.set(new SettingEntry({ name: "visu.editor.bpm-count", type: SettingTypes.NUMBER, defaultValue: 0 }))
+    this.settings.set(new SettingEntry({ name: "visu.editor.bpm-sub", type: SettingTypes.NUMBER, defaultValue: 2 }))
+    this.settings.set(new SettingEntry({ name: "visu.editor.snap", type: SettingTypes.BOOLEAN, defaultValue: true }))
+    this.settings.set(new SettingEntry({ name: "visu.editor.render", type: SettingTypes.BOOLEAN, defaultValue: false }))
+    this.settings.set(new SettingEntry({ name: "visu.editor.render-event", type: SettingTypes.BOOLEAN, defaultValue: false }))
+    this.settings.set(new SettingEntry({ name: "visu.editor.render-timeline", type: SettingTypes.BOOLEAN, defaultValue: false }))
+    this.settings.set(new SettingEntry({ name: "visu.editor.render-track-control", type: SettingTypes.BOOLEAN, defaultValue: false }))
+    this.settings.set(new SettingEntry({ name: "visu.editor.render-scene-config-preview", type: SettingTypes.BOOLEAN, defaultValue: false }))
+    this.settings.set(new SettingEntry({ name: "visu.editor.render-brush", type: SettingTypes.BOOLEAN, defaultValue: false }))
+    this.settings.set(new SettingEntry({ name: "visu.editor.accordion.render-event-inspector", type: SettingTypes.BOOLEAN, defaultValue: false }))
+    this.settings.set(new SettingEntry({ name: "visu.editor.accordion.render-template-toolbar", type: SettingTypes.BOOLEAN, defaultValue: false }))
+    this.settings.set(new SettingEntry({ name: "visu.editor.timeline-zoom", type: SettingTypes.NUMBER, defaultValue: 10 }))
+    this.settings.set(new SettingEntry({ name: "visu.editor.timeline-follow", type: SettingTypes.BOOLEAN, defaultValue: false }))
+    this.settings.set(new SettingEntry({ name: "visu.editor.update-services", type: SettingTypes.BOOLEAN, defaultValue: false }))
+    this.settings.set(new SettingEntry({ name: "visu.keyboard.player.up", type: SettingTypes.NUMBER, defaultValue: ord("W") }))
+    this.settings.set(new SettingEntry({ name: "visu.keyboard.player.down", type: SettingTypes.NUMBER, defaultValue: ord("S") }))
+    this.settings.set(new SettingEntry({ name: "visu.keyboard.player.left", type: SettingTypes.NUMBER, defaultValue: ord("A") }))
+    this.settings.set(new SettingEntry({ name: "visu.keyboard.player.right", type: SettingTypes.NUMBER, defaultValue: ord("D") }))
+    this.settings.set(new SettingEntry({ name: "visu.keyboard.player.action", type: SettingTypes.NUMBER, defaultValue: ord("Z") }))
+    this.settings.set(new SettingEntry({ name: "visu.keyboard.player.bomb", type: SettingTypes.NUMBER, defaultValue: ord("X") }))
+    this.settings.set(new SettingEntry({ name: "visu.260214.keyboard.wasd", type: SettingTypes.BOOLEAN, defaultValue: false }))
+    this.settings.set(new SettingEntry({ name: "visu.keyboard.player.focus", type: SettingTypes.NUMBER, defaultValue: KeyboardKeyType.SHIFT }))
+    this.settings.set(new SettingEntry({ name: "visu.mouse.player.up", type: SettingTypes.NUMBER, defaultValue: MouseButtonType.NONE }))
+    this.settings.set(new SettingEntry({ name: "visu.mouse.player.down", type: SettingTypes.NUMBER, defaultValue: MouseButtonType.NONE }))
+    this.settings.set(new SettingEntry({ name: "visu.mouse.player.left", type: SettingTypes.NUMBER, defaultValue: MouseButtonType.NONE }))
+    this.settings.set(new SettingEntry({ name: "visu.mouse.player.right", type: SettingTypes.NUMBER, defaultValue: MouseButtonType.NONE }))
+    this.settings.set(new SettingEntry({ name: "visu.mouse.player.action", type: SettingTypes.NUMBER, defaultValue: MouseButtonType.LEFT }))
+    this.settings.set(new SettingEntry({ name: "visu.mouse.player.bomb", type: SettingTypes.NUMBER, defaultValue: MouseButtonType.RIGHT }))
+    this.settings.set(new SettingEntry({ name: "visu.mouse.player.focus", type: SettingTypes.NUMBER, defaultValue: MouseButtonType.NONE }))
+    this.settings.set(new SettingEntry({ name: "visu.difficulty", type: SettingTypes.STRING, defaultValue: Difficulty.NORMAL }))
+    this.settings.set(new SettingEntry({ name: "visu.developer.mouse-shoot", type: SettingTypes.BOOLEAN, defaultValue: false }))
+    this.settings.set(new SettingEntry({ name: "visu.graphics.visual-mode", type: SettingTypes.BOOLEAN, defaultValue: false }))
+    this.settings.set(new SettingEntry({ name: "visu.graphics.raw-mode", type: SettingTypes.BOOLEAN, defaultValue: false }))
+    this.settings.set(new SettingEntry({ name: "visu.gamepad", type: SettingTypes.BOOLEAN, defaultValue: true }))
+    this.settings.set(new SettingEntry({
+      name: "visu.gamepad.controls",
+      type: SettingTypes.STRUCT,
         validate: function(value) {
           return {
             "BTN_A": VisuGamepadButtonActions
@@ -1978,15 +2045,25 @@ function _Visu() constructor {
     //Logger.info("Visu", "run::initDisplayService()")
     if (!Beans.exists(BeanDisplayService)) {
       Beans.add(Beans.factory(BeanDisplayService, GMServiceInstance, layerId,
-        new DisplayService()))
+        new DisplayService({
+          windowWidth: Visu.settings.getValue("visu.window.width", 1440),
+          windowHeight: Visu.settings.getValue("visu.window.height", 900),
+          scale: Visu.settings.getValue("visu.interface.scale", 1.0),
+        })))
     }
 
     var displayService = Beans.get(BeanDisplayService)
-    displayService.minWidth = 960
-    displayService.minHeight = 540
+    displayService.scale = Visu.settings.getValue("visu.interface.scale")
     displayService.windowWidth = Visu.settings.getValue("visu.window.width", 1440)
     displayService.windowHeight = Visu.settings.getValue("visu.window.height", 900)
-    displayService.scale = Visu.settings.getValue("visu.interface.scale")
+    displayService.minWidth = 960
+    displayService.minHeight = 540
+    displayService.beforeFullscreenWidth = displayService.windowWidth
+    displayService.beforeFullscreenHeight = displayService.windowHeight
+    displayService.previousWidth = displayService.beforeFullscreenWidth
+    displayService.previousHeight = displayService.beforeFullscreenHeight
+    displayService.previousGuiWidth = displayService.windowWidth / displayService.scale
+    displayService.previousGuiHeight = displayService.windowHeight / displayService.scale
 
     //if (!Optional.is(Core.fetchAARange().find(Lambda.equal, Visu.settings.getValue("visu.graphics.aa")))) {
     //  Visu.settings.setValue("visu.graphics.aa", 0).save()
@@ -2190,5 +2267,35 @@ function _Visu() constructor {
     return this
   }
 }
-global.__Visu = new _Visu()
+
+
+function init_VisuEditor() {
+  if (Callable.run("VisuEditorModule") == null) {
+    return
+  }
+
+  Core.print("init_VisuEditor")
+
+  init_VETemplate()
+  init_VELayouts()
+  init_VEStyles()
+  init_VEComponents()
+  init_VEBrushToolbar()
+  init_VETemplateToolbar()
+  init_SHADER_UNIFORM_TEMPLATES()
+}
+
+///@static
+global.__Visu = null///@GMRT//new _Visu()
 #macro Visu global.__Visu
+function init_Visu() {
+  Core.print("init_Visu")
+
+  init_VisuComponents()
+  init_VisuLayouts()
+  init_VisuStyles()
+  init_VisuEditor()
+
+  Visu = new _Visu()
+}
+

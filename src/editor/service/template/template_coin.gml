@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.editor.api.template
+show_debug_message("init template_coin.gml")
+
 
 ///@param {Struct} json
 ///@return {Struct}

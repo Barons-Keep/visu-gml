@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.editor.ui
+show_debug_message("init VEStyles.gml")
+
 
 ///@static
 ///@type {Struct}
@@ -672,6 +674,10 @@ function generateVEStyles() {
 }
 
 ///@static
-///@type {Map<String, Struct>}
-global.__VEStyles = generateVEStyles()
+///@type {?Map<String, Struct>}
+global.__VEStyles = null///@GMRT
 #macro VEStyles global.__VEStyles
+function init_VEStyles() {
+  Core.print("init_VEStyles")
+  VEStyles = generateVEStyles()
+}

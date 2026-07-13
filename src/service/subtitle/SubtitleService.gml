@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.service.subtitle
+show_debug_message("init SubtitleService.gml")
+
 
 ///@param {?Struct} [config]
 function SubtitleService(config = null): Service(config) constructor {

@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.service.player
+show_debug_message("init PlayerService.gml")
+
 
 ///@param {?Struct} [config]
 function PlayerService(config = null): Service(config) constructor {

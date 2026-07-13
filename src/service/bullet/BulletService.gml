@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.service.bullet.BulletService
+show_debug_message("init BulletService.gml")
+
 
 ///@param {?Struct} [config]
 function BulletService(config = null): Service(config) constructor {

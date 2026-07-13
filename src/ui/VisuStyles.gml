@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.ui
+show_debug_message("init VisuStyles.gml")
+
 
 
 ///@static
@@ -37,109 +39,197 @@ global.__VisuTheme = {
 #macro VisuTheme global.__VisuTheme
 
 
-///@type {Map<String, Callable>}
-global.__VisuStyles = new Map(String, Callable, {
-  "menu-title": {
-    label: {
-      align: { v: VAlign.BOTTOM, h: HAlign.LEFT },
-      font: "font_kodeo_mono_48_bold",
-      offset: { x: 48, y: -18 },
-      useScale: true,
-      useScaleWithOffset: true,
-      color: VisuTheme.color.text,
-      enableColorWrite: false,
-    },
-  },
-  "menu-statistics": {
-    label: {
-      align: { v: VAlign.CENTER, h: HAlign.LEFT },
-      font: "font_kodeo_mono_12_bold",
-      offset: { x: 0, y: 0 },
-      useScale: true,
-      useScaleWithOffset: true,
-      color: VisuTheme.color.text,
-      enableColorWrite: false,
-    },
-  },
-  "menu-button-entry": {
-    label: {
-      align: { v: VAlign.CENTER, h: HAlign.LEFT },
-      font: "font_kodeo_mono_18_bold",
-      color: VisuTheme.color.text,
-      offset: { x: 48, y: 0 },
-      useScale: true,
-      useScaleWithOffset: true,
-      enableColorWrite: false,
-      colorHoverOver: VisuTheme.color.accentLight,
-      colorHoverOut: VisuTheme.color.sideDark,
-      //backgroundColor: VisuTheme.color.side,
-      backgroundMargin: { top: 4, left: 4, bottom: 4, right: 4 },
-      backgroundAlpha: 0.75,
-    },
-  },
-  "menu-button-entry-title": {
-    title: {
-      align: { v: VAlign.BOTTOM, h: HAlign.LEFT },
-      font: "font_kodeo_mono_12_bold",
-      color: VisuTheme.color.text,
-      offset: { x: 48, y: 0 },
-      useScale: true,
-      useScaleWithOffset: false,
-      enableColorWrite: false,
-      colorHoverOver: VisuTheme.color.accentLight,
-      colorHoverOut: VisuTheme.color.sideDark,
-      //backgroundColor: VisuTheme.color.side,
-      backgroundMargin: { top: 4, left: 4, bottom: 0, right: 4 },
-      backgroundAlpha: 0.75,
-    },
-    label: {
-      align: { v: VAlign.TOP, h: HAlign.LEFT },
-      font: "font_kodeo_mono_18_bold",
-      color: VisuTheme.color.text,
-      offset: { x: 48, y: 8 },
-      useScale: true,
-      useScaleWithOffset: true,
-      enableColorWrite: false,
-      colorHoverOver: VisuTheme.color.accentLight,
-      colorHoverOut: VisuTheme.color.sideDark,
-      //backgroundColor: VisuTheme.color.side,
-      backgroundMargin: { top: 0, left: 4, bottom: 4, right: 4 },
-      backgroundAlpha: 0.75,
-    },
-  },
-  "menu-label-entry": {
-    label: {
-      align: { v: VAlign.CENTER, h: HAlign.LEFT },
-      font: "font_kodeo_mono_18_bold",
-      color: VisuTheme.color.text,
-      offset: { x: 48 },
-      useScaleWithOffset: true,
-      enableColorWrite: false,
-      //backgroundColor: VisuTheme.color.side,
-      colorHoverOver: VisuTheme.color.accentLight,
-      colorHoverOut: VisuTheme.color.sideDark,
-      backgroundMargin: { top: 4, left: 4, bottom: 4, right: 4 },
-      backgroundAlpha: 0.05,
-    },
-  },
-  "menu-button-input-entry": {
-    label: {
-      align: { v: VAlign.CENTER, h: HAlign.LEFT },
-      font: "font_kodeo_mono_18_bold",
-      color: VisuTheme.color.text,
-      outline: true,
-      outlineColor: VisuTheme.color.side,
-      offset: { x: 48 },
-      useScaleWithOffset: true,
-      enableColorWrite: false,
-      //colorHoverOver: VisuTheme.color.accentLight,
-      //colorHoverOut: VisuTheme.color.sideDark,
-      //backgroundColor: VisuTheme.color.side,
-      backgroundAlpha: 0.75,
-      backgroundMargin: { top: 4, left: 4, bottom: 4, right: 4 },
-    },
-    input: {
+///@static
+///@type {?Map<String, Callable>}
+global.__VisuStyles = null///@GMRT
+#macro VisuStyles global.__VisuStyles
+function init_VisuStyles() {
+  Core.print("init_VisuStyles")
+  VisuStyles = new Map(String, Callable, {
+    "menu-title": {
       label: {
+        align: { v: VAlign.BOTTOM, h: HAlign.LEFT },
+        font: "font_kodeo_mono_48_bold",
+        offset: { x: 48, y: -18 },
+        useScale: true,
+        useScaleWithOffset: true,
+        color: VisuTheme.color.text,
+        enableColorWrite: false,
+      },
+    },
+    "menu-statistics": {
+      label: {
+        align: { v: VAlign.CENTER, h: HAlign.LEFT },
+        font: "font_kodeo_mono_12_bold",
+        offset: { x: 0, y: 0 },
+        useScale: true,
+        useScaleWithOffset: true,
+        color: VisuTheme.color.text,
+        enableColorWrite: false,
+      },
+    },
+    "menu-button-entry": {
+      label: {
+        align: { v: VAlign.CENTER, h: HAlign.LEFT },
+        font: "font_kodeo_mono_18_bold",
+        color: VisuTheme.color.text,
+        offset: { x: 48, y: 0 },
+        useScale: true,
+        useScaleWithOffset: true,
+        enableColorWrite: false,
+        colorHoverOver: VisuTheme.color.accentLight,
+        colorHoverOut: VisuTheme.color.sideDark,
+        //backgroundColor: VisuTheme.color.side,
+        backgroundMargin: { top: 4, left: 4, bottom: 4, right: 4 },
+        backgroundAlpha: 0.75,
+      },
+    },
+    "menu-button-entry-title": {
+      title: {
+        align: { v: VAlign.BOTTOM, h: HAlign.LEFT },
+        font: "font_kodeo_mono_12_bold",
+        color: VisuTheme.color.text,
+        offset: { x: 48, y: 0 },
+        useScale: true,
+        useScaleWithOffset: false,
+        enableColorWrite: false,
+        colorHoverOver: VisuTheme.color.accentLight,
+        colorHoverOut: VisuTheme.color.sideDark,
+        //backgroundColor: VisuTheme.color.side,
+        backgroundMargin: { top: 4, left: 4, bottom: 0, right: 4 },
+        backgroundAlpha: 0.75,
+      },
+      label: {
+        align: { v: VAlign.TOP, h: HAlign.LEFT },
+        font: "font_kodeo_mono_18_bold",
+        color: VisuTheme.color.text,
+        offset: { x: 48, y: 8 },
+        useScale: true,
+        useScaleWithOffset: true,
+        enableColorWrite: false,
+        colorHoverOver: VisuTheme.color.accentLight,
+        colorHoverOut: VisuTheme.color.sideDark,
+        //backgroundColor: VisuTheme.color.side,
+        backgroundMargin: { top: 0, left: 4, bottom: 4, right: 4 },
+        backgroundAlpha: 0.75,
+      },
+    },
+    "menu-label-entry": {
+      label: {
+        align: { v: VAlign.CENTER, h: HAlign.LEFT },
+        font: "font_kodeo_mono_18_bold",
+        color: VisuTheme.color.text,
+        offset: { x: 48 },
+        useScaleWithOffset: true,
+        enableColorWrite: false,
+        //backgroundColor: VisuTheme.color.side,
+        colorHoverOver: VisuTheme.color.accentLight,
+        colorHoverOut: VisuTheme.color.sideDark,
+        backgroundMargin: { top: 4, left: 4, bottom: 4, right: 4 },
+        backgroundAlpha: 0.05,
+      },
+    },
+    "menu-button-input-entry": {
+      label: {
+        align: { v: VAlign.CENTER, h: HAlign.LEFT },
+        font: "font_kodeo_mono_18_bold",
+        color: VisuTheme.color.text,
+        outline: true,
+        outlineColor: VisuTheme.color.side,
+        offset: { x: 48 },
+        useScaleWithOffset: true,
+        enableColorWrite: false,
+        //colorHoverOver: VisuTheme.color.accentLight,
+        //colorHoverOut: VisuTheme.color.sideDark,
+        //backgroundColor: VisuTheme.color.side,
+        backgroundAlpha: 0.75,
+        backgroundMargin: { top: 4, left: 4, bottom: 4, right: 4 },
+      },
+      input: {
+        label: {
+          align: { v: VAlign.CENTER, h: HAlign.CENTER },
+          font: "font_kodeo_mono_18_bold",
+          color: VisuTheme.color.textFocus,
+          enableColorWrite: false,
+          colorHoverOver: VisuTheme.color.accentLight,
+          colorHoverOut: VisuTheme.color.sideDark,
+          //backgroundColor: VisuTheme.color.side,
+          backgroundAlpha: 0.75,
+          backgroundMargin: { top: 4, left: 4, bottom: 4, right: 4 },
+        },
+        colorHoverOver: VisuTheme.color.accentLight,
+        colorHoverOut: VisuTheme.color.sideDark,
+        //backgroundColor: VisuTheme.color.side,
+        backgroundAlpha: 0.75,
+        backgroundMargin: { top: 4, left: 4, bottom: 4, right: 4 },
+      },
+    },
+    "menu-spin-select-entry": {
+      label: {
+        align: { v: VAlign.CENTER, h: HAlign.LEFT },
+        font: "font_kodeo_mono_18_bold",
+        color: VisuTheme.color.text,
+        outline: true,
+        outlineColor: VisuTheme.color.side,
+        offset: { x: 48 },
+        useScaleWithOffset: true,
+        enableColorWrite: false,
+        //colorHoverOver: VisuTheme.color.accentLight,
+        //colorHoverOut: VisuTheme.color.sideDark,
+        //backgroundColor: VisuTheme.color.side,
+        backgroundAlpha: 0.75,
+        backgroundMargin: { top: 4, left: 4, bottom: 4, right: 4 },
+      },
+      previous: {
+        sprite: {
+          name: "texture_menu_button_previous",
+          blend: VisuTheme.color.textFocus,
+        },
+        colorHoverOver: VisuTheme.color.accentLight,
+        colorHoverOut: VisuTheme.color.sideDark,
+        backgroundAlpha: 0.75,
+        backgroundMargin: { top: 4, left: 4, bottom: 4, right: 0 },
+      },
+      preview: {
+        label: {
+          align: { v: VAlign.CENTER, h: HAlign.CENTER },
+          font: "font_kodeo_mono_18_bold",
+          color: VisuTheme.color.textFocus,
+          enableColorWrite: false,
+        },
+        colorHoverOver: VisuTheme.color.accentLight,
+        colorHoverOut: VisuTheme.color.sideDark,
+        backgroundMargin: { top: 4, left: 0, bottom: 4, right: 0 },
+        backgroundAlpha: 0.75,
+      },
+      next: {
+        sprite: {
+          name: "texture_menu_button_next",
+          blend: VisuTheme.color.textFocus,
+        },
+        colorHoverOver: VisuTheme.color.accentLight,
+        colorHoverOut: VisuTheme.color.sideDark,
+        backgroundMargin: { top: 4, left: 0, bottom: 4, right: 4 },
+        backgroundAlpha: 0.75,
+      },
+    },
+    "menu-keyboard-key-entry": {
+      label: {
+        align: { v: VAlign.CENTER, h: HAlign.LEFT },
+        font: "font_kodeo_mono_18_bold",
+        color: VisuTheme.color.text,
+        offset: { x: 48 },
+        useScaleWithOffset: true,
+        enableColorWrite: false,
+        outline: true,
+        outlineColor: VisuTheme.color.side,
+        //colorHoverOver: VisuTheme.color.accentLight,
+        //colorHoverOut: VisuTheme.color.sideDark,
+        //backgroundColor: VisuTheme.color.side,
+        backgroundAlpha: 0.75,
+        backgroundMargin: { top: 4, left: 4, bottom: 4, right: 4 },
+      },
+      preview: {
         align: { v: VAlign.CENTER, h: HAlign.CENTER },
         font: "font_kodeo_mono_18_bold",
         color: VisuTheme.color.textFocus,
@@ -149,164 +239,81 @@ global.__VisuStyles = new Map(String, Callable, {
         //backgroundColor: VisuTheme.color.side,
         backgroundAlpha: 0.75,
         backgroundMargin: { top: 4, left: 4, bottom: 4, right: 4 },
-      },
-      colorHoverOver: VisuTheme.color.accentLight,
-      colorHoverOut: VisuTheme.color.sideDark,
-      //backgroundColor: VisuTheme.color.side,
-      backgroundAlpha: 0.75,
-      backgroundMargin: { top: 4, left: 4, bottom: 4, right: 4 },
+      }
     },
-  },
-  "menu-spin-select-entry": {
-    label: {
-      align: { v: VAlign.CENTER, h: HAlign.LEFT },
-      font: "font_kodeo_mono_18_bold",
-      color: VisuTheme.color.text,
-      outline: true,
-      outlineColor: VisuTheme.color.side,
-      offset: { x: 48 },
-      useScaleWithOffset: true,
-      enableColorWrite: false,
-      //colorHoverOver: VisuTheme.color.accentLight,
-      //colorHoverOut: VisuTheme.color.sideDark,
-      //backgroundColor: VisuTheme.color.side,
-      backgroundAlpha: 0.75,
-      backgroundMargin: { top: 4, left: 4, bottom: 4, right: 4 },
-    },
-    previous: {
-      sprite: {
-        name: "texture_menu_button_previous",
-        blend: VisuTheme.color.textFocus,
-      },
-      colorHoverOver: VisuTheme.color.accentLight,
-      colorHoverOut: VisuTheme.color.sideDark,
-      backgroundAlpha: 0.75,
-      backgroundMargin: { top: 4, left: 4, bottom: 4, right: 0 },
-    },
-    preview: {
+    "menu-slider-entry": {
       label: {
-        align: { v: VAlign.CENTER, h: HAlign.CENTER },
+        align: { v: VAlign.CENTER, h: HAlign.LEFT },
         font: "font_kodeo_mono_18_bold",
-        color: VisuTheme.color.textFocus,
+        color: VisuTheme.color.text,
+        outline: true,
+        outlineColor: VisuTheme.color.side,
+        offset: { x: 48 },
+        useScaleWithOffset: true,
         enableColorWrite: false,
+        //colorHoverOver: VisuTheme.color.accentLight,
+        //colorHoverOut: VisuTheme.color.sideDark,
+        //backgroundColor: VisuTheme.color.side,
+        backgroundAlpha: 0.75,
+        backgroundMargin: { top: 4, left: 4, bottom: 4, right: 4 },
       },
-      colorHoverOver: VisuTheme.color.accentLight,
-      colorHoverOut: VisuTheme.color.sideDark,
-      backgroundMargin: { top: 4, left: 0, bottom: 4, right: 0 },
-      backgroundAlpha: 0.75,
-    },
-    next: {
-      sprite: {
-        name: "texture_menu_button_next",
-        blend: VisuTheme.color.textFocus,
-      },
-      colorHoverOver: VisuTheme.color.accentLight,
-      colorHoverOut: VisuTheme.color.sideDark,
-      backgroundMargin: { top: 4, left: 0, bottom: 4, right: 4 },
-      backgroundAlpha: 0.75,
-    },
-  },
-  "menu-keyboard-key-entry": {
-    label: {
-      align: { v: VAlign.CENTER, h: HAlign.LEFT },
-      font: "font_kodeo_mono_18_bold",
-      color: VisuTheme.color.text,
-      offset: { x: 48 },
-      useScaleWithOffset: true,
-      enableColorWrite: false,
-      outline: true,
-      outlineColor: VisuTheme.color.side,
-      //colorHoverOver: VisuTheme.color.accentLight,
-      //colorHoverOut: VisuTheme.color.sideDark,
-      //backgroundColor: VisuTheme.color.side,
-      backgroundAlpha: 0.75,
-      backgroundMargin: { top: 4, left: 4, bottom: 4, right: 4 },
-    },
-    preview: {
-      align: { v: VAlign.CENTER, h: HAlign.CENTER },
-      font: "font_kodeo_mono_18_bold",
-      color: VisuTheme.color.textFocus,
-      enableColorWrite: false,
-      colorHoverOver: VisuTheme.color.accentLight,
-      colorHoverOut: VisuTheme.color.sideDark,
-      //backgroundColor: VisuTheme.color.side,
-      backgroundAlpha: 0.75,
-      backgroundMargin: { top: 4, left: 4, bottom: 4, right: 4 },
-    }
-  },
-  "menu-slider-entry": {
-    label: {
-      align: { v: VAlign.CENTER, h: HAlign.LEFT },
-      font: "font_kodeo_mono_18_bold",
-      color: VisuTheme.color.text,
-      outline: true,
-      outlineColor: VisuTheme.color.side,
-      offset: { x: 48 },
-      useScaleWithOffset: true,
-      enableColorWrite: false,
-      //colorHoverOver: VisuTheme.color.accentLight,
-      //colorHoverOut: VisuTheme.color.sideDark,
-      //backgroundColor: VisuTheme.color.side,
-      backgroundAlpha: 0.75,
-      backgroundMargin: { top: 4, left: 4, bottom: 4, right: 4 },
-    },
-    slider: {
-      backgroundColor: VisuTheme.color.side,
-      backgroundMargin: { top: 4, bottom: 4, left: -10, right: -8 },
-      backgroundAlpha: 0.75,
-      pointer: {
-        name: "texture_empty",
-        scaleX: 0.25,
-        scaleY: 0.25,
-        blend: VisuTheme.color.accent,
-      },
-      progress: {
-        thickness: 8.0,
-        blend: VisuTheme.color.accentLight,
-        line: { name: "texture_grid_line_bold" },
-        cornerFrom: { name: "texture_empty" },
-        cornerTo: { name: "texture_empty" },
-      },
-      background: {
-        thickness: 8.0,
-        blend: VisuTheme.color.sideDark,
-        line: { name: "texture_grid_line_bold" },
-        cornerFrom: { name: "texture_grid_line_bold" },
-        cornerTo: { name: "texture_grid_line_bold" },
+      slider: {
+        backgroundColor: VisuTheme.color.side,
+        backgroundMargin: { top: 4, bottom: 4, left: -10, right: -8 },
+        backgroundAlpha: 0.75,
+        pointer: {
+          name: "texture_empty",
+          scaleX: 0.25,
+          scaleY: 0.25,
+          blend: VisuTheme.color.accent,
+        },
+        progress: {
+          thickness: 8.0,
+          blend: VisuTheme.color.accentLight,
+          line: { name: "texture_grid_line_bold" },
+          cornerFrom: { name: "texture_empty" },
+          cornerTo: { name: "texture_empty" },
+        },
+        background: {
+          thickness: 8.0,
+          blend: VisuTheme.color.sideDark,
+          line: { name: "texture_grid_line_bold" },
+          cornerFrom: { name: "texture_grid_line_bold" },
+          cornerTo: { name: "texture_grid_line_bold" },
+        },
       },
     },
-  },
-  "visu-modal": {
-    message: {
-      color: VisuTheme.color.textFocus,
-      font: "font_inter_10_regular",
-      align: { v: VAlign.CENTER, h: HAlign.CENTER },
-    },
-    accept: {
-      backgroundColor: VisuTheme.color.acceptShadow,
-      label: {
+    "visu-modal": {
+      message: {
         color: VisuTheme.color.textFocus,
         font: "font_inter_10_regular",
         align: { v: VAlign.CENTER, h: HAlign.CENTER },
-      }
+      },
+      accept: {
+        backgroundColor: VisuTheme.color.acceptShadow,
+        label: {
+          color: VisuTheme.color.textFocus,
+          font: "font_inter_10_regular",
+          align: { v: VAlign.CENTER, h: HAlign.CENTER },
+        }
+      },
+      deny: {
+        backgroundColor: VisuTheme.color.denyShadow,
+        label: {
+          color: VisuTheme.color.textFocus,
+          font: "font_inter_10_regular",
+          align: { v: VAlign.CENTER, h: HAlign.CENTER },
+        }
+      },
     },
-    deny: {
-      backgroundColor: VisuTheme.color.denyShadow,
+    "text": {
       label: {
+        align: { v: VAlign.BOTTOM, h: HAlign.LEFT },
+        font: "font_consolas_10_bold",
         color: VisuTheme.color.textFocus,
-        font: "font_inter_10_regular",
-        align: { v: VAlign.CENTER, h: HAlign.CENTER },
-      }
+        outline: true,
+        outlineColor: VisuTheme.color.accent,
+      },
     },
-  },
-  "text": {
-    label: {
-      align: { v: VAlign.BOTTOM, h: HAlign.LEFT },
-      font: "font_consolas_10_bold",
-      color: VisuTheme.color.textFocus,
-      outline: true,
-      outlineColor: VisuTheme.color.accent,
-    },
-  },
-})
-#macro VisuStyles global.__VisuStyles
+  })
+}

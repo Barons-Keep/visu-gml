@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu
+show_debug_message("init VisuControllerTest.gml")
+
 
 
 ///@param {Test} json

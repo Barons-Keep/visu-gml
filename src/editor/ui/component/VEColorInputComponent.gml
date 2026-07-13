@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.editor.ui.component
+show_debug_message("init VEColorInputComponent.gml")
+
 
 //@param {String} name
 //@param {?Struct} [config]

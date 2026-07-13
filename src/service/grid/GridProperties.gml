@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.service.grid
+show_debug_message("init GridProperties.gml")
+
 
 ///@param {?Struct} [config]
 function GridProperties(config = null) constructor {

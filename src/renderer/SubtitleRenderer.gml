@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.service.subtitle
+show_debug_message("init SubtitleRenderer.gml")
+
 
 function SubtitleRenderer() constructor {
 

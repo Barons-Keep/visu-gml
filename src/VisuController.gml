@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu
+show_debug_message("init VisuController.gml")
+
 
 #macro BeanVisuController "VisuController"
 ///@param {?Struct} [config]
@@ -700,11 +702,16 @@ function VisuController(config = null): Service(config) constructor {
   updateWatchdog = function() {
     if (!VISU_DISPLAY_SERVICE_SETUP) {
       var displayService = Beans.get(BeanDisplayService)
-      var width = Visu.settings.getValue("visu.window.width"),
+      var width = Visu.settings.getValue("visu.window.width")
       var height = Visu.settings.getValue("visu.window.height")
-      var fullscreen = Visu.settings.getValue("visu.fullscreen",)
+      var fullscreen = Visu.settings.getValue("visu.fullscreen")
       var borderlessWindow = Visu.settings.getValue("visu.borderless-window")
       var timingMethod = TimingMethod.get(Visu.settings.getValue("visu.graphics.timing-method"))
+      if (fullscreen) {
+        width = Math.getEvenCeil(max(displayService.minWidth, displayService.getDisplayWidth()) / displayService.scale)
+        height = Math.getEvenCeil(max(displayService.minHeight, displayService.getDisplayHeight()) / displayService.scale)
+      }
+
       displayService
         .resize(width, height)
         .setBorderlessWindow(borderlessWindow)

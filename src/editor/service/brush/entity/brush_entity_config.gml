@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.editor.service.brush.entity
+show_debug_message("init brush_entity_config.gml")
+
 
 ///@param {?Struct} [json]
 ///@return {Struct}

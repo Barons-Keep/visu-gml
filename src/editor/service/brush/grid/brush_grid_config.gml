@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.editor.service.brush.grid
+show_debug_message("init brush_grid_config.gml")
+
 
 ///@param {Struct} json
 ///@return {Struct}

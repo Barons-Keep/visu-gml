@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.service.grid.feature
+show_debug_message("init BooleanFeature.gml")
+
 
 ///@param {Struct} json 
 function BooleanFeature(json): GridItemFeature(json) constructor {

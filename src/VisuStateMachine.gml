@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu
+show_debug_message("init VisuStateMachine.gml")
+
 
 ///@param {VisuController} context
 ///@param {String} name

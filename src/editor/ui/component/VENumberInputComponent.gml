@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.editor.ui.component
+show_debug_message("init VENumberInputComponent.gml")
+
 
 //@param {String} name
 //@param {?Struct} [config]
@@ -65,7 +67,7 @@ function VENumberInputComponent(name, config = null) {
   if (checkboxConfig != null) {
     var checkbox = { }
     var title = { text: Struct.getIfType(checkboxConfig, "text", String, "") }
-    var enableCheckbox = Struct.get(checkboxConfig, "enable"),
+    var enableCheckbox = Struct.get(checkboxConfig, "enable")
     var storeCheckbox = Struct.get(checkboxConfig, "store")
 
     if (hidden != null) {

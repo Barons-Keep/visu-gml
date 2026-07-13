@@ -4,7 +4,26 @@ GMObjectUtil.factoryStructInstance(
 	GMServiceInstance, 
 	Scene.fetchLayer("instance_main", 100),
 	{
-	  timer: new Timer(0.5, { 
+	  updateBegin: function() {
+	    if (!Global.inject("__GMRT_INITIALIZED", false)) {
+        Core.print("========== RUN INIT SCRIPTS BEGIN ==========")
+
+        init_Core()
+        init_GMTF()
+        init_Visu()
+
+        Global.set("__GMRT_INITIALIZED", true)
+        Core.print("========== RUN INIT SCRIPTS END ==========")
+      }
+	  }
+	}
+)
+
+GMObjectUtil.factoryStructInstance(
+	GMServiceInstance, 
+	Scene.fetchLayer("instance_main", 100),
+	{
+	  timer: new Timer(1.0, { 
 	    callback: function() {
 	      Scene.open("scene_visu")
 	    }

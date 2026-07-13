@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.editor.service.brush
+show_debug_message("init VEBrush.gml")
+
 
 ///@param {VEBrushTemplate} template
 function VEBrush(template) constructor {
@@ -218,7 +220,7 @@ function VEBrush(template) constructor {
             var from = -1.0 * floor(size / 2.0)
             var to = abs(from)
             var beginX = round(this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2.0) - (width / 2.0))
-            var beginY = this.context.area.getY() + this.area.getY(),
+            var beginY = this.context.area.getY() + this.area.getY()
             var color = ColorUtil.parse(VETheme.color.primaryLight).toGMColor()
             var color2 = ColorUtil.parse("#d1a1ff").toGMColor()
             var enableFactor = Struct.get(this.enable, "value") == true ? 1.0 : 0.5

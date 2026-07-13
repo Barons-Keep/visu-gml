@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.editor.api.template
+show_debug_message("init template_bullet.gml")
+
 
 ///@param {Struct} json
 ///@return {Struct}
@@ -1353,7 +1355,7 @@ function template_bullet(json = null) {
               var blend = sprite.getBlend()
               var blendRight = ColorUtil.parse(VETheme.color.textFocus).toGMColor()
               var blendLeft = ColorUtil.parse(VETheme.color.primaryLight).toGMColor()
-              var _x = this.context.area.getX() + this.area.getX() + this.margin.left + this.margin.right + 2.0,
+              var _x = this.context.area.getX() + this.area.getX() + this.margin.left + this.margin.right + 2.0
               var _y = this.context.area.getY() + this.area.getY() - this.margin.top
 
               sprite

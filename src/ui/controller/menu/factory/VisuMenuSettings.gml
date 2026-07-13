@@ -1,4 +1,6 @@
 ///@package fun.barons-keep.visu.ui.controller.menu
+show_debug_message("init VisuMenuSettings.gml")
+
 
 ///@param {?Struct} [_config]
 ///@return {Event}

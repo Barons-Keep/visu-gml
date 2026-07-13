@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.service.shroom
+show_debug_message("init ShroomService.gml")
+
 
 ///@param {?Struct} [config]
 function ShroomService(config = null): Service(config) constructor {

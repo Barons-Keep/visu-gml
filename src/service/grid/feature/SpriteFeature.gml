@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.service.grid.feature
+show_debug_message("init SpriteFeature.gml")
+
 
 ///@param {Struct} json
 function SpriteFeature(json): GridItemFeature(json) constructor {

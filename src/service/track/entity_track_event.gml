@@ -1,3 +1,5 @@
+show_debug_message("init entity_track_event.gml")
+
 
 ///@type {Number}
 #macro SHROOM_SPAWN_AMOUNT 60
@@ -147,7 +149,7 @@ global.__entity_track_event = {
         + (Struct.get(data, "en-shr_use-dir-rng")
           ? (random(Struct.get(data, "en-shr_dir-rng") / 2.0)
           * choose(1.0, -1.0))
-        : 0.0)),
+        : 0.0))
       var spawnX = Struct.get(data, "en-shr_x")
         * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
         + 0.5
@@ -356,7 +358,7 @@ global.__entity_track_event = {
         + (Struct.get(data, "en-blt_use-dir-rng")
           ? (random(Struct.get(data, "en-blt_dir-rng") / 2.0)
           * choose(1.0, -1.0))
-        : 0.0)),
+        : 0.0))
       var spawnX = Struct.get(data, "en-blt_x")
         * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
         + 0.5

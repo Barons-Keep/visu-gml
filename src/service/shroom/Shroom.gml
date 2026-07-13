@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.service.shroom
+show_debug_message("init Shroom.gml")
+
 
 ///@type {Number}
 #macro SHROOM_FADE_IN_TIME 0.25

@@ -1,4 +1,6 @@
 ///@package io.alkapivo.visu.editor.service.brush.effect
+show_debug_message("init brush_effect_config.gml")
+
 
 ///@param {Struct} json
 ///@return {Struct}
