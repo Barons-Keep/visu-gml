@@ -14,7 +14,7 @@ pipeline {
           String overrideDependencies = """
           {
             "visu-gml": {
-              "revision": "${env.GIT_COMMIT-}"
+              "revision": "${env.GIT_COMMIT}"
             }
           }
           """.stripIndent()
