@@ -34,20 +34,4 @@ pipeline {
       }
     }
   }
-
-  post {
-    success {
-      giteaCommitStatus(
-        context: 'jenkins',
-        state: 'success'
-      )
-     }
-
-  failure {
-      giteaCommitStatus(
-        context: 'jenkins',
-        state: 'failure'
-      )
-    }
-  }
 }
