@@ -13,7 +13,7 @@ pipeline {
           String revision = "main"
           String overrideDependencies = """
           {
-            "visu-gml": {
+            "visu": {
               "revision": "${env.GIT_COMMIT}"
             }
           }
