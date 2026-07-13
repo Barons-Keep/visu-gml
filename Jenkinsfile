@@ -39,7 +39,7 @@ pipeline {
     success {
       giteaCommitStatus(
         context: 'jenkins',
-        state: 'failure'
+        state: 'success'
       )
      }
 
