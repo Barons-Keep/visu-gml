@@ -82,7 +82,7 @@ function GridRenderer() constructor {
 
   ///@private
   ///@type {Font}
-  playerHintFont = Assert.isType(FontUtil.parse({ name: "font_inter_24_regular" }), Font)
+  playerHintFont = Assert.isType(FontUtil.parse({ name: "font_inter_28_regular" }), Font)
 
   ///@private
   ///@param {Struct}

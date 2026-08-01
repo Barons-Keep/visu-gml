@@ -1311,7 +1311,7 @@ function VisuMenu(_config = null) constructor {
                     useScale: true ,
                     enableColorWrite: false,
                     align: { v: VAlign.TOP, h: HAlign.LEFT },
-                    font: "font_kodeo_mono_18_regular",
+                    font: "font_kodeo_mono_18_bold",
                     updateCustom: function() {
                       var statisticsText = ""
                       var controller = Beans.get(BeanVisuController)

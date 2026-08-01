@@ -1244,15 +1244,47 @@ function _Visu() constructor {
       "file": "",
     },
     "tx_sigil_agares":{
-      "name": tx_sigil_agares,
+      "asset": tx_sigil_agares,
       "file": "",
     },
     "tx_sigil_aim":{
-      "name": tx_sigil_aim,
+      "asset": tx_sigil_aim,
       "file": "",
     },
     "tx_sigil_aamon":{
-      "name": tx_sigil_aamon,
+      "asset": tx_sigil_aamon,
+      "file": "",
+    },
+    "texture_schnoopy_blue": {
+      "asset": texture_schnoopy_blue,
+      "file": "",
+    },
+    "texture_schnoopy_green": {
+      "asset": texture_schnoopy_green,
+      "file": "",
+    },
+    "texture_schnoopy_magenta": {
+      "asset": texture_schnoopy_magenta,
+      "file": "",
+    },
+    "texture_schnoopy_red": {
+      "asset": texture_schnoopy_red,
+      "file": "",
+    },
+    "texture_schnoopy_white": {
+      "asset": texture_schnoopy_white,
+      "file": "",
+    },
+    "texture_schnoopy_yellow": {
+      "asset": texture_schnoopy_yellow,
+      "file": "",
+    },
+    "tx_particle_heart_1": {
+      "asset": tx_particle_heart_1,
+      "file": "",
+    },
+    "tx_particle_heart_2": {
+      "asset": tx_particle_heart_2,
       "file": "",
     },
   } 

@@ -92,7 +92,7 @@ function VisuStateMachine(context, name) {
               label: new UILabel({
                 text: Language.get("visu.menu.splashscreen.skip"),
                 color: "#ffffff",
-                font: "font_inter_24_bold",
+                font: "font_inter_28_bold",
                 align: { v: VAlign.CENTER, h: HAlign.CENTER },
                 useScale: true,
                 alpha: 0.0,
