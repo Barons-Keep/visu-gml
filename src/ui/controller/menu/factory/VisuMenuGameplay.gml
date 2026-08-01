@@ -94,6 +94,40 @@ function factoryVisuMenuOpenGameplayEvent(_config = null) {
         }
       },
       {
+        name: "gameplay_menu-button-input-entry_focus-grid",
+        template: VisuComponents.get("menu-button-input-entry"),
+        layout: VisuLayouts.get("menu-button-input-entry"),
+        config: {
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: Language.get("visu.menu.render-focus-grid"),
+            callback: new BindIntent(function() {
+              var value = Visu.settings.getValue("visu.interface.focus-grid")
+              Visu.settings.setValue("visu.interface.focus-grid", !value).save()
+              Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+            }),
+            onMouseReleasedLeft: function() {
+              this.callback()
+            },
+          },
+          input: {
+            label: { text: VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT },
+            callback: function() {
+              var value = Visu.settings.getValue("visu.interface.focus-grid")
+              Visu.settings.setValue("visu.interface.focus-grid", !value).save()
+              Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+            },
+            updateCustom: function() {
+              this.label.text = Visu.settings.getValue("visu.interface.focus-grid") ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+              this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
+            },
+            onMouseReleasedLeft: function() {
+              this.callback()
+            },
+          }
+        }
+      },
+      {
         name: "gameplay_menu-button-input-entry_raw-mode",
         template: VisuComponents.get("menu-button-input-entry"),
         layout: VisuLayouts.get("menu-button-input-entry"),

@@ -1418,7 +1418,7 @@ function GridRenderer() constructor {
     //GPU.render.clear(c_black, 0.0)
     GPU.render.clear(properties.gridClearColor.toGMColor(), properties.gridClearFrameAlpha)
 
-    if (properties.renderSupportGrid) {
+    if (properties.renderSupportGrid && properties.renderFocusGrid) {
       var color = properties.supportColor.toGMColor()
       var colorAlpha = properties.supportColorAlpha
       var gridAlpha = properties.supportGridAlpha
@@ -1932,7 +1932,7 @@ function GridRenderer() constructor {
       this.overlayRenderer.renderForegrounds(width, height)
     }
 
-    if (properties.renderSupportGrid) {
+    if (properties.renderSupportGrid && properties.renderFocusGrid) {
       this.gridItemSurface.renderStretched(width, height, 0, 0, properties.supportGridAlpha)
     }
 

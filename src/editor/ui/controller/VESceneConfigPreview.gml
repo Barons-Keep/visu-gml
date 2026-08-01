@@ -217,7 +217,7 @@ function VESceneConfigPreview(_config = null) constructor {
         + $"      Alpha: {properties.separatorsSecondaryAlpha}\n"
         + $"      Color: {properties.separatorsSecondaryColor.toHex()}\n"
         + $"  Focus:\n"
-        + $"    Enabled: {properties.renderSupportGrid}\n"
+        + $"    Enabled: {properties.renderSupportGrid && properties.renderFocusGrid}\n"
   
       grid = $"{grid}:\n"
         + $"    Treshold: {properties.supportGridTreshold}\n"

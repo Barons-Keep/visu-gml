@@ -189,6 +189,9 @@ function GridProperties(config = null) constructor {
   renderSupportGrid = Struct.getIfType(config, "renderSupportGrid",  Boolean, false)
 
   ///@type {Number}
+  renderFocusGrid = Struct.getIfType(config, "renderFocusGrid",  Boolean, false)
+
+  ///@type {Number}
   supportGridTreshold = Struct.getIfType(config, "supportGridTreshold", Number, 8.0)
 
   ///@type {Number}
@@ -320,6 +323,7 @@ function GridProperties(config = null) constructor {
   ///@param {GridService} gridService
   ///@return {GridProperties}
   update = function(gridService) {
+    this.renderFocusGrid = Visu.settings.getValue("visu.interface.focus-grid")
     this.separatorTimer.duration = ((gridService.view.height * 2.0) / this.separators)
     this.separatorTimer.update()
     this.separatorTimer.amount = (this.speed / GRID_ITEM_SPEED_SCALE) - (gridService.view.derivativeY)
