@@ -1243,6 +1243,18 @@ function _Visu() constructor {
       "asset": tx_bkg_magic,
       "file": "",
     },
+    "tx_sigil_agares":{
+      "name": tx_sigil_agares,
+      "file": "",
+    },
+    "tx_sigil_aim":{
+      "name": tx_sigil_aim,
+      "file": "",
+    },
+    "tx_sigil_aamon":{
+      "name": tx_sigil_aamon,
+      "file": "",
+    },
   } 
 
   static modules = function() {
