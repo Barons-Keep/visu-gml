@@ -2242,6 +2242,7 @@ function _Visu() constructor {
   static run = function(layerName = "layer_main", layerDefaultDepth = 100) {
     Logger.info("Visu", "run()")
     randomise()
+    draw_texture_flush()
 
     var layerId = Scene.fetchLayer(layerName, layerDefaultDepth)
     

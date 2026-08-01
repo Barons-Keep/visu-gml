@@ -93,6 +93,7 @@ function VisuTrackLoader(config = null): Service(config) constructor {
                   editor.dispatcher.execute(new Event("close"))
                 }
               },
+              function() { draw_texture_flush() }
             ]))
             //printFPS($"clear-state::onStart")
           }
