@@ -197,7 +197,7 @@ function VisuRenderer() constructor {
   initFpsReport = function(filename) {
     global.fpsReportPath = $"{program_directory}{filename}"
     var file = file_text_open_write(global.fpsReportPath);
-    file_text_write_string(file, "date,FPS_MIN,DELTA_MAX\n");
+    file_text_write_string(file, "date,FPS_MIN,DELTA_MAX");
     file_text_close(file); 
   }
   
