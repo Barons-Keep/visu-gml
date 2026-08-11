@@ -197,7 +197,7 @@ function VisuRenderer() constructor {
   initFpsReport = function(filename) {
     global.fpsReportPath = $"{program_directory}{filename}"
     var file = file_text_open_write(global.fpsReportPath);
-    file_text_write_string(file, "date,FPS_MIN,DELTA_MAX");
+    file_text_write_string(file, "id,name,FPS_MIN,DELTA_MAX");
     file_text_close(file); 
   }
   
@@ -215,12 +215,12 @@ function VisuRenderer() constructor {
       var date =
             string(current_year) + "-"
           + z(current_month) + "-"
-          + z(current_day)   + " "
-          + z(current_hour)  + ":"
-          + z(current_minute)+ ":"
+          + z(current_day)   + "_"
+          + z(current_hour)  + "-"
+          + z(current_minute)+ "-"
           + z(current_second)
 
-      return $"{date},{message}"
+      return $"t-{date},t {date},{message}"
     }
     var controller = Beans.get(BeanVisuController)
     var editor = Beans.get(Visu.modules().editor.controller)
