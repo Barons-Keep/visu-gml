@@ -1,6 +1,7 @@
 ///@package io.alkapivo.visu.renderer
 show_debug_message("init VisuRenderer.gml")
 
+global.fpsReportPath = null
 
 ///@enum
 function _WallpaperType(): Enum() constructor {
@@ -189,10 +190,38 @@ function VisuRenderer() constructor {
     return this
   }
 
+  
+  fpsReport = ""
+  fpsTimer = new Timer(1.0, { loop: Infinity })
+  fpsReportTimer = new Timer(5.0, { loop: Infinity })
+  initFpsReport = function(filename) {
+    global.fpsReportPath = $"{program_directory}{filename}"
+    var file = file_text_open_write(global.fpsReportPath);
+    file_text_write_string(file, "date,FPS_MIN,DELTA_MAX\n");
+    file_text_close(file); 
+  }
+  
+
+  
   ///@private
   ///@param {UILayout} layout
   ///@return {VisuRenderer}
   renderDebugGUI = function(layout) {
+    static generateRow = function(message) {
+      var z = function(v) {
+        return (v < 10 ? "0" : "") + string(v)
+      }
+
+      var date =
+            string(current_year) + "-"
+          + z(current_month) + "-"
+          + z(current_day)   + " "
+          + z(current_hour)  + ":"
+          + z(current_minute)+ ":"
+          + z(current_second)
+
+      return $"{date},{message}"
+    }
     var controller = Beans.get(BeanVisuController)
     var editor = Beans.get(Visu.modules().editor.controller)
     var gridService = controller.gridService
@@ -221,6 +250,11 @@ function VisuRenderer() constructor {
     if (deltaTime >= this.debugMaxDelta) {
       this.debugMaxDelta = deltaTime
       this.debugDeltaHighCooldown = GAME_FPS * 2
+    }
+
+    if (global.fpsReportPath != null && this.fpsTimer.update().finished) {
+      var row = generateRow($"{this.debugMinFPS},{this.debugMaxDelta}")
+      this.fpsReport = this.fpsReport == "" ? row : $"{this.fpsReport}\n{row}"
     }
     
     if (enableDebugOverlay) {
@@ -571,6 +605,17 @@ function VisuRenderer() constructor {
     }
 
     this.executor.update()
+
+    if (global.fpsReportPath != null && this.fpsReportTimer.update().finished) {
+      var file = file_text_open_append(global.fpsReportPath)
+      if (file != -1) {
+        file_text_write_string(file, this.fpsReport)
+        file_text_writeln(file)
+        file_text_close(file)
+        this.fpsReport = ""
+      }
+    }
+
     return this
   }
   

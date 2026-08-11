@@ -1511,6 +1511,27 @@ function _Visu() constructor {
                 autoplay: false,
               }))
             }
+          }),
+          new CLIParam({
+            name: "-f",
+            fullName: "--fps",
+            description: "Measure fps to file",
+            handler: function(args) {
+              static z = function(v) {
+                return (v < 10 ? "0" : "") + string(v)
+              }
+
+              Logger.debug("CLIParamParser", $"Run --fps")
+
+              var filename = string(current_year) + "-"
+                + z(current_month) + "-"
+                + z(current_day) + "_"
+                + z(current_hour) + "-"
+                + z(current_minute) + "-fps-report.csv"
+
+              Beans.get(BeanVisuController).visuRenderer
+                .initFpsReport(filename)
+            }
           })
         ])
       })
