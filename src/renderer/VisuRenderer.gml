@@ -253,7 +253,7 @@ function VisuRenderer() constructor {
     }
 
     if (global.fpsReportPath != null && this.fpsTimer.update().finished) {
-      var row = generateRow($"{this.debugMinFPS},{this.debugMaxDelta}")
+      var row = generateRow($"{abs(this.debugMinFPS)},{abs(this.debugMaxDelta)}")
       this.fpsReport = this.fpsReport == "" ? row : $"{this.fpsReport}\n{row}"
     }
     
