@@ -2,7 +2,6 @@
 show_debug_message("init VisuRenderer.gml")
 
 global.fpsReportPath = null
-global.fpsReportIndex = 1
 
 ///@enum
 function _WallpaperType(): Enum() constructor {
@@ -197,9 +196,8 @@ function VisuRenderer() constructor {
   fpsReportTimer = new Timer(5.0, { loop: Infinity })
   initFpsReport = function(filename) {
     global.fpsReportPath = $"{program_directory}{filename}"
-    global.fpsReportIndex = 1
     var file = file_text_open_write(global.fpsReportPath);
-    file_text_write_string(file, "id,name,INDEX,FPS_MIN,DELTA_MAX\n");
+    file_text_write_string(file, "id,name,FPS_MIN,DELTA_MAX\n");
     file_text_close(file); 
   }
   
@@ -255,8 +253,7 @@ function VisuRenderer() constructor {
     }
 
     if (global.fpsReportPath != null && this.fpsTimer.update().finished) {
-      var row = generateRow($"{global.fpsReportIndex},{abs(this.debugMinFPS)},{abs(this.debugMaxDelta)}")
-      global.fpsReportIndex++
+      var row = generateRow($"{abs(this.debugMinFPS)},{abs(this.debugMaxDelta)}")
       this.fpsReport = this.fpsReport == "" ? row : $"{this.fpsReport}\n{row}"
     }
     
