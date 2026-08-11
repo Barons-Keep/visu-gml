@@ -197,7 +197,7 @@ function VisuRenderer() constructor {
   initFpsReport = function(filename) {
     global.fpsReportPath = $"{program_directory}{filename}"
     var file = file_text_open_write(global.fpsReportPath);
-    file_text_write_string(file, "id,name,FPS_MIN,DELTA_MAX\n");
+    file_text_write_string(file, "timestamp,FPS_MIN,DELTA_MAX\n");
     file_text_close(file); 
   }
   
@@ -220,7 +220,7 @@ function VisuRenderer() constructor {
           + z(current_minute)+ "-"
           + z(current_second)
 
-      return $"t-{date},t {date},{message}"
+      return $"{date},{message}"
     }
     var controller = Beans.get(BeanVisuController)
     var editor = Beans.get(Visu.modules().editor.controller)
