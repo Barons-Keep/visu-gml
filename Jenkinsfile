@@ -17,6 +17,7 @@ pipeline {
             parameters: [
               string(name: 'GIT_REVISION', value: "main"),
               string(name: 'GMS_RUNTIME', value: "VM"),
+              string(name: 'BUILD_OPTIONS', value: "--devtools"),
               string(
                 name: 'OVERRIDE_DEPENDENCIES',
                 value: """
@@ -26,8 +27,7 @@ pipeline {
                   }
                 }
                 """.stripIndent()
-              ),
-              booleanParam(name: 'EDITOR', value: false),
+              )
             ]
           )
         }
