@@ -1382,13 +1382,12 @@ function _Visu() constructor {
               }
             ],
             handler: function(args) {
-              Logger.debug("CLIParamParser", $"Run --test {args.get(0)}")
-
+              var file = args.get(0)
               Core.setProperty("visu.manifest.load-on-start", false)
               Core.setProperty("visu.menu.open-on-start", false)
               Core.setProperty("visu.splashscreen.skip", true)
-
-              Beans.get(BeanTestRunner).push(args.get(0))
+              Logger.debug("CLIParamParser", $"Add test {file}")
+              Beans.get(BeanTestRunner).push(file)
 
               var fsm = Beans.get(BeanVisuController).fsm
               if (fsm.getStateName() != "idle") {
@@ -1407,18 +1406,18 @@ function _Visu() constructor {
                 description: "Comma separated list of paths to test suites"
               }
             ],
-            handler: function(args) {
+            handler: function(tests) {
+              var files = args.get(0)
               Core.setProperty("visu.manifest.load-on-start", false)
               Core.setProperty("visu.menu.open-on-start", false)
               Core.setProperty("visu.splashscreen.skip", true)
-
-              String.split(args.get(0), ",").forEach(function(path) {
+              String.split(files, ",").forEach(function(path) {
                 var test = String.trim(path)
                 if (test == "") {
                   return
                 }
 
-                Logger.debug("CLIParamParser", $"Run --test {test}")
+                Logger.debug("CLIParamParser", $"Add test {test}")
                 Beans.get(BeanTestRunner).push(test)
               })
 
@@ -1432,8 +1431,7 @@ function _Visu() constructor {
             name: "-f",
             fullName: "--fullscreen",
             description: "Force fullscreen mode",
-            handler: function(args) {
-              Logger.debug("CLIParamParser", $"Run --fullscreen")
+            handler: function() {
               Visu.settings.setValue("visu.fullscreen", true).save()
               Beans.get(BeanDisplayService).setFullscreen(true)
             },
@@ -1442,8 +1440,7 @@ function _Visu() constructor {
             name: "-w",
             fullName: "--window",
             description: "Force window mode",
-            handler: function(args) {
-              Logger.debug("CLIParamParser", $"Run --window")
+            handler: function() {
               Visu.settings
                 .setValue("visu.fullscreen", false)
                 .setValue("visu.borderless-window", false)
@@ -1459,8 +1456,7 @@ function _Visu() constructor {
             name: "-r",
             fullName: "--reset",
             description: "Reset settings",
-            handler: function(args) {
-              Logger.debug("CLIParamParser", $"Run --reset")
+            handler: function() {
               if (FileUtil.fileExists(Visu.settings.path)) {
                 file_delete(Visu.settings.path)
               }
@@ -1478,12 +1474,11 @@ function _Visu() constructor {
               {
                 name: "langCode",
                 type: "String",
-                descritpion: "Language type"
+                description: "Language type"
               }
             ],
             handler: function(args) {
               var langType = args.get(0)
-              Logger.debug("CLIParamParser", $"Run --language {langType}")
               if (!LanguageType.contains(langType)) {
                 Logger.error("Visu", $"Language type not supported: {langType}")
                 return
@@ -1501,27 +1496,25 @@ function _Visu() constructor {
               {
                 name: "file",
                 type: "String",
-                descritpion: "Path to manifest.visu"
+                description: "Path to manifest.visu"
               }
             ],
             handler: function(args) {
-              Logger.debug("CLIParamParser", $"Run --load {args.get(0)}")
+              var file = args.get(0)
               Beans.get(BeanVisuController).send(new Event("load", {
-                manifest: FileUtil.get(args.get(0)),
+                manifest: FileUtil.get(file),
                 autoplay: false,
               }))
             }
           }),
           new CLIParam({
-            name: "-f",
+            name: "-F",
             fullName: "--fps",
             description: "Measure fps to file",
-            handler: function(args) {
+            handler: function() {
               static z = function(v) {
                 return (v < 10 ? "0" : "") + string(v)
               }
-
-              Logger.debug("CLIParamParser", $"Run --fps")
 
               var filename = string(current_year) + "-"
                 + z(current_month) + "-"
@@ -1529,8 +1522,99 @@ function _Visu() constructor {
                 + z(current_hour) + "-"
                 + z(current_minute) + "-fps-report.csv"
 
-              Beans.get(BeanVisuController).visuRenderer
-                .initFpsReport(filename)
+              Beans.get(BeanVisuController).visuRenderer.initFpsReport(filename)
+            }
+          }),
+          new CLIParam({
+            name: "-s",
+            fullName: "--settings",
+            description: "Override settings",
+            args: [
+              {
+                name: "prompt",
+                type: "String",
+                description: "Settings string, entries are \";\" separated, key-value are \"=\" separeated"
+              }
+            ],
+            handler: function(args) {
+              var prompt = args.get(0)
+              String.split(prompt, ";").forEach(function(entry) {
+                var tuple = String.split(entry, "=")
+                if (tuple.size() != 2) {
+                  Logger.error("CLIParamParser", $"Cannot parse settings tuple: {tuple}")
+                  return
+                }
+                
+                var key = tuple.get(0)
+                var value = tuple.get(1)
+                var settingsEntry = Visu.settings.get(key)
+                if (settingsEntry == null) {
+                  Logger.error("CLIParamParser", $"Settings does not exists: {key}")
+                  return
+                }
+
+                Logger.debug("CLIParamParser", $"Set settings key: {key}, value: {value}")
+                var defaultValue = Visu.settings.getValue(key)
+                switch (settingsEntry.type) {
+                  case SettingTypes.BOOLEAN:
+                    Visu.settings.setValue(key, String.toLowerCase(value) == "true"
+                      ? true
+                      : (String.toLowerCase(value) == "false"
+                        ? false
+                        : NumberUtil(value, defaultValue) > 0.0))
+                    break
+                  case SettingTypes.NUMBER:
+                    Visu.settings.setValue(key, NumberUtil.parse(value, defaultValue))
+                    break
+                  case SettingTypes.STRING:
+                    Visu.settings.setValue(key, value)
+                    break
+                  case SettingTypes.STRUCT:
+                    Visu.settings.setValue(key, JSON.parse(value, defaultValue))
+                    break
+                  default:
+                    Logger.error("CLIParamParser", $"Settings type unsupported. Key: {key}, type: {settingsEntry.type}")
+                    break
+                }
+              })
+
+              Visu.settings.save()
+            }
+          }),
+          new CLIParam({
+            name: "-p",
+            fullName: "--properties",
+            description: "Override properties",
+            args: [
+              {
+                name: "prompt",
+                type: "String",
+                description: "Properties string, entries are \";\" separated, key-value are \"=\" separeated"
+              }
+            ],
+            handler: function(args) {
+              var prompt = args.get(0)
+              String.split(prompt, ";").forEach(function(entry) {
+                var tuple = String.split(entry, "=")
+                if (tuple.size() != 2) {
+                  Logger.error("CLIParamParser", $"Cannot parse properties tuple: {tuple.getContainer()}")
+                  return
+                }
+
+                var key = tuple.get(0)
+                var value = tuple.get(1)
+                value = (String.getFirstChar(value) == "["
+                    || String.getFirstChar(value) = "{"
+                    || String.toLowerCase(value) == "true"
+                    || String.toLowerCase(value) == "false")
+                  ? JSON.parse(value, value)
+                  : NumberUtil.parse(value, value)
+                var displayValue = Core.isType(value, Array)
+                  ? value.getContainer()
+                  : value
+                Logger.debug("CLIParamParser", $"Set property key: {key}, value: {displayValue}")
+                Core.setProperty(key, value)
+              })
             }
           })
         ])
@@ -2298,7 +2382,7 @@ function _Visu() constructor {
     }
 
     //Logger.info("Visu", "run::parseCli()")
-    this.cliParser().parse()
+    this.cliParser().print().parse()
     VISU_PARSE_CLI = true
   }
   
