@@ -1406,7 +1406,7 @@ function _Visu() constructor {
                 description: "Comma separated list of paths to test suites"
               }
             ],
-            handler: function(tests) {
+            handler: function(args) {
               var files = args.get(0)
               Core.setProperty("visu.manifest.load-on-start", false)
               Core.setProperty("visu.menu.open-on-start", false)
