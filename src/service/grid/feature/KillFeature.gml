@@ -13,6 +13,7 @@ function KillFeature(json): GridItemFeature(json) constructor {
   ///@param {GridItem} item
   ///@param {VisuController} controller
   static update = function(item, controller) {
-    item.signal("kill")
+    item.signalKill()
+    //item.signal("kill")
   }
 }

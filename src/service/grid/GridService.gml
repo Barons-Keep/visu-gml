@@ -783,7 +783,8 @@ function GridService(_config = null): Service(_config) constructor {
 
     if (!bullet.signals.kill && length > GRID_ITEM_FRUSTUM_RANGE) {
       bullet.signals.freeReason = "expired"
-      bullet.signal("kill")
+      //bullet.signal("kill")
+      bullet.signalKill()
     }
   }
 
@@ -798,7 +799,8 @@ function GridService(_config = null): Service(_config) constructor {
     if (!shroom.signals.kill
           && Math.fetchLength(shroom.x, shroom.y, view.x + (view.width / 2.0), view.y + (view.height / 2.0)) > GRID_ITEM_FRUSTUM_RANGE) {
       shroom.signals.freeReason = "expired"
-      shroom.signal("kill")
+      //shroom.signal("kill")
+      shroom.signalKill()
     }
   }
 
@@ -831,17 +833,22 @@ function GridService(_config = null): Service(_config) constructor {
   bulletCollision = function(bullet, index, controller) {
     static playerBullet = function(shroom, index, bullet) {
       if (shroom.collide(bullet)) {
-        shroom.signal("bulletCollision", bullet)
-        shroom.signal("damage", true)
         shroom.healthPoints = clamp(shroom.healthPoints - bullet.damage, 0, 9999.9)
-        bullet.signal("shroomCollision", shroom)
+        shroom.signalBulletCollision(bullet)
+        shroom.signalDamage(true)
+        bullet.signalShroomCollision(shroom)
+        //shroom.signal("bulletCollision", bullet)
+        //shroom.signal("damage", true)
+        //bullet.signal("shroomCollision", shroom)
       }
     }
 
     static shroomBullet = function(player, bullet) {
       if (bullet.fadeIn >= 1.0 && player.collide(bullet)) {
-        player.signal("bulletCollision", bullet)
-        bullet.signal("playerCollision", player)
+        player.signalBulletCollision(bullet)
+        bullet.signalPlayerCollision(player)
+        //player.signal("bulletCollision", bullet)
+        //bullet.signal("playerCollision", player)
       }
     }
 
@@ -876,10 +883,13 @@ function GridService(_config = null): Service(_config) constructor {
   ///@param {Player} player
   shroomCollision = function(shroom, index, player) {
     if (shroom.fadeIn >= 1.0 && shroom.collide(player)) {
-      player.signal("shroomCollision", shroom)
-      shroom.signal("playerCollision", player)
-      shroom.signal("damage", true)
       shroom.healthPoints = clamp(shroom.healthPoints - 1.0, 0, 9999.9)
+      player.signalShroomCollision(shroom)
+      shroom.signalPlayerCollision(player)
+      shroom.signalDamage(true)
+      //player.signal("shroomCollision", shroom)
+      //shroom.signal("playerCollision", player)
+      //shroom.signal("damage", true)
     }
   }
 
@@ -888,10 +898,12 @@ function GridService(_config = null): Service(_config) constructor {
   ///@param {Player} player
   shroomCollisionGodMode = function(shroom, index, player) {
     if (shroom.collide(player)) {
-      shroom.signal("playerCollision", player)
+      shroom.signalPlayerCollision(player)
+      //shroom.signal("playerCollision", player)
       if (!shroom.signals.kill) {
         shroom.signals.freeReason = "shooted"
-        shroom.signal("kill")
+        shroom.signalKill()
+        //shroom.signal("kill")
       }
     }
   }

@@ -406,7 +406,8 @@ function Bullet(template): GridItem(template) constructor {
       this.signals.freeReason = (this.producer == Player
         ? (this.signals.shroomCollision != null ? "hitShroom" : "expired")
         : (this.signals.playerCollision != null ? "hitPlayer" : "expired"))
-      this.signal("kill")
+      //this.signal("kill")
+      this.signalKill()
     }
     #endregion
 

@@ -61,7 +61,8 @@ function BulletService(config = null): Service(config) constructor {
       static freeBullet = function(bullet, idx, bulletService) {
         if (!bullet.signals.kill) {
           bullet.signals.freeReason = "expired"
-          bullet.signal("kill")
+          //bullet.signal("kill")
+          bullet.signalKill()
         }
 
         bulletService.statistics.freeBullet(bullet, bullet.signals.freeReason)

@@ -443,7 +443,49 @@ function GridItem(config) constructor {
   chunkPosition = Struct.getIfType(config, "chunkPosition", Struct)
 
   ///@type {GridItemSignals}
-  signals = new GridItemSignals()
+  //signals = new GridItemSignals()
+
+  signals = {
+    kill: null,
+    damage: null,
+    bulletCollision: null,
+    shroomCollision: null,
+    playerCollision: null,
+    freeReason: null,
+  }
+
+  static signalKill = function() {
+    this.signals.kill = true
+  }
+
+  static signalBulletCollision = function(item) {
+    this.signals.bulletCollision = item
+  }
+
+  static signalDamage = function(damage) {
+    this.signals.damage = damage
+  }
+
+  static signalShroomCollision = function(item) {
+    this.signals.shroomCollision = item
+  }
+
+  static signalBulletCollision = function(item) {
+    this.signals.bulletCollision = item
+  }
+
+  static signalPlayerCollision = function(item) {
+    this.signals.playerCollision = item
+  }
+
+  static resetSignals = function() {
+    gml_pragma("forceinline")
+    this.signals.damage = false
+    this.signals.bulletCollision = null
+    this.signals.shroomCollision = null
+    this.signals.playerCollision = null
+    return this
+  }
     
   ///@param {Number} angle
   ///@return {GridItem}
@@ -482,11 +524,11 @@ function GridItem(config) constructor {
   ///@param {any} name
   ///@param {any} [value]
   ///@return {GridItem}
-  static signal = function(name, value = true) {
-    gml_pragma("forceinline")
-    this.signals.set(name, value)
-    return this
-  }
+  //static signal = function(name, value = true) {
+  //  gml_pragma("forceinline")
+  //  this.signals.set(name, value)
+  //  return this
+  //}
 
   ///@param {GridItem} target
   ///@return {Bollean}
@@ -512,7 +554,8 @@ function GridItem(config) constructor {
   ///@return {GridItem}
   static move = function() {
     gml_pragma("forceinline")
-    this.signals.reset()
+    //this.signals.reset()
+    this.resetSignals()
     //var _speed = DeltaTime.apply(controller.gridService.properties.bulletTime * this.speed)
     var _speed = DELTA_TIME * GRID_SERVICE_BULLET_TIME * this.speed
     //var _speed = DeltaTime.apply(GRID_SERVICE_BULLET_TIME * this.speed)

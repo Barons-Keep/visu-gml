@@ -395,7 +395,8 @@ function PlayerStats(_player, json) constructor {
             controller.shroomService.shrooms.forEach(function(shroom, index, player) {
               if (!shroom.signals.kill && Math.fetchLength(shroom.x, shroom.y, player.x, player.y) <= 1.41) {
                 shroom.signals.freeReason = "nuked"
-                shroom.signal("kill")
+                shroom.signalKill()
+                //shroom.signal("kill")
               }
             }, player)
 
@@ -1032,7 +1033,8 @@ function Player(template): GridItem(template) constructor {
   ///@return {GridItem}
   static move = function(controller) {
     gml_pragma("forceinline")
-    this.signals.reset()
+    //this.signals.reset()
+    this.resetSignals()
 
     var _speed = DELTA_TIME * this.speed
     //var _speed = DeltaTime.apply(this.speed)

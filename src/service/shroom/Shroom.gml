@@ -330,7 +330,8 @@ function Shroom(template): GridItem(template) constructor {
     gml_pragma("forceinline")
     if (this.healthPoints == 0.0 && !this.signals.kill) {
       this.signals.freeReason = "shooted"
-      this.signal("kill")
+      this.signalKill()
+      //this.signal("kill")
     }
 
     if (this.signals.damage && !this.signals.kill) {
@@ -372,7 +373,8 @@ function Shroom(template): GridItem(template) constructor {
     //this.lifespan += DeltaTime.apply(FRAME_MS)
     if (!this.signals.kill && this.lifespan >= this.lifespanMax) {
       this.signals.freeReason = "expired"
-      this.signal("kill")
+      this.signalKill()
+      //this.signal("kill")
     }
     #endregion
     

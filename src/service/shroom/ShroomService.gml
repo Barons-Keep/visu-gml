@@ -194,7 +194,8 @@ function ShroomService(config = null): Service(config) constructor {
       static freeShroom = function(shroom, idx, shroomService) {
         if (!shroom.signals.kill) {
           shroom.signals.freeReason = "expired"
-          shroom.signal("kill")
+          shroom.signalKill()
+          //shroom.signal("kill")
         }
 
         shroomService.statistics.freeShroom(shroom, shroom.signals.freeReason)
