@@ -53,9 +53,9 @@ function BulletService(config = null): Service(config) constructor {
         this.chunkService.add(bullet)
       }
 
-      if (this.optimalizationSortEntitiesByTxGroup) {
-        controller.gridService.textureGroups.sortItems(this.bullets)
-      }
+      //if (this.optimalizationSortEntitiesByTxGroup) {
+      //  controller.gridService.textureGroups.sortItems(this.bullets)
+      //}
     },
     "clear-bullets": function(event) {
       static freeBullet = function(bullet, idx, bulletService) {
@@ -196,9 +196,9 @@ function BulletService(config = null): Service(config) constructor {
     this.bullets.add(bullet)
     this.statistics.factoryBullet(bullet)
 
-    if (this.optimalizationSortEntitiesByTxGroup) {
-      controller.gridService.textureGroups.sortItems(this.bullets)
-    }
+    //if (this.optimalizationSortEntitiesByTxGroup) {
+    //  controller.gridService.textureGroups.sortItems(this.bullets)
+    //}
 
     if (onDeath) {
       bullet.fadeIn = 1.0

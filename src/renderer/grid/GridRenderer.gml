@@ -32,7 +32,7 @@ function GridRenderer() constructor {
 
   ///@private
   ///@type {Surface}
-  gridItemSurface = new Surface({ width: GuiWidth(), height: GuiHeight(), depth: false })
+  //gridItemSurface = new Surface({ width: GuiWidth(), height: GuiHeight(), depth: false })
 
   ///@private
   ///@type {Surface}
@@ -53,11 +53,11 @@ function GridRenderer() constructor {
 
   ///@private
   ///@type {BKTGlitchService}
-  gridGlitchService = new BKTGlitchService()
+  gridGlitchService = this.backgroundGlitchService//new BKTGlitchService()
 
   ///@private
   ///@type {BKTGlitchService}
-  combinedGlitchService = new BKTGlitchService()
+  combinedGlitchService = this.backgroundGlitchService//new BKTGlitchService()
 
   ///@private
   ///@type {Timer}
@@ -1446,6 +1446,7 @@ function GridRenderer() constructor {
     var height = layout.height()
     var renderDebugMasks = Visu.settings.getValue("visu.debug.render-entities-mask", false)
     var renderDebugChunks = Visu.settings.getValue("visu.debug.render-debug-chunks", false)
+    var _renderPlayerShadow = this.entityRenderPlayerShadow
     var _renderPlayer = this.entityRenderPlayer
     var _renderShrooms = this.entityRenderShrooms
     var _renderBullets = this.entityRenderBullets
@@ -1534,11 +1535,10 @@ function GridRenderer() constructor {
     ))
     this.gridRenderSeparatorsMain(gridService)
 
-    gpu_set_ztestenable(true)
-    gpu_set_zwriteenable(true)
-    gpu_set_alphatestenable(true)
-  
     if (this.pathTrack != null) {
+      gpu_set_ztestenable(true)
+      gpu_set_zwriteenable(true)
+      gpu_set_alphatestenable(true)
       var xxx = (((gridService.width - gridService.view.width) / 2.0) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH
       var yyy = (gridService.height - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT
       matrix_set(matrix_world, matrix_build(
@@ -1547,11 +1547,10 @@ function GridRenderer() constructor {
         1, 1, 1
       ))
       vertex_submit(this.pathTrack.vertexBuffer.buffer, pr_trianglelist, -1)
+      gpu_set_ztestenable(false)
+      gpu_set_zwriteenable(false)
+      gpu_set_alphatestenable(false)
     }
-
-    gpu_set_ztestenable(false)
-    gpu_set_zwriteenable(false)
-    gpu_set_alphatestenable(false)
 
     matrix_set(matrix_world, matrix_build(
       baseX, baseY, depths.playerZ, 
@@ -1560,75 +1559,7 @@ function GridRenderer() constructor {
     ))
     this.gridRenderBorders(gridService)
 
-    matrix_set(matrix_world, matrix_build_identity())
-
-    return this
-  }
-
-  ///@private
-  ///@param {UILayout} layout
-  ///@return {GridRenderer}
-  renderGridItemSurface = function(layout) {
-    var width = layout.width()
-    var height = layout.height()
-    var renderDebugMasks = Visu.settings.getValue("visu.debug.render-entities-mask", false)
-    var renderDebugChunks = Visu.settings.getValue("visu.debug.render-debug-chunks", false)
-    var _renderPlayerShadow = this.entityRenderPlayerShadow
-    var _renderPlayer = this.entityRenderPlayer
-    var _renderShrooms = this.entityRenderShrooms
-    var _renderBullets = this.entityRenderBullets
-    var _renderCoins = this.entityRenderCoins
-    if (renderDebugMasks) {
-      _renderPlayer = this.debugRenderPlayer
-      _renderShrooms = this.debugRenderShrooms
-      _renderBullets = this.debugRenderBullets
-      _renderCoins = this.debugRenderCoins
-    }
-    
-    var controller = Beans.get(BeanVisuController)
-    var gridService = controller.gridService
-    var properties = gridService.properties
-    var bulletService = controller.bulletService
-    var playerService = controller.playerService
-    var shroomService = controller.shroomService
-    var coinService = controller.coinService
-    var particleService = controller.particleService
-
-    //GPU.render.clear(properties.gridClearColor.toGMColor(), 0.0)
-    GPU.render.clear(c_black, 0.0)
-
-    var depths = properties.depths
-    var camera = this.camera
-    var gmCamera = camera.get()
-    var cameraAngle = camera.angle + (sin(camera.breathTimer2.time / 4.0) * BREATH_TIMER_FACTOR_2)
-    var cameraPitch = camera.pitch + (sin(camera.breathTimer1.time) * BREATH_TIMER_FACTOR_1)
-    var xto = camera.x + (sin(camera.breathTimer2.time) * GRID_SERVICE_PIXEL_WIDTH * -1.0)
-    var yto = camera.y
-    var zto = camera.z
-    var xfrom = xto + dcos(cameraAngle) * dcos(cameraPitch)
-    var yfrom = yto - dsin(cameraAngle) * dcos(cameraPitch)
-    var zfrom = zto - dsin(cameraPitch)
-    var baseX = GRID_SERVICE_PIXEL_WIDTH + GRID_SERVICE_PIXEL_WIDTH * 0.5
-    var baseY = GRID_SERVICE_PIXEL_HEIGHT + GRID_SERVICE_PIXEL_HEIGHT * 0.5
-    camera.viewMatrix = matrix_build_lookat(
-      xfrom, yfrom, zfrom, 
-      xto, yto, zto, 
-      0, 0, 1
-    )
-    ///@todo extract parameters
-    camera.projectionMatrix = matrix_build_projection_perspective_fov(
-      -60, 
-      -1 * (width / height), 
-      1, 
-      32000 
-    ) 
-    camera_set_view_mat(gmCamera, camera.viewMatrix)
-    camera_set_proj_mat(gmCamera, camera.projectionMatrix)
-    camera_apply(gmCamera)
-
-    gpu_set_ztestenable(true)
-    gpu_set_zwriteenable(true)
-    gpu_set_alphatestenable(true)
+    //matrix_set(matrix_world, matrix_build_identity())
 
     var shadowZ = min(depths.coinZ, depths.bulletZ, depths.shroomZ, depths.playerZ) - 1
     matrix_set(matrix_world, matrix_build(
@@ -1743,9 +1674,246 @@ function GridRenderer() constructor {
 
     this.editorRenderSpawners(gridService, shroomService, layout)
 
-    gpu_set_ztestenable(false)
-    gpu_set_zwriteenable(false)
-    gpu_set_alphatestenable(false)
+    //gpu_set_ztestenable(false)
+    //gpu_set_zwriteenable(false)
+    //gpu_set_alphatestenable(false)
+
+    matrix_set(matrix_world, matrix_build(
+      baseX, baseY, depths.bulletZ, 
+      global.cameraRollSpeed, global.cameraPitchSpeed, global.cameraYawSpeed,
+      1, 1, 1
+    ))
+    _renderBullets(gridService, bulletService)
+    
+    if (isMouseShoot && !controller.menu.enabled && global.gamepadPlayerAimMouse) {
+      matrix_set(matrix_world, matrix_build(
+        0, 0, depths.playerZ + 1,
+        global.cameraRollSpeed, global.cameraPitchSpeed, global.cameraYawSpeed,
+        1, 1, 1
+      ))
+
+      var angle = Math.fetchPointsAngle(this.player3DCoords.x, this.player3DCoords.y, this.target3DCoords.x, this.target3DCoords.y)
+      var color = c_blue
+      var alpha = player.sprite.getAlpha() * player.fadeIn
+      var spawnerX = coords[0]
+      var spawnerY = coords[1]
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 1.1, 1.1, angle, c_white, alpha * 0.6)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 0.8, 0.8, angle, c_red, alpha * 0.8)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 0.9, 0.9, angle, c_fuchsia, alpha * 0.7)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 1.0, 1.0, angle, c_blue, alpha * 0.6)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 0.7, 0.7, angle, c_yellow, alpha * 0.9)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 0.6, 0.6, angle, c_white, alpha * 1.0)
+    }
+    
+    matrix_set(matrix_world, matrix_build(
+      baseX, baseY, depths.playerZ, 
+      global.cameraRollSpeed, global.cameraPitchSpeed, global.cameraYawSpeed,
+      1, 1, 1
+    ))
+    //this.gridRenderBorders(gridService)
+    if (isMouseShoot && !controller.menu.enabled && global.gamepadPlayerAim && !global.gamepadPlayerAimMouse) {
+      global.gamepadPlayerAimAlpha = clamp(global.gamepadPlayerAimAlpha - GAMEPAD_PLAYER_AIM_ALPHA_FADE, 0.0, global.gamepadPlayerAimAlphaDefault)
+      var angle = global.gamepadPlayerAimAngle        
+      var color = c_blue
+      var alpha = player.sprite.getAlpha() * player.fadeIn * global.gamepadPlayerAimAlpha
+      var spawnerX = this.player3DCoords.x + Math.fetchCircleX(GAMEPAD_PLAYER_AIM_OFFSET, angle)
+      var spawnerY = this.player3DCoords.y + Math.fetchCircleY(GAMEPAD_PLAYER_AIM_OFFSET, angle)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 1.1, 1.1, angle, c_white, alpha * 0.6)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 0.8, 0.8, angle, c_red, alpha * 0.8)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 0.9, 0.9, angle, c_fuchsia, alpha * 0.7)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 1.0, 1.0, angle, c_blue, alpha * 0.6)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 0.7, 0.7, angle, c_yellow, alpha * 0.9)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, spawnerX, spawnerY, 0.6, 0.6, angle, c_white, alpha * 1.0)
+    }
+
+    _renderPlayer(gridService, playerService, baseX, baseY)
+
+    matrix_set(matrix_world, matrix_build_identity())
+
+    return this
+  }
+
+  ///@private
+  ///@param {UILayout} layout
+  ///@return {GridRenderer}
+  renderGridItemSurface = function(layout) {
+    var width = layout.width()
+    var height = layout.height()
+    var renderDebugMasks = Visu.settings.getValue("visu.debug.render-entities-mask", false)
+    var renderDebugChunks = Visu.settings.getValue("visu.debug.render-debug-chunks", false)
+    var _renderPlayerShadow = this.entityRenderPlayerShadow
+    var _renderPlayer = this.entityRenderPlayer
+    var _renderShrooms = this.entityRenderShrooms
+    var _renderBullets = this.entityRenderBullets
+    var _renderCoins = this.entityRenderCoins
+    if (renderDebugMasks) {
+      _renderPlayer = this.debugRenderPlayer
+      _renderShrooms = this.debugRenderShrooms
+      _renderBullets = this.debugRenderBullets
+      _renderCoins = this.debugRenderCoins
+    }
+    
+    var controller = Beans.get(BeanVisuController)
+    var gridService = controller.gridService
+    var properties = gridService.properties
+    var bulletService = controller.bulletService
+    var playerService = controller.playerService
+    var shroomService = controller.shroomService
+    var coinService = controller.coinService
+    var particleService = controller.particleService
+
+    //GPU.render.clear(properties.gridClearColor.toGMColor(), 0.0)
+    GPU.render.clear(c_black, 0.0)
+
+    var depths = properties.depths
+    var camera = this.camera
+    var gmCamera = camera.get()
+    var cameraAngle = camera.angle + (sin(camera.breathTimer2.time / 4.0) * BREATH_TIMER_FACTOR_2)
+    var cameraPitch = camera.pitch + (sin(camera.breathTimer1.time) * BREATH_TIMER_FACTOR_1)
+    var xto = camera.x + (sin(camera.breathTimer2.time) * GRID_SERVICE_PIXEL_WIDTH * -1.0)
+    var yto = camera.y
+    var zto = camera.z
+    var xfrom = xto + dcos(cameraAngle) * dcos(cameraPitch)
+    var yfrom = yto - dsin(cameraAngle) * dcos(cameraPitch)
+    var zfrom = zto - dsin(cameraPitch)
+    var baseX = GRID_SERVICE_PIXEL_WIDTH + GRID_SERVICE_PIXEL_WIDTH * 0.5
+    var baseY = GRID_SERVICE_PIXEL_HEIGHT + GRID_SERVICE_PIXEL_HEIGHT * 0.5
+    camera.viewMatrix = matrix_build_lookat(
+      xfrom, yfrom, zfrom, 
+      xto, yto, zto, 
+      0, 0, 1
+    )
+    ///@todo extract parameters
+    camera.projectionMatrix = matrix_build_projection_perspective_fov(
+      -60, 
+      -1 * (width / height), 
+      1, 
+      32000 
+    ) 
+    camera_set_view_mat(gmCamera, camera.viewMatrix)
+    camera_set_proj_mat(gmCamera, camera.projectionMatrix)
+    camera_apply(gmCamera)
+
+    //gpu_set_ztestenable(true)
+    //gpu_set_zwriteenable(true)
+    //gpu_set_alphatestenable(true)
+
+    var shadowZ = min(depths.coinZ, depths.bulletZ, depths.shroomZ, depths.playerZ) - 1
+    matrix_set(matrix_world, matrix_build(
+      baseX, baseY, shadowZ, 
+      global.cameraRollSpeed, global.cameraPitchSpeed, global.cameraYawSpeed,
+      1, 1, 1
+    ))
+    _renderPlayerShadow(gridService, playerService)
+
+    matrix_set(matrix_world, matrix_build(
+      0, 0, shadowZ,
+      global.cameraRollSpeed, global.cameraPitchSpeed, global.cameraYawSpeed,
+      1, 1, 1
+    ))
+    var mouseX = MouseUtil.getMouseX() - layout.x()
+    var mouseY = MouseUtil.getMouseY() - layout.y()
+    var ray = Math.project2DCoordsOn3D(mouseX, mouseY, camera.viewMatrix, camera.projectionMatrix, width, height)
+    var coords = Math.rayPlaneZ(ray, depths.playerZ)
+    var player = playerService.player
+    var isMouseShoot = coords != null
+        && gridService.properties.renderPlayer
+        && player != null
+        && player.sprite.texture.asset != texture_empty
+        && Visu.settings.getValue("visu.developer.mouse-shoot", false)
+  
+    if (isMouseShoot && !controller.menu.enabled) {
+      this.target3DCoords.x = coords[0] - (GRID_SERVICE_PIXEL_WIDTH * 1.5)
+      this.target3DCoords.y = coords[1] - (GRID_SERVICE_PIXEL_HEIGHT * 1.5)
+      this.target3DCoords.z = gridService.properties.depths.playerZ
+      if (gridService.properties.playerShadowEnable) {
+        var supportColor = gridService.properties.supportColor
+        var luminance = (0.2126 * supportColor.red * 255.0) + (0.7152 * supportColor.green * 255.0) + (0.0722 * supportColor.blue * 255.0)
+        var contrastGMColor = luminance > 128 ? c_black : c_white
+    
+        var focusCooldown = Struct.get(player.handler, "focusCooldown")
+        var focusTime = Struct.get(focusCooldown, "time")
+        var focusDuration = Struct.get(focusCooldown, "duration")
+        var focusFactor = focusTime != null && focusDuration != null ? focusTime / focusDuration : 0.0
+        var scaleFactor = clamp(player.stats.godModeCooldown, 1.0, 10.0)
+        var swing = (sin(this.playerZTimer.time * 2.0) + 1.0) / 4.0
+        var scaleX = ((player.sprite.texture.width * player.sprite.scaleX) / sprite_get_width(texture_player_shadow)) * (4.0 + (0.0 * focusFactor)) * (scaleFactor + swing)
+        var scaleY = ((player.sprite.texture.height * player.sprite.scaleY) / sprite_get_height(texture_player_shadow)) * (4.0 + (0.0 * focusFactor)) * (scaleFactor + swing)
+        var alpha = player.sprite.getAlpha() * player.fadeIn
+        if (global.gamepadPlayerAimMouse) {
+          draw_sprite_ext(texture_player_shadow, 0, coords[0], coords[1], scaleX * 0.625, scaleY * 0.625, 0.0, contrastGMColor, alpha * 1.0)
+          draw_sprite_ext(texture_player_shadow, 0, coords[0], coords[1], scaleX * 1.25, scaleY * 1.25, 0.0, supportColor.toGMColor(), alpha * 0.85)
+        } else if (global.gamepadPlayerAim) {
+          matrix_set(matrix_world, matrix_build(
+            baseX, baseY, depths.playerZ, 
+            global.cameraRollSpeed, global.cameraPitchSpeed, global.cameraYawSpeed,
+            1, 1, 1
+          ))
+
+          var shadowX = this.player3DCoords.x + Math.fetchCircleX(GAMEPAD_PLAYER_AIM_OFFSET, global.gamepadPlayerAimAngle)
+          var shadowY = this.player3DCoords.y + Math.fetchCircleY(GAMEPAD_PLAYER_AIM_OFFSET, global.gamepadPlayerAimAngle)
+          alpha = alpha * global.gamepadPlayerAimAlphaDefault
+          draw_sprite_ext(texture_player_shadow, 0, shadowX, shadowY, scaleX * 0.625, scaleY * 0.625, 0.0, contrastGMColor, alpha * 1.0)
+          draw_sprite_ext(texture_player_shadow, 0, shadowX, shadowY, scaleX * 1.25, scaleY * 1.25, 0.0, supportColor.toGMColor(), alpha * 0.85)
+        }
+      }
+    }
+
+    matrix_set(matrix_world, matrix_build(
+      baseX, baseY, depths.coinZ, 
+      global.cameraRollSpeed, global.cameraPitchSpeed, global.cameraYawSpeed,
+      1, 1, 1
+    ))
+    _renderCoins(gridService, coinService)
+
+    matrix_set(matrix_world, matrix_build(
+      baseX, baseY, depths.shroomZ, 
+      global.cameraRollSpeed, global.cameraPitchSpeed, global.cameraYawSpeed,
+      1, 1, 1
+    ))
+    _renderShrooms(gridService, shroomService)
+
+    if (renderDebugChunks) {
+      shroomService.chunkService.chunks.forEach(function(chunk, key, view) {
+        var coords = String.split(key, "_")
+        var xx = ((real(coords.get(0)) * GRID_ITEM_CHUNK_SERVICE_SIZE) - view.x) * GRID_SERVICE_PIXEL_WIDTH
+        var yy = ((real(coords.get(1)) * GRID_ITEM_CHUNK_SERVICE_SIZE) - view.y) * GRID_SERVICE_PIXEL_HEIGHT
+        draw_sprite_ext(
+          texture_white, 
+          0.0, 
+          xx,
+          yy, 
+          ((GRID_SERVICE_PIXEL_WIDTH * GRID_ITEM_CHUNK_SERVICE_SIZE) / 64) * 0.9,
+          ((GRID_SERVICE_PIXEL_HEIGHT * GRID_ITEM_CHUNK_SERVICE_SIZE) / 64) * 0.9,
+          0.0,
+          chunk.size() > 0 ? c_red : c_white,
+          0.6
+        )
+      }, gridService.view)
+
+      bulletService.chunkService.chunks.forEach(function(chunk, key, view) {
+        var coords = String.split(key, "_")
+        var xx = ((real(coords.get(0)) * GRID_ITEM_CHUNK_SERVICE_SIZE) - view.x) * GRID_SERVICE_PIXEL_WIDTH
+        var yy = ((real(coords.get(1)) * GRID_ITEM_CHUNK_SERVICE_SIZE) - view.y) * GRID_SERVICE_PIXEL_HEIGHT
+        draw_sprite_ext(
+          texture_white, 
+          0.0, 
+          xx + 128, 
+          yy + 128, 
+          ((GRID_SERVICE_PIXEL_WIDTH * GRID_ITEM_CHUNK_SERVICE_SIZE) / 64) * 0.75,
+          ((GRID_SERVICE_PIXEL_HEIGHT * GRID_ITEM_CHUNK_SERVICE_SIZE) / 64) * 0.75,
+          0.0,
+          chunk.size() > 0 ? c_lime : c_white,
+          0.6
+        )
+      }, gridService.view)
+    }
+
+    this.editorRenderSpawners(gridService, shroomService, layout)
+
+    //gpu_set_ztestenable(false)
+    //gpu_set_zwriteenable(false)
+    //gpu_set_alphatestenable(false)
 
     matrix_set(matrix_world, matrix_build(
       baseX, baseY, depths.bulletZ, 
@@ -1906,9 +2074,9 @@ function GridRenderer() constructor {
     //GPU.render.clear(properties.gridClearColor.toGMColor(), properties.gridClearFrameAlpha)
     GPU.render.clear(c_black, 0.0)
 
-    GPU.set.surface(this.gridSurface)
-    this.gridItemSurface.renderStretched(width, height, 0, 0, 1.0)
-    GPU.reset.surface()
+    //GPU.set.surface(this.gridSurface)
+    //this.gridItemSurface.renderStretched(width, height, 0, 0, 1.0)
+    //GPU.reset.surface()
 
     if (enableParticles && gridService.properties.renderParticles) {
       GPU.set.surface(this.backgroundSurface)
@@ -1933,7 +2101,7 @@ function GridRenderer() constructor {
     }
 
     if (properties.renderSupportGrid && properties.renderFocusGrid) {
-      this.gridItemSurface.renderStretched(width, height, 0, 0, properties.supportGridAlpha)
+      //this.gridItemSurface.renderStretched(width, height, 0, 0, properties.supportGridAlpha)
     }
 
     var player = controller.playerService.player
@@ -2190,9 +2358,9 @@ function GridRenderer() constructor {
     application_surface_enable(false)
     application_surface_draw_enable(false)
     
+    gpu_set_zfunc(cmpfunc_lessequal)
     gpu_set_ztestenable(false)
     gpu_set_zwriteenable(false)
-    gpu_set_zfunc(cmpfunc_lessequal)
     gpu_set_alphatestenable(false)
     gpu_set_alphatestref(0)
     gpu_set_cullmode(cull_counterclockwise)
@@ -2212,8 +2380,8 @@ function GridRenderer() constructor {
     this.camera = new GridCamera()
     this.overlayRenderer.clear()
     this.gridGlitchService.dispatcher.send(new Event("clear-glitch"))
-    this.backgroundGlitchService.dispatcher.send(new Event("clear-glitch"))
-    this.combinedGlitchService.dispatcher.send(new Event("clear-glitch"))
+    //this.backgroundGlitchService.dispatcher.send(new Event("clear-glitch"))
+    //this.combinedGlitchService.dispatcher.send(new Event("clear-glitch"))
     this.init()
     return this
   }
@@ -2229,8 +2397,8 @@ function GridRenderer() constructor {
     var controller = Beans.get(BeanVisuController)
     if (controller.isGameplayRunning()) {
       this.backgroundGlitchService.update(width, height)
-      this.gridGlitchService.update(width, height)
-      this.combinedGlitchService.update(width, height)
+      //this.gridGlitchService.update(width, height)
+      //this.combinedGlitchService.update(width, height)
     }
 
     if (this.pathTrack != null) {
@@ -2257,9 +2425,9 @@ function GridRenderer() constructor {
       .update(width, height)
       .renderOn(this.renderGridSurface, layout, true)
 
-    this.gridItemSurface
-      .update(width, height)
-      .renderOn(this.renderGridItemSurface, layout, true)
+    //this.gridItemSurface
+    //  .update(width, height)
+    //  .renderOn(this.renderGridItemSurface, layout, true)
 
     this.shaderBufferSurface
       .update(shaderWidth, shaderHeight)
@@ -2308,7 +2476,7 @@ function GridRenderer() constructor {
   free = function() {
     this.backgroundSurface.free()
     this.gridSurface.free()
-    this.gridItemSurface.free()
+    //this.gridItemSurface.free()
     this.gameSurface.free()
     this.shaderBufferSurface.free()
     this.camera.free()

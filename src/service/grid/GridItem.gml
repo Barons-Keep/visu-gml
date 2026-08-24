@@ -377,56 +377,73 @@ function GridItemEmitter(json = null) constructor {
 }
 
 
+global.__GridItemSpawn = {
+  uid: null,
+  x: null,
+  y: null,
+  z: null,
+  sprite: null,
+  mask: null,
+  speed: null,
+  angle: null,
+  lifespan: null,
+  fadeIn: null,
+  chunkPosition: null,
+}
+#macro GridItemSpawn global.__GridItemSpawn
+
 ///@interface
 ///@param {Struct} config
 ///@return {GridItem}
 function GridItem(config) constructor {
 
   ///@type {String}
-  uid = Assert.isType(config.uid, String,
-    "GridItem::uid must be type of String")
+  uid = config.uid//Assert.isType(config.uid, String, "GridItem::uid must be type of String")
 
   ///@type {Number}
-  x = Assert.isType(Struct.get(config, "x"), Number,
-    "GridItem::x must be type of Number")
+  x = config.x//Assert.isType(Struct.get(config, "x"), Number, "GridItem::x must be type of Number")
 
   ///@type {Number}
-  y = Assert.isType(Struct.get(config, "y"), Number,
-    "GridItem::y must be type of Number")
+  y = config.y//Assert.isType(Struct.get(config, "y"), Number, "GridItem::y must be type of Number")
 
   ///@type {Number}
-  z = Struct.getIfType(config, "z", Number, 0.0)
+  z = 0.0;//Struct.getIfType(config, "z", Number, 0.0)
 
   ///@type {Sprite}
   sprite = SpriteUtil.parse(Struct.get(config, "sprite"), GRID_ITEM_DEFAULT_SPRITE)
 
   ///@type {Rectangle}
-  mask = Core.isType(Struct.get(config, "mask"), Struct)
-    ? new Rectangle(config.mask)
-    : new Rectangle({ 
-      x: 0, 
-      y: 0, 
-      width: this.sprite.getWidth(), 
-      height: this.sprite.getHeight()
-  })
+  /*
+  mask = new Rectangle(Core.isType(Struct.get(config, "mask"), Struct)
+    ? config.mask
+    : { 
+        x: 0, 
+        y: 0, 
+        width: this.sprite.getWidth(), 
+        height: this.sprite.getHeight()
+    })
+  */
+  mask = Struct.get(config, "mask") != null
+    ? new RectangleSimple(config.mask.x, config.mask.y, config.mask.width, config.mask.height)
+    : new RectangleSimple(0.0, 0.0, this.sprite.getWidth(), this.sprite.getHeight())
 
   ///@type {Number}
-  speed = Struct.getIfType(config, "speed", Number, 0.0)
+  speed = config.speed//Struct.getIfType(config, "speed", Number, 0.0)
 
   ///@type {Number}
-  angle = Struct.getIfType(config, "angle", Number, 0.0)
+  angle = config.angle//Struct.getIfType(config, "angle", Number, 0.0)
 
   ///@type {Number}
   lifespan = Struct.getIfType(config, "lifespan", Number, 0.0)
 
-  ///@type {GridItemSignals}
-  signals = new GridItemSignals()
-
   ///@type {Number}
-  fadeIn = 0.0
+  fadeIn = Struct.getIfType(config, "fadeIn", Number, 0.0)
 
   ///@type {?Struct}
   chunkPosition = Struct.getIfType(config, "chunkPosition", Struct)
+
+  ///@type {GridItemSignals}
+  signals = new GridItemSignals()
     
   ///@param {Number} angle
   ///@return {GridItem}

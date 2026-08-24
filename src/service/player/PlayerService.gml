@@ -122,6 +122,8 @@ function PlayerService(config = null): Service(config) constructor {
       Struct.set(template, "x", _x)
       Struct.set(template, "y", _y)
       Struct.set(template, "uid", controller.gridService.generateUID())
+      Struct.set(template, "speed", 0.0)
+      Struct.set(template, "angle", 0.0)
 
       var visuPlayer = new Player(template)
       this.set(visuPlayer)

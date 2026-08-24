@@ -9,6 +9,45 @@ show_debug_message("init Bullet.gml")
 ///@type {Number}
 #macro BULLET_FADE_OUT_TIME 0.33
 
+///@type {Struct}
+global.__BulletTemplateSpawn = {
+  uid: null,
+  producer: null,
+  x: null,
+  y: null,
+  angle: null,
+  speed: null,
+  angleOffset: null,
+  angleOffsetRng: null,
+  useAngleOffset: null,
+  changeAngleOffset: null,
+  sumAngleOffset: null,
+  speedOffset: null,
+  useSpeedOffset: null,
+  changeSpeedOffset: null,
+  sumSpeedOffset: null,
+  damage: null,
+  lifespanMax: null,
+  sprite: null,
+  mask: null,
+  wiggle: null,
+  wiggleTime: null,
+  wiggleTimeRng: null,
+  wiggleFrequency: null,
+  wiggleDirRng: null,
+  wiggleAmplitude: null,
+  onDeath: null,
+  onDeathAmount: null,
+  onDeathAngle: null,
+  onDeathAngleRng: null,
+  onDeathAngleStep: null,
+  onDeathAngleIncrease: null,
+  onDeathRngStep: null,
+  onDeathSpeed: null,
+  onDeathSpeedMerge: null,
+  onDeathRngSpeed: null,
+}
+#macro BulletSTemplateSpawn global.__BulletTemplateSpawn
 
 ///@param {String}
 ///@param {Struct} json
@@ -160,6 +199,7 @@ function BulletTemplate(_name, json) constructor {
       angleOffsetRng = null, sumAngleOffset = null, speedOffset = null, 
       sumSpeedOffset = null, lifespan = null, damage = null) {
 
+    /*
     return {
       uid: uid,
       producer: producer,
@@ -198,6 +238,60 @@ function BulletTemplate(_name, json) constructor {
       onDeathSpeedMerge: this.onDeathSpeedMerge,
       onDeathRngSpeed: this.onDeathRngSpeed,
     }
+    */
+
+    BulletSTemplateSpawn.uid = uid
+    BulletSTemplateSpawn.producer = producer
+    BulletSTemplateSpawn.x = x
+    BulletSTemplateSpawn.y = y
+    BulletSTemplateSpawn.angle = angle
+    BulletSTemplateSpawn.speed = speed
+    BulletSTemplateSpawn.sprite = this.sprite
+    BulletSTemplateSpawn.mask = this.mask
+    BulletSTemplateSpawn.wiggle = this.wiggle
+    BulletSTemplateSpawn.wiggleTime = this.wiggleTime
+    BulletSTemplateSpawn.wiggleTimeRng = this.wiggleTimeRng
+    BulletSTemplateSpawn.wiggleFrequency = this.wiggleFrequency
+    BulletSTemplateSpawn.wiggleDirRng = this.wiggleDirRng
+    BulletSTemplateSpawn.wiggleAmplitude = this.wiggleAmplitude
+    BulletSTemplateSpawn.onDeath = this.onDeath
+    BulletSTemplateSpawn.onDeathAmount = this.onDeathAmount
+    BulletSTemplateSpawn.onDeathAngle = this.onDeathAngle
+    BulletSTemplateSpawn.onDeathAngleRng = this.onDeathAngleRng
+    BulletSTemplateSpawn.onDeathAngleStep = this.onDeathAngleStep
+    BulletSTemplateSpawn.onDeathAngleIncrease = this.onDeathAngleIncrease
+    BulletSTemplateSpawn.onDeathRngStep = this.onDeathRngStep
+    BulletSTemplateSpawn.onDeathSpeed = this.onDeathSpeed
+    BulletSTemplateSpawn.onDeathSpeedMerge = this.onDeathSpeedMerge
+    BulletSTemplateSpawn.onDeathRngSpeed = this.onDeathRngSpeed
+
+    BulletSTemplateSpawn.angleOffsetRng = angleOffsetRng != null ? angleOffsetRng : this.angleOffsetRng
+    BulletSTemplateSpawn.sumAngleOffset = sumAngleOffset != null ? sumAngleOffset : this.sumAngleOffset
+    BulletSTemplateSpawn.sumSpeedOffset = sumSpeedOffset != null ? sumSpeedOffset : this.sumSpeedOffset
+    BulletSTemplateSpawn.damage = damage != null ? damage : this.damage
+    BulletSTemplateSpawn.lifespanMax = lifespan != null ? lifespan : this.lifespanMax
+
+    if (angleOffset != null) {
+      BulletSTemplateSpawn.angleOffset = angleOffset
+      BulletSTemplateSpawn.useAngleOffset = true
+      BulletSTemplateSpawn.changeAngleOffset = true
+    } else {
+      BulletSTemplateSpawn.angleOffset = this.angleOffset
+      BulletSTemplateSpawn.useAngleOffset = this.useAngleOffset
+      BulletSTemplateSpawn.changeAngleOffset = this.changeAngleOffset
+    }
+    
+    if (speedOffset != null) {
+      BulletSTemplateSpawn.speedOffset = speedOffset
+      BulletSTemplateSpawn.useSpeedOffset = true
+      BulletSTemplateSpawn.changeSpeedOffset = true
+    } else {
+      BulletSTemplateSpawn.speedOffset = this.speedOffset
+      BulletSTemplateSpawn.useSpeedOffset = this.useSpeedOffset
+      BulletSTemplateSpawn.changeSpeedOffset = this.changeSpeedOffset
+    }
+
+    return BulletSTemplateSpawn
   }
 }
 

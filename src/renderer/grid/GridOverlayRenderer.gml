@@ -72,11 +72,11 @@ function GridOverlayRenderer() constructor {
     var color = task.state.get("color")
     var alpha = color.alpha
     color = color.toGMColor()
-    GPU.set.blendModeExt(task.state.get("blendModeSource"), task.state.get("blendModeTarget"))
-    GPU.set.blendEquation(task.state.get("blendEquation"), task.state.get("blendEquationAlpha"))
+    //GPU.set.blendModeExt(task.state.get("blendModeSource"), task.state.get("blendModeTarget"))
+    //GPU.set.blendEquation(task.state.get("blendEquation"), task.state.get("blendEquationAlpha"))
     GPU.render.rectangle(0, 0, acc.width, acc.height, false, color, color, color, color, alpha)
-    GPU.reset.blendEquation()
-    GPU.reset.blendMode()
+    //GPU.reset.blendEquation()
+    //GPU.reset.blendMode()
   }
 
   ///@param {Task} task
@@ -108,9 +108,6 @@ function GridOverlayRenderer() constructor {
     } else {
       sprite.render(coordX, coordY)
     }
-
-    GPU.reset.blendEquation()
-    GPU.reset.blendMode()
   }
 
   ///@param {Number} width
@@ -127,6 +124,8 @@ function GridOverlayRenderer() constructor {
 
       this.backgrounds.forEach(this.renderTexture, this.parameters)
     }
+    GPU.reset.blendEquation()
+    GPU.reset.blendMode()
     return this
   }
 
@@ -142,6 +141,8 @@ function GridOverlayRenderer() constructor {
     this.parameters.y = y
     this.gridColors.forEach(this.renderColor, this.parameters)
     this.grids.forEach(this.renderTexture, this.parameters)
+    GPU.reset.blendEquation()
+    GPU.reset.blendMode()
     return this
   }
 
@@ -159,7 +160,8 @@ function GridOverlayRenderer() constructor {
 
       this.foregrounds.forEach(this.renderTexture, this.parameters)
     }
-
+    GPU.reset.blendEquation()
+    GPU.reset.blendMode()
     return this
   }
 

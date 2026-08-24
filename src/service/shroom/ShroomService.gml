@@ -1,6 +1,12 @@
 ///@package io.alkapivo.visu.service.shroom
 show_debug_message("init ShroomService.gml")
 
+global.__ShroomServiceAcc = {
+  names: null,
+  service: null,
+  template: null,
+}
+#macro ShroomServiceAcc global.__ShroomServiceAcc
 
 ///@param {?Struct} [config]
 function ShroomService(config = null): Service(config) constructor {
@@ -158,18 +164,16 @@ function ShroomService(config = null): Service(config) constructor {
       var templateInheritSize = template.inherit != null ? GMArray.size(template.inherit) : 0
       if (inheritSize + templateInheritSize > 0) {
         var service = this
-        var acc = {
-          names: { },
-          service: service,
-          template: template,
-        }
+        ShroomServiceAcc.names = {}
+        ShroomServiceAcc.service = this
+        ShroomServiceAcc.template = template
 
         for (var idx = 0; idx < templateInheritSize; idx++) {
-          this.parseInherit(template.inherit[idx], idx, acc)
+          this.parseInherit(template.inherit[idx], idx, ShroomServiceAcc)
         }
 
         for (var idx = 0; idx < inheritSize; idx++) {
-          this.parseInherit(inherit[idx], idx, acc)
+          this.parseInherit(inherit[idx], idx, ShroomServiceAcc)
         }
       }
 
@@ -179,9 +183,9 @@ function ShroomService(config = null): Service(config) constructor {
       this.shrooms.add(shroom)
       this.chunkService.add(shroom)
 
-      if (this.optimalizationSortEntitiesByTxGroup) {
-        controller.gridService.textureGroups.sortItems(this.shrooms)
-      }
+      //if (this.optimalizationSortEntitiesByTxGroup) {
+      //  controller.gridService.textureGroups.sortItems(this.shrooms)
+      //}
     },
     "spawn-shroom-emitter": function(event) {
 
@@ -255,19 +259,16 @@ function ShroomService(config = null): Service(config) constructor {
     var inheritSize = inherit != null ? GMArray.size(inherit) : 0
     var templateInheritSize = template.inherit != null ? GMArray.size(template.inherit) : 0
     if (inheritSize + templateInheritSize > 0) {
-      var service = this
-      var acc = {
-        names: { },
-        service: service,
-        template: template,
-      }
+      ShroomServiceAcc.names = { }
+      ShroomServiceAcc.service = this
+      ShroomServiceAcc.template = template
 
       for (var idx = 0; idx < templateInheritSize; idx++) {
-        this.parseInherit(template.inherit[idx], idx, acc)
+        this.parseInherit(template.inherit[idx], idx, ShroomServiceAcc)
       }
 
       for (var idx = 0; idx < inheritSize; idx++) {
-        this.parseInherit(inherit[idx], idx, acc)
+        this.parseInherit(inherit[idx], idx, ShroomServiceAcc)
       }
     }
 
@@ -277,9 +278,9 @@ function ShroomService(config = null): Service(config) constructor {
     this.shrooms.add(shroom)
     this.chunkService.add(shroom)
 
-    if (this.optimalizationSortEntitiesByTxGroup) {
-      controller.gridService.textureGroups.sortItems(this.shrooms)
-    }
+    //if (this.optimalizationSortEntitiesByTxGroup) {
+    //  controller.gridService.textureGroups.sortItems(this.shrooms)
+    //}
   }
 
   ///@param {Struct} item

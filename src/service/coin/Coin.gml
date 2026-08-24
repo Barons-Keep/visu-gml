@@ -1,6 +1,20 @@
 ///@package io.alkapivo.visu.service.coin
 show_debug_message("init Coin.gml")
 
+global.__CoinTemplateSpawn = {
+  name: null,
+  category: null,
+  sprite: null,
+  useSpeed: null,
+  changeSpeed: null,
+  mask: null,
+  amount: null,
+  x: null,
+  y: null,
+  angle: null,
+  speed: null,
+}
+#macro CoinTemplateSpawn global.__CoinTemplateSpawn
 
 function _CoinCategory(): Enum() constructor {
   FORCE = "force"
@@ -51,10 +65,8 @@ function CoinTemplate(_name, json) constructor {
       sprite: this.sprite,
       useSpeed: this.useSpeed,
       changeSpeed: this.changeSpeed,
-      //mask: this.mask != null ? JSON.clone(this.mask) : null,
       mask: this.mask,
       amount: this.amount,
-      //speed: this.speed != null ? JSON.clone(this.speed) : null,
       speed: this.speed,
     }
   }
@@ -64,15 +76,14 @@ function CoinTemplate(_name, json) constructor {
   ///@param {?Number} [angle]
   ///@param {?Struct} [speed]
   serializeSpawn = function(x, y, angle = null, speed = null) {
-    //var _speed = this.speed != null ? JSON.clone(this.speed) : null
     var _speed = this.speed
+    /*
     return {
       name: this.name,
       category: this.category,
       sprite: this.sprite,
       useSpeed: this.useSpeed,
       changeSpeed: this.changeSpeed,
-      //mask: this.mask != null ? JSON.clone(this.mask) : null,
       mask: this.mask,
       amount: this.amount,
       x: x,
@@ -80,6 +91,21 @@ function CoinTemplate(_name, json) constructor {
       angle: angle != null ? angle : 90.0,
       speed: speed != null ? Struct.append(_speed, speed) : _speed,
     }
+    */
+
+    CoinTemplateSpawn.name = this.name
+    CoinTemplateSpawn.category = this.category
+    CoinTemplateSpawn.sprite = this.sprite
+    CoinTemplateSpawn.useSpeed = this.useSpeed
+    CoinTemplateSpawn.changeSpeed = this.changeSpeed
+    CoinTemplateSpawn.mask = this.mask
+    CoinTemplateSpawn.amount = this.amount
+    CoinTemplateSpawn.x = x
+    CoinTemplateSpawn.y = y
+    CoinTemplateSpawn.angle = angle != null ? angle : 90.0
+    CoinTemplateSpawn.speed = speed != null ? Struct.append(_speed, speed) : _speed
+
+    return CoinTemplateSpawn
   }
 }
 

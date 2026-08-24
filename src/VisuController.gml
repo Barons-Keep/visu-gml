@@ -566,7 +566,9 @@ function VisuController(config = null): Service(config) constructor {
     }
 
     var mode = Visu.settings.getValue("visu.delta-time")
-    deltaTimeService.setMode(mode)
+    if (mode != DeltaTime.mode) {
+      deltaTimeService.setMode(mode)
+    }
 
     return this
   }
@@ -949,7 +951,11 @@ function VisuController(config = null): Service(config) constructor {
 
   //@return {VisuController}
   update = function() {
-    this.updateDebugTimer.start()
+    var enableDebugOverlay = is_debug_overlay_open()
+    if (enableDebugOverlay) {
+      this.updateDebugTimer.start()
+    }
+    
     this.updateDeltaTimeMode()
     this.updateDebugFPS()
     this.updateGCFrameTime()
@@ -958,7 +964,10 @@ function VisuController(config = null): Service(config) constructor {
     this.updateCursor()
     this.updateGameplayServices()
     this.updateWatchdog()
-    updateDebugTimer.finish()
+
+    if (enableDebugOverlay) {
+      this.updateDebugTimer.finish()
+    }
     return this
   }
 

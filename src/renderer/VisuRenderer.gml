@@ -192,8 +192,8 @@ function VisuRenderer() constructor {
 
   
   fpsReport = ""
-  fpsTimer = new Timer(1.0, { loop: Infinity })
-  fpsReportTimer = new Timer(5.0, { loop: Infinity })
+  fpsTimer = new Timer(2.0, { loop: Infinity })
+  fpsReportTimer = new Timer(10.0, { loop: Infinity })
   initFpsReport = function(filename) {
     global.fpsReportPath = $"{program_directory}{filename}"
     var file = file_text_open_write(global.fpsReportPath);
@@ -237,7 +237,7 @@ function VisuRenderer() constructor {
     var fpsReal = round(fps_real)
     if (fpsReal < this.debugMinFPS) {
       this.debugMinFPS = fpsReal
-      this.debugFPSLowCooldown = GAME_FPS * 2
+      this.debugFPSLowCooldown = GAME_FPS
     }
 
     if (this.debugDeltaHighCooldown > 0) {
@@ -497,8 +497,8 @@ function VisuRenderer() constructor {
     var outlineColor = c_black
     var outlineFactor = 1.0
 
-    this.gridRenderer.gridItemSurface
-      .renderStretched(width, height, width * 0.0, height * 0.0)
+    //this.gridRenderer.gridItemSurface
+    //  .renderStretched(width, height, width * 0.0, height * 0.0)
     this.gridRenderer.backgroundSurface
       .renderStretched(width, height, width * 1.0, height * 0.0)
     
@@ -507,8 +507,8 @@ function VisuRenderer() constructor {
     this.gridRenderer.gameSurface
       .renderStretched(width, height, width * 1.0, height * 1.0)
 
-    GPU.render.text(marginX + (width * 0.0), marginY + (height * 0.0), "gridItemSurface",
-      scale, angle, alpha, color, font, alignH, alignV, outlineColor, outlineFactor)
+    //GPU.render.text(marginX + (width * 0.0), marginY + (height * 0.0), "gridItemSurface",
+    //  scale, angle, alpha, color, font, alignH, alignV, outlineColor, outlineFactor)
     GPU.render.text(marginX + (width * 1.0), marginY + (height * 0.0), "backgroundSurface",
       scale, angle, alpha, color, font, alignH, alignV, outlineColor, outlineFactor)
     

@@ -8,6 +8,25 @@ show_debug_message("init Shroom.gml")
 ///@type {Number}
 #macro SHROOM_FADE_OUT_TIME 0.33
 
+global.__ShroomTemplateSpawn = {
+  name: null,
+  sprite: null,
+  mask: null,
+  lifespanMax: null,
+  healthPoints: null,
+  hostile: null,
+  onDamage: null,
+  onDeath: null,
+  queue: null,
+  features: null,
+  inherit: null,
+  x: null,
+  y: null,
+  speed: null,
+  angle: null,
+  uid: null,
+}
+#macro ShroomTemplateSpawn global.__ShroomTemplateSpawn
 
 ///@param {String} _name
 ///@param {Struct} json
@@ -174,6 +193,7 @@ function ShroomTemplate(_name, json) constructor {
   }
 
   serializeSpawn = function(x, y, speed, angle, uid, lifespan = null, hp = null) {
+    /*
     return {
       name: this.name,
       sprite: this.sprite,
@@ -197,6 +217,26 @@ function ShroomTemplate(_name, json) constructor {
       angle: angle,
       uid: uid,
     }
+    */
+
+    ShroomTemplateSpawn.name = this.name
+    ShroomTemplateSpawn.sprite = this.sprite
+    ShroomTemplateSpawn.x = x
+    ShroomTemplateSpawn.y = y
+    ShroomTemplateSpawn.speed = speed
+    ShroomTemplateSpawn.angle = angle
+    ShroomTemplateSpawn.uid = uid
+    ShroomTemplateSpawn.mask = this.use_shroom_mask ? this.mask : null
+    ShroomTemplateSpawn.lifespanMax = lifespan != null ? lifespan : (this.use_shroom_lifespan ? this.lifespanMax : 15)
+    ShroomTemplateSpawn.healthPoints = hp != null ? hp : (this.use_shroom_healthPoints ? this.healthPoints : 1)
+    ShroomTemplateSpawn.hostile = this.hostile
+    ShroomTemplateSpawn.onDamage = this.use_shroom_on_damage ? this.onDamage : []
+    ShroomTemplateSpawn.onDeath = this.use_shroom_on_death ? this.onDeath : []
+    ShroomTemplateSpawn.queue = this.use_shroom_queue ? this.queue : []
+    ShroomTemplateSpawn.features = this.use_shroom_features ? this.features : []
+    ShroomTemplateSpawn.inherit = this.use_shroom_inherit ? this.inherit : []
+
+    return ShroomTemplateSpawn
   }
 }
 
