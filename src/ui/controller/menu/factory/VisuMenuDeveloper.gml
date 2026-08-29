@@ -169,7 +169,7 @@ function factoryVisuMenuOpenDeveloperEvent(_config = null) {
         config: {
           layout: { type: UILayoutType.VERTICAL },
           label: { 
-            text: Language.get("visu.menu.debug.render.surfaces", "Render debug surfaces"),
+            text: Language.get("visu.menu.debug.render.surfaces"),
             callback: new BindIntent(function() {
               var value = Visu.settings.getValue("visu.debug.render-surfaces")
               Visu.settings.setValue("visu.debug.render-surfaces", !value).save()
@@ -188,6 +188,40 @@ function factoryVisuMenuOpenDeveloperEvent(_config = null) {
             },
             updateCustom: function() {
               this.label.text = Visu.settings.getValue("visu.debug.render-surfaces") ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+              this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
+            },
+            onMouseReleasedLeft: function() {
+              this.callback()
+            },
+          }
+        }
+      },
+      {
+        name: "developer_menu-button-input-entry_debug-render-fps",
+        template: VisuComponents.get("menu-button-input-entry"),
+        layout: VisuLayouts.get("menu-button-input-entry"),
+        config: {
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: Language.get("visu.menu.debug.render.fps"),
+            callback: new BindIntent(function() {
+              var value = Visu.settings.getValue("visu.debug.render-fps")
+              Visu.settings.setValue("visu.debug.render-fps", !value).save()
+              Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+            }),
+            onMouseReleasedLeft: function() {
+              this.callback()
+            },
+          },
+          input: {
+            label: { text: VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT },
+            callback: function() {
+              var value = Visu.settings.getValue("visu.debug.render-fps")
+              Visu.settings.setValue("visu.debug.render-fps", !value).save()
+              Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+            },
+            updateCustom: function() {
+              this.label.text = Visu.settings.getValue("visu.debug.render-fps") ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
               this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
             },
             onMouseReleasedLeft: function() {

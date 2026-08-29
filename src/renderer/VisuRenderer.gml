@@ -101,6 +101,10 @@ function VisuRenderer() constructor {
   font = new Font(font_kodeo_mono_18_bold)
 
   ///@private
+  ///@type {Font}
+  fontFps = new Font(font_kodeo_mono_12_bold)
+
+  ///@private
   ///@type {Number}
   debugFPSLowCooldown = 0.0
 
@@ -194,34 +198,35 @@ function VisuRenderer() constructor {
   fpsReport = ""
   fpsTimer = new Timer(2.0, { loop: Infinity })
   fpsReportTimer = new Timer(10.0, { loop: Infinity })
+  generateRow = function(message) {
+    var z = function(v) {
+      return (v < 10 ? "0" : "") + string(v)
+    }
+
+    var date =
+          string(current_year) + "-"
+        + z(current_month) + "-"
+        + z(current_day)   + "_"
+        + z(current_hour)  + "-"
+        + z(current_minute)+ "-"
+        + z(current_second)
+
+    return $"{date},{message}"
+  }
+
   initFpsReport = function(filename) {
     global.fpsReportPath = $"{program_directory}{filename}"
     var file = file_text_open_write(global.fpsReportPath);
-    file_text_write_string(file, "timestamp,FPS_MIN,DELTA_MAX\n");
+    var row = this.generateRow($"{abs(this.debugMinFPS)},{abs(this.debugMaxDelta)}")
+    file_text_write_string(file, $"timestamp,FPS_MIN,DELTA_MAX\n{row}\n");
     file_text_close(file); 
   }
   
-
   
   ///@private
   ///@param {UILayout} layout
   ///@return {VisuRenderer}
   renderDebugGUI = function(layout) {
-    static generateRow = function(message) {
-      var z = function(v) {
-        return (v < 10 ? "0" : "") + string(v)
-      }
-
-      var date =
-            string(current_year) + "-"
-          + z(current_month) + "-"
-          + z(current_day)   + "_"
-          + z(current_hour)  + "-"
-          + z(current_minute)+ "-"
-          + z(current_second)
-
-      return $"{date},{message}"
-    }
     var controller = Beans.get(BeanVisuController)
     var editor = Beans.get(Visu.modules().editor.controller)
     var gridService = controller.gridService
@@ -253,7 +258,7 @@ function VisuRenderer() constructor {
     }
 
     if (global.fpsReportPath != null && this.fpsTimer.update().finished) {
-      var row = generateRow($"{abs(this.debugMinFPS)},{abs(this.debugMaxDelta)}")
+      var row = this.generateRow($"{abs(this.debugMinFPS)},{abs(this.debugMaxDelta)}")
       this.fpsReport = this.fpsReport == "" ? row : $"{this.fpsReport}\n{row}"
     }
     
@@ -373,6 +378,36 @@ function VisuRenderer() constructor {
         HAlign.RIGHT,
         VAlign.BOTTOM,
         c_black,
+        1.0
+      )
+    }
+
+    return this
+  }
+
+  
+  ///@private
+  ///@param {UILayout} layout
+  ///@return {VisuRenderer}
+  renderFPS = function(layout) {
+    var enableFPS = Visu.settings.getValue("visu.debug.render-fps")
+    var fpsValue = String.format(fps, 4, 0)
+    var fpsReal = String.format(fps_real, 4, 0)
+    var fpsMin = String.format(this.debugMinFPS, 4, 0)
+    if (enableFPS) {
+      var text = $"FPS: {fpsValue} | FPS min: {fpsMin} | FPS real: {fpsReal}"
+      GPU.render.text(
+        layout.x() + layout.width() - 8, 
+        layout.y() + layout.height() - 4, 
+        text, 
+        1.0, 
+        0.0, 
+        1.0, 
+        c_white, 
+        this.fontFps, 
+        HAlign.RIGHT, 
+        VAlign.BOTTOM, 
+        c_black, 
         1.0
       )
     }
@@ -649,10 +684,10 @@ function VisuRenderer() constructor {
       this.renderGame(layout)
       this.renderUI(layout)
       this.renderSpinner(layout)
-      this.renderDebugGUI(layout)
       this.renderFadeBackground(this.initTimer)
       this.renderFadeBackground(this.fadeTimer)
-
+      this.renderDebugGUI(layout)
+      this.renderFPS(layout)
       
       if (stateName == "scene-close") {
         this.executor.tasks.forEach(this.renderSceneClose, this.layout)

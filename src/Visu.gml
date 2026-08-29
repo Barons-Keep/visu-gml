@@ -1867,6 +1867,7 @@ function _Visu() constructor {
     this.settings.set(new SettingEntry({ name: "visu.debug.render-entities-mask", type: SettingTypes.BOOLEAN, defaultValue: false }))
     this.settings.set(new SettingEntry({ name: "visu.debug.render-debug-chunks", type: SettingTypes.BOOLEAN, defaultValue: false }))
     this.settings.set(new SettingEntry({ name: "visu.debug.render-surfaces", type: SettingTypes.BOOLEAN, defaultValue: false }))
+    this.settings.set(new SettingEntry({ name: "visu.debug.render-fps", type: SettingTypes.BOOLEAN, defaultValue: false }))
     this.settings.set(new SettingEntry({ name: "visu.debug.menu.quit.hidden", type: SettingTypes.BOOLEAN, defaultValue: false }))
     this.settings.set(new SettingEntry({ name: "visu.god-mode", type: SettingTypes.BOOLEAN, defaultValue: false }))
     this.settings.set(new SettingEntry({ name: "visu.optimalization.sort-entities-by-txgroup", type: SettingTypes.BOOLEAN, defaultValue: false }))
