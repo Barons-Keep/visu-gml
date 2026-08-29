@@ -121,6 +121,18 @@ function VisuRenderer() constructor {
   debugMaxDelta = 1.0
 
   ///@private
+  ///@type {Number}
+  debugMinFPSReal = fps_real
+
+  ///@private
+  ///@type {Number}
+  debugMinFPSRealValue = fps_real
+
+  ///@private
+  ///@type {Number}
+  debugMinFPSRealCooldown = GAME_FPS
+
+  ///@private
   ///@type {Struct}
   shaderGaussianBlur = ShaderUtil.fetch("shader_gaussian_blur")
 
@@ -391,26 +403,38 @@ function VisuRenderer() constructor {
   ///@return {VisuRenderer}
   renderFPS = function(layout) {
     var enableFPS = Visu.settings.getValue("visu.debug.render-fps")
-    var fpsValue = String.format(fps, 4, 0)
-    var fpsReal = String.format(fps_real, 4, 0)
-    var fpsMin = String.format(this.debugMinFPS, 4, 0)
-    if (enableFPS) {
-      var text = $"FPS: {fpsValue} | FPS min: {fpsMin} | FPS real: {fpsReal}"
-      GPU.render.text(
-        layout.x() + layout.width() - 8, 
-        layout.y() + layout.height() - 4, 
-        text, 
-        1.0, 
-        0.0, 
-        1.0, 
-        c_white, 
-        this.fontFps, 
-        HAlign.RIGHT, 
-        VAlign.BOTTOM, 
-        c_black, 
-        1.0
-      )
+    if (!enableFPS) {
+      return this
     }
+
+    this.debugMinFPSRealValue = min(this.debugMinFPSRealValue, fps_real)
+    this.debugMinFPSRealCooldown--
+    if (this.debugMinFPSRealCooldown < 0) {
+      this.debugMinFPSRealCooldown = GAME_FPS
+      this.debugMinFPSReal = this.debugMinFPSRealValue
+      this.debugMinFPSRealValue = 9999
+    }
+
+    var fpsValue = String.format(fps, 4, 0)
+    var fpsMin = String.format(this.debugMinFPS, 4, 0)
+    var fpsReal = String.format(fps_real, 4, 0)
+    var fpsRealMin = String.format(this.debugMinFPSReal, 4, 0)
+
+    var text = $"FPS: {fpsValue} | FPS min: {fpsMin} | FPS real: {fpsReal} | FPS real min: {fpsRealMin}"
+    GPU.render.text(
+      layout.x() + layout.width() - 32, 
+      layout.y() + 4, 
+      text, 
+      1.0, 
+      0.0, 
+      1.0, 
+      c_white, 
+      this.fontFps, 
+      HAlign.RIGHT, 
+      VAlign.TOP, 
+      c_black, 
+      1.0
+    )
 
     return this
   }
