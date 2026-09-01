@@ -62,7 +62,7 @@ function VisuTrackLoader(config = null): Service(config) constructor {
           onStart: function(fsm, fsmState, path) {
             Beans.get(BeanVisuController).visuRenderer.gridRenderer.pathTrack = null
             fsmState.state.set("path", path)
-            fsmState.state.set("introTimer", new Timer(1.0))
+            fsmState.state.set("introTimer", new Timer(Core.getProperty("visu.manifest.loading-cooldown", 0.128))
             fsmState.state.set("clearQueue", new Queue(Callable, [
               function() { Beans.get(BeanDisplayService).setCaption(game_display_name) },
               function() { Beans.get(BeanVisuController).brushService.clearTemplates() },
