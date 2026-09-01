@@ -522,7 +522,6 @@ function VisuIO(config = null): Service(config) constructor {
     var isController = controller != null
     try {
       //EVENT_COUNTER.log().reset()
-      Struct.updateBegin()
       this.keyboard.update()
       this.mouse.update()
       GMTFContext.updateBegin()

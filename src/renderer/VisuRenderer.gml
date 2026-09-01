@@ -274,7 +274,57 @@ function VisuRenderer() constructor {
       this.fpsReport = this.fpsReport == "" ? row : $"{this.fpsReport}\n{row}"
     }
     
+    var gridCameraMessage = ""
     if (enableDebugOverlay) {
+      var gridCamera = this.gridRenderer.camera
+      if (enableEditor && (gridCamera.enableKeyboardLook || gridCamera.enableMouseLook)) {
+
+        var g1 = String.format(gridCamera.x + (sin(this.gridRenderer.camera.breathTimer2.time) * GRID_SERVICE_PIXEL_WIDTH * -1.0), 4, 2)
+        var g2 = String.format(gridCamera.y, 4, 2)
+        var g3 = String.format(gridCamera.z, 4, 2)
+        var g4 = String.format(gridCamera.pitch + (sin(this.gridRenderer.camera.breathTimer1.time) * BREATH_TIMER_FACTOR_1), 4, 2)
+        var g5 = String.format(gridCamera.angle + (sin(this.gridRenderer.camera.breathTimer2.time / 4.0) * BREATH_TIMER_FACTOR_2), 4, 2)
+        var h1 = String.format(gridService.view.x, 4, 2)
+        var h2 = String.format(gridService.view.y, 4, 2)
+        gridCameraMessage += ""
+          + $"______________________\n"
+          + $"|_______CAMERA_______|\n"
+          + $"| x:         {   g1} |\n"
+          + $"| y:         {   g2} |\n"
+          + $"| z:         {   g3} |\n"
+          + $"| pitch:     {   g4} |\n"
+          + $"| angle:     {   g5} |\n"
+          + $"|--------------------|\n"
+          + $"| view.x:    {   h1} |\n"
+          + $"| view.y:    {   h2} |\n"
+
+        /*
+              | x:         xxxx.xx
+              | y:         xxxx.xx
+              | z:         xxxx.xx
+              | pitch:     xxxx.xx
+              | angle:     xxxx.xx
+              |-------------------
+              | view.x:    xxxx.xx
+              | view.y:    xxxx.xx
+        */
+
+        var player = controller.playerService.player
+        var i1 = String.format((player == null ? 0.0 : player.x), 4, 2)
+        var i2 = String.format((player == null ? 0.0 : player.y), 4, 2)
+        gridCameraMessage += player == null ? "" :
+          + $"|--------------------|\n"
+          + $"| player.x:  {   i1} |\n"
+          + $"| player.y:  {   i2} |\n"
+        /*
+              |-------------------
+              | player.x:  xxxx.xx
+              | player.y:  xxxx.xx
+        */
+
+        gridCameraMessage += $"|____________________|\n"
+      }
+
       var shrooms = controller.shroomService.shrooms.size()
       var bullets = controller.bulletService.bullets.size()
   
@@ -296,15 +346,19 @@ function VisuRenderer() constructor {
       var e2 = String.format(bullets, 4, 0)
       var f1 = String.format(deltaTime, 1, 5)
       var f2 = String.format(this.debugMaxDelta, 1, 5)
-      var text = "" 
-        + $"fps:     {a1}    | fps-real:     {b1}\n"
-        + $"fps-min: {a2}    | fps-real-avg: {b2}\n"    
-        +  "-----------------|-------------------\n"
-        + $"update: { c1} ms | total:    { d1} ms\n"
-        + $"render: { c2} ms | avg:      { d2} ms\n"
-        +  "-----------------|-------------------\n"
-        + $"shrooms: {e1}    | dt:        {   f1}\n"
-        + $"bullets: {e2}    | dt-max:    {   f2}\n"
+      var text = "\n"
+        + $"_________________________________________\n"
+        + $"|________________DEBUG__________________|\n" 
+        + $"| fps:     {a1}    | fps-real:     {b1} |\n"
+        + $"| fps-min: {a2}    | fps-real-avg: {b2} |\n"    
+        +  "| -----------------|------------------- |\n"
+        + $"| update: { c1} ms | total:    { d1} ms |\n"
+        + $"| render: { c2} ms | avg:      { d2} ms |\n"
+        +  "| -----------------|------------------- |\n"
+        + $"| shrooms: {e1}    | dt:        {   f1} |\n"
+        + $"| bullets: {e2}    | dt-max:    {   f2} |\n"
+        + $"|__________________|____________________|\n"
+        + gridCameraMessage
       
       /*
             fps:     xxxx    | fps-real:     xxxx
@@ -318,14 +372,14 @@ function VisuRenderer() constructor {
       */
 
       GPU.render.text(
-        layout.x() + layout.width() - 60, 
-        layout.y() + 80, 
+        layout.x() + layout.width() - 32, 
+        layout.y() + 4, 
         text, 
         1.0, 
         0.0, 
         1.0, 
-        c_lime, 
-        GPU_DEFAULT_FONT_BOLD, 
+        c_white, 
+        this.fontFps, 
         HAlign.RIGHT, 
         VAlign.TOP, 
         c_black, 
@@ -333,66 +387,7 @@ function VisuRenderer() constructor {
       )
     }
 
-    var gridCamera = this.gridRenderer.camera
-    var gridCameraMessage = ""
-    if ((enableEditor || enableDebugOverlay)
-        && (gridCamera.enableKeyboardLook || gridCamera.enableMouseLook)) {
 
-      var g1 = String.format(gridCamera.x + (sin(this.gridRenderer.camera.breathTimer2.time) * GRID_SERVICE_PIXEL_WIDTH * -1.0), 4, 2)
-      var g2 = String.format(gridCamera.y, 4, 2)
-      var g3 = String.format(gridCamera.z, 4, 2)
-      var g4 = String.format(gridCamera.pitch + (sin(this.gridRenderer.camera.breathTimer1.time) * BREATH_TIMER_FACTOR_1), 4, 2)
-      var g5 = String.format(gridCamera.angle + (sin(this.gridRenderer.camera.breathTimer2.time / 4.0) * BREATH_TIMER_FACTOR_2), 4, 2)
-      var h1 = String.format(gridService.view.x, 4, 2)
-      var h2 = String.format(gridService.view.y, 4, 2)
-      gridCameraMessage += ""
-        + $"| x:         {g1}\n"
-        + $"| y:         {g2}\n"
-        + $"| z:         {g3}\n"
-        + $"| pitch:     {g4}\n"
-        + $"| angle:     {g5}\n"
-        + $"|-------------------\n"
-        + $"| view.x:    {h1}\n"
-        + $"| view.y:    {h2}\n"
-      /*
-            | x:         xxxx.xx
-            | y:         xxxx.xx
-            | z:         xxxx.xx
-            | pitch:     xxxx.xx
-            | angle:     xxxx.xx
-            |-------------------
-            | view.x:    xxxx.xx
-            | view.y:    xxxx.xx
-      */
-
-      var player = controller.playerService.player
-      var i1 = String.format((player == null ? 0.0 : player.x), 4, 2)
-      var i2 = String.format((player == null ? 0.0 : player.y), 4, 2)
-      gridCameraMessage += player == null ? "" :
-        + $"|-------------------\n"
-        + $"| player.x:  {i1}\n"
-        + $"| player.y:  {i2}\n"
-      /*
-            |-------------------
-            | player.x:  xxxx.xx
-            | player.y:  xxxx.xx
-      */
-
-      GPU.render.text(
-        layout.x() + layout.width() - 60,
-        layout.y() + layout.height() - 80,
-        gridCameraMessage,
-        1.0,
-        0.0,
-        1.0, 
-        c_lime,
-        GPU_DEFAULT_FONT_BOLD,
-        HAlign.RIGHT,
-        VAlign.BOTTOM,
-        c_black,
-        1.0
-      )
-    }
 
     return this
   }
@@ -416,7 +411,7 @@ function VisuRenderer() constructor {
     }
 
     var fpsValue = String.format(fps, 4, 0)
-    var fpsMin = String.format(this.debugMinFPS, 4, 0)
+    var fpsMin = String.format(min(fps, this.debugMinFPS), 4, 0)
     var fpsReal = String.format(fps_real, 4, 0)
     var fpsRealMin = String.format(this.debugMinFPSReal, 4, 0)
 
