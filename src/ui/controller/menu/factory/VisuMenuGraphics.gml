@@ -232,6 +232,42 @@ function factoryVisuMenuOpenGraphicsEvent(_config = null) {
           }
         }
       },
+            {
+        name: "graphics_menu-button-input-entry_ext-bkt-glitch",
+        template: VisuComponents.get("menu-button-input-entry"),
+        layout: VisuLayouts.get("menu-button-input-entry"),
+        config: {
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: Language.get("visu.menu.ext-glitch-effects"),
+            callback: new BindIntent(function() {
+              var value = Visu.settings.getValue("visu.graphics.ext-bkt-glitch")
+              Visu.settings.setValue("visu.graphics.ext-bkt-glitch", !value).save()
+              Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+            }),
+            onMouseReleasedLeft: function() {
+              this.callback()
+            },
+          },
+          input: {
+            label: {
+              text: VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT,
+            },
+            callback: function() {
+              var value = Visu.settings.getValue("visu.graphics.ext-bkt-glitch")
+              Visu.settings.setValue("visu.graphics.ext-bkt-glitch", !value).save()
+              Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+            },
+            updateCustom: function() {
+              this.label.text = Visu.settings.getValue("visu.graphics.ext-bkt-glitch") ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+              this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
+            },
+            onMouseReleasedLeft: function() {
+              this.callback()
+            },
+          }
+        }
+      },
       {
         name: "graphics_menu-button-input-entry_particle",
         template: VisuComponents.get("menu-button-input-entry"),
@@ -330,6 +366,42 @@ function factoryVisuMenuOpenGraphicsEvent(_config = null) {
             },
             updateCustom: function() {
               this.label.text = Visu.settings.getValue("visu.graphics.frg-tx") ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+              this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
+            },
+            onMouseReleasedLeft: function() {
+              this.callback()
+            },
+          }
+        }
+      },
+      {
+        name: "graphics_menu-button-input-entry_grid-item-surface",
+        template: VisuComponents.get("menu-button-input-entry"),
+        layout: VisuLayouts.get("menu-button-input-entry"),
+        config: {
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: Language.get("visu.menu.grid-item-surface"),
+            callback: new BindIntent(function() {
+              var value = Visu.settings.getValue("visu.graphics.grid-item-surface")
+              Visu.settings.setValue("visu.graphics.grid-item-surface", !value).save()
+              Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+            }),
+            onMouseReleasedLeft: function() {
+              this.callback()
+            },
+          },
+          input: {
+            label: {
+              text: VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT,
+            },
+            callback: function() {
+              var value = Visu.settings.getValue("visu.graphics.grid-item-surface")
+              Visu.settings.setValue("visu.graphics.grid-item-surface", !value).save()
+              Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+            },
+            updateCustom: function() {
+              this.label.text = Visu.settings.getValue("visu.graphics.grid-item-surface") ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
               this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
             },
             onMouseReleasedLeft: function() {

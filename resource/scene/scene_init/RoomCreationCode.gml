@@ -23,7 +23,7 @@ GMObjectUtil.factoryStructInstance(
 	GMServiceInstance, 
 	Scene.fetchLayer("instance_main", 100),
 	{
-	  timer: new Timer(1.0, { 
+	  timer: new Timer(3.0, { 
 	    callback: function() {
 	      Scene.open("scene_visu")
 	    }

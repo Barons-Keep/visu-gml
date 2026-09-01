@@ -550,24 +550,34 @@ function VisuRenderer() constructor {
     var alignV = VAlign.TOP
     var outlineColor = c_black
     var outlineFactor = 1.0
+    var renderGridItemSurface = Visu.settings.getValue("visu.graphics.grid-item-surface")
 
-    //this.gridRenderer.gridItemSurface
-    //  .renderStretched(width, height, width * 0.0, height * 0.0)
+    this.gridRenderer.gridSurface
+      .renderStretched(width, height, width * 0.0, height * 0.0)
+
     this.gridRenderer.backgroundSurface
       .renderStretched(width, height, width * 1.0, height * 0.0)
     
-    this.gridRenderer.gridSurface
-      .renderStretched(width, height, width * 0.0, height * 1.0)
+    if (renderGridItemSurface) {
+      this.gridRenderer.gridItemSurface
+        .renderStretched(width, height, width * 0.0, height * 1.0)
+    }
+
     this.gridRenderer.gameSurface
       .renderStretched(width, height, width * 1.0, height * 1.0)
 
-    //GPU.render.text(marginX + (width * 0.0), marginY + (height * 0.0), "gridItemSurface",
-    //  scale, angle, alpha, color, font, alignH, alignV, outlineColor, outlineFactor)
+    
+    GPU.render.text(marginX + (width * 0.0), marginY + (height * 0.0), "gridSurface",
+      scale, angle, alpha, color, font, alignH, alignV, outlineColor, outlineFactor)
+
     GPU.render.text(marginX + (width * 1.0), marginY + (height * 0.0), "backgroundSurface",
       scale, angle, alpha, color, font, alignH, alignV, outlineColor, outlineFactor)
     
-    GPU.render.text(marginX + (width * 0.0), marginY + (height * 1.0), "gridSurface",
+    if (renderGridItemSurface) {
+      GPU.render.text(marginX + (width * 0.0), marginY + (height * 1.0), "gridItemSurface",
       scale, angle, alpha, color, font, alignH, alignV, outlineColor, outlineFactor)
+    }
+
     GPU.render.text(marginX + (width * 1.0), marginY + (height * 1.0), "gameSurface",
       scale, angle, alpha, color, font, alignH, alignV, outlineColor, outlineFactor)
     
@@ -693,10 +703,10 @@ function VisuRenderer() constructor {
     var layout = editor == null ? this.layout : editor.layout.nodes.preview
     var stateName = controller.fsm.getStateName()
     if (stateName == "splashscreen") {
-      this.executor.tasks.forEach(this.renderSplashscreen, this.layout)
+      this.executor.tasks.forEach(this.renderSplashscreen, layout)
     } else {
       if (stateName == "load") {
-        this.executor.tasks.forEach(this.renderTextureLoad, this.layout)
+        this.executor.tasks.forEach(this.renderTextureLoad, layout)
       }
       
       this.renderMenu(layout)
@@ -709,7 +719,7 @@ function VisuRenderer() constructor {
       this.renderFPS(layout)
       
       if (stateName == "scene-close") {
-        this.executor.tasks.forEach(this.renderSceneClose, this.layout)
+        this.executor.tasks.forEach(this.renderSceneClose, layout)
       }
     }
 

@@ -1125,6 +1125,31 @@ global.__VEComponents = new Map(String, Callable, {
   ///@param {UILayout} layout
   ///@param {?Struct} [config]
   ///@return {Array<UIItem>}
+  "property-button": function(name, layout, config = null) {
+
+    return new Array(UIItem, [
+      UIText(
+        $"property-button_{name}", 
+        Struct.appendRecursive(
+          Struct.appendRecursive(
+            { 
+              layout: layout.nodes.label,
+              updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
+            },
+            VEStyles.get("text-field-button").label,
+            false
+          ),
+          Struct.get(config, "label"),
+          false
+        )
+      ),
+    ])
+  },
+
+  ///@param {String} name
+  ///@param {UILayout} layout
+  ///@param {?Struct} [config]
+  ///@return {Array<UIItem>}
   "property-bar": function(name, layout, config = null) {
     var style = VEStyles.get("property-bar")
     return new Array(UIItem, [

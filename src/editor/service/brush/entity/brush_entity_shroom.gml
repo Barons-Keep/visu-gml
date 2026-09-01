@@ -1471,7 +1471,6 @@ function brush_entity_shroom(json) {
         }
       }
     }),
-
     {
       name: "en-shr_em-cfg",
       template: VEComponents.get("text-area"),

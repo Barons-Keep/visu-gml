@@ -1887,6 +1887,8 @@ function _Visu() constructor {
     this.settings.set(new SettingEntry({ name: "visu.graphics.combined-shaders", type: SettingTypes.BOOLEAN, defaultValue: true }))
     this.settings.set(new SettingEntry({ name: "visu.graphics.shaders-limit", type: SettingTypes.NUMBER, defaultValue: 5 }))
     this.settings.set(new SettingEntry({ name: "visu.graphics.bkt-glitch", type: SettingTypes.BOOLEAN, defaultValue: true }))
+    this.settings.set(new SettingEntry({ name: "visu.graphics.ext-bkt-glitch", type: SettingTypes.BOOLEAN, defaultValue: true }))
+    this.settings.set(new SettingEntry({ name: "visu.graphics.grid-item-surface", type: SettingTypes.BOOLEAN, defaultValue: false }))
     this.settings.set(new SettingEntry({ name: "visu.graphics.particle", type: SettingTypes.BOOLEAN, defaultValue: true }))
     this.settings.set(new SettingEntry({ name: "visu.graphics.shader-quality", type: SettingTypes.NUMBER, defaultValue: 0.5 }))
     this.settings.set(new SettingEntry({ name: "visu.graphics.vsync", type: SettingTypes.BOOLEAN, defaultValue: true }))
