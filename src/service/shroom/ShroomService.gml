@@ -240,6 +240,18 @@ function ShroomService(config = null): Service(config) constructor {
       return
     }
 
+    //array_resize(acc.template.onDamage, array_length(acc.template.onDamage) + array_length(template.onDamage))
+    //array_copy(acc.template.onDamage, -1 * array_length(template.onDamage), template.onDamage, 0, array_length(template.onDamage)) 
+//
+    //array_resize(acc.template.onDeath, array_length(acc.template.onDeath) + array_length(template.onDeath))
+    //array_copy(acc.template.onDeath, -1 * array_length(template.onDeath), template.onDeath, 0, array_length(template.onDeath)) 
+//
+    //array_resize(acc.template.features, array_length(acc.template.features) + array_length(template.features))
+    //array_copy(acc.template.features, -1 * array_length(template.features), template.features, 0, array_length(template.features)) 
+//
+    //array_resize(acc.template.queue, array_length(acc.template.queue) + array_length(template.queue))
+    //array_copy(acc.template.queue, -1 * array_length(template.queue), template.queue, 0, array_length(template.queue)) 
+//
     GMArray.forEach(template.onDamage, add, acc.template.onDamage)
     GMArray.forEach(template.onDeath, add, acc.template.onDeath)
     GMArray.forEach(template.queue, add, acc.template.queue)
@@ -263,6 +275,11 @@ function ShroomService(config = null): Service(config) constructor {
       ShroomServiceAcc.names = { }
       ShroomServiceAcc.service = this
       ShroomServiceAcc.template = template
+      //ShroomServiceAcc.template.onDamage = GMArray.clone(ShroomServiceAcc.template.onDamage)
+      //ShroomServiceAcc.template.onDeath = GMArray.clone(ShroomServiceAcc.template.onDeath)
+      //ShroomServiceAcc.template.queue = GMArray.clone(ShroomServiceAcc.template.queue)
+      //ShroomServiceAcc.template.features = GMArray.clone(ShroomServiceAcc.template.features)
+      //ShroomServiceAcc.template.inherit = GMArray.clone(ShroomServiceAcc.template.inherit)
 
       for (var idx = 0; idx < templateInheritSize; idx++) {
         this.parseInherit(template.inherit[idx], idx, ShroomServiceAcc)
@@ -282,6 +299,26 @@ function ShroomService(config = null): Service(config) constructor {
     //if (this.optimalizationSortEntitiesByTxGroup) {
     //  controller.gridService.textureGroups.sortItems(this.shrooms)
     //}
+  }
+
+  static resolveShroomTemplateInheritance = function(template) {
+    var templateInheritSize = template.inherit != null ? GMArray.size(template.inherit) : 0
+    if (!template.inherited && templateInheritSize > 0) {
+      ShroomServiceAcc.names = { }
+      ShroomServiceAcc.service = this
+      ShroomServiceAcc.template = template
+      for (var idx = 0; idx < templateInheritSize; idx++) {
+        this.parseInherit(template.inherit[idx], idx, ShroomServiceAcc)
+      }
+    }
+
+    template.inherited = true
+    template.inherit = []
+    template.use_shroom_on_damage = true
+    template.use_shroom_on_death = true
+    template.use_shroom_queue = true
+    template.use_shroom_features = true
+    template.use_shroom_inherit = false
   }
 
   ///@param {Struct} item

@@ -1727,9 +1727,9 @@ function GridRenderer() constructor {
       }
 
       _renderPlayer(gridService, playerService, baseX, baseY)
-    } else {
-      matrix_set(matrix_world, matrix_build_identity())
     }
+
+    matrix_set(matrix_world, matrix_build_identity())
 
     return this
   }

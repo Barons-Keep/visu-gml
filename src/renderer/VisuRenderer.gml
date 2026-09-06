@@ -713,9 +713,9 @@ function VisuRenderer() constructor {
       this.renderGame(layout)
       this.renderUI(layout)
       this.renderSpinner(layout)
+      this.renderDebugGUI(layout)
       this.renderFadeBackground(this.initTimer)
       this.renderFadeBackground(this.fadeTimer)
-      this.renderDebugGUI(layout)
       this.renderFPS(layout)
       
       if (stateName == "scene-close") {
