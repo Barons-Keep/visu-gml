@@ -242,6 +242,7 @@ function ShroomTemplate(_name, json) constructor {
     ShroomTemplateSpawn.lifespanMax = lifespan != null ? lifespan : (this.use_shroom_lifespan ? this.lifespanMax : 15)
     ShroomTemplateSpawn.healthPoints = hp != null ? hp : (this.use_shroom_healthPoints ? this.healthPoints : 1)
     ShroomTemplateSpawn.hostile = this.hostile
+    ShroomTemplateSpawn.inherited = this.inherited
     //ShroomTemplateSpawn.onDamage = this.use_shroom_on_damage ? this.onDamage : []
     //ShroomTemplateSpawn.onDeath = this.use_shroom_on_death ? this.onDeath : []
     //ShroomTemplateSpawn.queue = this.use_shroom_queue ? this.queue : []
