@@ -900,6 +900,19 @@ function VisuTrackLoader(config = null): Service(config) constructor {
                 ease: EaseType.LINEAR,
               })
             }))
+
+            var shroomService = controller.shroomService
+            var shroomTemplates = new Stack(ShroomTemplate)
+            var editorControllerConstructor = Core.getConstructor(Visu.modules().editor.controller)
+            if (!Optional.is(editorControllerConstructor)
+                || !Optional.is(Beans.get(Visu.modules().editor.controller))) {
+              Logger.info("VisuTrackLoader", $"Resolve shroom template inheritance")
+              shroomService.templates.forEach(function(template, key, templates) {
+                templates.push(template)
+              }, shroomTemplates)
+            }
+            
+            fsmState.state.set("shroom-templates", shroomTemplates)
           },
         },
         update: function(fsm) {
@@ -911,6 +924,14 @@ function VisuTrackLoader(config = null): Service(config) constructor {
             Assert.isTrue(textureLoadTask.promise.status != PromiseStatus.REJECTED,
               "textureLoadTask.promise.status must be fullfilled")
             
+            var shroomTemplates = this.state.get("shroom-templates")
+            if (shroomTemplates.size() > 0) {
+              var shroomTemplate = shroomTemplates.pop()
+              Beans.get(BeanVisuController).shroomService
+                .resolveShroomTemplateInheritance(shroomTemplate)
+              return
+            }
+
             var timer = this.state.get("cooldown-timer")
             var editorIO = Beans.get(Visu.modules().editor.io)
             if (timer.update().finished) {

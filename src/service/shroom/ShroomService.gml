@@ -252,10 +252,10 @@ function ShroomService(config = null): Service(config) constructor {
     //array_resize(acc.template.queue, array_length(acc.template.queue) + array_length(template.queue))
     //array_copy(acc.template.queue, -1 * array_length(template.queue), template.queue, 0, array_length(template.queue)) 
 //
-    //GMArray.forEach(template.onDamage, add, acc.template.onDamage)
-    //GMArray.forEach(template.onDeath, add, acc.template.onDeath)
-    //GMArray.forEach(template.queue, add, acc.template.queue)
-    //GMArray.forEach(template.features, add, acc.template.features)
+    GMArray.forEach(template.onDamage, add, acc.template.onDamage)
+    GMArray.forEach(template.onDeath, add, acc.template.onDeath)
+    GMArray.forEach(template.queue, add, acc.template.queue)
+    GMArray.forEach(template.features, add, acc.template.features)
     for (var index = 0; index < GMArray.size(template.inherit); index++) {
       acc.service.parseInherit(template.inherit[index], index, acc)
     }
@@ -299,6 +299,26 @@ function ShroomService(config = null): Service(config) constructor {
     //if (this.optimalizationSortEntitiesByTxGroup) {
     //  controller.gridService.textureGroups.sortItems(this.shrooms)
     //}
+  }
+
+  static resolveShroomTemplateInheritance = function(template) {
+    var templateInheritSize = template.inherit != null ? GMArray.size(template.inherit) : 0
+    if (!template.inherited && templateInheritSize > 0) {
+      ShroomServiceAcc.names = { }
+      ShroomServiceAcc.service = this
+      ShroomServiceAcc.template = template
+      for (var idx = 0; idx < templateInheritSize; idx++) {
+        this.parseInherit(template.inherit[idx], idx, ShroomServiceAcc)
+      }
+    }
+
+    template.inherited = true
+    template.inherit = []
+    template.use_shroom_on_damage = true
+    template.use_shroom_on_death = true
+    template.use_shroom_queue = true
+    template.use_shroom_features = true
+    template.use_shroom_inherit = false
   }
 
   ///@param {Struct} item
