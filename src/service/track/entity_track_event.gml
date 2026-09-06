@@ -13,65 +13,67 @@ global.__entity_track_event = {
     parse: function(data) {
       var useEmitter = Struct.parse.boolean(data, "en-shr_use-em")
       var emitterConfig = Struct.getIfType(data, "en-shr_em-cfg", Struct)
-      if (useEmitter && emitterConfig == null) {
-        emitterConfig = {
-          amount: 1,
-          duration: 0,
-          arrays: {
-            value: 1,
-            target: 1,
+      if (useEmitter) {
+        if (emitterConfig == null) {
+          emitterConfig = {
+            amount: 1,
             duration: 0,
-            ease: "LINEAR",
-          },
-          perArray: 1,
-          angle: {
-            value: 0,
-            target: 0,
-            duration: 0,
-            ease: "LINEAR",
-          },
-          angleRng: 0,
-          angleStep: {
-            value: 0,
-            target: 0,
-            duration: 0,
-            ease: "LINEAR",
-          },
-          anglePerArray: 0,
-          anglePerArrayRng: 0,
-          anglePerArrayStep: 0,
-          speed: {
-            value: 0,
-            target: 0,
-            duration: 0,
-            ease: "LINEAR",
-          },
-          speedRng: 0,
-          offset: {
-            value: 0.0,
-            target: 0.0,
-            duration: 0.0,
-            ease: "LINEAR",
-          },
-          offsetX: {
-            value: 0.0,
-            target: 0.0,
-            duration: 0.0,
-            ease: "LINEAR",
-          },
-          offsetY: {
-            value: 0.0,
-            target: 0.0,
-            duration: 0.0,
-            ease: "LINEAR",
-          },
-          wiggleFrequency: 0.0,
-          wiggleAmplitude: {
-            value: 0.0,
-            target: 0.0,
-            duration: 0.0,
-            ease: "LINEAR",
-          },
+            arrays: {
+              value: 1,
+              target: 1,
+              duration: 0,
+              ease: "LINEAR",
+            },
+            perArray: 1,
+            angle: {
+              value: 0,
+              target: 0,
+              duration: 0,
+              ease: "LINEAR",
+            },
+            angleRng: 0,
+            angleStep: {
+              value: 0,
+              target: 0,
+              duration: 0,
+              ease: "LINEAR",
+            },
+            anglePerArray: 0,
+            anglePerArrayRng: 0,
+            anglePerArrayStep: 0,
+            speed: {
+              value: 0,
+              target: 0,
+              duration: 0,
+              ease: "LINEAR",
+            },
+            speedRng: 0,
+            offset: {
+              value: 0.0,
+              target: 0.0,
+              duration: 0.0,
+              ease: "LINEAR",
+            },
+            offsetX: {
+              value: 0.0,
+              target: 0.0,
+              duration: 0.0,
+              ease: "LINEAR",
+            },
+            offsetY: {
+              value: 0.0,
+              target: 0.0,
+              duration: 0.0,
+              ease: "LINEAR",
+            },
+            wiggleFrequency: 0.0,
+            wiggleAmplitude: {
+              value: 0.0,
+              target: 0.0,
+              duration: 0.0,
+              ease: "LINEAR",
+            },
+          }
         }
       } else {
         emitterConfig = null
@@ -208,85 +210,87 @@ global.__entity_track_event = {
     parse: function(data) {
       var useEmitter = Struct.parse.boolean(data, "en-blt_use-em")
       var emitterConfig = Struct.getIfType(data, "en-blt_em-cfg", Struct)
-      if (useEmitter && emitterConfig == null) {
-        emitterConfig = {
-          amount: 1,
-          duration: 0,
-          arrays: {
-            value: 1,
-            target: 1,
+      if (useEmitter) {
+        if (emitterConfig == null) {
+          emitterConfig = {
+            amount: 1,
             duration: 0,
-            ease: "LINEAR",
-          },
-          perArray: {
-            value: 1,
-            target: 1,
-            duration: 0,
-            ease: "LINEAR",
-          },
-          angle: {
-            value: 0,
-            target: 0,
-            duration: 0,
-            ease: "LINEAR",
-          },
-          angleRng: 0,
-          angleStep: {
-            value: 0,
-            target: 0,
-            duration: 0,
-            ease: "LINEAR",
-          },
-          anglePerArray: {
-            value: 0,
-            target: 0,
-            duration: 0,
-            ease: "LINEAR",
-          },
-          anglePerArrayRng: 0,
-          anglePerArrayStep: {
-            value: 0,
-            target: 0,
-            duration: 0,
-            ease: "LINEAR",
-          },
-          speed: {
-            value: 0,
-            target: 0,
-            duration: 0,
-            ease: "LINEAR",
-          },
-          speedRng: 0,
-          offset: {
-            value: 0,
-            target: 0,
-            duration: 0,
-            ease: "LINEAR",
-          },
-          offsetX: {
-            value: 0,
-            target: 0,
-            duration: 0,
-            ease: "LINEAR",
-          },
-          offsetY: {
-            value: 0,
-            target: 0,
-            duration: 0,
-            ease: "LINEAR",
-          },
-          wiggleFrequency: {
-            value: 0,
-            target: 0,
-            duration: 0,
-            ease: "LINEAR",
-          },
-          wiggleAmplitude: {
-            value: 0,
-            target: 0,
-            duration: 0,
-            ease: "LINEAR",
-          },
+            arrays: {
+              value: 1,
+              target: 1,
+              duration: 0,
+              ease: "LINEAR",
+            },
+            perArray: {
+              value: 1,
+              target: 1,
+              duration: 0,
+              ease: "LINEAR",
+            },
+            angle: {
+              value: 0,
+              target: 0,
+              duration: 0,
+              ease: "LINEAR",
+            },
+            angleRng: 0,
+            angleStep: {
+              value: 0,
+              target: 0,
+              duration: 0,
+              ease: "LINEAR",
+            },
+            anglePerArray: {
+              value: 0,
+              target: 0,
+              duration: 0,
+              ease: "LINEAR",
+            },
+            anglePerArrayRng: 0,
+            anglePerArrayStep: {
+              value: 0,
+              target: 0,
+              duration: 0,
+              ease: "LINEAR",
+            },
+            speed: {
+              value: 0,
+              target: 0,
+              duration: 0,
+              ease: "LINEAR",
+            },
+            speedRng: 0,
+            offset: {
+              value: 0,
+              target: 0,
+              duration: 0,
+              ease: "LINEAR",
+            },
+            offsetX: {
+              value: 0,
+              target: 0,
+              duration: 0,
+              ease: "LINEAR",
+            },
+            offsetY: {
+              value: 0,
+              target: 0,
+              duration: 0,
+              ease: "LINEAR",
+            },
+            wiggleFrequency: {
+              value: 0,
+              target: 0,
+              duration: 0,
+              ease: "LINEAR",
+            },
+            wiggleAmplitude: {
+              value: 0,
+              target: 0,
+              duration: 0,
+              ease: "LINEAR",
+            },
+          }
         }
       } else {
         emitterConfig = null
@@ -343,7 +347,6 @@ global.__entity_track_event = {
         "en-blt_mask": Struct.parse.rectangle(data, "en-blt_mask"),
         "en-blt_use-em": useEmitter,
         "en-blt_em-cfg": emitterConfig,
-        "en-blt_em-use-cfg": Struct.parse.boolean(data, "en-blt_em-use-cfg", true),
       }
     },
     run: function(data, channel) {
