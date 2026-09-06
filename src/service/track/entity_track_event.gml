@@ -11,8 +11,9 @@ show_debug_message("init entity_track_event.gml")
 global.__entity_track_event = {
   "brush_entity_shroom": {
     parse: function(data) {
+      var useEmitter = Struct.parse.boolean(data, "en-shr_use-em")
       var emitterConfig = Struct.getIfType(data, "en-shr_em-cfg", Struct)
-      if (emitterConfig == null) {
+      if (useEmitter && emitterConfig == null) {
         emitterConfig = {
           amount: 1,
           duration: 0,
@@ -72,6 +73,8 @@ global.__entity_track_event = {
             ease: "LINEAR",
           },
         }
+      } else {
+        emitterConfig = null
       }
 
       return {
@@ -126,7 +129,7 @@ global.__entity_track_event = {
         "_en-shr_texture": Struct.get(data, "en-shr_texture"),
         "en-shr_use-mask": Struct.parse.boolean(data, "en-shr_use-mask"),
         "en-shr_mask": Struct.parse.rectangle(data, "en-shr_mask"),
-        "en-shr_use-em": Struct.parse.boolean(data, "en-shr_use-em"),
+        "en-shr_use-em": useEmitter,
         "en-shr_em-cfg": emitterConfig,
       }
     },
@@ -203,8 +206,9 @@ global.__entity_track_event = {
   },
   "brush_entity_bullet": {
     parse: function(data) {
+      var useEmitter = Struct.parse.boolean(data, "en-blt_use-em")
       var emitterConfig = Struct.getIfType(data, "en-blt_em-cfg", Struct)
-      if (emitterConfig == null) {
+      if (useEmitter && emitterConfig == null) {
         emitterConfig = {
           amount: 1,
           duration: 0,
@@ -284,6 +288,8 @@ global.__entity_track_event = {
             ease: "LINEAR",
           },
         }
+      } else {
+        emitterConfig = null
       }
 
       return {
@@ -335,7 +341,7 @@ global.__entity_track_event = {
         "_en-blt_texture": Struct.get(data, "en-blt_texture"),
         "en-blt_use-mask": Struct.parse.boolean(data, "en-blt_use-mask"),
         "en-blt_mask": Struct.parse.rectangle(data, "en-blt_mask"),
-        "en-blt_use-em": Struct.parse.boolean(data, "en-blt_use-em"),
+        "en-blt_use-em": useEmitter,
         "en-blt_em-cfg": emitterConfig,
         "en-blt_em-use-cfg": Struct.parse.boolean(data, "en-blt_em-use-cfg", true),
       }

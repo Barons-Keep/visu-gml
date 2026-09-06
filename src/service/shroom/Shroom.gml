@@ -162,16 +162,16 @@ function ShroomTemplate(_name, json) constructor {
       lifespanMax: this.lifespanMax,
       healthPoints: this.healthPoints,
       hostile: this.hostile,
-      //onDamage: JSON.clone(this.onDamage).getContainer(),
-      //onDeath: JSON.clone(this.onDeath).getContainer(),
-      //queue: JSON.clone(this.queue).getContainer(),
-      //features: JSON.clone(this.features).getContainer(),
-      //inherit: GMArray.clone(this.inherit),
-      onDamage: this.onDamage,
-      onDeath: this.onDeath,
-      queue: this.queue,
-      features: this.features,
-      inherit: this.inherit,
+      onDamage: this.use_shroom_on_damage ? GMArray.clone(this.onDamage) : [],
+      onDeath: this.use_shroom_on_death ? GMArray.clone(this.onDeath) : [],
+      queue: this.use_shroom_queue ? GMArray.clone(this.queue) : [],
+      features: this.use_shroom_features ? GMArray.clone(this.features) : [],
+      inherit: this.use_shroom_inherit ? GMArray.clone(this.inherit) : [],
+      //onDamage: this.onDamage,
+      //onDeath: this.onDeath,
+      //queue: this.queue,
+      //features: this.features,
+      //inherit: this.inherit,
 
       use_shroom_mask: this.use_shroom_mask,
       use_shroom_lifespan: this.use_shroom_lifespan,
@@ -230,11 +230,16 @@ function ShroomTemplate(_name, json) constructor {
     ShroomTemplateSpawn.lifespanMax = lifespan != null ? lifespan : (this.use_shroom_lifespan ? this.lifespanMax : 15)
     ShroomTemplateSpawn.healthPoints = hp != null ? hp : (this.use_shroom_healthPoints ? this.healthPoints : 1)
     ShroomTemplateSpawn.hostile = this.hostile
-    ShroomTemplateSpawn.onDamage = this.use_shroom_on_damage ? this.onDamage : []
-    ShroomTemplateSpawn.onDeath = this.use_shroom_on_death ? this.onDeath : []
-    ShroomTemplateSpawn.queue = this.use_shroom_queue ? this.queue : []
-    ShroomTemplateSpawn.features = this.use_shroom_features ? this.features : []
-    ShroomTemplateSpawn.inherit = this.use_shroom_inherit ? this.inherit : []
+    //ShroomTemplateSpawn.onDamage = this.use_shroom_on_damage ? this.onDamage : []
+    //ShroomTemplateSpawn.onDeath = this.use_shroom_on_death ? this.onDeath : []
+    //ShroomTemplateSpawn.queue = this.use_shroom_queue ? this.queue : []
+    //ShroomTemplateSpawn.features = this.use_shroom_features ? this.features : []
+    //ShroomTemplateSpawn.inherit = this.use_shroom_inherit ? this.inherit : []
+    ShroomTemplateSpawn.onDamage = this.use_shroom_on_damage ? GMArray.clone(this.onDamage) : []
+    ShroomTemplateSpawn.onDeath = this.use_shroom_on_death ? GMArray.clone(this.onDeath) : []
+    ShroomTemplateSpawn.queue = this.use_shroom_queue ? GMArray.clone(this.queue) : []
+    ShroomTemplateSpawn.features = this.use_shroom_features ? GMArray.clone(this.features) : []
+    ShroomTemplateSpawn.inherit = this.use_shroom_inherit ? GMArray.clone(this.inherit) : []
 
     return ShroomTemplateSpawn
   }
