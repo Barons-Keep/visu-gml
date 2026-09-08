@@ -229,7 +229,7 @@ function VisuRenderer() constructor {
   initFpsReport = function(filename) {
     global.fpsReportPath = $"{program_directory}{filename}"
     var file = file_text_open_write(global.fpsReportPath);
-    var row = this.generateRow($"{abs(this.debugMinFPS)},{abs(this.debugMinFPSReal))}")
+    var row = this.generateRow($"{abs(this.debugMinFPS)},{abs(this.debugMinFPSReal)}")
     file_text_write_string(file, $"timestamp,FPS_MIN,FPS_REAL_MIN\n{row}\n");
     file_text_close(file); 
   }
