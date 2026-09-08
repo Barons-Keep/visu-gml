@@ -1126,20 +1126,39 @@ global.__VEComponents = new Map(String, Callable, {
   ///@param {?Struct} [config]
   ///@return {Array<UIItem>}
   "property-button": function(name, layout, config = null) {
-
     return new Array(UIItem, [
-      UIText(
+      UIButton(
         $"property-button_{name}", 
         Struct.appendRecursive(
           Struct.appendRecursive(
-            { 
-              layout: layout.nodes.label,
+            {
+              label: { 
+                text: "Button",
+                font: "font_inter_10_regular",
+                useScale: false,
+                color: VETheme.color.textFocus,
+                align: { v: VAlign.CENTER, h: HAlign.CENTER },
+              },
+              backgroundColor: VETheme.color.primaryDark,
+              backgroundColorSelected: VETheme.color.primaryShadow,
+              backgroundColorOut: VETheme.color.primaryDark,
+              layout: layout.nodes.button,
               updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
+              onMouseHoverOver: function(event) {
+                if (Struct.get(this.enable, "value") == false) {
+                  this.backgroundColor = ColorUtil.fromHex(this.backgroundColorOut).toGMColor()
+                  return
+                }
+                this.backgroundColor = ColorUtil.fromHex(this.backgroundColorSelected).toGMColor()
+              },
+              onMouseHoverOut: function(event) {
+                this.backgroundColor = ColorUtil.fromHex(this.backgroundColorOut).toGMColor()
+              },
             },
             VEStyles.get("text-field-button").label,
             false
           ),
-          Struct.get(config, "label"),
+          Struct.get(config, "button"),
           false
         )
       ),

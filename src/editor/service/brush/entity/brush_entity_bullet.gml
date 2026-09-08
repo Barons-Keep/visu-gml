@@ -5,80 +5,19 @@ show_debug_message("init brush_entity_bullet.gml")
 ///@param {Struct} json
 ///@return {Struct}
 function brush_entity_bullet(json) {
-  static sortEmitter =  function(key, index, emitter) {
-    var value = Struct.get(emitter.json, key)
-    var json = Struct.set({}, key, value)
-    var array = String.split(JSON.stringify(json, true), "\n")
-    emitter.array.add(array.remove(0).remove(array.size() - 1).join("\n"))
-  }
+  var defaultValues = entity_track_event.brush_entity_bullet.defaultValues()
 
-  var emitterConfig = Struct.getIfType(json, "en-blt_em-cfg", Struct)
   var emitter = {
-    json: emitterConfig != null
-      ? emitterConfig
-      : {
-          amount: 1,
-          duration: 0,
-          arrays: {
-            value: 1,
-            target: 1,
-            duration: 0,
-            ease: "LINEAR",
-          },
-          perArray: 1,
-          angle: {
-            value: 0,
-            target: 0,
-            duration: 0,
-            ease: "LINEAR",
-          },
-          angleRng: 0,
-          angleStep: {
-            value: 0,
-            target: 0,
-            duration: 0,
-            ease: "LINEAR",
-          },
-          anglePerArray: 0,
-          anglePerArrayRng: 0,
-          anglePerArrayStep: 0,
-          speed: {
-            value: 0,
-            target: 0,
-            duration: 0,
-            ease: "LINEAR",
-          },
-          speedRng: 0,
-          offset: {
-            value: 0.0,
-            target: 0.0,
-            duration: 0.0,
-            ease: "LINEAR",
-          },
-          offsetX: {
-            value: 0.0,
-            target: 0.0,
-            duration: 0.0,
-            ease: "LINEAR",
-          },
-          offsetY: {
-            value: 0.0,
-            target: 0.0,
-            duration: 0.0,
-            ease: "LINEAR",
-          },
-          wiggleFrequency: 0.0,
-          wiggleAmplitude: {
-            value: 0.0,
-            target: 0.0,
-            duration: 0.0,
-            ease: "LINEAR",
-          },
-        },
+    json: Struct.getIfType(json, "en-blt_em-cfg", Struct, defaultValues.get("en-blt_em-cfg")),
     array: new Array(String),
   }
   
-  GMArray.forEach(GMArray.sort(Struct.keys(emitter.json)), sortEmitter, emitter)
+  GMArray.forEach(
+    GMArray.sort(Struct.keys(emitter.json)),
+    __brush_entity_shroom__sortEmitter,
+    emitter
+  )
+
   var text = emitter.array.join(",\n")
   var emitterJSON = $"\{\n{text}\n\}"
 
@@ -154,7 +93,7 @@ function brush_entity_bullet(json) {
     },
     "en-blt_x": {
       type: Number,
-      value: Struct.get(json, "en-blt_x", Number, 0),
+      value: Struct.get(json, "en-blt_x"),
       passthrough: UIUtil.passthrough.getClampedStringNumber(),
       data: new Vector2(
         -1.0 * (SHROOM_SPAWN_AMOUNT / 2.0), 
@@ -171,7 +110,7 @@ function brush_entity_bullet(json) {
     },
     "en-blt_rng-x": {
       type: Number,
-      value: Struct.get(json, "en-blt_rng-x", Number, 0),
+      value: Struct.get(json, "en-blt_rng-x"),
       passthrough: UIUtil.passthrough.getClampedStringNumber(),
       data: new Vector2(
         0.0, 
@@ -180,7 +119,7 @@ function brush_entity_bullet(json) {
     },
     "en-blt_y": {
       type: Number,
-      value: Struct.get(json, "en-blt_y", Number, 0),
+      value: Struct.get(json, "en-blt_y"),
       passthrough: UIUtil.passthrough.getClampedStringNumber(),
       data: new Vector2(
         -1.0 * (SHROOM_SPAWN_AMOUNT / 2.0), 
@@ -197,32 +136,16 @@ function brush_entity_bullet(json) {
     },
     "en-blt_rng-y": {
       type: Number,
-      value: Struct.get(json, "en-blt_rng-y", Number, 0),
+      value: Struct.get(json, "en-blt_rng-y"),
       passthrough: UIUtil.passthrough.getClampedStringNumber(),
       data: new Vector2(
         0.0, 
         SHROOM_SPAWN_AMOUNT / 2.0
       ),
     },
-    "en-blt_use-texture": {
-      type: Boolean,
-      value: Struct.get(json, "en-blt_use-texture"),
-    },
-    "en-blt_texture": {
-      type: Sprite,
-      value: Struct.get(json, "en-blt_texture"),
-    },
-    "en-blt_use-mask": {
-      type: Boolean,
-      value: Struct.get(json, "en-blt_use-mask"),
-    },
-    "en-blt_mask": {
-      type: Rectangle,
-      value: Struct.get(json, "en-blt_mask"),
-    },
     "en-blt_spawn-map": {
       type: TextureTemplate,
-      value: new TextureTemplate("texture_shroom_spawn_map", { asset: texture_shroom_spawn_map, file: "" }),
+      value: defaultValues.get("en-blt_spawn-map"),
     },
     "en-blt_hide": {
       type: Boolean,
@@ -239,34 +162,6 @@ function brush_entity_bullet(json) {
     "en-blt_hide-em-cfg": {
       type: Boolean,
       value: Struct.get(json, "en-blt_hide-em-cfg"),
-    },
-    "en-blt_hide-em-angle": {
-      type: Boolean,
-      value: Struct.get(json, "en-blt_hide-em-angle"),
-    },
-    "en-blt_hide-em-per-array": {
-      type: Boolean,
-      value: Struct.get(json, "en-blt_hide-em-per-array"),
-    },
-    "en-blt_hide-em-spd": {
-      type: Boolean,
-      value: Struct.get(json, "en-blt_hide-em-spd"),
-    },
-    "en-blt_hide-em-offset-x": {
-      type: Boolean,
-      value: Struct.get(json, "en-blt_hide-em-offset-x"),
-    },
-    "en-blt_hide-em-offset-y": {
-      type: Boolean,
-      value: Struct.get(json, "en-blt_hide-em-offset-y"),
-    },
-    "en-blt_hide-em-wiggle-freq": {
-      type: Boolean,
-      value: Struct.get(json, "en-blt_hide-em-wiggle-freq"),
-    },
-    "en-blt_hide-em-wiggle-amp": {
-      type: Boolean,
-      value: Struct.get(json, "en-blt_hide-em-wiggle-amp"),
     },
     "en-blt_use-em": {
       type: Boolean,
@@ -1396,6 +1291,88 @@ function brush_entity_bullet(json) {
         },
       },
     },
+    VEButtonPropertyComponent("en-blt_em-cfg-btn", {
+      hidden: { key: "en-blt_hide-em" },
+      enable: { key: "en-blt_use-em"},
+      button: {
+        label: { text: "Insert default JSON" },
+        store: { key: "en-blt_em-cfg" },
+        callback: function() {
+          var item = UIItemUtils.getStoreItemFromUIStore(this, "en-blt_em-cfg")
+          if (item == null) {
+            return
+          }
+
+          var emitter = {
+            json: {
+              amount: 1,
+              duration: 0,
+              arrays: {
+                value: 1,
+                target: 1,
+                duration: 0,
+                ease: "LINEAR",
+              },
+              perArray: 1,
+              angle: {
+                value: 0,
+                target: 0,
+                duration: 0,
+                ease: "LINEAR",
+              },
+              angleRng: 0,
+              angleStep: {
+                value: 0,
+                target: 0,
+                duration: 0,
+                ease: "LINEAR",
+              },
+              anglePerArray: 0,
+              anglePerArrayRng: 0,
+              anglePerArrayStep: 0,
+              speed: {
+                value: 0,
+                target: 0,
+                duration: 0,
+                ease: "LINEAR",
+              },
+              speedRng: 0,
+              offset: {
+                value: 0.0,
+                target: 0.0,
+                duration: 0.0,
+                ease: "LINEAR",
+              },
+              offsetX: {
+                value: 0.0,
+                target: 0.0,
+                duration: 0.0,
+                ease: "LINEAR",
+              },
+              offsetY: {
+                value: 0.0,
+                target: 0.0,
+                duration: 0.0,
+                ease: "LINEAR",
+              },
+              wiggleFrequency: 0.0,
+              wiggleAmplitude: {
+                value: 0.0,
+                target: 0.0,
+                duration: 0.0,
+                ease: "LINEAR",
+              },
+            },
+            array: new Array(String),
+          }
+          
+          GMArray.forEach(GMArray.sort(Struct.keys(emitter.json)), __brush_entity_shroom__sortEmitter, emitter)
+          var text = emitter.array.join(",\n")
+          var emitterJSON = $"\{\n{text}\n\}"
+          item.set(emitterJSON)
+        },
+      },
+    }),
     {
       name: "en-blt_em-cfg",
       template: VEComponents.get("text-area"),

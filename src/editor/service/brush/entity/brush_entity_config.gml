@@ -5,6 +5,7 @@ show_debug_message("init brush_entity_config.gml")
 ///@param {?Struct} [json]
 ///@return {Struct}
 function brush_entity_config(json = null) {
+  var defaultValues = entity_track_event.brush_entity_config.defaultValues()
   return {
     name: "brush_entity_config",
     store: new Map(String, Struct, {
@@ -64,7 +65,10 @@ function brush_entity_config(json = null) {
         type: NumberTransformer,
         value: Struct.get(json, "en-cfg_z-shr"),
         passthrough: UIUtil.passthrough.getClampedNumberTransformer(),
-        data: new Vector2(0.0, 99999.9),
+        data: new Vector2(
+          defaultValues.get("en-cfg_z-shr").clampValue.from,
+          defaultValues.get("en-cfg_z-shr").clampValue.to
+        ),
       },
       "en-cfg_change-z-shr": {
         type: Boolean,
@@ -78,7 +82,10 @@ function brush_entity_config(json = null) {
         type: NumberTransformer,
         value: Struct.get(json, "en-cfg_z-player"),
         passthrough: UIUtil.passthrough.getClampedNumberTransformer(),
-        data: new Vector2(0.0, 99999.9),
+        data: new Vector2(
+          defaultValues.get("en-cfg_z-player").clampValue.from,
+          defaultValues.get("en-cfg_z-player").clampValue.to
+        ),
       },
       "en-cfg_change-z-player": {
         type: Boolean,
@@ -90,9 +97,12 @@ function brush_entity_config(json = null) {
       },
       "en-cfg_z-coin": {
         type: NumberTransformer,
-        value: Struct.get(json, "en-cfg_z-coin", Struct),
+        value: Struct.get(json, "en-cfg_z-coin"),
         passthrough: UIUtil.passthrough.getClampedNumberTransformer(),
-        data: new Vector2(0.0, 99999.9),
+        data: new Vector2(
+          defaultValues.get("en-cfg_z-coin").clampValue.from,
+          defaultValues.get("en-cfg_z-coin").clampValue.to
+        ),
       },
       "en-cfg_change-z-coin": {
         type: Boolean,
@@ -106,7 +116,10 @@ function brush_entity_config(json = null) {
         type: NumberTransformer,
         value: Struct.get(json, "en-cfg_z-bullet"),
         passthrough: UIUtil.passthrough.getClampedNumberTransformer(),
-        data: new Vector2(0.0, 99999.9),
+        data: new Vector2(
+          defaultValues.get("en-cfg_z-bullet").clampValue.from,
+          defaultValues.get("en-cfg_z-bullet").clampValue.to
+        ),
       },
       "en-cfg_change-z-bullet": {
         type: Boolean,

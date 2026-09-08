@@ -14,6 +14,10 @@ function VEEvent(_context, json = null) constructor {
 
   ///@type {Store}
   store = new Store({
+    "event-type": {
+      type: String,
+      value: this.type,
+    },
     "event-timestamp": {
       type: Number,
       value: Struct.get(json, "event-timestamp"),
@@ -376,19 +380,45 @@ function VEEvent(_context, json = null) constructor {
           },
         },
       },
-    },
-    {
-      name: "event_start-properties-line-h",
-      template: VEComponents.get("line-h"),
-      layout: VELayouts.get("line-h"),
-      config: { layout: { type: UILayoutType.VERTICAL } },
     }
   ])
 
-  var eventHandler = Assert.isType(Beans.get(BeanVisuController).trackService.handlers.get(this.type), Struct)
+  var eventHandler = Assert.isType(
+    Beans.get(BeanVisuController).trackService.handlers.get(this.type),
+    Struct,
+    "VEEvent.eventHandler must be type of Struct"
+  )
   
+  var uiHandler = Assert.isType(
+    Callable.get(this.type),
+    Callable,
+    "VEEvent.uiHandler must be type of Callable"
+  )
+
+  var eventParser = Assert.isType(
+    Struct.get(eventHandler, "parse"),
+    Callable,
+    "VEEvent.eventParser must be type of Callable"
+  )
+
+  var data = Assert.isType(
+    eventParser(Struct.getIfType(json, "properties", Struct, { })), 
+    Struct,
+    "VEEvent.data must be type of Struct"
+  )
+
+  var properties = Assert.isType(
+    uiHandler(data),
+    Struct,
+    "VEEvent.properties must be type of Struct"
+  )
+
   ///@type {Callable}
-  serializeData = Assert.isType(Struct.get(eventHandler, "serialize"), Callable)
+  serializeData = Assert.isType(
+    Struct.get(eventHandler, "serialize"),
+    Callable,
+    "VEEvent.serializeData must be type of Callable"
+  )
 
   ///@return {Struct}
   toTemplate = function() {
@@ -423,11 +453,43 @@ function VEEvent(_context, json = null) constructor {
     }
   }
 
-  ///@description append data
-  var uiHandler = Assert.isType(Callable.get(this.type), Callable)
-  var eventParser = Assert.isType(Struct.get(eventHandler, "parse"), Callable)
-  var data = Assert.isType(eventParser(Struct.getIfType(json, "properties", Struct, { })), Struct)
-  var properties = Assert.isType(uiHandler(data), Struct)
+  ///@description append event-reset-btn to components
+  if (Struct.get(eventHandler, "defaultValues") != null) {
+    components.add(VEButtonPropertyComponent("event-reset-btn", {
+      button: {
+        label: { text: "Reset event" },
+        store: { key: "event-hidden" },
+        callback: function() {
+          var item = UIItemUtils.getStoreItemFromUIStore(this, "event-type")
+          if (item == null) {
+            return
+          }
+
+          var type = item.get()
+          var eventHandler = Beans.get(BeanVisuController).trackService.handlers.get(type)
+          var defaultValues = Struct.get(eventHandler, "defaultValues")
+          if (defaultValues == null) {
+            return
+          }
+
+          defaultValues().forEach(function(value, key, uiItem) {
+            var item = UIItemUtils.getStoreItemFromUIStore(uiItem, key)
+            if (item == null) {
+              return
+            }
+
+            item.set(value)
+          }, this)
+        },
+      },
+    }))
+  }
+  components.add({
+    name: "event_start-properties-line-h",
+    template: VEComponents.get("line-h"),
+    layout: VELayouts.get("line-h"),
+    config: { layout: { type: UILayoutType.VERTICAL } },
+  })
 
   ///@description append StoreItems to default template
   properties.store.forEach(function(json, name, store) {

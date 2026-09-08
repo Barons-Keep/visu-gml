@@ -122,11 +122,11 @@ function VisuRenderer() constructor {
 
   ///@private
   ///@type {Number}
-  debugMinFPSReal = fps_real
+  debugMinFPSReal = GAME_FPS
 
   ///@private
   ///@type {Number}
-  debugMinFPSRealValue = fps_real
+  debugMinFPSRealValue = GAME_FPS
 
   ///@private
   ///@type {Number}
@@ -208,7 +208,7 @@ function VisuRenderer() constructor {
 
   
   fpsReport = ""
-  fpsTimer = new Timer(2.0, { loop: Infinity })
+  fpsTimer = new Timer(1.0, { loop: Infinity })
   fpsReportTimer = new Timer(10.0, { loop: Infinity })
   generateRow = function(message) {
     var z = function(v) {
@@ -229,8 +229,8 @@ function VisuRenderer() constructor {
   initFpsReport = function(filename) {
     global.fpsReportPath = $"{program_directory}{filename}"
     var file = file_text_open_write(global.fpsReportPath);
-    var row = this.generateRow($"{abs(this.debugMinFPS)},{abs(this.debugMaxDelta)}")
-    file_text_write_string(file, $"timestamp,FPS_MIN,DELTA_MAX\n{row}\n");
+    var row = this.generateRow($"{abs(this.debugMinFPS)},{abs(this.debugMinFPSReal))}")
+    file_text_write_string(file, $"timestamp,FPS_MIN,FPS_REAL_MIN\n{row}\n");
     file_text_close(file); 
   }
   
@@ -270,7 +270,7 @@ function VisuRenderer() constructor {
     }
 
     if (global.fpsReportPath != null && this.fpsTimer.update().finished) {
-      var row = this.generateRow($"{abs(this.debugMinFPS)},{abs(this.debugMaxDelta)}")
+      var row = this.generateRow($"{abs(this.debugMinFPS)},{abs(this.debugMinFPSReal)}")
       this.fpsReport = this.fpsReport == "" ? row : $"{this.fpsReport}\n{row}"
     }
     
@@ -402,18 +402,10 @@ function VisuRenderer() constructor {
       return this
     }
 
-    this.debugMinFPSRealValue = min(this.debugMinFPSRealValue, fps_real)
-    this.debugMinFPSRealCooldown--
-    if (this.debugMinFPSRealCooldown < 0) {
-      this.debugMinFPSRealCooldown = GAME_FPS
-      this.debugMinFPSReal = this.debugMinFPSRealValue
-      this.debugMinFPSRealValue = 9999
-    }
-
-    var fpsValue = String.format(fps, 4, 0)
-    var fpsMin = String.format(min(fps, this.debugMinFPS), 4, 0)
-    var fpsReal = String.format(fps_real, 4, 0)
-    var fpsRealMin = String.format(this.debugMinFPSReal, 4, 0)
+    var fpsValue = String.format(abs(fps), 4, 0)
+    var fpsMin = String.format(min(abs(fps), abs(this.debugMinFPS)), 4, 0)
+    var fpsReal = String.format(abs(fps_real), 4, 0)
+    var fpsRealMin = String.format(abs(this.debugMinFPSReal), 4, 0)
 
     var text = $"FPS: {fpsValue} | FPS min: {fpsMin} | FPS real: {fpsReal} | FPS real min: {fpsRealMin}"
     GPU.render.text(
@@ -669,6 +661,14 @@ function VisuRenderer() constructor {
     }
 
     this.executor.update()
+
+    this.debugMinFPSRealValue = min(abs(this.debugMinFPSRealValue), abs(fps_real))
+    this.debugMinFPSRealCooldown--
+    if (this.debugMinFPSRealCooldown < 0) {
+      this.debugMinFPSRealCooldown = GAME_FPS
+      this.debugMinFPSReal = this.debugMinFPSRealValue
+      this.debugMinFPSRealValue = 9999
+    }
 
     if (global.fpsReportPath != null && this.fpsReportTimer.update().finished) {
       var file = file_text_open_append(global.fpsReportPath)

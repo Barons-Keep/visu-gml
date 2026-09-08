@@ -6,10 +6,15 @@ show_debug_message("init VEBrush.gml")
 function VEBrush(template) constructor {
   
   ///@type {BrushType}
-  type = Assert.isEnum(template.type, BrushType)
-   
+  type = Assert.isEnum(template.type, BrushType,
+    "VEBrush.type must be type of BrushType")
+
   ///@type {Store}
   store = new Store({
+    "brush-type": {
+      type: String,
+      value: this.type,
+    },
     "brush-name": {
       type: String,
       value: template.name,
@@ -35,7 +40,7 @@ function VEBrush(template) constructor {
     "brush-hidden": {
       type: Boolean,
       value: Struct.getIfType(template, "hidden", Boolean, false)
-    }
+    },
   })
 
   ///@type {Array<Struct>}
@@ -340,21 +345,44 @@ function VEBrush(template) constructor {
         },
       }
     },
-    {
-      name: "brush-properties-line-h",
-      template: VEComponents.get("line-h"),
-      layout: VELayouts.get("line-h"),
-      config: {
-        layout: { type: UILayoutType.VERTICAL },
-        image: { hidden: { key: "brush-hidden" } },
-      },
-    }
   ])
 
-  var eventHandler = Assert.isType(Beans.get(BeanVisuController).trackService.handlers.get(this.type), Struct)
-  
+  var eventHandler = Assert.isType(
+    Beans.get(BeanVisuController).trackService.handlers.get(this.type),
+    Struct,
+    "VEBrush.eventHandler must be type of Struct"
+  )
+
+  var uiHandler = Assert.isType(
+    Callable.get(this.type),
+    Callable,
+    "VEBrush.uiHandler must be type of Callable"
+  )
+
+  var eventParser = Assert.isType(
+    Struct.get(eventHandler, "parse"),
+    Callable,
+    "VEBrush.eventParser must be type of Callable"
+  )
+
+  var data = Assert.isType(
+    eventParser(Struct.getIfType(template, "properties", Struct, { })), 
+    Struct,
+    "VEBrush.data must be type of Struct"
+  )
+
+  var properties = Assert.isType(
+    uiHandler(data),
+    Struct,
+    "VEBrush.properties must be type of Struct"
+  )
+
   ///@type {Callable}
-  serializeData = Assert.isType(Struct.get(eventHandler, "serialize"), Callable)
+  serializeData = Assert.isType(
+    Struct.get(eventHandler, "serialize"),
+    Callable,
+    "VEBrush.serializeData must be type of Callable"
+  )
 
   ///@return {VEBrushTemplate}
   toTemplate = function() {
@@ -385,11 +413,46 @@ function VEBrush(template) constructor {
     return new VEBrushTemplate(json)
   }
 
-  ///@description append data
-  var uiHandler = Assert.isType(Callable.get(this.type), Callable)
-  var eventParser = Assert.isType(Struct.get(eventHandler, "parse"), Callable)
-  var data = Assert.isType(eventParser(Struct.getIfType(template, "properties", Struct, { })), Struct)
-  var properties = Assert.isType(uiHandler(data), Struct)
+  ///@description append brush-reset-btn to components
+  if (Struct.get(eventHandler, "defaultValues") != null) {
+    components.add(VEButtonPropertyComponent("brush-reset-btn", {
+      button: {
+        label: { text: "Reset brush" },
+        store: { key: "brush-hidden" },
+        callback: function() {
+          var item = UIItemUtils.getStoreItemFromUIStore(this, "brush-type")
+          if (item == null) {
+            return
+          }
+
+          var type = item.get()
+          var eventHandler = Beans.get(BeanVisuController).trackService.handlers.get(type)
+          var defaultValues = Struct.get(eventHandler, "defaultValues")
+          if (defaultValues == null) {
+            return
+          }
+
+          defaultValues().forEach(function(value, key, uiItem) {
+            var item = UIItemUtils.getStoreItemFromUIStore(uiItem, key)
+            if (item == null) {
+              return
+            }
+
+            item.set(value)
+          }, this)
+        },
+      },
+    }))
+  }
+  components.add({
+    name: "brush_start-properties-line-h",
+    template: VEComponents.get("line-h"),
+    layout: VELayouts.get("line-h"),
+    config: {
+      layout: { type: UILayoutType.VERTICAL },
+      image: { hidden: { key: "brush-hidden" } },
+    },
+  })
 
   ///@description append StoreItems to default template
   properties.store.forEach(function(json, name, store) {

@@ -253,6 +253,29 @@ function init_VELayouts() {
       }
     },
 
+        ///@param {?Struct} [config]
+    ///@return {Struct}
+    "property-button": function(config = null) {
+      return {
+        name: "property-button",
+        type: Assert.isEnum(Struct.getDefault(config, "type", UILayoutType.NONE), UILayoutType),
+        height: function() { return 24 },
+        propagateHidden: Struct.getIfType(config, "propagateHidden", Boolean, false),
+        margin: { top: 2, bottom: 2, left: 2, right: 2 },
+        nodes: {
+          button: {
+            name: "property-button.button",
+            width: function() { 
+              return this.context.width() 
+                - this.context.__margin.left
+                - this.context.__margin.right
+            },
+            propagateHidden: Struct.getIfType(Struct.get(config, "button"), "propagateHidden", Boolean, true),
+          },
+        }
+      }
+    },
+
     ///@param {?Struct} [config]
     ///@return {Struct}
     "label": function(config = null) {
