@@ -393,6 +393,10 @@ function PlayerStats(_player, json) constructor {
             }))
 
             controller.shroomService.shrooms.forEach(function(shroom, index, player) {
+              if (shroom == null) {
+                return
+              }
+
               if (!shroom.signals.kill && Math.fetchLength(shroom.x, shroom.y, player.x, player.y) <= 1.41) {
                 shroom.signals.freeReason = "nuked"
                 shroom.signalKill()
