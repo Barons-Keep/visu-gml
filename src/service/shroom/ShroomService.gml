@@ -12,7 +12,10 @@ global.__ShroomServiceAcc = {
 function ShroomService(config = null): Service(config) constructor {
 
   ///@type {Array<Shroom>} 
-  shrooms = new Array(Shroom).enableGC()
+  //shrooms = new Array(Shroom).enableGC()
+  shrooms = new DSList(Shroom)
+
+  shroomsPool = new DSList(Number)
 
   ///@type {GridItemChunkService}
   chunkService = new GridItemChunkService(GRID_ITEM_CHUNK_SERVICE_SIZE)
@@ -187,11 +190,12 @@ function ShroomService(config = null): Service(config) constructor {
       //  controller.gridService.textureGroups.sortItems(this.shrooms)
       //}
     },
-    "spawn-shroom-emitter": function(event) {
-
-    },
     "clear-shrooms": function(event) {
       static freeShroom = function(shroom, idx, shroomService) {
+        if (shroom == null) {
+          return
+        }
+
         if (!shroom.signals.kill) {
           shroom.signals.freeReason = "expired"
           shroom.signalKill()
@@ -204,6 +208,7 @@ function ShroomService(config = null): Service(config) constructor {
       this.shrooms.forEach(freeShroom, this).clear()
       this.executor.tasks.forEach(TaskUtil.fullfill).clear()
       this.chunkService.clear()
+      this.shroomsPool.clear()
     },
     "reset-templates": function(event) {
       this.statistics.reset()
@@ -233,12 +238,12 @@ function ShroomService(config = null): Service(config) constructor {
       return
     }
 
-    Struct.set(acc.names, name, true)
-
     var template = acc.service.getTemplate(name)
     if (template == null) {
       return
     }
+
+    Struct.set(acc.names, name, true)
 
     //array_resize(acc.template.onDamage, array_length(acc.template.onDamage) + array_length(template.onDamage))
     //array_copy(acc.template.onDamage, -1 * array_length(template.onDamage), template.onDamage, 0, array_length(template.onDamage)) 
@@ -269,7 +274,8 @@ function ShroomService(config = null): Service(config) constructor {
     var viewY = snapV ? locked.snapV : view.y
     var template = this.getTemplate(name).serializeSpawn(viewX + spawnX, viewY + spawnY, spd / GRID_ITEM_SPEED_SCALE, angle, controller.gridService.generateUID(), lifespan, hp)
 
-    var inheritSize = inherit != null ? GMArray.size(inherit) : 0
+    //var inheritSize = inherit != null ? GMArray.size(inherit) : 0
+    var inheritSize = 0
     var templateInheritSize = template.inherit != null ? GMArray.size(template.inherit) : 0
     if (inheritSize + templateInheritSize > 0) {
       ShroomServiceAcc.names = { }
@@ -293,7 +299,15 @@ function ShroomService(config = null): Service(config) constructor {
     var shroom = new Shroom(template)
 
     this.statistics.factoryShroom(shroom)
-    this.shrooms.add(shroom)
+    var shroomsPoolSize = this.shroomsPool.size()
+    if (shroomsPoolSize > 0) {
+      var idx = this.shroomsPool.container[| shroomsPoolSize - 1]
+      this.shroomsPool.remove(shroomsPoolSize - 1)
+      this.shrooms.container[| idx] = shroom
+    } else {
+      this.shrooms.add(shroom)
+    }
+    
     this.chunkService.add(shroom)
 
     //if (this.optimalizationSortEntitiesByTxGroup) {
@@ -380,7 +394,49 @@ function ShroomService(config = null): Service(config) constructor {
     //this.optimalizationSortEntitiesByTxGroup = Visu.settings.getValue("visu.optimalization.sort-entities-by-txgroup")
     this.dispatcher.update()
     this.executor.update()
-    this.shrooms.forEach(this.updateShroom, Beans.get(BeanVisuController)).runGC(true)
+    //this.shrooms.forEach(this.updateShroom, Beans.get(BeanVisuController)).runGC(true)
+
+    var controller = Beans.get(BeanVisuController)
+    var size = this.shrooms.size()
+    for (var idx = 0; idx < size; idx++) {
+      var shroom = this.shrooms.container[| idx]
+      if (shroom == null) {
+        continue
+      }
+
+      shroom.update(controller)
+      if (shroom.signals.kill) {        
+        this.statistics.freeShroom(shroom, shroom.signals.freeReason)
+        this.chunkService.remove(shroom)
+        this.shrooms.container[| idx] = null
+        this.shroomsPool.add(idx)
+        shroom.free()
+      }
+
+    }
+    return this
+  }
+
+  ///@return {ShroomService}
+  free = function() {
+    if (Core.isType(this.shrooms, DSList)) {
+      this.shrooms.free()
+      delete this.shrooms
+      this.shrooms = null
+    }
+    
+    if (Core.isType(this.shroomsPool, DSList)) {
+      this.shroomsPool.free()
+      delete this.shroomsPool
+      this.shroomsPool = null
+    }
+
+    if (Core.isType(this.chunkService, GridItemChunkService)) {
+      chunkService.free()
+      delete chunkService
+      this.chunkService = null
+    }
+    
     return this
   }
 

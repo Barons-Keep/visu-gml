@@ -5,7 +5,10 @@ show_debug_message("init CoinService.gml")
 function CoinService(): Service() constructor {
 
   ///@type {Array<Coin>}
-  coins = new Array(Coin).enableGC()
+  //coins = new Array(Coin).enableGC()
+  coins = new DSList(Coin)
+
+  coinsPool = new DSList(Number)
 
   ///@type {Map<String, CoinTemplate>}
   templates = new Map(String, CoinTemplate)
@@ -42,10 +45,15 @@ function CoinService(): Service() constructor {
     },
     "clear-coins": function(event) {
       static freeCoin = function(coin, idx, coinService) {
+        if (coin == null) {
+          return
+        }
+
         coinService.statistics.freeCoin(coin, coin.freeReason)
       }
 
       this.coins.forEach(freeCoin, this).clear()
+      this.coinsPool.clear()
     },
     "reset-templates": function(event) {
       this.templates.clear()
@@ -254,7 +262,15 @@ function CoinService(): Service() constructor {
     }
     
     var coin = new Coin(template.serializeSpawn(x, y, angle, speed))
-    this.coins.add(coin)
+    //this.coins.add(coin)
+    var coinsPoolSize = this.coinsPool.size()
+    if (coinsPoolSize > 0) {
+      var idx = this.coinsPool.container[| coinsPoolSize - 1]
+      this.coinsPool.remove(coinsPoolSize - 1)
+      this.coins.container[| idx] = coin
+    } else {
+      this.coins.add(coin)
+    }
     this.statistics.factoryCoin(coin)
   }
 
@@ -268,8 +284,53 @@ function CoinService(): Service() constructor {
   ///@return {CoinService}
   update = function() { 
     this.dispatcher.update()
-    this.coins.forEach(this.updateCoin, Beans.get(BeanVisuController)).runGC(true)
+    //this.coins.forEach(this.updateCoin, Beans.get(BeanVisuController)).runGC(true)
+    var controller = Beans.get(BeanVisuController)
+    var player = controller.playerService.player
+    var view = controller.gridService.view
+    var viewX = view.x
+    var viewY = view.y
+    var viewWidth = view.width
+    var viewHeight = view.height
+    var size = this.coins.size()
+    for (var idx = 0; idx < size; idx++) {
+      var coin = this.coins.container[| idx]
+      if (coin == null) {
+        continue
+      }
+
+      coin.move(player)
+      if (player != null && coin.collide(player)) {
+        player.stats.dispatchCoin(coin)
+        coin.freeReason = "collected"
+        controller.coinService.statistics.freeCoin(coin, coin.freeReason)
+        this.coinsPool.add(idx)
+        this.coins.container[| idx] = null 
+      } else {
+        var length = point_distance(coin.x, coin.y, viewX + (viewWidth / 2.0), viewY + (viewHeight / 2.0))
+        if (length > GRID_ITEM_FRUSTUM_RANGE) {
+          coin.freeReason = "expired"
+          controller.coinService.statistics.freeCoin(coin, coin.freeReason)
+          this.coinsPool.add(idx)
+          this.coins.container[| idx] = null 
+        }
+      }
+
+    }
+
     return this
+  }
+
+  free = function() {
+    if (Core.isType(this.coins, DSList)) {
+      this.coins.free()
+      this.coins = null
+    }
+    
+    if (Core.isType(this.coinsPool, DSList)) {
+      this.coinsPool.free()
+      this.coinsPool = null
+    }
   }
 
   this.send(new Event("reset-templates"))

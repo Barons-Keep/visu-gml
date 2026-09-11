@@ -6,7 +6,10 @@ show_debug_message("init BulletService.gml")
 function BulletService(config = null): Service(config) constructor {
 
   ///@type {Array<Bullet>}
-  bullets = new Array(Bullet).enableGC()
+  //bullets = new Array(Bullet).enableGC()
+  bullets = new DSList(Bullet)
+
+  bulletsPool = new DSList(Number)
 
   ///@type {Map<String, BulletTemplate>}
   templates = new Map(String, BulletTemplate)
@@ -59,6 +62,10 @@ function BulletService(config = null): Service(config) constructor {
     },
     "clear-bullets": function(event) {
       static freeBullet = function(bullet, idx, bulletService) {
+        if (bullet == null) {
+          return
+        }
+
         if (!bullet.signals.kill) {
           bullet.signals.freeReason = "expired"
           //bullet.signal("kill")
@@ -70,6 +77,7 @@ function BulletService(config = null): Service(config) constructor {
 
       this.bullets.forEach(freeBullet, this).clear()
       this.chunkService.clear()
+      this.bulletsPool.clear()
     },
     "reset-templates": function(event) {
       this.statistics.reset()
@@ -190,11 +198,20 @@ function BulletService(config = null): Service(config) constructor {
     }
     
     var bullet = new Bullet(template)
+    var bulletsPoolSize = this.bulletsPool.size()
+    if (bulletsPoolSize > 0) {
+      var idx = this.bulletsPool.container[| bulletsPoolSize - 1]
+      this.bulletsPool.remove(bulletsPoolSize - 1)
+      this.bullets.container[| idx] = bullet
+    } else {
+      this.bullets.add(bullet)
+    }
+
+    //this.bullets.add(bullet)
     if (producer == Player) {
       this.chunkService.add(bullet)
     }
 
-    this.bullets.add(bullet)
     this.statistics.factoryBullet(bullet)
 
     //if (this.optimalizationSortEntitiesByTxGroup) {
@@ -325,7 +342,87 @@ function BulletService(config = null): Service(config) constructor {
     //this.optimalizationSortEntitiesByTxGroup = Visu.settings.getValue("visu.optimalization.sort-entities-by-txgroup")
     this.dispatcher.update()
     this.executor.update()
-    this.bullets.forEach(this.updateBullet, Beans.get(BeanVisuController)).runGC(true)
+    //this.bullets.forEach(this.updateBullet, Beans.get(BeanVisuController)).runGC(true)
+    var controller = Beans.get(BeanVisuController)
+    var size = this.bullets.size()
+    for (var idx = 0; idx < size; idx++) {
+      var bullet = this.bullets.container[| idx]
+      if (bullet == null) {
+        continue
+      }
+
+      bullet.update(controller)
+      if (bullet.signals.kill) {
+        this.statistics.freeBullet(bullet, bullet.signals.freeReason)
+        if (bullet.producer == Player) {
+          this.chunkService.remove(bullet)
+        }
+        this.bulletsPool.add(idx)
+        this.bullets.container[| idx] = null
+        bullet.free()
+        
+        if (bullet.onDeath != null) {
+          for (var onDeathIdx = 0; onDeathIdx < bullet.onDeathAmount; onDeathIdx++) {
+            var rngDir = bullet.onDeathAngleRng ? choose(1, -1) : 1
+            var rngSpd = random(bullet.onDeathRngSpeed)
+            var dir = bullet.angle + (rngDir * bullet.onDeathAngle) 
+              + (rngDir * onDeathIdx * bullet.onDeathAngleStep * Math.pow(bullet.onDeathAngleIncrease, clamp(idx - 1, 1, bullet.onDeathAmount))) 
+              + (rngDir * (random(2.0 * bullet.onDeathRngStep) - bullet.onDeathRngStep))
+            var spd = clamp(abs(bullet.onDeathSpeedMerge 
+              ? (rngSpd + (bullet.speed * GRID_ITEM_SPEED_SCALE) + bullet.onDeathSpeed) 
+              : (rngSpd + bullet.onDeathSpeed)), 0.1, 99.9)
+
+            var angleOffset = null
+            var angleOffsetRng = null
+            var sumAngleOffset = null
+            var speedOffset = null
+            var sumSpeedOffset = null
+            var lifespan = null
+            var damage = null
+            var onDeath = true
+            this.spawnBullet(
+              bullet.onDeath, 
+              bullet.producer,
+              bullet.x, 
+              bullet.y,
+              dir,
+              spd,
+              angleOffset,
+              angleOffsetRng,
+              sumAngleOffset,
+              speedOffset,
+              sumSpeedOffset,
+              lifespan,
+              damage,
+              onDeath
+            )
+          }
+        }
+      }
+    }
+    return this
+  }
+
+  ///@return {BulletService}
+  free = function() {
+    if (Core.isType(this.bullets, DSList)) {
+      this.bullets.free()
+      delete this.bullets
+      this.bullets = null
+    }
+    
+    if (Core.isType(this.bulletsPool, DSList)) {
+      this.bulletsPool.free()
+      delete this.bulletsPool
+      this.bulletsPool = null
+    }
+
+    if (Core.isType(this.chunkService, GridItemChunkService)) {
+      chunkService.free()
+      delete chunkService
+      this.chunkService = null
+    }
+
     return this
   }
 }

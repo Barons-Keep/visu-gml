@@ -287,46 +287,29 @@ function VisuRenderer() constructor {
         var h1 = String.format(gridService.view.x, 4, 2)
         var h2 = String.format(gridService.view.y, 4, 2)
         gridCameraMessage += ""
-          + $"______________________\n"
-          + $"|_______CAMERA_______|\n"
-          + $"| x:         {   g1} |\n"
-          + $"| y:         {   g2} |\n"
-          + $"| z:         {   g3} |\n"
-          + $"| pitch:     {   g4} |\n"
-          + $"| angle:     {   g5} |\n"
-          + $"|--------------------|\n"
-          + $"| view.x:    {   h1} |\n"
-          + $"| view.y:    {   h2} |\n"
+          + $"|____________CAMERA____________|\n"
+          +  "|                              |\n"
+          + $"| x:  {   g1} | pitch: {   g4} |\n"
+          + $"| y:  {   g2} | angle: {   g5} |\n"
+          + $"| z:  {   g3} |                |\n"
+          +  "| ---------------------------- |\n"
+          + $"| view   x: {   h1} y: {   h2} |\n"
 
-        /*
-              | x:         xxxx.xx
-              | y:         xxxx.xx
-              | z:         xxxx.xx
-              | pitch:     xxxx.xx
-              | angle:     xxxx.xx
-              |-------------------
-              | view.x:    xxxx.xx
-              | view.y:    xxxx.xx
-        */
 
         var player = controller.playerService.player
         var i1 = String.format((player == null ? 0.0 : player.x), 4, 2)
         var i2 = String.format((player == null ? 0.0 : player.y), 4, 2)
         gridCameraMessage += player == null ? "" :
-          + $"|--------------------|\n"
-          + $"| player.x:  {   i1} |\n"
-          + $"| player.y:  {   i2} |\n"
-        /*
-              |-------------------
-              | player.x:  xxxx.xx
-              | player.y:  xxxx.xx
-        */
-
-        gridCameraMessage += $"|____________________|\n"
+          $"| player x: {   i1} y: {   i2} |\n"
+        gridCameraMessage += $"|______________________________|\n"
       }
 
-      var shrooms = controller.shroomService.shrooms.size()
-      var bullets = controller.bulletService.bullets.size()
+      var shroomsPools = controller.shroomService.shroomsPool.size()
+      var shrooms = controller.shroomService.shrooms.size() - shroomsPools
+      var bulletsPools = controller.bulletService.bulletsPool.size()
+      var bullets = controller.bulletService.bullets.size() - bulletsPools
+      var coinsPools = controller.coinService.coinsPool.size()
+      var coins = controller.coinService.coins.size() - coinsPools
   
       var renderSum = controller.renderTimer.getValue() + controller.renderGUITimer.getValue()
       var updateSum = controller.updateDebugTimer.getValue() + (enableEditor ? editor.updateDebugTimer.getValue() : 0.0)
@@ -344,20 +327,30 @@ function VisuRenderer() constructor {
       var d2 = String.format(gridService.avgTime.get(), 2, 2)
       var e1 = String.format(shrooms, 4, 0)
       var e2 = String.format(bullets, 4, 0)
+      var e3 = String.format(coins, 4, 0)
+      var e4 = String.format(shroomsPools, 4, 0)
+      var e5 = String.format(bulletsPools, 4, 0)
+      var e6 = String.format(coinsPools, 4, 0)
       var f1 = String.format(deltaTime, 1, 5)
       var f2 = String.format(this.debugMaxDelta, 1, 5)
       var text = "\n"
-        + $"_________________________________________\n"
-        + $"|________________DEBUG__________________|\n" 
-        + $"| fps:     {a1}    | fps-real:     {b1} |\n"
-        + $"| fps-min: {a2}    | fps-real-avg: {b2} |\n"    
-        +  "| -----------------|------------------- |\n"
-        + $"| update: { c1} ms | total:    { d1} ms |\n"
-        + $"| render: { c2} ms | avg:      { d2} ms |\n"
-        +  "| -----------------|------------------- |\n"
-        + $"| shrooms: {e1}    | dt:        {   f1} |\n"
-        + $"| bullets: {e2}    | dt-max:    {   f2} |\n"
-        + $"|__________________|____________________|\n"
+        + $" ______________________________ \n"
+        + $"|____________DEBUG_____________|\n"
+        +  "|                              |\n"
+        + $"| FPS:   {a1} | DT:    {   f1} |\n"
+        + $"|  min:  {a2} |  max:  {   f2} |\n"
+        + $"|  max:  {b1} |                |\n"
+        + $"|  avg:  {b2} |                |\n"
+        +  "| ---------------------------- |\n"
+        + $"| update:  { c1} [ms]          |\n"
+        + $"| render:  { c2} [ms]          |\n"
+        + $"|  sum:    { d1} [ms]          |\n"
+        + $"|  avg:    { d2} [ms]          |\n"
+        +  "| ---------------------------- |\n"
+        + $"| shrooms: {e1} ({e4})         |\n" 
+        + $"| bullets: {e2} ({e5})         |\n" 
+        + $"| coins:   {e2} ({e5})         |\n" 
+        + $"|______________________________|\n"
         + gridCameraMessage
       
       /*

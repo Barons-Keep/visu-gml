@@ -158,6 +158,10 @@ function Test_PlayerService_player_shoot(test) {
         var controller = Beans.get(BeanVisuController)
         var counter = { playerBullets: 0 }
         controller.bulletService.bullets.forEach(function(bullet, index, acc) {
+          if (bullet == null) {
+            return
+          }
+
           if (bullet.producer == Player) {
             acc.playerBullets += 1
           }

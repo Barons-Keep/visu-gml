@@ -276,6 +276,10 @@ function GridRenderer() constructor {
   ///@return {GridRenderer}
   debugRenderShrooms = function(gridService, shroomService) {
     static debugRenderShroom = function(shroom, index, gridService) {
+      if (shroom == null) {
+        return
+      }
+
       var alpha = shroom.sprite.getAlpha()
       shroom.sprite
         .setAlpha(alpha * shroom.fadeIn)
@@ -285,7 +289,12 @@ function GridRenderer() constructor {
         )
         .setAlpha(alpha)
     }
+
     static debugRenderShroomMask = function(shroom, index, gridService) {
+      if (shroom == null) {
+        return
+      }
+
       var _x = ((shroom.x - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH) - ((shroom.sprite.getWidth() * shroom.sprite.scaleX) / 2.0) + (shroom.mask.x * shroom.sprite.scaleX)
       var _y = ((shroom.y - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT) - ((shroom.sprite.getHeight() * shroom.sprite.scaleY) / 2.0) + (shroom.mask.y * shroom.sprite.scaleY)
       var _width = shroom.mask.z * shroom.sprite.scaleX
@@ -309,6 +318,10 @@ function GridRenderer() constructor {
   ///@return {GridRenderer}
   debugRenderBullets = function(gridService, bulletService) {
     static debugRenderBullet = function(bullet, index, gridService) {
+      if (bullet == null) {
+        return
+      }
+
       bullet.sprite
         .setAngle(bullet.angle)
         .render(
@@ -316,7 +329,12 @@ function GridRenderer() constructor {
           (bullet.y - ((bullet.sprite.texture.height * bullet.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) + ((bullet.sprite.texture.offsetY * bullet.sprite.scaleY) / GRID_SERVICE_PIXEL_HEIGHT) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT
         )
     }
+  
     static debugRenderBulletMask = function(bullet, index, gridService) {
+      if (bullet == null) {
+        return
+      }
+
       var _x = ((bullet.x - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH) - ((bullet.sprite.getWidth() * bullet.sprite.scaleX) / 2.0) + (bullet.mask.x * bullet.sprite.scaleX)
       var _y = ((bullet.y - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT) - ((bullet.sprite.getHeight() * bullet.sprite.scaleY) / 2.0) + (bullet.mask.y * bullet.sprite.scaleY)
       var _width = bullet.mask.z * bullet.sprite.scaleX
@@ -340,12 +358,21 @@ function GridRenderer() constructor {
   ///@return {GridRenderer}
   debugRenderCoins = function(gridService, coinService) {
     static debugRenderCoin = function(coin, index, gridService) {
+      if (coin == null) {
+        return
+      }
+
       coin.sprite.render(
         (coin.x - ((coin.sprite.texture.width * coin.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) + ((coin.sprite.texture.offsetX * coin.sprite.scaleX) / GRID_SERVICE_PIXEL_WIDTH) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH,
         (coin.y - ((coin.sprite.texture.height * coin.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) + ((coin.sprite.texture.offsetY * coin.sprite.scaleY) / GRID_SERVICE_PIXEL_HEIGHT) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT
       )
     }
+
     static debugRenderCoinMask = function(coin, index, gridService) {
+      if (coin == null) {
+        return
+      }
+
       var _x = ((coin.x - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH) - ((coin.sprite.getWidth() * coin.sprite.scaleX) / 2.0) + (coin.mask.x * coin.sprite.scaleX)
       var _y = ((coin.y - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT) - ((coin.sprite.getHeight() * coin.sprite.scaleY) / 2.0) + (coin.mask.y * coin.sprite.scaleY)
       var _width = coin.mask.z * coin.sprite.scaleX
@@ -1272,13 +1299,33 @@ function GridRenderer() constructor {
   ///@return {GridRenderer}
   entityRenderShrooms = function(gridService, shroomService) {
     static renderShroom = function(shroom, index, gridService) {
+      if (shroom == null) {
+        return
+      }
+
       var _x = (shroom.x - ((shroom.sprite.texture.width * shroom.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) + ((shroom.sprite.texture.offsetX * shroom.sprite.scaleX) / GRID_SERVICE_PIXEL_WIDTH)  - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH
       var _y = (shroom.y - ((shroom.sprite.texture.height * shroom.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) + ((shroom.sprite.texture.offsetY * shroom.sprite.scaleY) / GRID_SERVICE_PIXEL_HEIGHT) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT
-      var alpha = shroom.sprite.getAlpha()
+      var alpha = shroom.sprite.alpha
+
+      var sprite = shroom.sprite
+      if (sprite.scaleX != 0 && sprite.scaleY != 0) {
+        sprite.alpha = alpha * shroom.fadeIn
+        draw_sprite_ext(sprite.texture.asset, sprite.frame, _x, _y, sprite.scaleX, sprite.scaleY, sprite.angle, sprite.blend, sprite.alpha)
+        sprite.alpha = alpha
+        if (sprite.animate) {
+          sprite.frame += (DELTA_TIME * sprite.speed) / GAME_FPS
+          if (sprite.frame > sprite.texture.frames) {
+            sprite.frame = sprite.frame - (sprite.texture.frames * floor(sprite.frame / sprite.texture.frames))
+          }
+        }
+      }
+
+      /*
       shroom.sprite
         .setAlpha(alpha * shroom.fadeIn)
         .render(_x, _y)
         .setAlpha(alpha)
+      */
     }
 
     if (!gridService.properties.renderElements 
@@ -1286,7 +1333,37 @@ function GridRenderer() constructor {
       return this
     }
 
-    shroomService.shrooms.forEach(renderShroom, gridService)
+    //shroomService.shrooms.forEach(renderShroom, gridService)
+    var shrooms = shroomService.shrooms
+    var shroomsSize = shrooms.size()
+    var viewX = gridService.view.x
+    var viewY = gridService.view.y
+    for (var idx = 0; idx < shroomsSize; idx++) {
+      var shroom = shrooms.container[| idx]
+      if (shroom == null) {
+        continue
+      }
+
+      var sprite = shroom.sprite
+      var scaleX = sprite.scaleX
+      var scaleY = sprite.scaleY
+      if (scaleX != 0 && scaleY != 0) {
+        var texture = sprite.texture
+        var _x = (shroom.x - ((texture.width * scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) + ((texture.offsetX * scaleX) / GRID_SERVICE_PIXEL_WIDTH) - viewX) * GRID_SERVICE_PIXEL_WIDTH
+        var _y = (shroom.y - ((texture.height * scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) + ((texture.offsetY * scaleY) / GRID_SERVICE_PIXEL_HEIGHT) - viewY) * GRID_SERVICE_PIXEL_HEIGHT
+        draw_sprite_ext(texture.asset, sprite.frame, _x, _y, scaleX, scaleY, sprite.angle, sprite.blend, sprite.alpha * shroom.fadeIn)
+        if (sprite.animate) {
+          sprite.frame += (DELTA_TIME * sprite.speed) / GAME_FPS
+          var frames = texture.frames
+          if (sprite.frame > frames) {
+            sprite.frame -= frames * floor(sprite.frame / frames)
+          }
+        }
+        
+        var alpha = shroom.sprite.alpha
+      }
+    }
+
     return this
   }
 
@@ -1296,14 +1373,36 @@ function GridRenderer() constructor {
   ///@return {GridRenderer}
   entityRenderBullets = function(gridService, bulletService) {
     static renderBullet = function(bullet, index, gridService) {
+      if (bullet == null) {
+        return
+      }
+
       var _x = (bullet.x - ((bullet.sprite.texture.width * bullet.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) + ((bullet.sprite.texture.offsetX * bullet.sprite.scaleX) / GRID_SERVICE_PIXEL_WIDTH) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH
       var _y = (bullet.y - ((bullet.sprite.texture.height * bullet.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) + ((bullet.sprite.texture.offsetY * bullet.sprite.scaleY) / GRID_SERVICE_PIXEL_HEIGHT) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT
-      var alpha = bullet.sprite.getAlpha()
+      
+      var alpha = bullet.sprite.alpha
+      
+      var sprite = bullet.sprite
+      if (sprite.scaleX != 0 && sprite.scaleY != 0) {
+        sprite.alpha = alpha * bullet.fadeIn
+        sprite.angle = bullet.angle - 90.0
+        draw_sprite_ext(sprite.texture.asset, sprite.frame, _x, _y, sprite.scaleX, sprite.scaleY, sprite.angle, sprite.blend, sprite.alpha)
+        sprite.alpha = alpha
+        if (sprite.animate) {
+          sprite.frame += (DELTA_TIME * sprite.speed) / GAME_FPS
+          if (sprite.frame > sprite.texture.frames) {
+            sprite.frame = sprite.frame - (sprite.texture.frames * floor(sprite.frame / sprite.texture.frames))
+          }
+        }
+      }
+
+      /*
       bullet.sprite
         .setAlpha(alpha * bullet.fadeIn)
         .setAngle(bullet.angle - 90.0)
         .render(_x, _y)
         .setAlpha(alpha)
+      */
     }
     
     if (!gridService.properties.renderElements
@@ -1311,7 +1410,36 @@ function GridRenderer() constructor {
       return this
     }
 
-    bulletService.bullets.forEach(renderBullet, gridService)
+    //bulletService.bullets.forEach(renderBullet, gridService)
+    var bullets = bulletService.bullets
+    var bulletsSize = bullets.size()
+    var viewX = gridService.view.x
+    var viewY = gridService.view.y
+    for (var idx = 0; idx < bulletsSize; idx++) {
+      var bullet = bullets.container[| idx]
+      if (bullet == null) {
+        continue
+      }
+
+      var sprite = bullet.sprite
+      var scaleX = sprite.scaleX
+      var scaleY = sprite.scaleY
+      sprite.angle = bullet.angle - 90.0
+      if (scaleX != 0 && scaleY != 0) {
+        var texture = sprite.texture
+        var _x = (bullet.x - ((texture.width * scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) + ((texture.offsetX * scaleX) / GRID_SERVICE_PIXEL_WIDTH) - viewX) * GRID_SERVICE_PIXEL_WIDTH
+        var _y = (bullet.y - ((texture.height * scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) + ((texture.offsetY * scaleY) / GRID_SERVICE_PIXEL_HEIGHT) - viewY) * GRID_SERVICE_PIXEL_HEIGHT      
+        draw_sprite_ext(texture.asset, sprite.frame, _x, _y, scaleX, scaleY, sprite.angle, sprite.blend, sprite.alpha * bullet.fadeIn)
+        if (sprite.animate) {
+          sprite.frame += (DELTA_TIME * sprite.speed) / GAME_FPS
+          var frames = texture.frames
+          if (sprite.frame > frames) {
+            sprite.frame -= frames * floor(sprite.frame / frames)
+          }
+        }
+      }
+    }
+
     return this
   }
 
@@ -1321,11 +1449,31 @@ function GridRenderer() constructor {
   ///@return {GridRenderer}
   entityRenderCoins = function(gridService, coinService) {
     static renderCoin = function(coin, index, gridService) {
+      if (coin == null) {
+        return
+      }
+
+      var _x = (coin.x - ((coin.sprite.texture.width * coin.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) + ((coin.sprite.texture.offsetX * coin.sprite.scaleX) / GRID_SERVICE_PIXEL_WIDTH) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH,
+      var _y = (coin.y - ((coin.sprite.texture.height * coin.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) + ((coin.sprite.texture.offsetY * coin.sprite.scaleY) / GRID_SERVICE_PIXEL_HEIGHT) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT
+
+      var sprite = coin.sprite
+      if (sprite.scaleX != 0 && sprite.scaleY != 0) {
+        draw_sprite_ext(sprite.texture.asset, sprite.frame, _x, _y, sprite.scaleX, sprite.scaleY, sprite.angle, sprite.blend, sprite.alpha)
+        if (sprite.animate) {
+          sprite.frame += (DELTA_TIME * sprite.speed) / GAME_FPS
+          if (sprite.frame > sprite.texture.frames) {
+            sprite.frame = sprite.frame - (sprite.texture.frames * floor(sprite.frame / sprite.texture.frames))
+          }
+        }
+      }
+      
+      /*
       coin.sprite
         .render(
           (coin.x - ((coin.sprite.texture.width * coin.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) + ((coin.sprite.texture.offsetX * coin.sprite.scaleX) / GRID_SERVICE_PIXEL_WIDTH) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH,
           (coin.y - ((coin.sprite.texture.height * coin.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) + ((coin.sprite.texture.offsetY * coin.sprite.scaleY) / GRID_SERVICE_PIXEL_HEIGHT) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT
         )
+      */
     }
     
     if (!gridService.properties.renderElements
@@ -1333,7 +1481,34 @@ function GridRenderer() constructor {
       return this
     }
 
-    coinService.coins.forEach(renderCoin, gridService)
+    //coinService.coins.forEach(renderCoin, gridService)
+    var coins = coinService.coins
+    var coinsSize = coins.size()
+    var viewX = gridService.view.x
+    var viewY = gridService.view.y
+    for (var idx = 0; idx < coinsSize; idx++) {
+      var coin = coins.container[| idx]
+      if (coin == null) {
+        continue
+      }
+
+      var sprite = coin.sprite
+      var scaleX = sprite.scaleX
+      var scaleY = sprite.scaleY  
+      if (scaleX != 0 && scaleY != 0) {
+        var texture = sprite.texture
+        var _x = (coin.x - ((texture.width * scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) + ((texture.offsetX * scaleX) / GRID_SERVICE_PIXEL_WIDTH) - viewX) * GRID_SERVICE_PIXEL_WIDTH,
+        var _y = (coin.y - ((texture.height * scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) + ((texture.offsetY * scaleY) / GRID_SERVICE_PIXEL_HEIGHT) - viewY) * GRID_SERVICE_PIXEL_HEIGHT
+        draw_sprite_ext(texture.asset, sprite.frame, _x, _y, scaleX, scaleY, sprite.angle, sprite.blend, sprite.alpha)
+        if (sprite.animate) {
+          sprite.frame += (DELTA_TIME * sprite.speed) / GAME_FPS
+          var frames = texture.frames
+          if (sprite.frame > frames) {
+            sprite.frame -= frames * floor(sprite.frame / frames)
+          }
+        }
+      }
+    }
     return this
   }
 

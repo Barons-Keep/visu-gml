@@ -574,5 +574,16 @@ function GridItem(config) constructor {
 
     return this
   }
+
+  ///@return {GridItem}
+  static free = function() {
+    if (this.chunkPosition != null) {
+      this.chunkPosition.keys.free()
+      delete this.chunkPosition
+      this.chunkPosition = null
+    }
+
+    return this
+  }
 }
 
