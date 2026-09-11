@@ -47,10 +47,6 @@ global.__effect_track_event = {
     },
     run: function(data, channel) {
       var controller = Beans.get(BeanVisuController)
-      if (!controller.validateTrackChannelSettings(channel)) {
-        return
-      }
-
       static getPipeline = function(data, key) {
         var controller = Beans.get(BeanVisuController)
         var pipeline = Struct.get(data, key)
@@ -123,10 +119,6 @@ global.__effect_track_event = {
       }
 
       var controller = Beans.get(BeanVisuController)
-      if (!controller.validateTrackChannelSettings(channel)) {
-        return
-      }
-
       var pump = getGlitch(data, "ef-glt_glitch").dispatcher
 
       ///@description feature TODO effect.glitch.config
@@ -239,10 +231,6 @@ global.__effect_track_event = {
     },
     run: function(data, channel) {
       var controller = Beans.get(BeanVisuController)
-      if (!controller.validateTrackChannelSettings(channel)) {
-        return
-      }
-
       var particleService = controller.particleService
       var area = Struct.get(data, "ef-part_area")
 
@@ -330,10 +318,6 @@ global.__effect_track_event = {
     },
     run: function(data, channel) {
       var controller = Beans.get(BeanVisuController)
-      if (!controller.validateTrackChannelSettings(channel)) {
-        return
-      }
-
       Struct.get(data, "ef-cfg_particle-z").reset()
       var gridService = controller.gridService
       var properties = gridService.properties

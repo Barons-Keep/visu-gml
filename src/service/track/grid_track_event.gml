@@ -78,10 +78,6 @@ global.__grid_track_event = {
     },
     run: function(data, channel) {
       var controller = Beans.get(BeanVisuController)
-      if (!controller.validateTrackChannelSettings(channel)) {
-        return
-      }
-
       Struct.get(data, "gr-area_h").reset()
       Struct.get(data, "gr-area_h-size").reset()
       Struct.get(data, "gr-area_v").reset()
@@ -213,10 +209,6 @@ global.__grid_track_event = {
     },
     run: function(data, channel) {
       var controller = Beans.get(BeanVisuController)
-      if (!controller.validateTrackChannelSettings(channel)) {
-        return
-      }
-
       Struct.get(data, "gr-c_amount").reset()
       Struct.get(data, "gr-c_main-size").reset()
       Struct.get(data, "gr-c_side-size").reset()
@@ -361,10 +353,6 @@ global.__grid_track_event = {
     },
     run: function(data, channel) {
       var controller = Beans.get(BeanVisuController)
-      if (!controller.validateTrackChannelSettings(channel)) {
-        return
-      }
-
       Struct.get(data, "gr-r_amount").reset()
       Struct.get(data, "gr-r_main-size").reset()
       Struct.get(data, "gr-r_side-size").reset()
@@ -532,10 +520,6 @@ global.__grid_track_event = {
     },
     run: function(data, channel) {
       var controller = Beans.get(BeanVisuController)
-      if (!controller.validateTrackChannelSettings(channel)) {
-        return
-      }
-
       Struct.get(data, "gr-cfg_spd").reset()
       Struct.get(data, "gr-cfg_z").reset()
       Struct.get(data, "gr-cfg_focus-grid-treshold").reset()

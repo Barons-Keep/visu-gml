@@ -98,10 +98,6 @@ global.__entity_track_event = {
     },
     run: function(data, channel) {
       var controller = Beans.get(BeanVisuController)
-      if (!controller.validateTrackChannelSettings(channel)) {
-        return
-      }
-
       Struct.set(data, "en-shr_texture", Struct.parse.sprite(data, "_en-shr_texture"))
       var spd = abs(Struct.get(data, "en-shr_spd")
         + (Struct.get(data, "en-shr_use-spd-rng")
@@ -252,10 +248,6 @@ global.__entity_track_event = {
     },
     run: function(data, channel) {
       var controller = Beans.get(BeanVisuController)
-      if (!controller.validateTrackChannelSettings(channel)) {
-        return
-      }
-
       var spd = abs(Struct.get(data, "en-blt_spd")
         + (Struct.get(data, "en-blt_use-spd-rng")
           ? (random(Struct.get(data, "en-blt_spd-rng") / 2.0)
@@ -386,10 +378,6 @@ global.__entity_track_event = {
     },
     run: function(data, channel) {
       var controller = Beans.get(BeanVisuController)
-      if (!controller.validateTrackChannelSettings(channel)) {
-        return
-      }
-
       var view = controller.gridService.view
       var viewX = Struct.get(data, "en-coin_snap-x")
         ? floor(view.x / (view.width / 2.0)) * (view.width / 2.0)
@@ -519,10 +507,6 @@ global.__entity_track_event = {
     },
     run: function(data, channel) {
       var controller = Beans.get(BeanVisuController)
-      if (!controller.validateTrackChannelSettings(channel)) {
-        return
-      }
-      
       ///@description feature TODO entity.player.spawn
       controller.playerService.send(new Event("spawn-player", {
         "sprite": Struct.get(data, "en-pl_texture").serialize(),
@@ -639,10 +623,6 @@ global.__entity_track_event = {
     },
     run: function(data, channel) {
       var controller = Beans.get(BeanVisuController)
-      if (!controller.validateTrackChannelSettings(channel)) {
-        return
-      }
-
       Struct.get(data, "en-cfg_z-shr").reset()
       Struct.get(data, "en-cfg_z-player").reset()
       Struct.get(data, "en-cfg_z-coin").reset()

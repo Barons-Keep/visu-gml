@@ -79,10 +79,6 @@ global.__view_track_event = {
     },
     run: function(data, channel) {
       var controller = Beans.get(BeanVisuController)
-      if (!controller.validateTrackChannelSettings(channel)) {
-        return
-      }
-
       Struct.get(data, "vw-cam_x").reset()
       Struct.get(data, "vw-cam_y").reset()
       Struct.get(data, "vw-cam_z").reset()
@@ -315,10 +311,6 @@ global.__view_track_event = {
           : c_white))
 
       var controller = Beans.get(BeanVisuController)
-      if (!controller.validateTrackChannelSettings(channel)) {
-        return
-      }
-
       var editor = Beans.get(Visu.modules().editor.controller)
       var layout = editor == null ? controller.visuRenderer.layout : editor.layout.nodes.preview
       var gridService = controller.gridService
@@ -578,10 +570,6 @@ global.__view_track_event = {
     },
     run: function(data, channel) {
       var controller = Beans.get(BeanVisuController)
-      if (!controller.validateTrackChannelSettings(channel)) {
-        return
-      }
-
       Struct.get(data, "vw-sub_dir").reset()
       Struct.get(data, "vw-sub_spd").reset()
       var subtitleService = Beans.get(BeanVisuController).subtitleService
@@ -704,10 +692,6 @@ global.__view_track_event = {
     },
     run: function(data, channel) {
       var controller = Beans.get(BeanVisuController)
-      if (!controller.validateTrackChannelSettings(channel)) {
-        return
-      }
-
       var gridService = controller.gridService
       var properties = gridService.properties
       var pump = gridService.dispatcher

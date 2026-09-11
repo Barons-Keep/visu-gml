@@ -749,6 +749,10 @@ function VETimeline(_editor) constructor {
           var channel = Assert.isType(trackService.track
             .addChannel(name, {
               parseSettings: controller.parseTrackChannelSettings,
+              settingsResolver: function() {
+                return Beans.get(BeanVisuController)
+                  .validateTrackChannelSettings(this)
+              },
             }).channels.get(name), TrackChannel)
           this.collection.add(new UIComponent({
             name: name,

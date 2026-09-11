@@ -326,6 +326,10 @@ function VisuTrackLoader(config = null): Service(config) constructor {
                               return new TrackEvent(event, config)
                             }
                           ),
+                          settingsResolver: function() {
+                            return Beans.get(BeanVisuController)
+                              .validateTrackChannelSettings(this)
+                          },
                           executeEventCallable: (PRELOAD_TRACK_EVENT
                             ? function(event, trackChannel) {
                               event.callable(event.parsedData, trackChannel)
