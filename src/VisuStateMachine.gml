@@ -546,6 +546,7 @@ function VisuStateMachine(context, name) {
         },
         update: function(fsm) {
           if (this.state.get("promises-resolved") == "success") {
+            fsm.transition("paused", this.state.get("menuEvent"))
             return
           }
           
@@ -564,7 +565,6 @@ function VisuStateMachine(context, name) {
             }
 
             this.state.set("promises-resolved", "success")
-            fsm.transition("paused", this.state.get("menuEvent"))
           } catch (exception) {
             var message = $"'fsm::update' (state: 'pause') fatal error: {exception.message}"
             Logger.error(BeanVisuController, message)
