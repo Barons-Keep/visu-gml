@@ -51,8 +51,9 @@ function factoryVisuMenuOpenDeveloperEvent(_config = null) {
               Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
             },
             updateCustom: function() {
-              this.label.text = is_debug_overlay_open() ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
-              this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
+              var value = is_debug_overlay_open()
+              this.label.text = value ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+              this.label.alpha = value ? 1.0 : 0.3
             },
             onMouseReleasedLeft: function() {
               this.callback()

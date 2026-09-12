@@ -131,14 +131,14 @@ function init_VisuLayouts() {
         nodes: {
           label: {
             name: "menu-button-input-entry.label",
-            width: function() { return this.context.width() * 0.66 },
+            width: function() { return this.context.width() * 0.5 },
             height: function() { return this.context.height() },
             x: function() { return this.context.x() },
             y: function() { return this.context.y() },
           },
           input: {
             name: "menu-button-input-entry.input",
-            width: function() { return this.context.width() * 0.33 },
+            width: function() { return this.context.width() * 0.5 },
             height: function() { return this.context.height() },
             x: function() { return this.context.nodes.label.right() },
             y: function() { return this.context.y() },
@@ -165,7 +165,7 @@ function init_VisuLayouts() {
             name: "menu-spin-select.label",
             x: function() { return this.context.x() },
             y: function() { return this.context.y() },
-            width: function() { return this.context.width() * 0.66 },
+            width: function() { return this.context.width() * 0.5 },
           },
           previous: {
             name: "menu-spin-select.previous",
@@ -177,7 +177,7 @@ function init_VisuLayouts() {
             name: "menu-spin-select.preview",
             x: function() { return this.context.nodes.previous.right() },
             y: function() { return this.context.y() },
-            width: function() { return (this.context.width() * 0.33)
+            width: function() { return (this.context.width() * 0.5)
               - this.context.nodes.previous.width()
               - this.context.nodes.next.width() },
           },
@@ -209,7 +209,7 @@ function init_VisuLayouts() {
             name: "menu-slider-entry.label",
             x: function() { return this.context.x() },
             y: function() { return this.context.y() },
-            width: function() { return this.context.width() * 0.66 },
+            width: function() { return this.context.width() * 0.5 },
             height: function() { return this.context.height() },
           },
           slider: {

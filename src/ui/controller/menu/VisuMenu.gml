@@ -224,10 +224,10 @@ function factoryPlayerKeyboardKeyEntryConfig(name, text) {
 
         if (remapKeyEvent) {
           keyboardText = $"Key: [ {keyboardText} ]"
-          mouseText = $" | Mouse: [ {mouseText} ]"
+          mouseText = $"\nMouse: [ {mouseText} ]"
         } else {
           keyboardText = $"Key: {keyboardText}"
-          mouseText = mouseCode == MouseButtonType.NONE ? "" : $" | Mouse: {mouseText}"
+          mouseText = mouseCode == MouseButtonType.NONE ? "" : $"\nMouse: {mouseText}"
         }
 
         //mouseText = Visu.settings.getValue("visu.developer.mouse-shoot") ? mouseText : ""
@@ -309,10 +309,36 @@ function factoryPlayerGamepadButtonEntryConfig(name, text) {
           return
         }
 
+        var originalValue = Struct.get(config, this.key)
         Struct.set(config, this.key, value)
+
+        var required = new Map(String, Number)
+          .set(VisuGamepadButtonActions.UP, 0)
+          .set(VisuGamepadButtonActions.DOWN, 0)
+          .set(VisuGamepadButtonActions.LEFT, 0)
+          .set(VisuGamepadButtonActions.RIGHT, 0)
+          .set(VisuGamepadButtonActions.ACTION, 0)
+
+        Struct.forEach(config, function(action, key, required) {
+          var requiredAction = required.get(action)
+          if (requiredAction != null) {
+            required.set(action, requiredAction + 1)
+          }
+        }, required)
+
+        var found = required.filter(function(value, action, config) {
+          return value == 0
+        }, config).size()
+
+        if (found > 0) {
+          Struct.set(config, this.key, originalValue)
+          controller.sfxService.play("menu-deny")
+        } else {
+          controller.sfxService.play("menu-use-entry")
+        }
+
         Visu.settings.setValue("visu.gamepad.controls", config).save()
         Visu.initInputCandyLoader(controller.layerId)
-        controller.sfxService.play("menu-use-entry")
       },
     },
     preview: {
@@ -348,10 +374,36 @@ function factoryPlayerGamepadButtonEntryConfig(name, text) {
           return
         }
 
+        var originalValue = Struct.get(config, this.key)
         Struct.set(config, this.key, value)
+
+        var required = new Map(String, Number)
+          .set(VisuGamepadButtonActions.UP, 0)
+          .set(VisuGamepadButtonActions.DOWN, 0)
+          .set(VisuGamepadButtonActions.LEFT, 0)
+          .set(VisuGamepadButtonActions.RIGHT, 0)
+          .set(VisuGamepadButtonActions.ACTION, 0)
+
+        Struct.forEach(config, function(action, key, required) {
+          var requiredAction = required.get(action)
+          if (requiredAction != null) {
+            required.set(action, requiredAction + 1)
+          }
+        }, required)
+
+        var found = required.filter(function(value, action, config) {
+          return value == 0
+        }, config).size()
+
+        if (found > 0) {
+          Struct.set(config, this.key, originalValue)
+          controller.sfxService.play("menu-deny")
+        } else {
+          controller.sfxService.play("menu-use-entry")
+        }
+
         Visu.settings.setValue("visu.gamepad.controls", config).save()
         Visu.initInputCandyLoader(controller.layerId)
-        controller.sfxService.play("menu-use-entry")
       },
     },
   }

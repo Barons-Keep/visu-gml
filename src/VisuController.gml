@@ -441,6 +441,7 @@ function VisuController(config = null): Service(config) constructor {
       .set("menu-move-cursor", new SFX("sound_sfx_menu_move_cursor"), 1)
       .set("menu-select-entry", new SFX("sound_sfx_menu_select_entry"), 1)
       .set("menu-use-entry", new SFX("sound_sfx_menu_use_entry"), 1)
+      .set("menu-deny", new SFX("sound_sfx_shroom_damage"), 1)
       .set("menu-splashscreen", new SFX("sound_sfx_intro"), 1)
 
     if (Visu.settings.getValue("visu.server.enable", false)) {
