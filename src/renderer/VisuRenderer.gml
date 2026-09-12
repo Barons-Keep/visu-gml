@@ -349,7 +349,7 @@ function VisuRenderer() constructor {
         +  "| ---------------------------- |\n"
         + $"| shrooms: {e1} ({e4})         |\n" 
         + $"| bullets: {e2} ({e5})         |\n" 
-        + $"| coins:   {e2} ({e5})         |\n" 
+        + $"| coins:   {e3} ({e6})         |\n" 
         + $"|______________________________|\n"
         + gridCameraMessage
       
