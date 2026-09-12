@@ -75,7 +75,7 @@ function VisuRenderer() constructor {
   spinnerTime = 0
   
   ///@type {Timer}
-  initTimer = new Timer(0.5)
+  initTimer = new Timer(1.0)
 
   ///@type {Timer}
   fadeTimer = new Timer(0.25)
@@ -274,7 +274,7 @@ function VisuRenderer() constructor {
       this.fpsReport = this.fpsReport == "" ? row : $"{this.fpsReport}\n{row}"
     }
     
-    var gridCameraMessage = ""
+    var gridCameraMessage = "|______________________|\n"
     if (enableDebugOverlay) {
       var gridCamera = this.gridRenderer.camera
       if (enableEditor && (gridCamera.enableKeyboardLook || gridCamera.enableMouseLook)) {
@@ -286,22 +286,27 @@ function VisuRenderer() constructor {
         var g5 = String.format(gridCamera.angle + (sin(this.gridRenderer.camera.breathTimer2.time / 4.0) * BREATH_TIMER_FACTOR_2), 4, 2)
         var h1 = String.format(gridService.view.x, 4, 2)
         var h2 = String.format(gridService.view.y, 4, 2)
-        gridCameraMessage += ""
-          + $"|____________CAMERA____________|\n"
-          +  "|                              |\n"
-          + $"| x:  {   g1} | pitch: {   g4} |\n"
-          + $"| y:  {   g2} | angle: {   g5} |\n"
-          + $"| z:  {   g3} |                |\n"
-          +  "| ---------------------------- |\n"
-          + $"| view   x: {   h1} y: {   h2} |\n"
+        gridCameraMessage = ""
+          +  "| -------------------- |\n"
+          + $"| camx:    {   g1}     |\n" 
+          + $"| camy:    {   g2}     |\n" 
+          + $"| camz:    {   g3}     |\n"
+          + $"| pitch:   {   g4}     |\n"
+          + $"| angle:   {   g5}     |\n"
+          +  "| -------------------- |\n"
+          + $"| viewx:   {   h1}     |\n"
+          + $"| viewy:   {   h2}     |\n"
 
 
         var player = controller.playerService.player
         var i1 = String.format((player == null ? 0.0 : player.x), 4, 2)
         var i2 = String.format((player == null ? 0.0 : player.y), 4, 2)
         gridCameraMessage += player == null ? "" :
-          $"| player x: {   i1} y: {   i2} |\n"
-        gridCameraMessage += $"|______________________________|\n"
+          +  "| -------------------- |\n"
+          + $"| playerx: {   i1}     |\n"
+          + $"| playery: {   i2}     |\n"
+        gridCameraMessage += ""
+          +  "|______________________|\n"
       }
 
       var shroomsPools = controller.shroomService.shroomsPool.size()
@@ -334,35 +339,25 @@ function VisuRenderer() constructor {
       var f1 = String.format(deltaTime, 1, 5)
       var f2 = String.format(this.debugMaxDelta, 1, 5)
       var text = "\n"
-        + $" ______________________________ \n"
-        + $"|____________DEBUG_____________|\n"
-        +  "|                              |\n"
-        + $"| FPS:   {a1} | DT:    {   f1} |\n"
-        + $"|  min:  {a2} |  max:  {   f2} |\n"
-        + $"|  max:  {b1} |                |\n"
-        + $"|  avg:  {b2} |                |\n"
-        +  "| ---------------------------- |\n"
-        + $"| update:  { c1} [ms]          |\n"
-        + $"| render:  { c2} [ms]          |\n"
-        + $"|  sum:    { d1} [ms]          |\n"
-        + $"|  avg:    { d2} [ms]          |\n"
-        +  "| ---------------------------- |\n"
-        + $"| shrooms: {e1} ({e4})         |\n" 
-        + $"| bullets: {e2} ({e5})         |\n" 
-        + $"| coins:   {e3} ({e6})         |\n" 
-        + $"|______________________________|\n"
+        + $" ______________________ \n"
+        +  "|                      |\n"
+        + $"| FPS:     {a1}        |\n"
+        + $"| min:     {a2}        |\n"
+        + $"| max:     {b1}        |\n"
+        + $"| avg:     {b2}        |\n"
+        +  "| -------------------- |\n"
+        + $"| DT:      {   f1}     |\n"
+        + $"| max:     {   f2}     |\n"
+        +  "| -------------------- |\n"
+        + $"| update:  { c1} [ms]  |\n"
+        + $"| render:  { c2} [ms]  |\n"
+        + $"| sum:     { d1} [ms]  |\n"
+        + $"| avg:     { d2} [ms]  |\n"
+        +  "| -------------------- |\n"
+        + $"| shrooms: {e1} ({e4}) |\n" 
+        + $"| bullets: {e2} ({e5}) |\n" 
+        + $"| coins:   {e3} ({e6}) |\n" 
         + gridCameraMessage
-      
-      /*
-            fps:     xxxx    | fps-real:     xxxx
-            fps-min: xxxx    | fps-real-avg: xxxx    
-            -----------------|-------------------
-            update: xxxxx ms | total:    xxxxx ms
-            render: xxxxx ms | avg:      xxxxx ms
-            -----------------|-------------------
-            shrooms: xxxx    | dt:        xxxxxxx
-            bullets: xxxx    | dt-max:    xxxxxxx
-      */
 
       GPU.render.text(
         layout.x() + layout.width() - 32, 
@@ -706,9 +701,9 @@ function VisuRenderer() constructor {
       this.renderGame(layout)
       this.renderUI(layout)
       this.renderSpinner(layout)
-      this.renderDebugGUI(layout)
       this.renderFadeBackground(this.initTimer)
       this.renderFadeBackground(this.fadeTimer)
+      this.renderDebugGUI(layout)
       this.renderFPS(layout)
       
       if (stateName == "scene-close") {
