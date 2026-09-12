@@ -782,6 +782,7 @@ function VisuMenu(_config = null) constructor {
           }),
           "keyUpdater": new PrioritizedPressedKeyUpdater({ cooldown: 0.05 }),
           "playerKeyUpdater": new PrioritizedPressedKeyUpdater({ cooldown: 0.05 }),
+          "contentLoaded": false,
         }),
         scrollbarY: { align: HAlign.RIGHT },
         fetchViewHeight: function() {
@@ -795,6 +796,10 @@ function VisuMenu(_config = null) constructor {
           .get("updateVerticalSelectedIndex"))),
         updateCustom: function() {
           this.layout.viewHeight = this.fetchViewHeight()
+          if (!this.state.get("contentLoaded")) {
+            return
+          }
+
           this.controller.remapKey = this.state.get("remapKey")
           if (Optional.is(this.controller.remapKey)) {
             this.state.set("remapKeyRestored", 2)
@@ -1150,10 +1155,11 @@ function VisuMenu(_config = null) constructor {
             return progress == 1.0 ? 1.0 : 1.0 - Math.pow(2.0, -10.0 * progress)
           }
           
+          var _uiAlpha = this.state.get("contentLoaded") ? uiAlpha : uiAlpha * 0.5
           var _ui = this.state.get("uiAlphaFactor") >= 0.0
             ? easeOutExpo(uiAlpha)
             : (1.0 + easeInExpo(1.0 - abs(uiAlpha)))
-          this.surface.render(this.area.getX() * _ui, this.area.getY(), uiAlpha)
+          this.surface.render(this.area.getX() * _ui, this.area.getY(), _uiAlpha)
           if (this.enableScrollbarY) {
             this.scrollbarY.render(this)
           }
@@ -1170,32 +1176,88 @@ function VisuMenu(_config = null) constructor {
         onInit: function() {
           /*///@UICOLLECTION_1*/ this.collection = new UICollection(this, { layout: this.layout })
           ///@UICOLLECTION_2 this.collection = this.collection == null ? new UICollection(this, { layout: this.layout }) : this.collection.clear()
-          this.state.get("content").forEach(function(template, index, context) {
-            context.collection.add(new UIComponent(template))
-          }, this)
+          var context = this
+          var size = context.state.get("content").size()
+          var cooldown = FRAME_MS * (size > 6 ? 1 : 3)
+          var task = new Task("load-menu-content")
+            .setState({
+              context: context,
+              pointer: 0,
+              stage: "init",
+              timer: new Timer(cooldown, { loop: Infinity }),
+              stages: {
+                init: function(task) {
+                  var context = task.state.context
+                  context.scrollbarY.render = method(context.scrollbarY, function() { })
+                  task.state.stage = "factory"
+                },
+                factory: function(task) {
+                  if (!task.state.timer.update().finished) {
+                    return
+                  }
 
-          if (this.state.get("content").size() > 0) {
-            Struct.set(this, "selectedIndex", 0)
-            this.state.set("isKeyboardEvent", true)
-            this.collection.components.forEach(function(component, iterator, pointer) {
-              if (component.index == pointer) {
-                component.items.forEach(function(item) {
-                  item.backgroundColor = Struct.contains(item, "colorHoverOver") 
-                    ? ColorUtil.fromHex(item.colorHoverOver).toGMColor()
-                    : item.backgroundColor
-                })
-              } else {
-                component.items.forEach(function(item) {
-                  item.backgroundColor = Struct.contains(item, "colorHoverOut") 
-                    ? ColorUtil.fromHex(item.colorHoverOut).toGMColor()
-                    : item.backgroundColor
-                })
+                  var context = task.state.context
+                  var content = context.state.get("content")
+                  var size = content.size()
+                  repeat (1) {
+                    if (task.state.pointer >= size) {
+                      task.state.stage = "setup"
+                      break
+                    }
+
+                    var template = content.get(task.state.pointer)
+                    if (Core.isType(template, Struct)) {
+                      context.collection.add(new UIComponent(template))
+                    }
+
+                    task.state.pointer += 1
+                    if (task.state.pointer >= size) {
+                      task.state.stage = "setup"
+                      break
+                    }
+                  }
+                },
+                setup: function(task) {
+                  var context = task.state.context
+                  var content = context.state.get("content")
+                  var size = content.size()
+                  if (size > 0) {
+                    Struct.set(context, "selectedIndex", 0)
+                    context.state.set("isKeyboardEvent", true)
+                    context.collection.components.forEach(function(component, iterator, pointer) {
+                      if (component.index == pointer) {
+                        component.items.forEach(function(item) {
+                          item.backgroundColor = Struct.contains(item, "colorHoverOver") 
+                            ? ColorUtil.fromHex(item.colorHoverOver).toGMColor()
+                            : item.backgroundColor
+                        })
+                      } else {
+                        component.items.forEach(function(item) {
+                          item.backgroundColor = Struct.contains(item, "colorHoverOut") 
+                            ? ColorUtil.fromHex(item.colorHoverOut).toGMColor()
+                            : item.backgroundColor
+                        })
+                      }
+                    }, Struct.get(context, "selectedIndex"))
+                  }
+
+                  context.state.set("initPress", true)
+                  context.state.set("contentLoaded", true)
+                  task.state.stage = "finish"
+                },
+                finish: function(task) {
+                  task.fullfill()
+                },
               }
-            }, Struct.inject(this, "selectedIndex", 0))
-          }
-
-          this.state.set("initPress", true)
-          this.scrollbarY.render = method(this.scrollbarY, function() { })
+            })
+            .whenUpdate(function(executor) {
+              var stage = Struct.get(this.state.stages, this.state.stage)
+              stage(this)
+            })
+        
+          var controller = Beans.get(BeanVisuController)
+          controller.menu.executor.tasks.clear()
+          controller.menu.executor.add(task)
         },
       })
     }
@@ -1422,6 +1484,7 @@ function VisuMenu(_config = null) constructor {
       blur.reset()
 
       this.dispatcher.execute(new Event("close"))
+      this.executor.tasks.clear()
       this.back = Struct.getIfType(event.data, "back", Callable)
       this.backData = Struct.get(event.data, "backData")
       this.isMainMenu = Struct.getIfType(event.data, "isMainMenu", Boolean, false)
@@ -1470,6 +1533,7 @@ function VisuMenu(_config = null) constructor {
           quiet: true,
         }))
       }, controller.uiService).clear()
+      this.executor.tasks.clear()
     },
     "back": function(event) {
       if (this.back != null) {
@@ -1497,6 +1561,20 @@ function VisuMenu(_config = null) constructor {
     },
   }))
 
+  ///@type {TaskExecutor}
+  executor = new TaskExecutor(this, { 
+    loggerPrefix: "VisuMenu",
+    enableLogger: true,
+    catchException: true,
+    exceptionCallback: function(task, exception) {
+      task.status = TaskStatus.REJECTED
+      var controller = Beans.get(BeanVisuController)
+      var message = $"'VisuMenu::executor' (task.name: {task.name}), fatal error: {exception.message}"
+      controller.exceptionDebugHandler(message, exception)
+      controller.menu.send(new Event("close"))
+    },
+  })
+
   ///@param {Event} event
   ///@return {?Promise}
   send = function(event) {
@@ -1505,8 +1583,9 @@ function VisuMenu(_config = null) constructor {
 
   ///@return {VETrackControl}
   update = function() { 
-    VISU_MENU_ENTRY_HEIGHT = ceil(clamp((((GuiHeight() - 540) / 540) * 44) + 60, 60, 104))
+    VISU_MENU_ENTRY_HEIGHT = ceil(clamp((((GuiHeight() - 540) / 540) * 44) + 60, 60, 80))//104))
     this.dispatcher.update()
+    this.executor.update()
     return this
   }
 }

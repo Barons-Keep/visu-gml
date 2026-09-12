@@ -3,7 +3,7 @@ show_debug_message("init VisuLayouts.gml")
 
 
 ///@type {Number}
-global.__VISU_MENU_ENTRY_HEIGHT = 104
+global.__VISU_MENU_ENTRY_HEIGHT = 80 //104
 #macro VISU_MENU_ENTRY_HEIGHT global.__VISU_MENU_ENTRY_HEIGHT
 
 
