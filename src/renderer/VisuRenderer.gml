@@ -133,6 +133,14 @@ function VisuRenderer() constructor {
   debugMinFPSRealCooldown = GAME_FPS
 
   ///@private
+  ///@type {Number}
+  debugMinFPSRealMax = GAME_FPS
+
+  ///@private
+  ///@type {Number}
+  debugFPSMaxCooldown = GAME_FPS
+
+  ///@private
   ///@type {Struct}
   shaderGaussianBlur = ShaderUtil.fetch("shader_gaussian_blur")
 
@@ -229,8 +237,8 @@ function VisuRenderer() constructor {
   initFpsReport = function(filename) {
     global.fpsReportPath = $"{program_directory}{filename}"
     var file = file_text_open_write(global.fpsReportPath);
-    var row = this.generateRow($"{abs(this.debugMinFPS)},{abs(this.debugMinFPSReal)}")
-    file_text_write_string(file, $"timestamp,FPS_MIN,FPS_REAL_MIN\n{row}\n");
+    var row = this.generateRow($"{abs(this.debugMinFPS)},{abs(this.debugMinFPSReal)},{abs(this.debugMinFPSRealMax)}")
+    file_text_write_string(file, $"timestamp,FPS_MIN,FPS_REAL_MIN,FPS_REAL_MAX\n{row}\n");
     file_text_close(file); 
   }
   
@@ -251,10 +259,21 @@ function VisuRenderer() constructor {
       this.debugMinFPS = GAME_FPS
     }
 
+    if (this.debugFPSMaxCooldown > 0) {
+      this.debugFPSMaxCooldown--
+    } else {
+      this.debugMinFPSRealMax = GAME_FPS
+    }
+
     var fpsReal = round(fps_real)
     if (fpsReal < this.debugMinFPS) {
       this.debugMinFPS = fpsReal
       this.debugFPSLowCooldown = GAME_FPS
+    }
+
+    if (fpsReal > this.debugMinFPSRealMax) {
+      this.debugMinFPSRealMax = fpsReal
+      this.debugFPSMaxCooldown = GAME_FPS
     }
 
     if (this.debugDeltaHighCooldown > 0) {
@@ -270,7 +289,7 @@ function VisuRenderer() constructor {
     }
 
     if (global.fpsReportPath != null && this.fpsTimer.update().finished) {
-      var row = this.generateRow($"{abs(this.debugMinFPS)},{abs(this.debugMinFPSReal)}")
+      var row = this.generateRow($"{abs(this.debugMinFPS)},{abs(this.debugMinFPSReal)},{abs(this.debugMinFPSRealMax)}")
       this.fpsReport = this.fpsReport == "" ? row : $"{this.fpsReport}\n{row}"
     }
     
@@ -324,7 +343,8 @@ function VisuRenderer() constructor {
 
       var a1 = String.format(fps, 4, 0)
       var a2 = String.format(this.debugMinFPS, 4, 0)
-      var b1 = String.format(fpsReal, 4, 0)
+      var b0 = String.format(fpsReal, 4, 0)
+      var b1 = String.format(this.debugMinFPSRealMax, 4, 0)
       var b2 = String.format(gridService.avgCircular.value, 4, 0)
       var c1 = String.format(updateSum, 2, 2)
       var c2 = String.format(renderSum, 2, 2)
@@ -342,12 +362,13 @@ function VisuRenderer() constructor {
         + $" ______________________ \n"
         +  "|                      |\n"
         + $"| FPS:     {a1}        |\n"
+        + $"| val:     {b0}        |\n"
         + $"| min:     {a2}        |\n"
         + $"| max:     {b1}        |\n"
         + $"| avg:     {b2}        |\n"
         +  "| -------------------- |\n"
-        + $"| DT:      {   f1}     |\n"
-        + $"| max:     {   f2}     |\n"
+        + $"| DT:       {   f1}    |\n"
+        + $"| max:      {   f2}    |\n"
         +  "| -------------------- |\n"
         + $"| update:  { c1} [ms]  |\n"
         + $"| render:  { c2} [ms]  |\n"
@@ -394,8 +415,9 @@ function VisuRenderer() constructor {
     var fpsMin = String.format(min(abs(fps), abs(this.debugMinFPS)), 4, 0)
     var fpsReal = String.format(abs(fps_real), 4, 0)
     var fpsRealMin = String.format(abs(this.debugMinFPSReal), 4, 0)
+    var fpsRealMax = String.format(abs(this.debugMinFPSRealMax), 4, 0)
 
-    var text = $"FPS: {fpsValue} | FPS min: {fpsMin} | FPS real: {fpsReal} | FPS real min: {fpsRealMin}"
+    var text = $"FPS: {fpsValue} min: {fpsMin} | FPS real: {fpsReal} min: {fpsRealMin} max: {fpsRealMax}"
     GPU.render.text(
       layout.x() + layout.width() - 32, 
       layout.y() + 4, 
