@@ -170,9 +170,9 @@ function DeprecatedSpriteFeature(json): GridItemFeature(json) constructor {
     : null
 
   ///@type {?Struct}
-  scaleX = Core.isType(Struct.get(data, "scaleX"), Struct)
+  scaleX = Struct.get(data, "scaleX") != null
     ? {
-      add: (Core.isType(Struct.get(data.scaleX, "add"), Struct)
+      add: (Struct.get(data.scaleX, "add") != null
         ? new NumberTransformer({
           value: Core.getIfType(GMArray.resolveRandom(Struct.get(data.scaleX.add, "value")), Number, 0.0),
           factor: Core.getIfType(GMArray.resolveRandom(Struct.get(data.scaleX.add, "factor")), Number, 1.0),
@@ -182,7 +182,7 @@ function DeprecatedSpriteFeature(json): GridItemFeature(json) constructor {
           ease: Core.getIfType(GMArray.resolveRandom(Struct.get(data.scaleX.add, "ease")), String, "LEGACY"), // todo migrate
         })
         : null),
-      transform: (Core.isType(Struct.get(data.scaleX, "transform"), Struct)
+      transform: (Struct.get(data.scaleX, "transform") != null
         ? new NumberTransformer({
           value: Core.getIfType(GMArray.resolveRandom(Struct.get(data.scaleX.transform, "value")), Number, 0.0),
           factor: Core.getIfType(GMArray.resolveRandom(Struct.get(data.scaleX.transform, "factor")), Number, 1.0),
@@ -197,9 +197,9 @@ function DeprecatedSpriteFeature(json): GridItemFeature(json) constructor {
     : null
 
   ///@type {?Struct}
-  scaleY = Core.isType(Struct.get(data, "scaleY"), Struct)
+  scaleY = Struct.get(data, "scaleY") != null
     ? {
-      add: (Core.isType(Struct.get(data.scaleY, "add"), Struct)
+      add: (Struct.get(data.scaleY, "add") != null
         ? new NumberTransformer({
           value: Core.getIfType(GMArray.resolveRandom(Struct.get(data.scaleY.add, "value")), Number, 0.0),
           factor: Core.getIfType(GMArray.resolveRandom(Struct.get(data.scaleY.add, "factor")), Number, 1.0),
@@ -209,7 +209,7 @@ function DeprecatedSpriteFeature(json): GridItemFeature(json) constructor {
           ease: Core.getIfType(GMArray.resolveRandom(Struct.get(data.scaleY.add, "ease")), String, "LEGACY"), // todo migrate
         })
         : null),
-      transform: (Core.isType(Struct.get(data.scaleX, "transform"), Struct)
+      transform: (Struct.get(data.scaleX, "transform") != null
         ? new NumberTransformer({
           value: Core.getIfType(GMArray.resolveRandom(Struct.get(data.scaleY.transform, "value")), Number, 0.0),
           factor: Core.getIfType(GMArray.resolveRandom(Struct.get(data.scaleY.transform, "factor")), Number, 1.0),
@@ -224,9 +224,9 @@ function DeprecatedSpriteFeature(json): GridItemFeature(json) constructor {
     : null
   
   ///@type {?Struct}
-  angle = Core.isType(Struct.get(data, "angle"), Struct)
+  angle = Struct.get(data, "angle") != null
     ? {
-      add: (Core.isType(Struct.get(data.angle, "add"), Struct)
+      add: (Struct.get(data.angle, "add") != null
         ? new NumberTransformer({
           value: Core.getIfType(GMArray.resolveRandom(Struct.get(data.angle.add, "value")), Number, 0.0),
           factor: Core.getIfType(GMArray.resolveRandom(Struct.get(data.angle.add, "factor")), Number, 1.0),
@@ -236,7 +236,7 @@ function DeprecatedSpriteFeature(json): GridItemFeature(json) constructor {
           ease: Core.getIfType(GMArray.resolveRandom(Struct.get(data.angle.add, "ease")), String, "LEGACY"), // todo migrate
         })
         : null),
-      transform: (Core.isType(Struct.get(data.angle, "transform"), Struct)
+      transform: (Struct.get(data.angle, "transform") != null
         ? new NumberTransformer({
           value: Core.getIfType(GMArray.resolveRandom(Struct.get(data.angle.transform, "value")), Number, 0.0),
           factor: Core.getIfType(GMArray.resolveRandom(Struct.get(data.angle.transform, "factor")), Number, 1.0),
@@ -251,9 +251,9 @@ function DeprecatedSpriteFeature(json): GridItemFeature(json) constructor {
     : null
 
   ///@type {?Struct}
-  alpha = Core.isType(Struct.get(data, "alpha"), Struct)
+  alpha = Struct.get(data, "alpha") != null
     ? {
-      add: (Core.isType(Struct.get(data.alpha, "add"), Struct)
+      add: (Struct.get(data.alpha, "add") != null
         ? new NumberTransformer({
           value: Core.getIfType(GMArray.resolveRandom(Struct.get(data.alpha.add, "value")), Number, 0.0),
           factor: Core.getIfType(GMArray.resolveRandom(Struct.get(data.alpha.add, "factor")), Number, 1.0),
@@ -263,7 +263,7 @@ function DeprecatedSpriteFeature(json): GridItemFeature(json) constructor {
           ease: Core.getIfType(GMArray.resolveRandom(Struct.get(data.alpha.add, "ease")), String, "LEGACY"), // todo migrate
         })
         : null),
-      transform: (Core.isType(Struct.get(data.alpha, "transform"), Struct)
+      transform: (Struct.get(data.alpha, "transform") != null
         ? new NumberTransformer({
           value: Core.getIfType(GMArray.resolveRandom(Struct.get(data.alpha.transform, "value")), Number, 0.0),
           factor: Core.getIfType(GMArray.resolveRandom(Struct.get(data.alpha.transform, "factor")), Number, 1.0),

@@ -192,22 +192,22 @@ function GridOverlayRenderer() constructor {
   ///@return {GridOverlayRenderer}
   update = function() {
     static gcFilter = function(task, index, gc) {
-      if (!Core.isType(task, Task)
+      if (task == null
         || task.name != "fade-sprite"
         || task.status == TaskStatus.FULLFILLED
         || task.status == TaskStatus.REJECTED
-        || !Core.isType(task.state.get("sprite"), Sprite)) {
+        || task.state.get("sprite") == null) {
         
         gc.add(index)
       }
     }
 
     static gcColorFilter = function(task, index, gc) {
-      if (!Core.isType(task, Task)
+      if (task == null
         || task.name != "fade-color"
         || task.status == TaskStatus.FULLFILLED
         || task.status == TaskStatus.REJECTED
-        || !Core.isType(task.state.get("color"), Color)) {
+        || task.state.get("color") == null) {
         
         gc.add(index)
       }

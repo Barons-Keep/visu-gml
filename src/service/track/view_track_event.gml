@@ -356,7 +356,7 @@ global.__view_track_event = {
       var lastYScale = 1.0
       var lastX = 0.0
       var lastY = 0.0
-      if (Core.isType(lastTask, Task) && Core.isType(lastTask.state, Map)) {
+      if (lastTask != null && lastTask.state != null) {
         var _angleTransformer = lastTask.state.get("angleTransformer")
         lastAngle = Math.normalizeAngle(lastTask.state.get("angle") + (Optional.is(_angleTransformer) ? _angleTransformer.value : lastAngle))
 

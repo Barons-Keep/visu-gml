@@ -46,7 +46,7 @@ function GridView(config = {}) constructor {
   
   ///@return {GridView}
   static update = function() {
-    if (Core.isType(this.follow.target, Struct)) {
+    if (this.follow.target != null) {
       var targetX = this.follow.target.x
       var _derivativeX = 0.0
       if (targetX >= this.x + this.width - this.follow.xMargin) {

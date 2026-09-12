@@ -158,7 +158,7 @@ function VisuHUDRenderer() constructor {
   ///@param {?Number} [value]
   ///@return {VisuHUDRenderer}
   sendGlitchEvent = function(value = null) {
-    var factor = Core.isType(value, Number)
+    var factor = value != null
       ? value
       : (choose(0.3, 0.4, 0.5, 0.6, 0.7) / 100.0)
     this.setGlitchServiceConfig(factor, false)

@@ -94,7 +94,7 @@ function BulletService(config = null): Service(config) constructor {
   executor = new TaskExecutor(this, { 
     loggerPrefix: "BulletService",
     enableLogger: true,
-    catchException: true,
+    catchException: false,
     exceptionCallback: function(task, exception) {
       task.status = TaskStatus.REJECTED
       var message = $"'BulletService::executor' (task.name: {task.name}), fatal error: {exception.message}"

@@ -490,26 +490,23 @@ function VisuStateMachine(context, name) {
           },
         },
         update: function(fsm) {
+          if (this.state.get("promises-resolved") == "success") {
+            return
+          }
+
           try {
-            if (this.state.get("promises-resolved") != "success") {
-              var promises = this.state.get("promises")
-              var filtered = promises.filter(fsm.context.loader.utils.filterPromise)
-              if (filtered.size() != promises.size()) {
-                return
-              }
-
-              if (!promises.contains("track")) {
-                promises.set("track", fsm.context.trackService.send(new Event("resume-track")))
-                return
-              }
-
-              this.state.set("promises-resolved", "success")
+            var promises = this.state.get("promises")
+            var filtered = promises.filter(fsm.context.loader.utils.filterPromise)
+            if (filtered.size() != promises.size()) {
               return
             }
 
-            //Assert.isType(fsm.context.playerService.player, Player)
-            //Assert.areEqual(fsm.context.videoService.getVideo().getStatus(), VideoStatus.PLAYING)
-            //Assert.areEqual(fsm.context.trackService.track.getStatus(), TrackStatus.PLAYING)
+            if (!promises.contains("track")) {
+              promises.set("track", fsm.context.trackService.send(new Event("resume-track")))
+              return
+            }
+
+            this.state.set("promises-resolved", "success")
           } catch (exception) {
             var message = $"'fsm::update' (state: 'play') fatal error: {exception.message}"
             Logger.error(BeanVisuController, message)
@@ -548,24 +545,26 @@ function VisuStateMachine(context, name) {
           },
         },
         update: function(fsm) {
+          if (this.state.get("promises-resolved") == "success") {
+            return
+          }
+          
           try {
-            if (this.state.get("promises-resolved") != "success") {
-              var promises = this.state.get("promises")
-              var filtered = promises.filter(fsm.context.loader.utils.filterPromise)
-              var track = Beans.get(BeanVisuController).trackService.track
-              if (track != null && track.getStatus() == TrackStatus.STOPPED) {
-                this.state.set("promises-resolved", "success")
-                return
-              }
-              if (filtered.size() != promises.size()) {
-                return
-              }
+
+            var promises = this.state.get("promises")
+            var filtered = promises.filter(fsm.context.loader.utils.filterPromise)
+            var track = Beans.get(BeanVisuController).trackService.track
+            if (track != null && track.getStatus() == TrackStatus.STOPPED) {
               this.state.set("promises-resolved", "success")
+              return
             }
 
+            if (filtered.size() != promises.size()) {
+              return
+            }
+
+            this.state.set("promises-resolved", "success")
             fsm.transition("paused", this.state.get("menuEvent"))
-            //Assert.areEqual(fsm.context.videoService.getVideo().getStatus(), VideoStatus.PAUSED)
-            //Assert.areEqual(fsm.context.trackService.track.getStatus(), TrackStatus.PAUSED)
           } catch (exception) {
             var message = $"'fsm::update' (state: 'pause') fatal error: {exception.message}"
             Logger.error(BeanVisuController, message)

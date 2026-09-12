@@ -193,7 +193,7 @@ function ShootFeature(json): GridItemFeature(json) constructor {
     var angle = item.angle + this.angle
     if (this.targetPlayer) {
       var player = Beans.get(BeanVisuController).playerService.player
-      if (Core.isType(player, Player)) {
+      if (player != null) {
         angle = Math.fetchPointsAngle(item.x, item.y, player.x, player.y) 
           + this.angle
       }

@@ -999,44 +999,23 @@ function VisuTrackLoader(config = null): Service(config) constructor {
   executor = new TaskExecutor(this, {
     loggerPrefix: "VisuTrackLoader",
     enableLogger: true,
-    catchException: false
-  })
-
-  ///@return {VisuTrackLoader}
-  updateFSM = function() {
-    try {
-      this.fsm.update()
-    } catch (exception) {
-      var message = $"FSM fatal error: {exception.message}"
-      Logger.error("VisuTrackLoader", message)
-      Core.printStackTrace().printException(exception)
-      Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
-    }
-
-    return this
-  }
-
-  updateExecutor = function() {    
-    try {
-      this.executor.update()
-    } catch (exception) {
+    catchException: true,
+    exceptionCallback: function(task, exception) {
       var message = $"executor fatal error: {exception.message}"
-      Logger.error("VisuTrackLoader", message)
+      Logger.error(this.loggerPrefix, message)
       Core.printStackTrace().printException(exception)
-      this.executor.tasks.clear()
-      this.fsm.transition("idle")
-      Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
+      Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: $"{this.loggerPrefix} {message}" }))
+      this.tasks.clear()
+      this.context.fsm.transition("idle")
     }
-
-    return this
-  }
+  })
 
   ///@return {FSM}
   update = function() {
     var deltaTime = DELTA_TIME
     DELTA_TIME = 1.0
-    this.updateFSM()
-    this.updateExecutor()
+    this.fsm.update()
+    this.executor.update()
     DELTA_TIME = deltaTime
     return this
   }

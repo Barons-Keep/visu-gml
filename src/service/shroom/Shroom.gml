@@ -274,16 +274,15 @@ function Shroom(template): GridItem(template) constructor {
   ///@param {GMArray<GridItemFeature>} features
   ///@return {Array<GridItemFeature>}
   static parseFeatures = function(features) {
-    static parseFeature = function(json, index, features) {
+    var size = GMArray.size(features)
+    var parsed = GMArray.createGMArray(size)
+    for (var idx = 0; idx < size; idx++) {
+      var json = features[idx]
       var featureName = Struct.get(json, "type")
       var feature = Callable.get(featureName)
-      return feature != null
-        ? features.add(new feature(json))
-        : Logger.warn("Shroom", $"Found unsupported feature: '{featureName}'")
+      parsed[idx] = new feature(json)
     }
-
-    var parsed = new Array(Struct)
-    GMArray.forEach(features, parseFeature, parsed)
+    
     return parsed
   }
 
@@ -303,7 +302,8 @@ function Shroom(template): GridItem(template) constructor {
   onDeath = parseFeatures(template.onDeath)
 
   ///@type {Queue<GridItemFeature>}
-  queue = new Queue(GridItemFeature, parseFeatures(template.queue).getContainer())
+  queue = parseFeatures(template.queue)
+  queuePtr = 0
 
   ///@type {Array<GridItemFeature>}
   features = parseFeatures(template.features)
@@ -321,9 +321,9 @@ function Shroom(template): GridItem(template) constructor {
   ///@return {Shroom}
   static updateGridItemFeatures = function(item, controller, features) {
     gml_pragma("forceinline")
-    var size = features.size()
+    var size = GMArray.size(features)
     for (var index = 0; index < size; index++) {
-      var feature = features.get(index)
+      var feature = features[index]
       if (feature.checkConditions(item, controller)) {
         feature.update(item, controller)
       }
@@ -337,14 +337,20 @@ function Shroom(template): GridItem(template) constructor {
   ///@param {Queue<GridItemFeature} queue
   ///@return {Shroom}
   static updateGridItemFeatureQueue = function(item, controller, queue) {
-    var feature = queue.peek()
+    var size = GMArray.size(queue)
+    if (item.queuePtr >= size) {
+      return item
+    }
+
+    var feature = queue[item.queuePtr]
     if (feature == null) {
+      item.queuePtr++
       return item
     }
     
     feature.update(item, controller)
     if (feature.updateTimer()) {
-      queue.pop()
+      item.queuePtr++
     }
 
     return item

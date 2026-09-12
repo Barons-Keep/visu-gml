@@ -5,20 +5,19 @@ show_debug_message("init GridItemFeature.gml")
 ///@param {Struct} json
 function GridItemFeature(json) constructor {
 
-  ///@private
-  ///@param {Struct} condition
-  ///@return {GridItemCondition}
-  static parseCondition = function(condition) {
-    return new GridItemCondition(condition)
-  }
-
   ///@type {String}
   type = "GridItemFeature"
   
   ///@type {?Array<GridItemCondition>}
   conditions = Struct.getIfType(json, "conditions", GMArray) != null
-    ? new Array(GridItemCondition, GMArray.map(json.conditions, parseCondition))
+    ? GMArray.createGMArray(GMArray.size(json.conditions))
     : null
+  if (this.conditions != null) {
+    var size = GMArray.size(json.conditions)
+    for (var idx = 0; idx < size; idx++) {
+      conditions[idx] = new GridItemCondition(json.conditions[idx])
+    }
+  }
 
   ///@type {?Timer}
   timer = Struct.getIfType(json, "timer", Number) != null
@@ -32,9 +31,10 @@ function GridItemFeature(json) constructor {
       return true
     }
 
-    var size = this.conditions.size()
+    var size = GMArray.size(this.conditions)
     for (var index = 0; index < size; index++) { 
-      if (!this.conditions.get(index).check(gridItem, controller)) {
+      var condition = this.conditions[index]
+      if (!condition.check(gridItem, controller)) {
         return false
       }
     }

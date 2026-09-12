@@ -113,7 +113,7 @@ function VisuController(config = null): Service(config) constructor {
       }),
     isTrackLoaded: function() {
       var stateName = Beans.get(BeanVisuController).fsm.getStateName()
-      return Core.isType(this.track, Track) 
+      return this.track != null
           && (stateName == "play" 
           || stateName == "pause" 
           || stateName == "paused"

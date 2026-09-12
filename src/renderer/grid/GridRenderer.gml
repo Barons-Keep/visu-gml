@@ -1197,7 +1197,7 @@ function GridRenderer() constructor {
     var player = playerService.player
     if (!gridService.properties.playerShadowEnable
         || !gridService.properties.renderPlayer
-        || !Core.isType(player, Player)
+        || player == null
         || player.sprite.texture.asset == texture_empty) {
 
       return this
@@ -1233,7 +1233,7 @@ function GridRenderer() constructor {
   entityRenderPlayer = function(gridService, playerService, baseX, baseY) { 
     var player = playerService.player
     if (!gridService.properties.renderPlayer
-      || !Core.isType(player, Player)) {
+        || player == null) {
       this.player2DCoords.x = null
       this.player2DCoords.y = null
       return this

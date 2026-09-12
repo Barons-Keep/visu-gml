@@ -1678,8 +1678,15 @@ function VETrackControl(_editor) constructor {
       }, Beans.get(BeanVisuEditorController).uiService).clear()
     },
   }), { 
-    enableLogger: false, 
-    catchException: false,
+    loggerPrefix: "VETrackControl",
+    enableLogger: true, 
+    catchException: true,
+    exceptionCallback: function(event, exception) {
+      var message = $"dispatcher fatal error: {exception.message}"
+      Logger.error("VETrackControl", message)
+      Core.printStackTrace().printException(exception)
+      Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: $"VETrackControl {message}" }))
+    },
   })
 
   ///@param {Event} event
@@ -1690,14 +1697,7 @@ function VETrackControl(_editor) constructor {
 
   ///@return {VETrackControl}
   update = function() { 
-    try {
-      this.dispatcher.update()
-    } catch (exception) {
-      var message = $"dispatcher fatal error: {exception.message}"
-      Logger.error("VETrackControl", message)
-      Core.printStackTrace().printException(exception)
-      Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
-    }
+    this.dispatcher.update()
     return this
   }
 }

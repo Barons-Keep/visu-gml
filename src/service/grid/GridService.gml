@@ -227,7 +227,7 @@ function GridItemChunkService(_size) constructor {
 function GridService(_config = null): Service(_config) constructor {
 
   ///@type {?Struct}
-  config = Core.isType(_config, Struct) ? JSON.clone(_config) : null
+  config = _config != null ? JSON.clone(_config) : null
 
   ///@type {Number}
   width = Struct.getIfType(this.config, "width", Number, 2048.0)
@@ -288,7 +288,7 @@ function GridService(_config = null): Service(_config) constructor {
       var horizontal = gridService.properties.borderHorizontalLength / 2.0
       var vertical = gridService.properties.borderVerticalLength / 2.0
       var player = Beans.get(BeanVisuController).playerService.player
-      var isPlayer = Core.isType(player, Player) 
+      var isPlayer = player != null
       if (isPlayer) {
         this.setX(clamp(player.x, follow.xMargin, view.worldWidth - follow.xMargin))
         this.setY(clamp(player.y, follow.yMargin, view.worldHeight - follow.yMargin))
@@ -540,7 +540,7 @@ function GridService(_config = null): Service(_config) constructor {
         var scale = 1.0 + (random(1.0) * 0.25 * choose(1.0, -1.0))
         var angle = random(7.5) * choose(1.0, -1.0)
         var lastTask = controller.visuRenderer.gridRenderer.overlayRenderer.foregrounds.getLast()
-        if (Core.isType(lastTask, Task) && Core.isType(lastTask.state, Map)) {
+        if (lastTask != null && lastTask.state != null) {
           var factor = 0.25
           lastX = lastTask.state.get("x") + ((random(GuiWidth() * factor) * factor) * choose(1.0, -1.0))
           lastY = lastTask.state.get("y")
@@ -697,7 +697,7 @@ function GridService(_config = null): Service(_config) constructor {
         var scale = 1.0 + (random(1.0) * 0.25 * choose(1.0, -1.0))
         var angle = random(7.5) * choose(1.0, -1.0)
         var lastTask = controller.visuRenderer.gridRenderer.overlayRenderer.foregrounds.getLast()
-        if (Core.isType(lastTask, Task) && Core.isType(lastTask.state, Map)) {
+        if (lastTask != null && lastTask.state != null) {
           lastX = lastTask.state.get("x") + (random(GuiWidth() / 2.0) * choose(1.0, 1.0, -1.0))
           lastY = lastTask.state.get("y")
           if (sign(lastY) >= 0) {
@@ -1010,7 +1010,7 @@ function GridService(_config = null): Service(_config) constructor {
   signalGridItemsCollision = function() {
     var controller = Beans.get(BeanVisuController)
     var player = controller.playerService.player
-    var isPlayer = Core.isType(player, Player)
+    var isPlayer = player != null
   
     controller.bulletService.bullets.forEach(
       isPlayer
