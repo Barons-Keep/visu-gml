@@ -99,7 +99,7 @@ function PlayerService(config = null): Service(config) constructor {
         stats: Struct.get(event.data, "stats"),
         keyboard: Beans.get(BeanVisuIO).keyboards.get("player"),
         mouse: Beans.get(BeanVisuIO).mouses.get("player"),
-        handler: JSON.clone(Struct.getIfType(event.data, "handler", Struct, {})),
+        handler: Struct.getIfType(event.data, "handler", Struct, {}),
       })
 
       var controller = Beans.get(BeanVisuController)

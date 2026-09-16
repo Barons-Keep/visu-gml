@@ -1,8 +1,6 @@
 ///@package fun.barons-keep.visu.ui.controller.menu
 show_debug_message("init VisuMenuNode.gml")
 
-
-
 ///@param {Struct} json
 function VisuMenuNode(json) constructor {
 
@@ -11,6 +9,9 @@ function VisuMenuNode(json) constructor {
 
   ///@type {?String}
   back = Core.isType(json.back, String) ? json.back : null
+
+  ///@type {Callable}
+  init = Callable.get(Struct.get(json, "init"), VISU_MENU_LAYOUT_INIT_RESET)
 
   ///@type {Array<VisuMenuEntry>}
   entries = new Array(VisuMenuEntry, Core.isType(Struct.get(json, "entries"), GMArray) 
@@ -169,6 +170,7 @@ function factoryVisuMenuOpenNodeEvent(nodeName) {
         }
       ).getContainer()
     ),
+    init: node.init,
   })
 
   return event

@@ -13,6 +13,9 @@ function VisuController(config = null): Service(config) constructor {
   layerId = Assert.isType(Scene.getLayer(layerName), GMLayer,
     "VisuController::layerID must be type of GMLayer")
 
+  ///@type {Number}
+  gcFrameTime = Core.getProperty("core.gc.frame-time", 100)
+
   ///@type {Difficulty}
   difficulty = Difficulty.NORMAL
 
@@ -302,27 +305,6 @@ function VisuController(config = null): Service(config) constructor {
     catchException: false,
   })
 
-  ///@private
-  ///@type {DebugTimer}
-  updateDebugTimer = new DebugTimer("updateDebugTimer")
-
-  ///@private
-  ///@type {DebugTimer}
-  renderTimer = new DebugTimer("renderTimer")
-  
-  ///@private
-  ///@type {DebugTimer}
-  renderGUITimer = new DebugTimer("renderGUITimer")
-
-  ///@private
-  ///@type {?Promise}
-  watchdogPromise = null
-
-  ///@private
-  ///@type {Number}
-  gcFrameTime = Core.getProperty("core.gc.frame-time", 100)
-
-  ///@private
   ///@type {Array<Struct>}
   services = new Array(Struct, GMArray.map([
     "fsm",
@@ -337,11 +319,11 @@ function VisuController(config = null): Service(config) constructor {
     /**///@log.level Logger.debug(BeanVisuController, $"Load service '{name}'")
     return {
       name: name,
-      struct: Assert.isType(Struct.get(controller, name), Struct),
+      struct: Assert.isType(Struct.get(controller, name), Struct,
+        $"VisuController.{name} must be type of Struct"),
     }
   }, this))
 
-  ///@private
   ///@type {Array<Struct>}
   gameplayServices = new Array(Struct, GMArray.map([
     "shaderPipeline",
@@ -356,9 +338,22 @@ function VisuController(config = null): Service(config) constructor {
     /**///@log.level Logger.debug(BeanVisuController, $"Load gameplay service '{name}'")
     return {
       name: name,
-      struct: Assert.isType(Struct.get(controller, name), Struct),
+      struct: Assert.isType(Struct.get(controller, name), Struct,
+        $"VisuController.{name} must be type of Struct"),
     }
   }, this))
+
+  ///@type {?Promise}
+  watchdogPromise = null
+
+  ///@type {DebugTimer}
+  updateDebugTimer = new DebugTimer("updateDebugTimer")
+
+  ///@type {DebugTimer}
+  renderTimer = new DebugTimer("renderTimer")
+  
+  ///@type {DebugTimer}
+  renderGUITimer = new DebugTimer("renderGUITimer")
 
   ///@param {String} name
   ///@return {Boolean}
@@ -422,82 +417,112 @@ function VisuController(config = null): Service(config) constructor {
     return this
   }
 
-  ///@private
-  ///@return {VisuController}
-  init = function() {
-    Beans.get(BeanDisplayService).setCursor(Cursor.DEFAULT)
+  ///@param {String} message
+  ///@param {?Struct} exception
+  exceptionDebugHandler = function(message, exception) {
+    Logger.error(BeanVisuController, message)
+    Core.printStackTrace().printException(exception)
+    this.send(new Event("spawn-popup", { message: message }))
 
-    this.sfxService
-      .set("player-collect-bomb", new SFX("sound_sfx_player_collect_bomb"))
-      .set("player-collect-life", new SFX("sound_sfx_player_collect_life"))
-      .set("player-collect-point-or-force", new SFX("sound_sfx_player_collect_point_or_force"))
-      .set("player-die", new SFX("sound_sfx_player_die"))
-      .set("player-force-level-up", new SFX("sound_sfx_player_force_level_up"))
-      .set("player-shoot", new SFX("sound_sfx_player_shoot", 3))
-      .set("player-use-bomb", new SFX("sound_sfx_player_use_bomb"))
-      .set("shroom-die", new SFX("sound_sfx_shroom_die", 3))
-      .set("shroom-damage", new SFX("sound_sfx_shroom_damage", 3))
-      .set("shroom-shoot", new SFX("sound_sfx_shroom_shoot", 3))
-      .set("menu-move-cursor", new SFX("sound_sfx_menu_move_cursor"), 1)
-      .set("menu-select-entry", new SFX("sound_sfx_menu_select_entry"), 1)
-      .set("menu-use-entry", new SFX("sound_sfx_menu_use_entry"), 1)
-      .set("menu-deny", new SFX("sound_sfx_shroom_damage"), 1)
-      .set("menu-splashscreen", new SFX("sound_sfx_intro"), 1)
+    this.fsm.transition(this.trackService.isTrackLoaded() ? "pause" : "idle")
 
-    if (Visu.settings.getValue("visu.server.enable", false)) {
-      this.server.run()
+    var editorIOConstructor = Core.getConstructor(Visu.modules().editor.io)
+    if (Optional.is(editorIOConstructor)) {
+      if (!Beans.exists(Visu.modules().editor.io)) {
+        Beans.add(Beans.factory(Visu.modules().editor.io, GMServiceInstance, layerId,
+          new editorIOConstructor()))
+      }
+    }
+
+    var editorConstructor = Core.getConstructor(Visu.modules().editor.controller)
+    if (Optional.is(editorConstructor)) {
+      if (!Beans.exists(Visu.modules().editor.controller)) {
+        Beans.add(Beans.factory(Visu.modules().editor.controller, GMServiceInstance, layerId,
+          new editorConstructor()))
+      }
     }
     
-    var httpService = Beans.get(BeanHTTPService)
-    if (Core.getProperty("visu.version.check", false)
-      && Core.getRuntimeType() != RuntimeType.GXGAMES
-      && Optional.is(httpService)) {
-      httpService.send(httpService.factoryGetEvent({
-        url: Core.getProperty("visu.version.url"),
-        onSuccess: function(result) {
-          try {
-            ///@todo Use JSON.parserTask
-            var versionConfig = JSON.parse(result)
-            var current = Struct.get(versionConfig.data.current, Core.getRuntimeType())
-            Visu._serverVersion = current.version
-          } catch (exception) {
-            Visu._serverVersion = null
-            Logger.error(BeanVisuController, $"serverVersion fatal error: {exception.message}")
-            Core.printStackTrace().printException(exception)
-          }
-        },
-      }))
+    var editor = Beans.get(Visu.modules().editor.controller)
+    if (Optional.is(editor)) {
+      editor.send(new Event("open"))
+      editor.renderUI = true
+      editor.store.get("update-services").set(false)
     }
-    
-    if (Core.getProperty("visu.version.update", false)
-      && Core.getRuntimeType() != RuntimeType.GXGAMES
-      && Optional.is(httpService)) {
-      /*
-      httpService.send(httpService.factoryGetEvent({
-        url: "http://192.168.1.10/game.unx",
-        file: true,
-        target: "download.zip",
-        onSuccess: function(result) {
-          try {
-            ///@todo Use JSON.parserTask
-            Core.print("Result", result)
-          } catch (exception) {
-            Logger.error(BeanVisuController, $"update fatal error: {exception.message}")
-            Core.printStackTrace().printException(exception)
-          }
-        },
-      }))
-      */
-    }
-
-    return this
   }
 
-  ///@private
-  ///@param {UI}
-  resetUITimer = function(ui) {
-    ui.surfaceTick.skip()
-    ui.finishUpdateTimer()
+  ///@param {?Struct} [json]
+  ///@return {Struct}
+  parseTrackChannelSettings = function(json = null) {
+    var difficulty = Struct.get(json, "difficulty")
+    return {
+      "difficulty": {
+        "EASY": Struct.getDefault(difficulty, "EASY", true),
+        "NORMAL": Struct.getDefault(difficulty, "NORMAL", true),
+        "HARD": Struct.getDefault(difficulty, "HARD", true),
+        "LUNATIC": Struct.getDefault(difficulty, "LUNATIC", true),
+      },
+      "isMouseAim": Struct.getDefault(json, "isMouseAim", null),
+      "isVisualMode": Struct.getDefault(json, "isVisualMode", null),
+      "isRawMode": Struct.getDefault(json, "isRawMode", null),
+    }
+  }
+
+  ///@param {?TrackChannel|?Struct} channel
+  ///@return {Boolean}
+  validateTrackChannelSettings = function(channel) {
+    var settings = Struct.get(channel, "settings")
+    return this.isChannelDifficultyValid(settings)
+        && this.isMouseAimValid(settings)
+        && this.isVisualModeValid(settings)
+        && this.isRawModeValid(settings)
+  }
+
+  ///@param {?Struct} settings
+  ///@return {Boolean}
+  isChannelDifficultyValid = function(settings) {
+    var difficulty = Struct.get(settings, "difficulty")
+    return difficulty == null || Struct.get(difficulty, this.difficulty) != false
+  }
+
+  ///@param {?Struct} settings
+  ///@return {Boolean}
+  isMouseAimValid = function(settings) {
+    var isMouseAim = Struct.get(settings, "isMouseAim")
+    return isMouseAim == null || isMouseAim == this.isMouseAim 
+  }
+
+  ///@param {?Struct} settings
+  ///@return {Boolean}
+  isVisualModeValid = function(settings) {
+    var isVisualMode = Struct.get(settings, "isVisualMode")
+    return isVisualMode == null || isVisualMode == this.isVisualMode
+  }
+
+  ///@param {?Struct} settings
+  ///@return {Boolean}
+  isRawModeValid = function(settings) {
+    var isRawMode = Struct.get(settings, "isRawMode")
+    return isRawMode == null || isRawMode == this.isRawMode
+  }
+  
+  ///@return {Boolean}
+  isGameplayRunning = function() {
+    var state = this.fsm.getStateName()
+    var editor = Beans.get(Visu.modules().editor.controller)
+    return (!this.menu.enabled) 
+        && (state != "splashscreen")
+        && (state != "game-over")
+        && (state != "scene-close")
+        && (state != "paused" 
+        || (Optional.is(editor) && editor.store.getValue("update-services")))
+  }
+
+  ///@return {Boolean}
+  isLoadingTrack = function() {
+    var state = this.loader.fsm.getStateName()
+    return (!this.menu.enabled) 
+        && (state != "idle")
+        && (state != "loaded")
   }
 
   ///@private
@@ -603,7 +628,7 @@ function VisuController(config = null): Service(config) constructor {
   ///@param {Number} iterator
   ///@param {VisuController} controller
   updateGameplayService = function(service, iterator, controller) {
-  try {
+    try {
       if (service.name == "trackService") {
         service.struct.update()
       } else if (controller.fsm.getStateName() != "rewind") {
@@ -622,7 +647,10 @@ function VisuController(config = null): Service(config) constructor {
       var displayService = Beans.get(BeanDisplayService)
       if (displayService.state == "resized") { 
         ///@description reset UI timers after resize to avoid ghost effect
-        this.uiService.containers.forEach(this.resetUITimer)
+        this.uiService.containers.forEach(function(ui) {
+          ui.surfaceTick.skip()
+          ui.finishUpdateTimer()
+        })
 
         Visu.settings.setValue("visu.fullscreen", displayService.getFullscreen()).save()
         if (!displayService.getFullscreen()) {
@@ -836,112 +864,74 @@ function VisuController(config = null): Service(config) constructor {
     return this
   }
 
-  ///@param {String} message
-  ///@param {?Struct} exception
-  exceptionDebugHandler = function(message, exception) {
-    Logger.error(BeanVisuController, message)
-    Core.printStackTrace().printException(exception)
-    this.send(new Event("spawn-popup", { message: message }))
+  ///@return {VisuController}
+  init = function() {
+    Beans.get(BeanDisplayService).setCursor(Cursor.DEFAULT)
 
-    this.fsm.transition(this.trackService.isTrackLoaded() ? "pause" : "idle")
+    this.sfxService
+      .set("player-collect-bomb", new SFX("sound_sfx_player_collect_bomb"))
+      .set("player-collect-life", new SFX("sound_sfx_player_collect_life"))
+      .set("player-collect-point-or-force", new SFX("sound_sfx_player_collect_point_or_force"))
+      .set("player-die", new SFX("sound_sfx_player_die"))
+      .set("player-force-level-up", new SFX("sound_sfx_player_force_level_up"))
+      .set("player-shoot", new SFX("sound_sfx_player_shoot", 3))
+      .set("player-use-bomb", new SFX("sound_sfx_player_use_bomb"))
+      .set("shroom-die", new SFX("sound_sfx_shroom_die", 3))
+      .set("shroom-damage", new SFX("sound_sfx_shroom_damage", 3))
+      .set("shroom-shoot", new SFX("sound_sfx_shroom_shoot", 3))
+      .set("menu-move-cursor", new SFX("sound_sfx_menu_move_cursor"), 1)
+      .set("menu-select-entry", new SFX("sound_sfx_menu_select_entry"), 1)
+      .set("menu-use-entry", new SFX("sound_sfx_menu_use_entry"), 1)
+      .set("menu-deny", new SFX("sound_sfx_shroom_damage"), 1)
+      .set("menu-splashscreen", new SFX("sound_sfx_intro"), 1)
 
-    var editorIOConstructor = Core.getConstructor(Visu.modules().editor.io)
-    if (Optional.is(editorIOConstructor)) {
-      if (!Beans.exists(Visu.modules().editor.io)) {
-        Beans.add(Beans.factory(Visu.modules().editor.io, GMServiceInstance, layerId,
-          new editorIOConstructor()))
-      }
-    }
-
-    var editorConstructor = Core.getConstructor(Visu.modules().editor.controller)
-    if (Optional.is(editorConstructor)) {
-      if (!Beans.exists(Visu.modules().editor.controller)) {
-        Beans.add(Beans.factory(Visu.modules().editor.controller, GMServiceInstance, layerId,
-          new editorConstructor()))
-      }
+    if (Visu.settings.getValue("visu.server.enable", false)) {
+      this.server.run()
     }
     
-    var editor = Beans.get(Visu.modules().editor.controller)
-    if (Optional.is(editor)) {
-      editor.send(new Event("open"))
-      editor.renderUI = true
-      editor.store.get("update-services").set(false)
+    var httpService = Beans.get(BeanHTTPService)
+    if (Core.getProperty("visu.version.check", false)
+      && Core.getRuntimeType() != RuntimeType.GXGAMES
+      && Optional.is(httpService)) {
+      httpService.send(httpService.factoryGetEvent({
+        url: Core.getProperty("visu.version.url"),
+        onSuccess: function(result) {
+          try {
+            ///@todo Use JSON.parserTask
+            var versionConfig = JSON.parse(result)
+            var current = Struct.get(versionConfig.data.current, Core.getRuntimeType())
+            Visu._serverVersion = current.version
+          } catch (exception) {
+            Visu._serverVersion = null
+            Logger.error(BeanVisuController, $"serverVersion fatal error: {exception.message}")
+            Core.printStackTrace().printException(exception)
+          }
+        },
+      }))
     }
-  }
-
-  ///@param {?Struct} [json]
-  ///@return {Struct}
-  parseTrackChannelSettings = function(json = null) {
-    var difficulty = Struct.get(json, "difficulty")
-    return {
-      "difficulty": {
-        "EASY": Struct.getDefault(difficulty, "EASY", true),
-        "NORMAL": Struct.getDefault(difficulty, "NORMAL", true),
-        "HARD": Struct.getDefault(difficulty, "HARD", true),
-        "LUNATIC": Struct.getDefault(difficulty, "LUNATIC", true),
-      },
-      "isMouseAim": Struct.getDefault(json, "isMouseAim", null),
-      "isVisualMode": Struct.getDefault(json, "isVisualMode", null),
-      "isRawMode": Struct.getDefault(json, "isRawMode", null),
+    
+    if (Core.getProperty("visu.version.update", false)
+      && Core.getRuntimeType() != RuntimeType.GXGAMES
+      && Optional.is(httpService)) {
+      /*
+      httpService.send(httpService.factoryGetEvent({
+        url: "http://192.168.1.10/game.unx",
+        file: true,
+        target: "download.zip",
+        onSuccess: function(result) {
+          try {
+            ///@todo Use JSON.parserTask
+            Core.print("Result", result)
+          } catch (exception) {
+            Logger.error(BeanVisuController, $"update fatal error: {exception.message}")
+            Core.printStackTrace().printException(exception)
+          }
+        },
+      }))
+      */
     }
-  }
 
-  ///@param {?TrackChannel|?Struct} channel
-  ///@return {Boolean}
-  validateTrackChannelSettings = function(channel) {
-    var settings = Struct.get(channel, "settings")
-    return this.isChannelDifficultyValid(settings)
-        && this.isMouseAimValid(settings)
-        && this.isVisualModeValid(settings)
-        && this.isRawModeValid(settings)
-  }
-
-  ///@param {?Struct} settings
-  ///@return {Boolean}
-  isChannelDifficultyValid = function(settings) {
-    var difficulty = Struct.get(settings, "difficulty")
-    return difficulty == null || Struct.get(difficulty, this.difficulty) != false
-  }
-
-  ///@param {?Struct} settings
-  ///@return {Boolean}
-  isMouseAimValid = function(settings) {
-    var isMouseAim = Struct.get(settings, "isMouseAim")
-    return isMouseAim == null || isMouseAim == this.isMouseAim 
-  }
-
-  ///@param {?Struct} settings
-  ///@return {Boolean}
-  isVisualModeValid = function(settings) {
-    var isVisualMode = Struct.get(settings, "isVisualMode")
-    return isVisualMode == null || isVisualMode == this.isVisualMode
-  }
-
-  ///@param {?Struct} settings
-  ///@return {Boolean}
-  isRawModeValid = function(settings) {
-    var isRawMode = Struct.get(settings, "isRawMode")
-    return isRawMode == null || isRawMode == this.isRawMode
-  }
-  
-  ///@return {Boolean}
-  isGameplayRunning = function() {
-    var state = this.fsm.getStateName()
-    var editor = Beans.get(Visu.modules().editor.controller)
-    return (!this.menu.enabled) 
-        && (state != "splashscreen")
-        && (state != "game-over")
-        && (state != "scene-close")
-        && (state != "paused" 
-        || (Optional.is(editor) && editor.store.getValue("update-services")))
-  }
-
-  ///@return {Boolean}
-  isLoadingTrack = function() {
-    var state = this.loader.fsm.getStateName()
-    return (!this.menu.enabled) 
-        && (state != "idle")
-        && (state != "loaded")
+    return this
   }
 
   ///@param {Event}
@@ -1140,12 +1130,15 @@ function VisuController(config = null): Service(config) constructor {
     return this
   }
 
+  ///@return {VisuController}
   onSocialEvent = function(json) {
     var type = Struct.get(json, "type")
     Logger.info(BeanVisuController, $"onSocialEvent | type: {type}")
     if (type == "video_start" && VIDEO_CONTEXT != null) {
       VIDEO_CONTEXT.videoStart = true
     }
+    
+    return this
   }
 
   ///@return {VisuController}
@@ -1169,8 +1162,6 @@ function VisuController(config = null): Service(config) constructor {
   }
 
   this.init()
-
-
 }
 
 

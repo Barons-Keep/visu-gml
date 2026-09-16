@@ -418,7 +418,7 @@ function VisuStateMachine(context, name) {
             var controller = Beans.get(BeanVisuController)
             controller.menu.send(new Event("close"))
             controller.isRawMode = false
-            controller.loader.fsm.transition("clear-state", data.manifest)
+            controller.loader.fsm.transition("clear-visu", data.manifest)
             fsmState.state.set("autoplay", Struct.getIfType(data, "autoplay", Boolean, false))
             fsmState.state.set("isRawMode", Struct.getIfType(data, "isRawMode", Boolean, false))
             

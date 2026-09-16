@@ -2296,8 +2296,8 @@ function GridRenderer() constructor {
       var mouseY = MouseUtil.getMouseY() - layout.y()
       var angle = Math.fetchPointsAngle(this.player3DCoords.x, this.player3DCoords.y, this.target3DCoords.x, this.target3DCoords.y)
       var alpha = player.sprite.getAlpha() * player.fadeIn
-      //draw_sprite_ext(texture_visu_shroom_spawner, 0.0, mouseX, mouseY, 0.06, 0.06, angle, c_black, alpha * 0.6)
-      //draw_sprite_ext(texture_visu_shroom_spawner, 0.0, mouseX, mouseY, 0.05, 0.05, angle, c_white, alpha * 0.6)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, mouseX, mouseY, 0.06, 0.06, angle, c_black, alpha * 0.6)
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, mouseX, mouseY, 0.05, 0.05, angle, c_white, alpha * 0.6)
     }
 
     return this

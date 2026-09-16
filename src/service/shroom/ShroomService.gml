@@ -266,6 +266,69 @@ function ShroomService(config = null): Service(config) constructor {
     }
   }
 
+  static factoryShroom = function(name, spawnX, spawnY, angle, spd, snapH, snapV, lifespan, hp, inherit) {
+    var controller = Beans.get(BeanVisuController)
+    var view = controller.gridService.view
+    var locked = controller.gridService.targetLocked
+    var viewX = snapH ? locked.snapH : view.x
+    var viewY = snapV ? locked.snapV : view.y
+    var template = this.getTemplate(name).serializeSpawn(viewX + spawnX, viewY + spawnY, spd / GRID_ITEM_SPEED_SCALE, angle, controller.gridService.generateUID(), lifespan, hp)
+
+    //var inheritSize = inherit != null ? GMArray.size(inherit) : 0
+    var inheritSize = 0
+    var templateInheritSize = template.inherit != null ? GMArray.size(template.inherit) : 0
+    if (inheritSize + templateInheritSize > 0) {
+      ShroomServiceAcc.names = { }
+      ShroomServiceAcc.service = this
+      ShroomServiceAcc.template = template
+      //ShroomServiceAcc.template.onDamage = GMArray.clone(ShroomServiceAcc.template.onDamage)
+      //ShroomServiceAcc.template.onDeath = GMArray.clone(ShroomServiceAcc.template.onDeath)
+      //ShroomServiceAcc.template.queue = GMArray.clone(ShroomServiceAcc.template.queue)
+      //ShroomServiceAcc.template.features = GMArray.clone(ShroomServiceAcc.template.features)
+      //ShroomServiceAcc.template.inherit = GMArray.clone(ShroomServiceAcc.template.inherit)
+
+      for (var idx = 0; idx < templateInheritSize; idx++) {
+        this.parseInherit(template.inherit[idx], idx, ShroomServiceAcc)
+      }
+
+      for (var idx = 0; idx < inheritSize; idx++) {
+        this.parseInherit(inherit[idx], idx, ShroomServiceAcc)
+      }
+    }
+
+    var shroom = new Shroom(template)
+    return shroom
+  }
+
+  static spawnFactoredShroom = function(shroom, spawnX, spawnY, angle, spd, snapH, snapV) {
+    var controller = Beans.get(BeanVisuController)
+    var view = controller.gridService.view
+    var locked = controller.gridService.targetLocked
+    var viewX = snapH ? locked.snapH : view.x
+    var viewY = snapV ? locked.snapV : view.y
+
+    shroom.x = viewX + spawnX
+    shroom.y = viewY + spawnY
+    shroom.angle = angle
+    shroom.speed = spd / GRID_ITEM_SPEED_SCALE
+    shroom.resetSignals()
+    shroom.signals.kill = null
+    shroom.signals.freeReason = null
+    shroom.chunkPosition = null
+
+    this.statistics.factoryShroom(shroom)
+    var shroomsPoolSize = this.shroomsPool.size()
+    if (shroomsPoolSize > 0) {
+      var idx = this.shroomsPool.container[| shroomsPoolSize - 1]
+      this.shroomsPool.remove(shroomsPoolSize - 1)
+      this.shrooms.container[| idx] = shroom
+    } else {
+      this.shrooms.add(shroom)
+    }
+    
+    this.chunkService.add(shroom)
+  }
+
   static spawnShroom = function(name, spawnX, spawnY, angle, spd, snapH, snapV, lifespan, hp, inherit) {
     var controller = Beans.get(BeanVisuController)
     var view = controller.gridService.view

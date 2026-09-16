@@ -164,7 +164,15 @@ function factoryVisuMenuOpenCreditsEvent(_config = null) {
           },
         }
       }
-    ])
+    ]),
+    init: function() {
+      VISU_MENU_LAYOUT_INIT_LARGE()
+      var controller = Beans.get(BeanVisuController)
+      var content = controller.menu.containers.get("container_visu-menu.content")
+      if (Struct.getIfType(content, "state", Map) != null) {
+        content.state.set("load-step", 3)
+      }
+    },
   })
 
   return event

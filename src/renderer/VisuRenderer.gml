@@ -162,7 +162,7 @@ function VisuRenderer() constructor {
   renderSpinner = function(layout) {
     var controller = Beans.get(BeanVisuController)
     var loaderState = controller.loader.fsm.getStateName()
-    if (loaderState == "clear-state") {
+    if (loaderState == "clear-visu") {
       var color = c_black
       var alpha = clamp(1.0 - (this.spinnerFactor / 100), 0.0, 1.0)
       if (alpha > 0) {
@@ -171,7 +171,7 @@ function VisuRenderer() constructor {
       }
     }
 
-    if (loaderState != "idle" && loaderState != "clear-state" && loaderState != "cooldown" && loaderState != "loaded") {
+    if (loaderState != "idle" && loaderState != "clear-visu" && loaderState != "cooldown" && loaderState != "loaded") {
       //this.spinnerFactor = lerp(this.spinnerFactor, 100.0, 0.08)
       var ease = Ease.get(EaseType.IN_OUT_SINE)
       this.spinnerTime = clamp(this.spinnerTime + 0.016, 0.0, 1.0)

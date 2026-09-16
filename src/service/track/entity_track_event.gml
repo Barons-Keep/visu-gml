@@ -53,8 +53,9 @@ global.__entity_track_event = {
     },
     parse: function(data) {
       var defaultValues = this.defaultValues()
-      return {
+      var parsed = {
         "icon": Struct.parse.sprite(data, "icon"),
+        "shroom": null,
         "en-shr_hide": Struct.parse.boolean(data, "en-shr_hide", defaultValues.get("en-shr_hide")),
         "en-shr_hide-spawn": Struct.parse.boolean(data, "en-shr_hide-spawn", defaultValues.get("en-shr_hide-spawn")),
         "en-shr_hide-inherit": Struct.parse.boolean(data, "en-shr_hide-inherit", defaultValues.get("en-shr_hide-inherit")),
@@ -95,10 +96,66 @@ global.__entity_track_event = {
         "en-shr_em-cfg": Struct.getIfType(data, "en-shr_em-cfg", Struct, defaultValues.get("en-shr_em-cfg")),
         "en-shr_spawn-map": defaultValues.get("en-shr_spawn-map"),
       }
+
+      var factoryShroom = Core.getProperty("visu.manifest.parse-track-event-preload.shroom", false)
+        && !Optional.is(Beans.get(Visu.modules().editor.controller))
+      if (factoryShroom) {
+        var controller = Beans.get(BeanVisuController)
+        var name = Struct.get(parsed, "en-shr_template")
+        var spd = abs(Struct.get(parsed, "en-shr_spd")
+          + (Struct.get(parsed, "en-shr_use-spd-rng")
+            ? (random(Struct.get(parsed, "en-shr_spd-rng") / 2.0)
+              * choose(1.0, -1.0))
+            : 0.01))
+          + (Struct.get(parsed, "en-shr_spd-grid")
+            ? controller.gridService.properties.speed
+            : 0.0)
+        var angle = Math.normalizeAngle(Struct.get(parsed, "en-shr_dir")
+          + (Struct.get(parsed, "en-shr_use-dir-rng")
+            ? (random(Struct.get(parsed, "en-shr_dir-rng") / 2.0)
+            * choose(1.0, -1.0))
+          : 0.0))
+        var spawnX = Struct.get(parsed, "en-shr_x")
+          * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
+          + 0.5
+          + (Struct.get(parsed, "en-shr_use-rng-x")
+            ? (random(Struct.get(parsed, "en-shr_rng-x") / 2.0)
+              * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
+              * choose(1.0, -1.0))
+            : 0.0)
+        var snapH = Struct.getDefault(parsed, "en-shr_snap-x", false)
+        var spawnY = Struct.get(parsed, "en-shr_y")
+          * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
+          - 0.5
+          + (Struct.get(parsed, "en-shr_use-rng-y")
+            ? (random(Struct.get(parsed, "en-shr_rng-y") / 2.0)
+              * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
+              * choose(1.0, -1.0))
+            : 0.0)
+        var snapV = Struct.getDefault(parsed, "en-shr_snap-y", false)
+        var lifespan = Struct.get(parsed, "en-shr_use-lifespan") ? Struct.get(parsed, "en-shr_lifespan") : null
+        var hp = Struct.get(parsed, "en-shr_use-hp") ? Struct.get(parsed, "en-shr_hp") : null
+        var inherit = Struct.get(parsed, "en-shr_use-inherit") ? Struct.get(parsed, "en-shr_inherit") : null
+        var shroom = controller.shroomService.factoryShroom(
+          name,
+          spawnX, 
+          spawnY,
+          angle,
+          spd,
+          snapH,
+          snapV,
+          lifespan,
+          hp,
+          inherit
+        )
+
+        parsed.shroom = shroom
+      }
+      
+      return parsed
     },
     run: function(data, channel) {
       var controller = Beans.get(BeanVisuController)
-      Struct.set(data, "en-shr_texture", Struct.parse.sprite(data, "_en-shr_texture"))
       var spd = abs(Struct.get(data, "en-shr_spd")
         + (Struct.get(data, "en-shr_use-spd-rng")
           ? (random(Struct.get(data, "en-shr_spd-rng") / 2.0)
@@ -134,7 +191,9 @@ global.__entity_track_event = {
       var hp = Struct.get(data, "en-shr_use-hp") ? Struct.get(data, "en-shr_hp") : null
       var inherit = Struct.get(data, "en-shr_use-inherit") ? Struct.get(data, "en-shr_inherit") : null
       var template = Struct.get(data, "en-shr_template")
+      var shroom = Struct.get(data, "shroom")
       if (Struct.get(data, "en-shr_use-em")) {
+        Struct.set(data, "en-shr_texture", Struct.parse.sprite(data, "_en-shr_texture"))
         controller.shroomService.spawnShroomEmitter({
           name: template,
           spawnX: spawnX,
@@ -148,18 +207,33 @@ global.__entity_track_event = {
           inherit: inherit
         }, Struct.get(data, "en-shr_em-cfg"))
       } else {
-        controller.shroomService.spawnShroom(
-          template,
-          spawnX,
-          spawnY,
-          angle,
-          spd,
-          snapH,
-          snapV,
-          lifespan,
-          hp,
-          inherit
-        )
+        if (shroom == null) {
+          Struct.set(data, "en-shr_texture", Struct.parse.sprite(data, "_en-shr_texture"))
+          controller.shroomService.spawnShroom(
+            template,
+            spawnX,
+            spawnY,
+            angle,
+            spd,
+            snapH,
+            snapV,
+            lifespan,
+            hp,
+            inherit
+          )
+        } else { 
+          Struct.set(data, "en-shr_texture", Struct.parse.sprite(data, "_en-shr_texture"))
+          controller.shroomService.spawnFactoredShroom(
+            shroom,
+            spawnX,
+            spawnY,
+            angle,
+            spd,
+            snapH,
+            snapV
+          )
+        }
+        
       }
     },
   },
@@ -447,35 +521,159 @@ global.__entity_track_event = {
             width: 52,
             height: 52
           }),
-          "en-pl_reset-pos": false,
+          "en-pl_reset-pos": true,
           "en-pl_shadow": true,
-          "en-pl_use-stats": true,
+          "en-pl_use-stats": false,
           "en-pl_stats": {
-            force: { value: 0 },
-            point: { value: 0 },
-            bomb: { value: 5 },
-            life: { value: 4 },
+            "life":{
+              "maxValue":10.0,
+              "minValue":0.0,
+              "value":6.0
+            },
+            "point":{
+              "maxValue":9999999.0,
+              "minValue":0.0,
+              "value":0.0
+            },
+            "bomb":{
+              "maxValue":10.0,
+              "minValue":0.0,
+              "value":5.0
+            },
+            "force":{
+              "maxValue": Core.getProperty("visu.player.force.tresholds", new Array(Number, [ 0, 50, 125, 250 ])).getLast(),
+              "minValue":0.0,
+              "value":0.0
+            }
           },
-          "en-pl_use-bullethell": true,
+          "en-pl_use-bullethell": false,
           "en-pl_bullethell": {
-            x: {
-              friction: 9.3,
-              acceleration: 1.92,
-              speedMax: 2.1,
+            "x": {
+              "friction": 20.0,
+              "acceleration": 2.0,
+              "speedMax": 1.6,
             },
-            y: {
-              friction: 9.3,
-              acceleration: 1.92,
-              speedMax: 2.1,
+            "y": {
+              "friction": 20.0,
+              "acceleration": 2.0,
+              "speedMax": 1.6,
             },
-            guns: [
+            "guns":[
               {
-                angle:  90,
-                bullet: "bullet-default",
-                cooldown: 8.0,
-                offsetX:  0.0,
-                offsetY:  0.0,
-                speed:  10.0,
+                "offsetX":-240.0,
+                "offsetY":300.0,
+                "speed":50.0,
+                "cooldown":13.6,
+                "bullet":"bullet-player",
+                "focus":false,
+                "angle":90.0
+              },
+              {
+                "offsetX":140.0,
+                "offsetY":300.0,
+                "speed":75.0,
+                "cooldown":10.6,
+                "bullet":"bullet-player",
+                "focus":true,
+                "angle":90.0
+              },
+              {
+                "offsetX":-140.0,
+                "offsetY":300.0,
+                "speed":75.0,
+                "cooldown":10.6,
+                "bullet":"bullet-player",
+                "focus":true,
+                "angle":90.0
+              },
+              {
+                "offsetX":240.0,
+                "offsetY":300.0,
+                "speed":50.0,
+                "cooldown":13.6,
+                "bullet":"bullet-player",
+                "focus":false,
+                "angle":90.0
+              },
+              {
+                "minForce":1.0,
+                "offsetX":-180.0,
+                "offsetY":300.0,
+                "speed":60.0,
+                "cooldown":13.6,
+                "bullet":"bullet-player-l",
+                "focus":false,
+                "angle":120.0
+              },
+              {
+                "minForce":1.0,
+                "offsetX":200.0,
+                "offsetY":300.0,
+                "speed":60.0,
+                "cooldown":13.6,
+                "bullet":"bullet-player-r",
+                "focus":false,
+                "angle":60.0
+              },
+              {
+                "minForce":1.0,
+                "offsetX":160.0,
+                "offsetY":300.0,
+                "speed":75.0,
+                "cooldown":10.6,
+                "bullet":"bullet-player",
+                "focus":true,
+                "angle":80.0
+              },
+              {
+                "minForce":1.0,
+                "offsetX":-160.0,
+                "offsetY":300.0,
+                "speed":75.0,
+                "cooldown":10.6,
+                "bullet":"bullet-player",
+                "focus":true,
+                "angle":100.0
+              },
+              {
+                "minForce":2.0,
+                "offsetX":-180.0,
+                "offsetY":300.0,
+                "speed":60.0,
+                "cooldown":13.6,
+                "bullet":"bullet-player-l",
+                "focus":false,
+                "angle":105.0
+              },
+              {
+                "minForce":2.0,
+                "offsetX":200.0,
+                "offsetY":300.0,
+                "speed":60.0,
+                "cooldown":13.6,
+                "bullet":"bullet-player-r",
+                "focus":false,
+                "angle":75.0
+              },
+              {
+                "minForce":2.0,
+                "offsetX":160.0,
+                "offsetY":300.0,
+                "speed":75.0,
+                "cooldown":10.6,
+                "bullet":"bullet-player",
+                "focus":true,
+                "angle":85.0
+              },
+              {
+                "minForce":2.0,
+                "offsetX":-160.0,
+                "offsetY":300.0,
+                "speed":75.0,
+                "cooldown":10.6,
+                "bullet":"bullet-player",
+                "focus":true,
+                "angle":95.0
               }
             ]
           },
@@ -515,10 +713,10 @@ global.__entity_track_event = {
           ? Struct.get(data, "en-pl_reset-pos")
           : false,
         "stats": Struct.get(data, "en-pl_use-stats")
-          ? Struct.get(data, "en-pl_stats")
+          ? JSON.clone(Struct.get(data, "en-pl_stats"))
           : null,
         "handler": Struct.get(data, "en-pl_use-bullethell")
-          ? Struct.get(data, "en-pl_bullethell")
+          ? JSON.clone(Struct.get(data, "en-pl_bullethell"))
           : null,
       }))
 

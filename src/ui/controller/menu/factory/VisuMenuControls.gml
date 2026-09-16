@@ -35,6 +35,7 @@ function factoryVisuMenuOpenControlsEvent(_config = null) {
             font: "font_kodeo_mono_28_bold",
             colorHoverOut: VisuTheme.color.accentShadow,
           },
+          isCursor: false,
         },
       },
       {
@@ -97,6 +98,7 @@ function factoryVisuMenuOpenControlsEvent(_config = null) {
             },
             colorHoverOut: VisuTheme.color.accentShadow,
           },
+          isCursor: false,
         },
       },
       {
@@ -249,7 +251,8 @@ function factoryVisuMenuOpenControlsEvent(_config = null) {
           },
         }
       }
-    ])
+    ]),
+    init: VISU_MENU_LAYOUT_INIT_LARGE,
   })
 
   return event

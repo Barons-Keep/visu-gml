@@ -329,7 +329,7 @@ function Bullet(template): GridItem(template) constructor {
   wiggleDirRng = template.wiggleDirRng
 
   ///@type {Number}
-  this.wiggleFrequency = template.wiggleFrequency
+  wiggleFrequency = template.wiggleFrequency
     * (this.wiggleDirRng ? choose(1.0, -1.0) : 1.0)
 
   ///@type {Number}

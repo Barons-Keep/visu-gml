@@ -259,6 +259,7 @@ function factoryVisuMenuOpenTrackSetupEvent(_config = null) {
         }
       }
     ]),
+    init: VISU_MENU_LAYOUT_INIT,
     back: (config.node != null 
       ? controller.menu.factories.get("menu-node")
       : controller.menu.factories.get("menu-main")),

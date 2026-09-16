@@ -572,7 +572,8 @@ function factoryVisuMenuOpenDeveloperEvent(_config = null) {
           },
         }
       }
-    ])
+    ]),
+    init: VISU_MENU_LAYOUT_INIT_LARGE,
   })
 
   var editorConstructor = Core.getConstructor("VisuEditorController")

@@ -16,7 +16,8 @@ function VisuTrackLoader(config = null): Service(config) constructor {
   utils = {
     addTask: function(task, executor) {
       executor.add(task)
-      return Assert.isType(task.promise, Promise)
+      return Assert.isType(task.promise, Promise,
+        $"Task '{task.name}' promise must be type of Promise")
     },
     filterPromise: function(promise, name) {
       if (!promise.isReady()) {
@@ -46,18 +47,14 @@ function VisuTrackLoader(config = null): Service(config) constructor {
             if (Optional.is(editor)) {
               editor.send(new Event("open"))
             }
-            
-            if (Core.isType(data, String)) {
-              Logger.info("VisuTrackLoader", $"FSM::onStart(idle): '{data}'")
-            }
           },
         },
         transitions: { 
           "idle": null,
-          "clear-state": null,
+          "clear-visu": null,
         },
       },
-      "clear-state": {
+      "clear-visu": {
         actions: {
           onStart: function(fsm, fsmState, path) {
             Beans.get(BeanVisuController).visuRenderer.gridRenderer.pathTrack = null
@@ -96,7 +93,7 @@ function VisuTrackLoader(config = null): Service(config) constructor {
               },
               function() { draw_texture_flush() }
             ]))
-            //printFPS($"clear-state::onStart")
+            //printFPS($"clear-visu::onStart")
           }
         },
         update: function(fsm) {
@@ -107,7 +104,7 @@ function VisuTrackLoader(config = null): Service(config) constructor {
             }
 
             var clearQueue = this.state.get("clearQueue")
-            //printFPS($"clear-state::update, clearQueue.size(): {clearQueue.size()}")
+            //printFPS($"clear-visu::update, clearQueue.size(): {clearQueue.size()}")
             if (clearQueue.size() == 0) {
               var data = this.state.get("path")
               var stateName = Core.isType(data, String) ? "parse-manifest" : "idle"
@@ -117,7 +114,7 @@ function VisuTrackLoader(config = null): Service(config) constructor {
               clearQueue.forEach(Callable.run)
             }
           } catch (exception) {
-            var message = $"'clear-state' fatal error: {exception.message}"
+            var message = $"'clear-visu' fatal error: {exception.message}"
             Logger.error("VisuTrackLoader", message)
             Core.printStackTrace().printException(exception)
             fsm.transition("idle")
@@ -180,7 +177,7 @@ function VisuTrackLoader(config = null): Service(config) constructor {
               return
             }
             
-            fsm.transition("create-parser-tasks", {
+            fsm.transition("parse-tasks", {
               path: Assert.isType(promise.response.path, String),
               manifest: Assert.isType(promise.response.manifest, VisuTrack),
             })
@@ -194,10 +191,10 @@ function VisuTrackLoader(config = null): Service(config) constructor {
         },
         transitions: { 
           "idle": null, 
-          "create-parser-tasks": null,
+          "parse-tasks": null,
         },
       },
-      "create-parser-tasks": {
+      "parse-tasks": {
         actions: {
           onStart: function(fsm, fsmState, data) {
             var controller = Beans.get(BeanVisuController)
@@ -521,11 +518,11 @@ function VisuTrackLoader(config = null): Service(config) constructor {
               })
             }
 
-            //printFPS($"create-parser-tasks::onStart")
+            //printFPS($"parse-tasks::onStart")
           },
         },
         update: function(fsm) {
-          //printFPS($"create-parser-tasks::update")
+          //printFPS($"parse-tasks::update")
           try {
             var promises = this.state.get("promises")
             var events = this.state.get("events")
@@ -557,12 +554,12 @@ function VisuTrackLoader(config = null): Service(config) constructor {
                 "audioGroupPromise value must be equal to PromiseStatus.FULLFILLED")
             }
 
-            fsm.transition("parse-primary-assets", {
+            fsm.transition("parse-video", {
               video: this.state.get("video"),
               tasks: filtered.map(fsm.context.utils.mapPromiseToTask, null, String, Task),
             })
           } catch (exception) {
-            var message = $"'create-parser-tasks' fatal error: {exception.message}"
+            var message = $"'parse-tasks' fatal error: {exception.message}"
             Logger.error("VisuTrackLoader", message)
             Core.printStackTrace().printException(exception)
             fsm.transition("idle")
@@ -571,63 +568,7 @@ function VisuTrackLoader(config = null): Service(config) constructor {
         },
         transitions: {
           "idle": null, 
-          "parse-primary-assets": null,
-        },
-      },
-      "parse-primary-assets": {
-        actions: {
-          onStart: function(fsm, fsmState, acc) { 
-            var addTask = fsm.context.utils.addTask
-            var executor = fsm.context.executor
-            var video = acc.video
-            var tasks = acc.tasks
-            fsmState.state
-              .set("video", video)
-              .set("tasks", tasks)
-              .set("parsePrimaryCooldown", new Timer(Core.getProperty("visu.manifest.parse-cooldown", 0.0)))
-              .set("promises", new Map(String, Promise, {
-                "texture": addTask(tasks.get("texture"), executor),
-                "sound": addTask(tasks.get("sound"), executor),
-                "shader": addTask(tasks.get("shader"), executor),
-              }))
-            //printFPS($"parse-primary-assets::onStart")
-          },
-        },
-        update: function(fsm) {
-          //printFPS($"parse-primary-assets::update")
-          try {
-            var promises = this.state.get("promises")
-            var filtered = promises.filter(fsm.context.utils.filterPromise)
-            if (filtered.size() != promises.size()) {
-              return
-            }
-
-            var texturePromises = this.state.get("tasks").get("texture").state.get("acc").promises
-            var filteredTextures = texturePromises.filter(fsm.context.utils.filterPromise)
-            if (filteredTextures.size() != texturePromises.size()) {
-              return
-            }
-
-            if (!this.state.get("parsePrimaryCooldown").update().finished) {
-              return
-            }
-
-            fsm.transition("parse-video", {
-              video: this.state.get("video"),
-              tasks: Assert.isType(this.state.get("tasks"), Map),
-            })
-          } catch (exception) {
-            var message = $"'parse-primary-assets' fatal error: {exception.message}"
-            Logger.error("VisuTrackLoader", message)
-            Core.printStackTrace().printException(exception)
-            fsm.transition("idle")
-            Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
-          }
-        },
-        transitions: {
-          "idle": null,
           "parse-video": null,
-          "parse-secondary-assets": null,
         },
       },
       "parse-video": {
@@ -636,9 +577,7 @@ function VisuTrackLoader(config = null): Service(config) constructor {
             var addTask = fsm.context.utils.addTask
             var executor = fsm.context.executor
             var promises = new Map(String, Promise)
-
             fsmState.state.set("tasks", acc.tasks).set("promises", promises)
-
             if (Core.isType(acc.video, Event)) {
               fsmState.state
                 .get("promises")
@@ -656,7 +595,7 @@ function VisuTrackLoader(config = null): Service(config) constructor {
               return
             }
 
-            fsm.transition("parse-secondary-assets", this.state.get("tasks"))
+            fsm.transition("parse-texture", this.state.get("tasks"))
           } catch (exception) {
             var message = $"'parse-video' fatal error: {exception.message}"
             Logger.error("VisuTrackLoader", message)
@@ -667,20 +606,383 @@ function VisuTrackLoader(config = null): Service(config) constructor {
         },
         transitions: {
           "idle": null, 
-          "parse-secondary-assets": null,
+          "parse-texture": null,
         },
       },
-      "parse-secondary-assets": {
+      "parse-texture": {
+        actions: {
+          onStart: function(fsm, fsmState, tasks) { 
+            var addTask = fsm.context.utils.addTask
+            var executor = fsm.context.executor
+            fsmState.state.set("tasks", tasks).set("promises", new Map(String, Promise, {
+              "texture": addTask(tasks.get("texture"), executor),
+            }))
+            //printFPS($"parse-texture::onStart")
+          },
+        },
+        update: function(fsm) {
+          //printFPS($"parse-texture::update")
+          try {
+            var promises = this.state.get("promises")
+            var filtered = promises.filter(fsm.context.utils.filterPromise)
+            if (filtered.size() != promises.size()) {
+              return
+            }
+
+            var texturePromises = this.state.get("tasks").get("texture").state.get("acc").promises
+            var filteredTextures = texturePromises.filter(fsm.context.utils.filterPromise)
+            if (filteredTextures.size() != texturePromises.size()) {
+              return
+            }
+
+
+            fsm.transition("parse-shader", this.state.get("tasks"))
+          } catch (exception) {
+            var message = $"'parse-texture' fatal error: {exception.message}"
+            Logger.error("VisuTrackLoader", message)
+            Core.printStackTrace().printException(exception)
+            fsm.transition("idle")
+            Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
+          }
+        },
+        transitions: {
+          "idle": null,
+          "parse-shader": null,
+        },
+      },
+      "parse-shader": {
+        actions: {
+          onStart: function(fsm, fsmState, tasks) { 
+            var addTask = fsm.context.utils.addTask
+            var executor = fsm.context.executor
+            fsmState.state.set("tasks", tasks).set("promises", new Map(String, Promise, {
+              "shader": addTask(tasks.get("shader"), executor),
+            }))
+            //printFPS($"parse-shader::onStart")
+          },
+        },
+        update: function(fsm) {
+          //printFPS($"parse-shader::update")
+          try {
+            var promises = this.state.get("promises")
+            var filtered = promises.filter(fsm.context.utils.filterPromise)
+            if (filtered.size() != promises.size()) {
+              return
+            }
+
+            fsm.transition("parse-sound", this.state.get("tasks"))
+          } catch (exception) {
+            var message = $"'parse-shader' fatal error: {exception.message}"
+            Logger.error("VisuTrackLoader", message)
+            Core.printStackTrace().printException(exception)
+            fsm.transition("idle")
+            Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
+          }
+        },
+        transitions: {
+          "idle": null,
+          "parse-sound": null,
+        },
+      },
+      "parse-sound": {
+        actions: {
+          onStart: function(fsm, fsmState, tasks) { 
+            var addTask = fsm.context.utils.addTask
+            var executor = fsm.context.executor
+            fsmState.state.set("tasks", tasks).set("promises", new Map(String, Promise, {
+              "sound": addTask(tasks.get("sound"), executor),
+            }))
+            //printFPS($"parse-sound::onStart")
+          },
+        },
+        update: function(fsm) {
+          //printFPS($"parse-sound::update")
+          try {
+            var promises = this.state.get("promises")
+            var filtered = promises.filter(fsm.context.utils.filterPromise)
+            if (filtered.size() != promises.size()) {
+              return
+            }
+
+            fsm.transition("parse-particle", this.state.get("tasks"))
+          } catch (exception) {
+            var message = $"'parse-sound' fatal error: {exception.message}"
+            Logger.error("VisuTrackLoader", message)
+            Core.printStackTrace().printException(exception)
+            fsm.transition("idle")
+            Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
+          }
+        },
+        transitions: {
+          "idle": null,
+          "parse-particle": null,
+        },
+      },
+      "parse-particle": {
+        actions: {
+          onStart: function(fsm, fsmState, tasks) { 
+            var addTask = fsm.context.utils.addTask
+            var executor = fsm.context.executor
+            var promises = new Map(String, Promise, {
+              "particle": addTask(tasks.get("particle"), executor),
+            })
+
+            tasks.forEach(function(task, key, acc) { 
+              if (String.contains(key, ".json")) {
+                acc.promises.add(acc.addTask(task, acc.executor), key)
+              }
+            }, { addTask: addTask, executor: executor, promises: promises })
+            
+            fsmState.state.set("tasks", tasks).set("promises", promises)
+            //printFPS($"parse-particle::onStart")
+          },
+        },
+        update: function(fsm) {
+          //printFPS($"parse-particle::update")
+          try {
+            var controller = Beans.get(BeanVisuController)
+            var promises = this.state.get("promises")
+            var filtered = promises.filter(fsm.context.utils.filterPromise)
+            if (filtered.size() != promises.size()) {
+              return
+            }
+
+            fsm.transition("parse-coin", this.state.get("tasks"))
+          } catch (exception) {
+            var message = $"'parse-particle' fatal error: {exception.message}"
+            Logger.error("VisuTrackLoader", message)
+            Core.printStackTrace().printException(exception)
+            fsm.transition("idle")
+            Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
+          }
+        },
+        transitions: {
+          "idle": null, 
+          "parse-coin": null,
+        },
+      },
+      "parse-coin": {
+        actions: {
+          onStart: function(fsm, fsmState, tasks) { 
+            var addTask = fsm.context.utils.addTask
+            var executor = fsm.context.executor
+            var promises = new Map(String, Promise, {
+              "coin": addTask(tasks.get("coin"), executor),
+            })
+
+            tasks.forEach(function(task, key, acc) { 
+              if (String.contains(key, ".json")) {
+                acc.promises.add(acc.addTask(task, acc.executor), key)
+              }
+            }, { addTask: addTask, executor: executor, promises: promises })
+            
+            fsmState.state.set("tasks", tasks).set("promises", promises)
+            //printFPS($"parse-coin::onStart")
+          },
+        },
+        update: function(fsm) {
+          //printFPS($"parse-coin::update")
+          try {
+            var controller = Beans.get(BeanVisuController)
+            var promises = this.state.get("promises")
+            var filtered = promises.filter(fsm.context.utils.filterPromise)
+            if (filtered.size() != promises.size()) {
+              return
+            }
+
+            fsm.transition("parse-bullet", this.state.get("tasks"))
+          } catch (exception) {
+            var message = $"'parse-coin' fatal error: {exception.message}"
+            Logger.error("VisuTrackLoader", message)
+            Core.printStackTrace().printException(exception)
+            fsm.transition("idle")
+            Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
+          }
+        },
+        transitions: {
+          "idle": null, 
+          "parse-bullet": null,
+        },
+      },
+      "parse-bullet": {
         actions: {
           onStart: function(fsm, fsmState, tasks) { 
             var addTask = fsm.context.utils.addTask
             var executor = fsm.context.executor
             var promises = new Map(String, Promise, {
               "bullet": addTask(tasks.get("bullet"), executor),
-              "coin": addTask(tasks.get("coin"), executor),
-              "subtitle": addTask(tasks.get("subtitle"), executor),
-              "particle": addTask(tasks.get("particle"), executor),
+            })
+
+            tasks.forEach(function(task, key, acc) { 
+              if (String.contains(key, ".json")) {
+                acc.promises.add(acc.addTask(task, acc.executor), key)
+              }
+            }, { addTask: addTask, executor: executor, promises: promises })
+            
+            fsmState.state.set("tasks", tasks).set("promises", promises)
+            //printFPS($"parse-bullet::onStart")
+          },
+        },
+        update: function(fsm) {
+          //printFPS($"parse-bullet-assets::update")
+          try {
+            var controller = Beans.get(BeanVisuController)
+            var promises = this.state.get("promises")
+            var filtered = promises.filter(fsm.context.utils.filterPromise)
+            if (filtered.size() != promises.size()) {
+              return
+            }
+
+            fsm.transition("parse-shroom", this.state.get("tasks"))
+          } catch (exception) {
+            var message = $"'parse-bullet' fatal error: {exception.message}"
+            Logger.error("VisuTrackLoader", message)
+            Core.printStackTrace().printException(exception)
+            fsm.transition("idle")
+            Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
+          }
+        },
+        transitions: {
+          "idle": null, 
+          "parse-shroom": null,
+        },
+      },
+      "parse-shroom": {
+        actions: {
+          onStart: function(fsm, fsmState, tasks) { 
+            var addTask = fsm.context.utils.addTask
+            var executor = fsm.context.executor
+            var promises = new Map(String, Promise, {
               "shroom": addTask(tasks.get("shroom"), executor),
+            })
+
+            tasks.forEach(function(task, key, acc) { 
+              if (String.contains(key, ".json")) {
+                acc.promises.add(acc.addTask(task, acc.executor), key)
+              }
+            }, { addTask: addTask, executor: executor, promises: promises })
+            
+            fsmState.state.set("tasks", tasks).set("promises", promises)
+            //printFPS($"parse-shroom::onStart")
+          },
+        },
+        update: function(fsm) {
+          //printFPS($"parse-shroom::update")
+          try {
+            var controller = Beans.get(BeanVisuController)
+            var promises = this.state.get("promises")
+            var filtered = promises.filter(fsm.context.utils.filterPromise)
+            if (filtered.size() != promises.size()) {
+              return
+            }
+
+            fsm.transition("parse-subtitle", this.state.get("tasks"))
+          } catch (exception) {
+            var message = $"'parse-shroom' fatal error: {exception.message}"
+            Logger.error("VisuTrackLoader", message)
+            Core.printStackTrace().printException(exception)
+            fsm.transition("idle")
+            Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
+          }
+        },
+        transitions: {
+          "idle": null, 
+          "parse-subtitle": null,
+        },
+      },
+      "parse-subtitle": {
+        actions: {
+          onStart: function(fsm, fsmState, tasks) { 
+            var addTask = fsm.context.utils.addTask
+            var executor = fsm.context.executor
+            var promises = new Map(String, Promise, {
+              "subtitle": addTask(tasks.get("subtitle"), executor),
+            })
+
+            tasks.forEach(function(task, key, acc) { 
+              if (String.contains(key, ".json")) {
+                acc.promises.add(acc.addTask(task, acc.executor), key)
+              }
+            }, { addTask: addTask, executor: executor, promises: promises })
+            
+            fsmState.state.set("tasks", tasks).set("promises", promises)
+            //printFPS($"parse-subtitle::onStart")
+          },
+        },
+        update: function(fsm) {
+          //printFPS($"parse-subtitle::update")
+          try {
+            var controller = Beans.get(BeanVisuController)
+            var promises = this.state.get("promises")
+            var filtered = promises.filter(fsm.context.utils.filterPromise)
+            if (filtered.size() != promises.size()) {
+              return
+            }
+
+            fsm.transition("parse-shroom-template", this.state.get("tasks"))
+          } catch (exception) {
+            var message = $"'parse-subtitle' fatal error: {exception.message}"
+            Logger.error("VisuTrackLoader", message)
+            Core.printStackTrace().printException(exception)
+            fsm.transition("idle")
+            Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
+          }
+        },
+        transitions: {
+          "idle": null, 
+          "parse-shroom-template": null,
+        },
+      },
+      "parse-shroom-template": {
+        actions: {
+          onStart: function(fsm, fsmState, tasks) { 
+            var addTask = fsm.context.utils.addTask
+            var executor = fsm.context.executor
+            fsmState.state.set("tasks", tasks)
+
+            var controller = Beans.get(BeanVisuController)
+            var shroomService = controller.shroomService
+            var shroomTemplates = new Stack(ShroomTemplate)
+            if (!Optional.is(Beans.get(Visu.modules().editor.controller))) {
+              Logger.info("VisuTrackLoader", $"Resolve shroom template inheritance")
+              shroomService.templates.forEach(function(template, key, templates) {
+                templates.push(template)
+              }, shroomTemplates)
+            }       
+            fsmState.state.set("shroom-templates", shroomTemplates)
+          },
+        },
+        update: function(fsm) {
+          //printFPS($"parse-video::update")
+          try {
+            var shroomTemplates = this.state.get("shroom-templates")
+            if (shroomTemplates.size() > 0) {
+              var shroomTemplate = shroomTemplates.pop()
+              Beans.get(BeanVisuController).shroomService
+                .resolveShroomTemplateInheritance(shroomTemplate)
+              return
+            }
+
+            fsm.transition("parse-track", this.state.get("tasks"))
+          } catch (exception) {
+            var message = $"'parse-track' fatal error: {exception.message}"
+            Logger.error("VisuTrackLoader", message)
+            Core.printStackTrace().printException(exception)
+            fsm.transition("idle")
+            Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
+          }
+        },
+        transitions: {
+          "idle": null, 
+          "parse-track": null,
+        },
+      },
+      "parse-track": {
+        actions: {
+          onStart: function(fsm, fsmState, tasks) { 
+            var addTask = fsm.context.utils.addTask
+            var executor = fsm.context.executor
+            var promises = new Map(String, Promise, {
               "track": addTask(tasks.get("track"), executor),
             })
 
@@ -691,11 +993,9 @@ function VisuTrackLoader(config = null): Service(config) constructor {
             }, { addTask: addTask, executor: executor, promises: promises })
             
             fsmState.state.set("tasks", tasks).set("promises", promises)
-            //printFPS($"parse-secondary-assets::onStart")
           },
         },
         update: function(fsm) {
-          //printFPS($"parse-secondary-assets::update")
           try {
             var promises = this.state.get("promises")
             var filtered = promises.filter(fsm.context.utils.filterPromise)
@@ -706,7 +1006,7 @@ function VisuTrackLoader(config = null): Service(config) constructor {
             var controller = Beans.get(BeanVisuController)
             if (controller.trackService.track == null) {
               Assert.isTrue(controller.trackService.executor.tasks.size() > 0,
-                "parse-secondary-assets TrackService.executor.tasks.size() must be > 0")
+                "parse-track TrackService.executor.tasks.size() must be > 0")
               return
             }
 
@@ -723,7 +1023,7 @@ function VisuTrackLoader(config = null): Service(config) constructor {
             audio.pause()
             fsm.transition("cooldown")
           } catch (exception) {
-            var message = $"'parse-secondary-assets' fatal error: {exception.message}"
+            var message = $"'parse-track' fatal error: {exception.message}"
             Logger.error("VisuTrackLoader", message)
             Core.printStackTrace().printException(exception)
             fsm.transition("idle")
@@ -904,19 +1204,6 @@ function VisuTrackLoader(config = null): Service(config) constructor {
                 ease: EaseType.LINEAR,
               })
             }))
-
-            var shroomService = controller.shroomService
-            var shroomTemplates = new Stack(ShroomTemplate)
-            var editorControllerConstructor = Core.getConstructor(Visu.modules().editor.controller)
-            if (!Optional.is(editorControllerConstructor)
-                || !Optional.is(Beans.get(Visu.modules().editor.controller))) {
-              Logger.info("VisuTrackLoader", $"Resolve shroom template inheritance")
-              shroomService.templates.forEach(function(template, key, templates) {
-                templates.push(template)
-              }, shroomTemplates)
-            }
-            
-            fsmState.state.set("shroom-templates", shroomTemplates)
           },
         },
         update: function(fsm) {
@@ -927,14 +1214,6 @@ function VisuTrackLoader(config = null): Service(config) constructor {
             }
             Assert.isTrue(textureLoadTask.promise.status != PromiseStatus.REJECTED,
               "textureLoadTask.promise.status must be fullfilled")
-            
-            var shroomTemplates = this.state.get("shroom-templates")
-            if (shroomTemplates.size() > 0) {
-              var shroomTemplate = shroomTemplates.pop()
-              Beans.get(BeanVisuController).shroomService
-                .resolveShroomTemplateInheritance(shroomTemplate)
-              return
-            }
 
             var timer = this.state.get("cooldown-timer")
             var editorIO = Beans.get(Visu.modules().editor.io)
@@ -988,7 +1267,7 @@ function VisuTrackLoader(config = null): Service(config) constructor {
         },
         transitions: {
           "idle": null,
-          "clear-state": null,
+          "clear-visu": null,
         },
       }
     }
@@ -1010,6 +1289,7 @@ function VisuTrackLoader(config = null): Service(config) constructor {
     }
   })
 
+  ///@override
   ///@return {FSM}
   update = function() {
     var deltaTime = DELTA_TIME
@@ -1020,6 +1300,7 @@ function VisuTrackLoader(config = null): Service(config) constructor {
     return this
   }
 
+  ///@override
   ///@return {TaskExecutor}
   free = function() {
     this.executor.free()

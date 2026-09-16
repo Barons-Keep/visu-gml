@@ -140,7 +140,8 @@ function factoryVisuMenuOpenStoryEvent(_config = null) {
           },
         }
       }
-    ])
+    ]),
+    init: VISU_MENU_LAYOUT_INIT_RESET,
   })
 
   return event

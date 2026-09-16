@@ -14,6 +14,44 @@ show_debug_message("init VisuMenu.gml")
 #macro EMPTY_STRING ""
 
 
+///@type {Struct}
+global.__VISU_MENU_LAYOUT = {
+  MARGIN_FACTOR: 4,
+  MAX_MARGIN_WIDTH: 240,
+  WIDTH_FACTOR: 0.3,
+  MIN_WIDTH: 480,
+  MAX_WIDTH: 700,
+  reset: function() {
+    VISU_MENU_LAYOUT.MARGIN_FACTOR = 4
+    VISU_MENU_LAYOUT.MAX_MARGIN_WIDTH = 240
+    VISU_MENU_LAYOUT.WIDTH_FACTOR = 0.3
+    VISU_MENU_LAYOUT.MIN_WIDTH = 480
+    VISU_MENU_LAYOUT.MAX_WIDTH = 700
+    return VISU_MENU_LAYOUT
+  },
+}
+#macro VISU_MENU_LAYOUT global.__VISU_MENU_LAYOUT
+
+function VISU_MENU_LAYOUT_INIT_LARGE() {
+  var width = GuiWidth()
+  VISU_MENU_LAYOUT.WIDTH_FACTOR = 0.6
+  VISU_MENU_LAYOUT.MARGIN_FACTOR = 2
+  VISU_MENU_LAYOUT.MAX_MARGIN_WIDTH = width * (1.0 - VISU_MENU_LAYOUT.WIDTH_FACTOR) / VISU_MENU_LAYOUT.MARGIN_FACTOR
+  VISU_MENU_LAYOUT.MAX_WIDTH = width * VISU_MENU_LAYOUT.WIDTH_FACTOR
+}
+
+function VISU_MENU_LAYOUT_INIT() {
+  var width = GuiWidth()
+  VISU_MENU_LAYOUT.WIDTH_FACTOR = 0.3
+  VISU_MENU_LAYOUT.MARGIN_FACTOR = 2
+  VISU_MENU_LAYOUT.MAX_MARGIN_WIDTH = width * (1.0 - VISU_MENU_LAYOUT.WIDTH_FACTOR) / VISU_MENU_LAYOUT.MARGIN_FACTOR
+  VISU_MENU_LAYOUT.MAX_WIDTH = max(width * VISU_MENU_LAYOUT.WIDTH_FACTOR, 700)
+}
+
+function VISU_MENU_LAYOUT_INIT_RESET() {
+  VISU_MENU_LAYOUT.reset()
+}
+
 ///@enum
 function _VisuMenuEntryEventType(): Enum() constructor {
   OPEN_NODE = "open-node"
@@ -515,6 +553,7 @@ function factoryMenuButtonEntryTitle(index, text) {
         font: "font_kodeo_mono_28_bold",
         colorHoverOut: VisuTheme.color.accentShadow,
       },
+      isCursor: false,
     }
   }
 }
@@ -544,6 +583,67 @@ function VisuMenuEntry(json) constructor {
   event = new VisuMenuEntryEvent(json.event)
 }
 
+function __VisuMenuGetPointerUp(context, _pointer) {
+  var pointer = _pointer
+  if (!Core.isType(pointer, Number)) {
+    pointer = 0
+  } else {
+    pointer = clamp(
+      (pointer == 0 ? context.collection.size() - 1 : pointer - 1), 
+      0, 
+      (context.collection.size() - 1 >= 0 ? context.collection.size() - 1 : 0)
+    )
+  }
+
+  var acc = {
+    isCursor: true,
+    pointer: pointer,
+  }
+  context.collection.components.forEach(function(component, iterator, acc) {
+    if (!acc.isCursor) {
+      return
+    }
+
+    if (component.index == acc.pointer) {
+      acc.isCursor = Struct.getIfType(component.config, "isCursor", Boolean, acc.isCursor)
+    }
+  }, acc)
+
+  acc.isCursor = acc.isCursor || pointer == context.collection.size() - 1 || pointer == 0
+
+  return acc.isCursor ? pointer : __VisuMenuGetPointerUp(context, pointer)
+}
+
+function __VisuMenuGetPointerDown(context, _pointer) {
+  var pointer = _pointer
+  if (!Core.isType(pointer, Number)) {
+    pointer = 0
+  } else {
+    pointer = clamp(
+      (pointer == context.collection.size() - 1 ? 0 : pointer + 1), 
+      0, 
+      (context.collection.size() - 1 >= 0 ? context.collection.size() - 1 : 0)
+    )
+  }
+
+  var acc = {
+    isCursor: true,
+    pointer: pointer,
+  }
+  context.collection.components.forEach(function(component, iterator, acc) {
+    if (!acc.isCursor) {
+      return
+    }
+
+    if (component.index == acc.pointer) {
+      acc.isCursor = Struct.getIfType(component.config, "isCursor", Boolean, acc.isCursor)
+    }
+  }, acc)
+
+  acc.isCursor = acc.isCursor || pointer == context.collection.size() - 1 || pointer == 0
+
+  return acc.isCursor ? pointer : __VisuMenuGetPointerDown(context, pointer)
+}
 
 ///@param {?Struct} [_config]
 function VisuMenu(_config = null) constructor {
@@ -639,9 +739,9 @@ function VisuMenu(_config = null) constructor {
         nodes: {
           "visu-menu.title": {
             name: "visu-menu.title",
-            x: function() { return this.context.x() + min((this.context.width() - this.width() ) / 4.0, 240.0) },
+            x: function() { return this.context.x() + min((this.context.width() - this.width() ) / VISU_MENU_LAYOUT.MARGIN_FACTOR, VISU_MENU_LAYOUT.MAX_MARGIN_WIDTH) },
             y: function() { return this.context.y() },
-            width: function() { return clamp(this.context.width() * 0.3, 480, 700) },
+            width: function() { return clamp(this.context.width() * VISU_MENU_LAYOUT.WIDTH_FACTOR, VISU_MENU_LAYOUT.MIN_WIDTH, VISU_MENU_LAYOUT.MAX_WIDTH) },
             height: function() { 
               var minFooterHeight = 48
               var minTitleHeight = 208
@@ -658,10 +758,9 @@ function VisuMenu(_config = null) constructor {
           },
           "visu-menu.content": {
             name: "visu-menu.content",
-            x: function() { return this.context.x() + min((this.context.width() - this.width() ) / 4.0, 240.0) },
-            //x: function() { return this.context.x() + clamp(this.context.width() * 0.15, 80, 384) },
+            x: function() { return this.context.x() + min((this.context.width() - this.width() ) / VISU_MENU_LAYOUT.MARGIN_FACTOR, VISU_MENU_LAYOUT.MAX_MARGIN_WIDTH) },
             y: function() { return Struct.get(this.context.nodes, "visu-menu.title").bottom() + this.__margin.top },
-            width: function() { return clamp(this.context.width() * 0.3, 480, 700) },
+            width: function() { return clamp(this.context.width() * VISU_MENU_LAYOUT.WIDTH_FACTOR, VISU_MENU_LAYOUT.MIN_WIDTH, VISU_MENU_LAYOUT.MAX_WIDTH) },
             viewHeight: 0.0,
             height: function() {
               var contextHeight = this.context.height()
@@ -678,11 +777,21 @@ function VisuMenu(_config = null) constructor {
             //margin: { top: 24, bottom: 24 },
             margin: { top: 0, bottom: 0 },
           },
+          "visu-menu.preview": {
+            name: "visu-menu.preview",
+            x: function() { return Struct.get(this.context.nodes, "visu-menu.content").right() + this.__margin.left },
+            y: function() { return Struct.get(this.context.nodes, "visu-menu.title").bottom() + this.__margin.top },
+            width: function() { return clamp(this.context.width() * VISU_MENU_LAYOUT.WIDTH_FACTOR, VISU_MENU_LAYOUT.MIN_WIDTH, VISU_MENU_LAYOUT.MAX_WIDTH) },
+            height: function() { return Struct.get(this.context.nodes, "visu-menu.content").height() },
+
+            //margin: { top: 24, bottom: 24 },
+            margin: { top: 0, bottom: 0 },
+          },
           "visu-menu.footer": {
             name: "visu-menu.footer",
-            x: function() { return this.context.x() + min((this.context.width() - this.width() ) / 4.0, 240.0) },
+            x: function() { return this.context.x() + min((this.context.width() - this.width() ) / VISU_MENU_LAYOUT.MARGIN_FACTOR, VISU_MENU_LAYOUT.MAX_MARGIN_WIDTH) },
             y: function() { return this.context.y() + this.context.height() - this.height() },
-            width: function() { return clamp(this.context.width() * 0.3, 480, 700) },
+            width: function() { return clamp(this.context.width() * VISU_MENU_LAYOUT.WIDTH_FACTOR, VISU_MENU_LAYOUT.MIN_WIDTH, VISU_MENU_LAYOUT.MAX_WIDTH) },
             height: function() {
               var minFooterHeight = 48
               return max(
@@ -835,6 +944,7 @@ function VisuMenu(_config = null) constructor {
           "keyUpdater": new PrioritizedPressedKeyUpdater({ cooldown: 0.05 }),
           "playerKeyUpdater": new PrioritizedPressedKeyUpdater({ cooldown: 0.05 }),
           "contentLoaded": false,
+          "load-step": 1,
         }),
         scrollbarY: { align: HAlign.RIGHT },
         fetchViewHeight: function() {
@@ -897,16 +1007,7 @@ function VisuMenu(_config = null) constructor {
             .bindKeyboardKeys(playerKeyboard)
             .updateKeyboard(playerKeyboard.update())
           if (playerKeyboard.keys.up.pressed || keyboard.keys.up.pressed) {
-            var pointer = Struct.inject(this, "selectedIndex", 0)
-            if (!Core.isType(pointer, Number)) {
-              pointer = 0
-            } else {
-              pointer = clamp(
-                (pointer == 0 ? this.collection.size() - 1 : pointer - 1), 
-                0, 
-                (this.collection.size() -1 >= 0 ? this.collection.size() - 1 : 0)
-              )
-            }
+            var pointer = __VisuMenuGetPointerUp(this, Struct.inject(this, "selectedIndex", 0))
 
             this.state.set("isKeyboardEvent", true)
             Struct.set(this, "selectedIndex", pointer)
@@ -929,16 +1030,7 @@ function VisuMenu(_config = null) constructor {
           }
 
           if (playerKeyboard.keys.down.pressed || keyboard.keys.down.pressed) {
-            var pointer = Struct.inject(this, "selectedIndex", 0)
-            if (!Core.isType(pointer, Number)) {
-              pointer = 0
-            } else {
-              pointer = clamp(
-                (pointer == this.collection.size() - 1 ? 0 : pointer + 1), 
-                0, 
-                (this.collection.size() - 1 >= 0 ? this.collection.size() - 1 : 0)
-              )
-            }
+            var pointer = __VisuMenuGetPointerDown(this, Struct.inject(this, "selectedIndex", 0))
             
             this.state.set("isKeyboardEvent", true)
             Struct.set(this, "selectedIndex", pointer)
@@ -1250,8 +1342,9 @@ function VisuMenu(_config = null) constructor {
 
                   var context = task.state.context
                   var content = context.state.get("content")
+                  var step = context.state.get("load-step")
                   var size = content.size()
-                  repeat (1) {
+                  repeat (step) {
                     if (task.state.pointer >= size) {
                       task.state.stage = "setup"
                       break
@@ -1259,7 +1352,7 @@ function VisuMenu(_config = null) constructor {
 
                     var template = content.get(task.state.pointer)
                     if (Core.isType(template, Struct)) {
-                      context.collection.add(new UIComponent(template))
+                      context.collection.add(new UIComponent(template), null, Struct.get(template, "config"))
                     }
 
                     task.state.pointer += 1
@@ -1549,6 +1642,11 @@ function VisuMenu(_config = null) constructor {
           replace: true,
         }))
       }, controller.uiService)
+
+      var init = Struct.getIfType(event.data, "init", Callable)
+      if (init != null) {
+        init()
+      }
     },
     "close": function(event) {    
       this.isMainMenu = false

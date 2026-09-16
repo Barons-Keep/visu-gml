@@ -628,7 +628,8 @@ function factoryVisuMenuOpenGraphicsEvent(_config = null) {
           },
         }
       }
-    ])
+    ]),
+    init: VISU_MENU_LAYOUT_INIT_LARGE,
   })
 
   if (Core.getRuntimeType() != RuntimeType.GXGAMES) {

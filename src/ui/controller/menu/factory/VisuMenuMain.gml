@@ -54,7 +54,8 @@ function factoryVisuMenuOpenMainEvent(_config = null) {
           },
         }
       }
-    ])
+    ]),
+    init: VISU_MENU_LAYOUT_INIT_RESET,
   })
 
   var menuState = config.isGameOver
@@ -108,7 +109,7 @@ function factoryVisuMenuOpenMainEvent(_config = null) {
                   audio_stop_all()
 
                   controller.menu.send(new Event("close", { fade: true }))
-                  controller.loader.fsm.transition("clear-state")
+                  controller.loader.fsm.transition("clear-visu")
                   controller.fsm.transition("idle")
                   controller.trackService.dispatcher.execute(new Event("close-track"))
                   controller.sfxService.play("menu-select-entry")

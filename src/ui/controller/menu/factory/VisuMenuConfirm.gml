@@ -72,7 +72,8 @@ function factoryVisuMenuOpenConfirmEvent(_config = null) {
           },
         }
       },
-    ])
+    ]),
+    init: VISU_MENU_LAYOUT_INIT,
   })
 
   return event
