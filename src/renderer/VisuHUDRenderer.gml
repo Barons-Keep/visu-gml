@@ -303,47 +303,19 @@ function VisuHUDRenderer() constructor {
     var controller = Beans.get(BeanVisuController)
     var player = controller.playerService.player
     if (player != null) {
-      var _x = layout.x()
-      var _y = layout.y()
-      var _width = layout.width()
-      var _height = layout.height()
-      var xStart = _width * 0.061
-      var yStart = _height * 0.08
+      var screenFactor = 3.0
+      var layoutWidth = layout.width()
+      var layoutHeight = layout.height()
+      var layoutX = layout.x()
+      var layoutY = layout.y()
+      var _width = layoutWidth / screenFactor
+      var _height = layoutHeight / screenFactor
+      var _x = layoutX
+      var _y = layoutY + (layoutHeight - _height)
+      var xStart = _width * 0.061 * screenFactor
+      var yStart = _height * 0.08 * screenFactor
       var offset = (this.glitchCooldown.duration - this.glitchCooldown.time) * 64.0
-      var scale = clamp((min(_width, _height) / 1536), 0.33, 1.5)
-      var factor = 1.0 - (ceil(player.stats.godModeCooldown) - player.stats.godModeCooldown)
-
-      if (this.refreshTimer.update().finished) {
-        var lifeString = ""
-        repeat (player.stats.life.get()) {
-          lifeString = $"{lifeString}L "
-        }
-
-        var bombString = ""
-        repeat (player.stats.bomb.get()) {
-          bombString = $"{bombString}B "
-        }
-
-        var point = string(player.stats.point.get())
-        repeat (4 - String.size(point)) {
-          point = $"0{point}"
-        }
-
-        var forceLevel = player.stats.forceLevel
-        var forceTreshold = forceLevel.level < forceLevel.tresholds.size() - 1
-          ? forceLevel.tresholds.get(forceLevel.level + 1)
-          : (forceLevel.tresholds.size() == 0 ? 0 : forceLevel.tresholds.getLast())
-        var force = forceLevel.level == forceLevel.tresholds.size() - 1
-          ? "MAX"
-          : $"{player.stats.force.get()} / {forceTreshold}"
-
-        this.cachedText.mask = $"POINT: {point}\nFORCE: {force}\n LIFE: {lifeString}\n BOMB: {bombString}"
-        this.cachedText.label = $"POINT:        \nFORCE:        \n LIFE:\n BOMB:"
-        this.cachedText.point = $"       {point}\n              \n      \n      "
-        this.cachedText.force = $"              \n       {force}\n      \n      "
-        this.cachedText.life = $"\n\n       {lifeString}\n\n"
-        this.cachedText.bomb = $"\n\n\n       {bombString}"
-      }
+      var scale = clamp((min(_width, _height) / (1536 / screenFactor)), 0.33, 1.5)
 
       GPU.render.text(_x + xStart + offset, _y + _height - yStart, this.cachedText.mask,  scale, 0.0, 1.00 * this.fadeIn, c_white,   this.font, HAlign.LEFT, VAlign.BOTTOM)
       GPU.render.text(_x + xStart + offset, _y + _height - yStart, this.cachedText.label, scale, 0.0, 0.10 * this.fadeIn, c_fuchsia, this.font, HAlign.LEFT, VAlign.BOTTOM)  
@@ -356,6 +328,37 @@ function VisuHUDRenderer() constructor {
       this.hudPosition.height = string_height(this.cachedText.mask) * scale
       this.hudPosition.x = _x + xStart
       this.hudPosition.y = _y + _height - yStart - this.hudPosition.height
+    }
+
+    this.renderParticleHUDSystem()
+    return this
+  }
+
+  ///@private
+  ///@type {UILayout} layout
+  ///@return {VisuHUDRenderer}
+  renderJumbotron = function(layout) {
+    if (!this.enabled && this.fadeIn == 0.0) {
+      return this
+    }
+
+    var controller = Beans.get(BeanVisuController)
+    var player = controller.playerService.player
+    if (player != null) {
+      var screenFactor = 1.0
+      var layoutWidth = layout.width()
+      var layoutHeight = layout.height()
+      var layoutX = layout.x()
+      var layoutY = layout.y()
+      var _width = layoutWidth / screenFactor
+      var _height = layoutHeight / screenFactor
+      var _x = layoutX
+      var _y = layoutY + (layoutHeight - _height)
+      var xStart = _width * 0.061 * screenFactor
+      var yStart = _height * 0.08 * screenFactor
+      var offset = (this.glitchCooldown.duration - this.glitchCooldown.time) * 64.0
+      var scale = clamp((min(_width, _height) / (1536 / screenFactor)), 0.33, 1.5)
+      var factor = 1.0 - (ceil(player.stats.godModeCooldown) - player.stats.godModeCooldown)
 
       if (player.stats.godModeCooldown > 0.0) {
         if (this.lastGodMode == 0.0) {
@@ -396,7 +399,6 @@ function VisuHUDRenderer() constructor {
       }
     }
 
-    this.renderParticleHUDSystem()
     return this
   }
 
@@ -425,10 +427,42 @@ function VisuHUDRenderer() constructor {
       if (this.fadeIn < 1.0) {
         this.fadeIn = clamp(this.fadeIn + VISU_FADE_FACTOR, 0.0, 1.0)
       }
-    } else {
-      if (this.fadeIn > 0.0) {
-        this.fadeIn = clamp(this.fadeIn - VISU_FADE_FACTOR, 0.0, 1.0)
+
+      if (this.fadeIn > 0.0 && this.refreshTimer.update().finished) {
+        var controller = Beans.get(BeanVisuController)
+        var player = controller.playerService.player
+        var lifeString = ""
+        repeat (player.stats.life.get()) {
+          lifeString = $"{lifeString}L "
+        }
+
+        var bombString = ""
+        repeat (player.stats.bomb.get()) {
+          bombString = $"{bombString}B "
+        }
+
+        var point = string(player.stats.point.get())
+        repeat (4 - String.size(point)) {
+          point = $"0{point}"
+        }
+
+        var forceLevel = player.stats.forceLevel
+        var forceTreshold = forceLevel.level < forceLevel.tresholds.size() - 1
+          ? forceLevel.tresholds.get(forceLevel.level + 1)
+          : (forceLevel.tresholds.size() == 0 ? 0 : forceLevel.tresholds.getLast())
+        var force = forceLevel.level == forceLevel.tresholds.size() - 1
+          ? "MAX"
+          : $"{player.stats.force.get()} / {forceTreshold}"
+
+        this.cachedText.mask = $"POINT: {point}\nFORCE: {force}\n LIFE: {lifeString}\n BOMB: {bombString}"
+        this.cachedText.label = $"POINT:        \nFORCE:        \n LIFE:\n BOMB:"
+        this.cachedText.point = $"       {point}\n              \n      \n      "
+        this.cachedText.force = $"              \n       {force}\n      \n      "
+        this.cachedText.life = $"\n\n       {lifeString}\n\n"
+        this.cachedText.bomb = $"\n\n\n       {bombString}"
       }
+    } else if (this.fadeIn > 0.0) {
+      this.fadeIn = clamp(this.fadeIn - VISU_FADE_FACTOR, 0.0, 1.0)
     }
     
     return this
@@ -442,6 +476,7 @@ function VisuHUDRenderer() constructor {
     } else {
       this.renderHUD(layout)
     }
+    this.renderJumbotron(layout)
     
     return this
   }
