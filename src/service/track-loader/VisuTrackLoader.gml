@@ -61,35 +61,113 @@ function VisuTrackLoader(config = null): Service(config) constructor {
             fsmState.state.set("path", path)
             fsmState.state.set("introTimer", new Timer(Core.getProperty("visu.manifest.loading-cooldown", 0.128)))
             fsmState.state.set("clearQueue", new Queue(Callable, [
-              function() { Beans.get(BeanDisplayService).setCaption(game_display_name) },
-              function() { Beans.get(BeanVisuController).brushService.clearTemplates() },
-              function() { Beans.get(BeanVisuController).visuRenderer.executor.tasks.forEach(TaskUtil.fullfill).clear() },
-              function() { Beans.get(BeanVisuController).visuRenderer.gridRenderer.clear() },
-              function() { Beans.get(BeanVisuController).trackService.dispatcher.execute(new Event("close-track")) },
-              function() { Beans.get(BeanVisuController).videoService.dispatcher.execute(new Event("close-video")) },              
-              function() { Beans.get(BeanVisuController).gridService.executor.tasks.forEach(TaskUtil.fullfill).clear() },
-              function() { Beans.get(BeanVisuController).gridService.dispatcher.execute(new Event("clear-grid")) },
-              function() { Beans.get(BeanVisuController).gridService.loadingScreen() },
+              function() {
+                Beans.get(BeanDisplayService)
+                  .setCaption(game_display_name)
+              },
+              function() {
+                Beans.get(BeanVisuController).brushService
+                  .clearTemplates()
+              },
+              function() {
+                Beans.get(BeanVisuController).visuRenderer.executor.tasks
+                  .forEach(TaskUtil.fullfill)
+                  .clear()
+              },
+              function() {
+                Beans.get(BeanVisuController).visuRenderer.gridRenderer
+                  .clear()
+              },
+              function() {
+                Beans.get(BeanVisuController).trackService.dispatcher
+                  .execute(new Event("close-track"))
+              },
+              function() {
+                Beans.get(BeanVisuController).videoService.dispatcher
+                  .execute(new Event("close-video")) },           
+                  
+              function() {
+                Beans.get(BeanVisuController).gridService.executor.tasks
+                  .forEach(TaskUtil.fullfill)
+                  .clear()
+              },
+              function() {
+                Beans.get(BeanVisuController).gridService.dispatcher
+                  .execute(new Event("clear-grid"))
+              },
+              function() {
+                Beans.get(BeanVisuController).gridService
+                  .loadingScreen()
+              },
               function() {
                 var playerService = Beans.get(BeanVisuController).playerService
-                playerService.dispatcher.execute(new Event("clear-player"))
-                playerService.statistics.reset()
+                playerService.dispatcher
+                  .execute(new Event("clear-player"))
+                playerService.statistics
+                  .reset()
               },
-              function() { Beans.get(BeanVisuController).shroomService.dispatcher.execute(new Event("clear-shrooms")).execute(new Event("reset-templates")) },
-              function() { Beans.get(BeanVisuController).bulletService.dispatcher.execute(new Event("clear-bullets")).execute(new Event("reset-templates")) },
-              function() { Beans.get(BeanVisuController).coinService.dispatcher.execute(new Event("clear-coins")).execute(new Event("reset-templates")) },
-              function() { Beans.get(BeanVisuController).subtitleService.dispatcher.execute(new Event("clear-subtitle")).execute(new Event("reset-templates")) },
-              function() { Beans.get(BeanVisuController).particleService.dispatcher.execute(new Event("clear-particles")).execute(new Event("reset-templates")) },
-              function() { Beans.get(BeanVisuController).shaderPipeline.dispatcher.execute(new Event("clear-shaders")).execute(new Event("reset-templates")) },
-              function() { Beans.get(BeanVisuController).shaderBackgroundPipeline.dispatcher.execute(new Event("clear-shaders")).execute(new Event("reset-templates")) },
-              function() { Beans.get(BeanVisuController).shaderCombinedPipeline.dispatcher.execute(new Event("clear-shaders")).execute(new Event("reset-templates")) },
-              function() { Beans.get(BeanTextureService).dispatcher.execute(new Event("free")) },
+              function() {
+                var shroomService = Beans.get(BeanVisuController).shroomService
+                shroomService.dispatcher
+                  .execute(new Event("clear-shrooms"))
+                  .execute(new Event("reset-templates"))
+                shroomService.statistics
+                  .reset()
+              },
+              function() {
+                var bulletService = Beans.get(BeanVisuController).bulletService
+                bulletService.dispatcher
+                  .execute(new Event("clear-bullets"))
+                  .execute(new Event("reset-templates"))
+                bulletService.statistics
+                  .reset()
+              },
+              function() { 
+                var coinService = Beans.get(BeanVisuController).coinService
+                coinService.dispatcher
+                  .execute(new Event("clear-coins"))
+                  .execute(new Event("reset-templates"))
+                coinService.statistics.reset()
+              },
+              function() {
+                Beans.get(BeanVisuController).subtitleService.dispatcher
+                  .execute(new Event("clear-subtitle"))
+                  .execute(new Event("reset-templates"))
+              },
+              function() {
+                Beans.get(BeanVisuController).particleService.dispatcher
+                  .execute(new Event("clear-particles"))
+                  .execute(new Event("reset-templates"))
+              },
+              function() {
+                Beans.get(BeanVisuController).shaderPipeline.dispatcher
+                  .execute(new Event("clear-shaders"))
+                  .execute(new Event("reset-templates"))
+              },
+              function() {
+                Beans.get(BeanVisuController).shaderBackgroundPipeline.dispatcher
+                  .execute(new Event("clear-shaders"))
+                  .execute(new Event("reset-templates"))
+              },
+              function() {
+                Beans.get(BeanVisuController).shaderCombinedPipeline.dispatcher
+                  .execute(new Event("clear-shaders"))
+                  .execute(new Event("reset-templates"))
+              },
+              function() {
+                Beans.get(BeanTextureService).dispatcher
+                  .execute(new Event("free"))
+              },
               function() {
                 var editor = Beans.get(Visu.modules().editor.controller)
-                if (Optional.is(editor)) {
-                  editor.popupQueue.dispatcher.execute(new Event("clear"))
-                  editor.dispatcher.execute(new Event("close"))
+                if (!Optional.is(editor)) {
+                  return
                 }
+
+                editor.popupQueue.dispatcher
+                    .execute(new Event("clear"))
+                  editor.dispatcher
+                    .execute(new Event("close"))
               },
               function() { draw_texture_flush() }
             ]))

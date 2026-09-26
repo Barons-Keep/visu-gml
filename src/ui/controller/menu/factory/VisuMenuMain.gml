@@ -253,8 +253,35 @@ function factoryVisuMenuOpenMainEvent(_config = null) {
               text: Language.get("visu.menu.story"),
               callback: new BindIntent(function() {
                 var controller = Beans.get(BeanVisuController)
-                var factory = controller.menu.factories.get("menu-story")
-                controller.menu.send(factory(this.callbackData))
+                //var factory = controller.menu.factories.get("menu-story")
+                //controller.menu.send(factory(this.callbackData))
+                var factory = controller.menu.factories.get("menu-track-setup")
+
+                var callback = new BindIntent(function() {
+                    Beans.get(BeanVisuController).menu.dispatcher
+                    .execute(new Event("close", { fade: true }))
+                  Beans.get(BeanDialogueDesignerService)
+                    .open(Core.getProperty("visu.story.dialog")).facts
+                    .clear()
+                })
+
+                var data = Core.isType(this.callbackData, Struct) ? this.callbackData : {}
+                Struct.set(data, "title", "Story mode")
+                var event = factory(data)
+                var runButton = event.data.content.find(function(entry) {
+                  return entry.name == "open-track-setup_menu-button-entry_run"
+                })
+
+                runButton.config.label.callback = callback
+
+                var runVisualButtonIndex = event.data.content.findIndex(function(entry) {
+                  return entry.name == "open-track-setup_menu-button-entry_run-visual-mode"
+                })
+
+                event.data.content.remove(runVisualButtonIndex)
+
+
+                controller.menu.send(event)
                 controller.sfxService.play("menu-select-entry")
               }),
               callbackData: config,

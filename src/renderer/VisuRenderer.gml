@@ -381,8 +381,8 @@ function VisuRenderer() constructor {
         + gridCameraMessage
 
       GPU.render.text(
-        layout.x() + layout.width() - 32, 
-        layout.y() + 4, 
+        layout.x() + layout.width() - 42, 
+        layout.y() + 24, 
         text, 
         1.0, 
         0.0, 
@@ -416,11 +416,10 @@ function VisuRenderer() constructor {
     var fpsReal = String.format(abs(fps_real), 4, 0)
     var fpsRealMin = String.format(abs(this.debugMinFPSReal), 4, 0)
     var fpsRealMax = String.format(abs(this.debugMinFPSRealMax), 4, 0)
-
-    var text = $"FPS: {fpsValue} min: {fpsMin} | FPS real: {fpsReal} min: {fpsRealMin} max: {fpsRealMax}"
+    var text = $"FPS: {fpsValue} | FPS min: {fpsMin} | FPS real min: {fpsRealMin} | FPS real max: {fpsRealMax} | FPS real: {fpsReal}"
     GPU.render.text(
-      layout.x() + layout.width() - 32, 
-      layout.y() + 4, 
+      layout.x() + layout.width() - 42, 
+      layout.y() + 24, 
       text, 
       1.0, 
       0.0, 
@@ -589,10 +588,10 @@ function VisuRenderer() constructor {
   ///@param {UILayout} layout
   ///@return {GridRenderer}
   renderGUIGameSurface = function(layout) {
-    var _width = layout.width()
-    var _height = layout.height()
-    var _x = layout.x()
-    var _y = layout.y()
+    var _width = ceil(layout.width())
+    var _height = ceil(layout.height())
+    var _x = ceil(layout.x())
+    var _y = ceil(layout.y())
     this.gridRenderer.gameSurface.renderStretched(_width, _height, _x, _y)
     return this
   }
