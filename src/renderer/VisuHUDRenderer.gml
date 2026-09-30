@@ -431,35 +431,38 @@ function VisuHUDRenderer() constructor {
       if (this.fadeIn > 0.0 && this.refreshTimer.update().finished) {
         var controller = Beans.get(BeanVisuController)
         var player = controller.playerService.player
-        var lifeString = ""
-        repeat (player.stats.life.get()) {
-          lifeString = $"{lifeString}L "
+        if (player != null) {
+          var lifeString = ""
+          repeat (player.stats.life.get()) {
+            lifeString = $"{lifeString}L "
+          }
+
+          var bombString = ""
+          repeat (player.stats.bomb.get()) {
+            bombString = $"{bombString}B "
+          }
+
+          var point = string(player.stats.point.get())
+          repeat (4 - String.size(point)) {
+            point = $"0{point}"
+          }
+
+          var forceLevel = player.stats.forceLevel
+          var forceTreshold = forceLevel.level < forceLevel.tresholds.size() - 1
+            ? forceLevel.tresholds.get(forceLevel.level + 1)
+            : (forceLevel.tresholds.size() == 0 ? 0 : forceLevel.tresholds.getLast())
+          var force = forceLevel.level == forceLevel.tresholds.size() - 1
+            ? "MAX"
+            : $"{player.stats.force.get()} / {forceTreshold}"
+
+          this.cachedText.mask = $"POINT: {point}\nFORCE: {force}\n LIFE: {lifeString}\n BOMB: {bombString}"
+          this.cachedText.label = $"POINT:        \nFORCE:        \n LIFE:\n BOMB:"
+          this.cachedText.point = $"       {point}\n              \n      \n      "
+          this.cachedText.force = $"              \n       {force}\n      \n      "
+          this.cachedText.life = $"\n\n       {lifeString}\n\n"
+          this.cachedText.bomb = $"\n\n\n       {bombString}"
         }
-
-        var bombString = ""
-        repeat (player.stats.bomb.get()) {
-          bombString = $"{bombString}B "
-        }
-
-        var point = string(player.stats.point.get())
-        repeat (4 - String.size(point)) {
-          point = $"0{point}"
-        }
-
-        var forceLevel = player.stats.forceLevel
-        var forceTreshold = forceLevel.level < forceLevel.tresholds.size() - 1
-          ? forceLevel.tresholds.get(forceLevel.level + 1)
-          : (forceLevel.tresholds.size() == 0 ? 0 : forceLevel.tresholds.getLast())
-        var force = forceLevel.level == forceLevel.tresholds.size() - 1
-          ? "MAX"
-          : $"{player.stats.force.get()} / {forceTreshold}"
-
-        this.cachedText.mask = $"POINT: {point}\nFORCE: {force}\n LIFE: {lifeString}\n BOMB: {bombString}"
-        this.cachedText.label = $"POINT:        \nFORCE:        \n LIFE:\n BOMB:"
-        this.cachedText.point = $"       {point}\n              \n      \n      "
-        this.cachedText.force = $"              \n       {force}\n      \n      "
-        this.cachedText.life = $"\n\n       {lifeString}\n\n"
-        this.cachedText.bomb = $"\n\n\n       {bombString}"
+        
       }
     } else if (this.fadeIn > 0.0) {
       this.fadeIn = clamp(this.fadeIn - VISU_FADE_FACTOR, 0.0, 1.0)
