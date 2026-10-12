@@ -1609,9 +1609,9 @@ function GridRenderer() constructor {
 
       var color = properties.supportColor.toGMColor()
       var colorAlpha = properties.supportColorAlpha
-      //GPU.set.blendMode(BlendMode.ADD)
+      GPU.set.blendMode(BlendMode.ADD)
       GPU.render.fillColor(-1 * ceil(width / 4.0), -1 * ceil(height / 4.0), width * 1.5, height * 1.5, color, colorAlpha)
-      //GPU.reset.blendMode()
+      GPU.reset.blendMode()
     } else {
       renderLayer(this, controller, gridService, shroomService, particleService, properties, width, height)
     }
