@@ -381,8 +381,8 @@ global.__entity_track_event = {
       } else {
         var view = controller.gridService.view
         var locked = controller.gridService.targetLocked
-        var viewX = snapH ? locked.snapH : view.x
-        var viewY = snapV ? locked.snapV : view.y
+        var viewX = snapH ? locked.snapHSpawner : view.x
+        var viewY = snapV ? locked.snapVSpawner : view.y
         controller.bulletService.spawnBullet(
           template,
           Shroom,

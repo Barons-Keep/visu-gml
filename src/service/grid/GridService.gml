@@ -264,6 +264,9 @@ function GridService(_config = null): Service(_config) constructor {
     lockY: null,
     snapH: 1.0,
     snapV: 1.0,
+    snapHSpawner: 1.0,
+    snapVSpawner: 1.0,
+    snapSpawnerToView: Core.getProperty("visu.gameplay.snap-spawner-to-view", false),
     setX: function(x) {
       this.x = x
       return this
@@ -306,9 +309,13 @@ function GridService(_config = null): Service(_config) constructor {
         xMax = clamp(xMax + xMinOffset, 0.0, view.worldWidth)
         this.setX(clamp(this.x, xMin, xMax))
         this.snapH = clamp(this.lockX + xMinOffset - xMaxOffset, 0.0, view.worldWidth)
+        this.snapHSpawner = this.snapSpawnerToView
+          ? floor(view.x / (view.width / 2.0)) * (view.width / 2.0)
+          : this.snapH
       } else {
         this.lockX = null
         this.snapH = floor(view.x / (view.width / 2.0)) * (view.width / 2.0)
+        this.snapHSpawner = this.snapH
       }
   
       if (this.isLockedY) {
@@ -323,9 +330,13 @@ function GridService(_config = null): Service(_config) constructor {
         yMax = clamp(yMax + yMinOffset, 0.0, view.worldHeight)
         this.setY(clamp(this.y, yMin, yMax))
         this.snapV = clamp(this.lockY + yMinOffset - yMaxOffset, 0.0, view.worldHeight)
+        this.snapVSpawner = this.snapSpawnerToView
+          ? floor(view.y / (view.height / 2.0)) * (view.height / 2.0)
+          : this.snapV
       } else {
         this.lockY = null
         this.snapV = floor(view.y / (view.height / 2.0)) * (view.height / 2.0)
+        this.snapVSpawner = this.snapV
       }
 
       if (isPlayer) {
@@ -483,6 +494,8 @@ function GridService(_config = null): Service(_config) constructor {
     this.targetLocked.isLockedY = false
     this.targetLocked.snapH = floor(this.view.x / (this.view.width / 2.0)) * (this.view.width / 2.0)
     this.targetLocked.snapV = floor(this.view.y / (this.view.height / 2.0)) * (this.view.height / 2.0)
+    this.targetLocked.snapHSpawner = this.targetLocked.snapH
+    this.targetLocked.snapVSpawner = this.targetLocked.snapV
     this.targetLocked.lockX = null
     this.targetLocked.lockY = null
 

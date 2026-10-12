@@ -620,6 +620,97 @@ function init_SHADER_UNIFORM_TEMPLATES() {
         ]),
       }
     })
+
+    .set(ShaderUniformType.findKey(ShaderUniformType.TIME), function(uniform, json, config = null) {
+      var store = {}
+      var storeConfig = Struct.get(config, "store")
+      var componentsConfig = Struct.get(config, "components")
+      Struct.set(store, $"{uniform.name}_hide", {
+        type: Boolean,
+        value: Struct.parse.boolean(json, $"{uniform.name}_hide", true),
+      })
+
+      Struct.set(store, uniform.name, {
+        type: NumberTransformer,
+        value: new NumberTransformer(Struct.getIfType(json, uniform.name, Struct, !Optional.is(storeConfig) ? {
+          value: 1.0,
+          target: 1000.0,
+          duration: 1000.0,
+          ease: EaseType.LINEAR,
+        } : storeConfig)),
+        passthrough: Struct.get(config, "passthrough"),
+        data: Struct.get(config, "data"),
+      })
+
+      return {
+        store: store,
+        components: new Array(Struct, [
+          {
+            name: $"shader-uniform_{uniform.name}_title",
+            template: VEComponents.get("property"),
+            layout: VELayouts.get("property"),
+            config: { 
+              layout: { type: UILayoutType.VERTICAL },
+              label: { 
+                text: $"[TIME]  {uniform.name}",
+                //backgroundColor: VETheme.color.accentShadow,
+              },
+              checkbox: {
+                spriteOn: { name: "visu_texture_checkbox_show" },
+                spriteOff: { name: "visu_texture_checkbox_hide" },
+                store: { key: $"{uniform.name}_hide" },
+                //backgroundColor: VETheme.color.accentShadow
+              },
+              input: {
+                //backgroundColor: VETheme.color.accentShadow,
+              },
+            },
+          },
+          {
+            name: $"shader-uniform_{uniform.name}",
+            template: VEComponents.get("transform-numeric-uniform-simple"),
+            layout: VELayouts.get("transform-numeric-uniform-simple"),
+            config: Struct.appendRecursive({
+              layout: { type: UILayoutType.VERTICAL },
+              value: {
+                label: { 
+                  text: "Value",
+                  hidden: { key: $"{uniform.name}_hide" },
+                },
+                field: {
+                  store: { key: $"{uniform.name}" },
+                  hidden: { key: $"{uniform.name}_hide" },
+                },
+                increase: {
+                  store: { key: $"{uniform.name}" },
+                  hidden: { key: $"{uniform.name}_hide" },
+                },
+                decrease: {
+                  store: { key: $"{uniform.name}" },
+                  hidden: { key: $"{uniform.name}_hide" },
+                },
+                slider: {
+                  store: { key: $"{uniform.name}" },
+                  hidden: { key: $"{uniform.name}_hide" },
+                  factor: 0.01,
+                },
+              },
+            }, componentsConfig, false),
+          },
+          {
+            name: $"shader-uniform_{uniform.name}-line-h",
+            template: VEComponents.get("line-h"),
+            layout: VELayouts.get("line-h"),
+            config: {
+              layout: { type: UILayoutType.VERTICAL },
+              image: { hidden: { key: $"{uniform.name}_hide" }, },
+            },
+          }
+        ]),
+      }
+    })
+
+
     .set(ShaderUniformType.findKey(ShaderUniformType.VECTOR2), function(uniform, json, config = null) {
       var store = {}
       var storeConfig = Struct.get(config, "store")

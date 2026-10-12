@@ -410,7 +410,7 @@ function brush_entity_bullet(json) {
             }
 
             if (store.getValue("en-blt_snap-x")) {
-              _x = _x - (view.x - locked.snapH)
+              _x = _x - (view.x - locked.snapHSpawner)
             }
 
             if (!Struct.contains(this, "spawnerYTimer")) {

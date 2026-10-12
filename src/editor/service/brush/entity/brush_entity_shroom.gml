@@ -422,7 +422,7 @@ function brush_entity_shroom(json) {
           }
 
           if (store.getValue("en-shr_snap-x")) {
-            _x = _x - (view.x - locked.snapH)
+            _x = _x - (view.x - locked.snapHSpawner)
           }
 
           if (!Struct.contains(this, "spawnerYTimer")) {

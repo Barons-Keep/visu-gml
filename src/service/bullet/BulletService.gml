@@ -235,8 +235,8 @@ function BulletService(config = null): Service(config) constructor {
           callback: function(item, controller, emitter, idx, arrIdx, x, y, angle, speed) {
             var view = controller.gridService.view
             var locked = controller.gridService.targetLocked
-            var viewX = item.snapH ? locked.snapH : view.x
-            var viewY = item.snapV ? locked.snapV : view.y
+            var viewX = item.snapH ? locked.snapHSpawner : view.x
+            var viewY = item.snapV ? locked.snapVSpawner : view.y
             var angleOffset = item.angleOffset
             var angleOffsetRng = item.angleOffsetRng
             var sumAngleOffset = item.sumAngleOffset

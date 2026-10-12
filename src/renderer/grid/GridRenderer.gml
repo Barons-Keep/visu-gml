@@ -1593,19 +1593,25 @@ function GridRenderer() constructor {
     //GPU.render.clear(c_black, 0.0)
     GPU.render.clear(properties.gridClearColor.toGMColor(), properties.gridClearFrameAlpha)
 
-    if (properties.renderSupportGrid && properties.renderFocusGrid) {
+    if (properties.renderSupportGrid) {
+      if (properties.renderFocusGrid) {
+        var size = properties.supportGridTreshold
+        var shaderGaussianBlur = controller.visuRenderer.shaderGaussianBlur
+        GPU.set.shader(shaderGaussianBlur)
+        var uniform = shaderGaussianBlur.uniforms.get("u_resolution")
+        uniform.setter(uniform.asset, width, height)
+        shaderGaussianBlur.uniforms.get("u_size").set(size)
+        renderLayer(this, controller, gridService, shroomService, particleService, properties, width, height)
+        GPU.reset.shader()
+      } else {
+        renderLayer(this, controller, gridService, shroomService, particleService, properties, width, height)
+      }
+
       var color = properties.supportColor.toGMColor()
       var colorAlpha = properties.supportColorAlpha
-      var gridAlpha = properties.supportGridAlpha
-      var size = properties.supportGridTreshold
-      var shaderGaussianBlur = controller.visuRenderer.shaderGaussianBlur
-
-      GPU.set.shader(shaderGaussianBlur)
-      var uniform = shaderGaussianBlur.uniforms.get("u_resolution")
-      uniform.setter(uniform.asset, width, height)
-      shaderGaussianBlur.uniforms.get("u_size").set(size)
-      renderLayer(this, controller, gridService, shroomService, particleService, properties, width, height)
-      GPU.reset.shader()
+      //GPU.set.blendMode(BlendMode.ADD)
+      GPU.render.fillColor(-1 * ceil(width / 4.0), -1 * ceil(height / 4.0), width * 1.5, height * 1.5, color, colorAlpha)
+      //GPU.reset.blendMode()
     } else {
       renderLayer(this, controller, gridService, shroomService, particleService, properties, width, height)
     }
@@ -2282,7 +2288,7 @@ function GridRenderer() constructor {
 
     if (renderGridItemSurface
         && properties.renderSupportGrid
-        && properties.renderFocusGrid) {
+        && properties.supportGridAlpha > 0.0) {
       this.gridItemSurface.renderStretched(width, height, 0, 0, properties.supportGridAlpha)
     }
 

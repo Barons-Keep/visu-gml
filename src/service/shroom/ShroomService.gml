@@ -147,8 +147,8 @@ function ShroomService(config = null): Service(config) constructor {
       var spawnY = event.data.spawnY
       var angle = event.data.angle
       var spd = event.data.speed
-      var viewX = event.data.snapH ? locked.snapH : view.x
-      var viewY = event.data.snapV ? locked.snapV : view.y
+      var viewX = event.data.snapH ? locked.snapHSpawner : view.x
+      var viewY = event.data.snapV ? locked.snapVSpawner : view.y
       Struct.set(template, "x", viewX + spawnX)
       Struct.set(template, "y", viewY + spawnY)
       Struct.set(template, "speed", spd / GRID_ITEM_SPEED_SCALE)
@@ -270,8 +270,8 @@ function ShroomService(config = null): Service(config) constructor {
     var controller = Beans.get(BeanVisuController)
     var view = controller.gridService.view
     var locked = controller.gridService.targetLocked
-    var viewX = snapH ? locked.snapH : view.x
-    var viewY = snapV ? locked.snapV : view.y
+    var viewX = snapH ? locked.snapHSpawner : view.x
+    var viewY = snapV ? locked.snapVSpawner : view.y
     var template = this.getTemplate(name).serializeSpawn(viewX + spawnX, viewY + spawnY, spd / GRID_ITEM_SPEED_SCALE, angle, controller.gridService.generateUID(), lifespan, hp)
 
     //var inheritSize = inherit != null ? GMArray.size(inherit) : 0
@@ -304,8 +304,8 @@ function ShroomService(config = null): Service(config) constructor {
     var controller = Beans.get(BeanVisuController)
     var view = controller.gridService.view
     var locked = controller.gridService.targetLocked
-    var viewX = snapH ? locked.snapH : view.x
-    var viewY = snapV ? locked.snapV : view.y
+    var viewX = snapH ? locked.snapHSpawner : view.x
+    var viewY = snapV ? locked.snapVSpawner : view.y
 
     shroom.x = viewX + spawnX
     shroom.y = viewY + spawnY
@@ -333,8 +333,8 @@ function ShroomService(config = null): Service(config) constructor {
     var controller = Beans.get(BeanVisuController)
     var view = controller.gridService.view
     var locked = controller.gridService.targetLocked
-    var viewX = snapH ? locked.snapH : view.x
-    var viewY = snapV ? locked.snapV : view.y
+    var viewX = snapH ? locked.snapHSpawner : view.x
+    var viewY = snapV ? locked.snapVSpawner : view.y
     var template = this.getTemplate(name).serializeSpawn(viewX + spawnX, viewY + spawnY, spd / GRID_ITEM_SPEED_SCALE, angle, controller.gridService.generateUID(), lifespan, hp)
 
     //var inheritSize = inherit != null ? GMArray.size(inherit) : 0
