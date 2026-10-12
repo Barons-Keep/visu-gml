@@ -1381,6 +1381,7 @@ function brush_entity_shroom(json) {
       button: {
         label: { text: "Insert default JSON" },
         store: { key: "en-shr_em-cfg" },
+        doubleClick: true,
         callback: function() {
           var item = UIItemUtils.getStoreItemFromUIStore(this, "en-shr_em-cfg")
           if (item == null) {

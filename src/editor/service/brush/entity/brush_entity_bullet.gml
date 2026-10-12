@@ -1297,6 +1297,7 @@ function brush_entity_bullet(json) {
       button: {
         label: { text: "Insert default JSON" },
         store: { key: "en-blt_em-cfg" },
+        doubleClick: true,
         callback: function() {
           var item = UIItemUtils.getStoreItemFromUIStore(this, "en-blt_em-cfg")
           if (item == null) {

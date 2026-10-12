@@ -1145,6 +1145,20 @@ global.__VEComponents = new Map(String, Callable, {
               layout: layout.nodes.button,
               updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
               onMouseHoverOver: function(event) {
+                if (Struct.get(this, "doubleClick") == true) {
+                  var pressCounter = 1
+                  var key = Struct.get(Struct.get(this, "store"), "key")
+                  if (key != null && GMTFContext.get() != null) {
+                    var gmtfUIItem = GMTFContext.get().uiItem
+                    var gmtfName = gmtfUIItem.name
+                    var gmtfKey = Struct.get(Struct.get(gmtfUIItem, "store"), "key")
+                    if (GMTFContext.isFocused() && gmtfUIItem.type == UITextField && gmtfKey == key) {
+                      pressCounter = 0
+                    }
+                  }
+                  Struct.set(this, "pressCounter", pressCounter)
+                }
+
                 if (Struct.get(this.enable, "value") == false) {
                   this.backgroundColor = ColorUtil.fromHex(this.backgroundColorOut).toGMColor()
                   return
@@ -1152,6 +1166,9 @@ global.__VEComponents = new Map(String, Callable, {
                 this.backgroundColor = ColorUtil.fromHex(this.backgroundColorSelected).toGMColor()
               },
               onMouseHoverOut: function(event) {
+                if (Struct.get(this, "doubleClick") == true) {
+                  Struct.set(this, "pressCounter", 0)
+                }
                 this.backgroundColor = ColorUtil.fromHex(this.backgroundColorOut).toGMColor()
               },
             },

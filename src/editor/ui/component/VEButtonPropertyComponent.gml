@@ -7,6 +7,17 @@ show_debug_message("init VEButtonPropertyComponent.gml")
 //@param {?Struct} [config]
 function VEButtonPropertyComponent(name, config = null) {
   var button = Struct.get(config, "button")
+  if (Struct.get(button, "doubleClick") == true) {
+    Struct.set(button, "_callback", Struct.get(button, "callback"))
+    Struct.set(button, "callback", function() {
+      if (Struct.get(Struct.set(this, "pressCounter", Struct.inject(this, "pressCounter", 0) + 1), "pressCounter") <= 1) {
+        return
+      }
+
+      this._callback = method(this, this._callback)
+      this._callback()
+    })
+  }
 
   var hidden = Struct.get(config, "hidden")
   if (hidden != null) {
