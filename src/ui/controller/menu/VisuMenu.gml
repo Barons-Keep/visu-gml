@@ -1733,7 +1733,13 @@ function VisuMenu(_config = null) constructor {
 
   ///@return {VETrackControl}
   update = function() { 
+    var __VISU_MENU_ENTRY_HEIGHT = VISU_MENU_ENTRY_HEIGHT
     VISU_MENU_ENTRY_HEIGHT = ceil(clamp((((GuiHeight() - 540) / 540) * 44) + 60, 60, 80))//104))
+    if (VISU_MENU_ENTRY_HEIGHT != __VISU_MENU_ENTRY_HEIGHT) {
+      this.containers.forEach(function(container) {
+        container.areaWatchdog.signal()
+      })
+    }
     this.dispatcher.update()
     this.executor.update()
     return this
