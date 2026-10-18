@@ -34,7 +34,7 @@ function GridItemFeature(json) constructor {
     var size = GMArray.size(this.conditions)
     for (var index = 0; index < size; index++) { 
       var condition = this.conditions[index]
-      if (!condition.check(gridItem, controller)) {
+      if (!condition.check(gridItem, controller, condition)) {
         return false
       }
     }

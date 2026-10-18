@@ -479,28 +479,6 @@ global.__entity_track_event = {
               * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
               * choose(1.0, -1.0))
             : 0.0))
-
-      /*
-      controller.coinService.send(new Event("spawn-coin", {
-        template: Struct.get(data, "en-coin_template"),
-        x: viewX + Struct.get(data, "en-coin_x")
-          * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
-          + 0.5
-          + (Struct.get(data, "en-coin_use-rng-x")
-            ? (random(Struct.get(data, "en-coin_rng-x") / 2.0)
-              * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
-              * choose(1.0, -1.0))
-            : 0.0),
-        y: viewY + Struct.get(data, "en-coin_y")
-          * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
-          - 0.5
-          + (Struct.get(data, "en-coin_use-rng-y")
-            ? (random(Struct.get(data, "en-coin_rng-y") / 2.0)
-              * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
-              * choose(1.0, -1.0))
-            : 0.0),
-      }))
-      */
     },
   },
   "brush_entity_player": {

@@ -14,7 +14,7 @@ function ParticleFeature(json): GridItemFeature(json) constructor {
   particle = Core.getIfType(GMArray.resolveRandom(Struct.get(data, "particle")), String, "particle-default")
 
   ///@type {Number}
-  duration = Core.getIfType(GMArray.resolveRandom(Struct.get(data, "duration")), Number, FRAME_MS)
+  duration = Core.getIfType(GMArray.resolveRandom(Struct.get(data, "duration")), Number, 0.0)
 
   ///@type {Number}
   amount = Core.getIfType(GMArray.resolveRandom(Struct.get(data, "amount")), Number, 10.0)

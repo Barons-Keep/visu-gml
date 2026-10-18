@@ -1818,39 +1818,49 @@ function GridRenderer() constructor {
       _renderShrooms(gridService, shroomService)
 
       if (renderDebugChunks) {
-        shroomService.chunkService.chunks.forEach(function(chunk, key, view) {
-          var coords = String.split(key, "_")
-          var xx = ((real(coords.get(0)) * GRID_ITEM_CHUNK_SERVICE_SIZE) - view.x) * GRID_SERVICE_PIXEL_WIDTH
-          var yy = ((real(coords.get(1)) * GRID_ITEM_CHUNK_SERVICE_SIZE) - view.y) * GRID_SERVICE_PIXEL_HEIGHT
-          draw_sprite_ext(
-            texture_white, 
-            0.0, 
-            xx,
-            yy, 
-            ((GRID_SERVICE_PIXEL_WIDTH * GRID_ITEM_CHUNK_SERVICE_SIZE) / 64) * 0.9,
-            ((GRID_SERVICE_PIXEL_HEIGHT * GRID_ITEM_CHUNK_SERVICE_SIZE) / 64) * 0.9,
-            0.0,
-            chunk.size() > 0 ? c_red : c_white,
-            0.6
-          )
-        }, gridService.view)
+        var view = gridService.view
+        var viewX = toInt(view.x / shroomService.chunkService.size)
+        var viewY = toInt(view.y / shroomService.chunkService.size)
+        var shroomChunks = shroomService.chunkService.chunks
+        var bulletChunks = bulletService.chunkService.chunks
+        for (var yIndex = -10; yIndex < 6; yIndex++) {
+          for (var xIndex = -8; xIndex < 12; xIndex++) {
+            var key = $"{viewX + xIndex}_{viewY + yIndex}"
+            var shroomChunk = shroomChunks.get(key)
+            if (shroomChunk != null) {
+              var xx = (((viewX + xIndex) * GRID_ITEM_CHUNK_SERVICE_SIZE) - view.x) * GRID_SERVICE_PIXEL_WIDTH
+              var yy = (((viewY + yIndex) * GRID_ITEM_CHUNK_SERVICE_SIZE) - view.y) * GRID_SERVICE_PIXEL_HEIGHT
+              draw_sprite_ext(
+                texture_white, 
+                0.0, 
+                xx,
+                yy, 
+                ((GRID_SERVICE_PIXEL_WIDTH * GRID_ITEM_CHUNK_SERVICE_SIZE) / 64) * 0.9,
+                ((GRID_SERVICE_PIXEL_HEIGHT * GRID_ITEM_CHUNK_SERVICE_SIZE) / 64) * 0.9,
+                0.0,
+                shroomChunk.size() > 0 ? c_red : c_white,
+                0.6
+              )
+            }
 
-        bulletService.chunkService.chunks.forEach(function(chunk, key, view) {
-          var coords = String.split(key, "_")
-          var xx = ((real(coords.get(0)) * GRID_ITEM_CHUNK_SERVICE_SIZE) - view.x) * GRID_SERVICE_PIXEL_WIDTH
-          var yy = ((real(coords.get(1)) * GRID_ITEM_CHUNK_SERVICE_SIZE) - view.y) * GRID_SERVICE_PIXEL_HEIGHT
-          draw_sprite_ext(
-            texture_white, 
-            0.0, 
-            xx + 128, 
-            yy + 128, 
-            ((GRID_SERVICE_PIXEL_WIDTH * GRID_ITEM_CHUNK_SERVICE_SIZE) / 64) * 0.75,
-            ((GRID_SERVICE_PIXEL_HEIGHT * GRID_ITEM_CHUNK_SERVICE_SIZE) / 64) * 0.75,
-            0.0,
-            chunk.size() > 0 ? c_lime : c_white,
-            0.6
-          )
-        }, gridService.view)
+            var bulletChunk = bulletChunks.get(key)
+            if (bulletChunk != null) {
+              var xx = (((viewX + xIndex) * GRID_ITEM_CHUNK_SERVICE_SIZE) - view.x) * GRID_SERVICE_PIXEL_WIDTH
+              var yy = (((viewY + yIndex) * GRID_ITEM_CHUNK_SERVICE_SIZE) - view.y) * GRID_SERVICE_PIXEL_HEIGHT
+              draw_sprite_ext(
+                texture_white, 
+                0.0, 
+                xx,
+                yy, 
+                ((GRID_SERVICE_PIXEL_WIDTH * GRID_ITEM_CHUNK_SERVICE_SIZE) / 64) * 0.9,
+                ((GRID_SERVICE_PIXEL_HEIGHT * GRID_ITEM_CHUNK_SERVICE_SIZE) / 64) * 0.9,
+                0.0,
+                bulletChunk.size() > 0 ? c_lime : c_white,
+                0.6
+              )
+            }
+          }
+        }
       }
 
       this.editorRenderSpawners(gridService, shroomService, layout)
@@ -2056,39 +2066,49 @@ function GridRenderer() constructor {
     _renderShrooms(gridService, shroomService)
 
     if (renderDebugChunks) {
-      shroomService.chunkService.chunks.forEach(function(chunk, key, view) {
-        var coords = String.split(key, "_")
-        var xx = ((real(coords.get(0)) * GRID_ITEM_CHUNK_SERVICE_SIZE) - view.x) * GRID_SERVICE_PIXEL_WIDTH
-        var yy = ((real(coords.get(1)) * GRID_ITEM_CHUNK_SERVICE_SIZE) - view.y) * GRID_SERVICE_PIXEL_HEIGHT
-        draw_sprite_ext(
-          texture_white, 
-          0.0, 
-          xx,
-          yy, 
-          ((GRID_SERVICE_PIXEL_WIDTH * GRID_ITEM_CHUNK_SERVICE_SIZE) / 64) * 0.9,
-          ((GRID_SERVICE_PIXEL_HEIGHT * GRID_ITEM_CHUNK_SERVICE_SIZE) / 64) * 0.9,
-          0.0,
-          chunk.size() > 0 ? c_red : c_white,
-          0.6
-        )
-      }, gridService.view)
+      var view = gridService.view
+      var viewX = toInt(view.x / shroomService.chunkService.size)
+      var viewY = toInt(view.y / shroomService.chunkService.size)
+      var shroomChunks = shroomService.chunkService.chunks
+      var bulletChunks = bulletService.chunkService.chunks
+      for (var yIndex = -10; yIndex < 6; yIndex++) {
+        for (var xIndex = -8; xIndex < 12; xIndex++) {
+          var key = $"{viewX + xIndex}_{viewY + yIndex}"
+          var shroomChunk = shroomChunks.get(key)
+          if (shroomChunk != null) {
+            var xx = (((viewX + xIndex) * GRID_ITEM_CHUNK_SERVICE_SIZE) - view.x) * GRID_SERVICE_PIXEL_WIDTH
+            var yy = (((viewY + yIndex) * GRID_ITEM_CHUNK_SERVICE_SIZE) - view.y) * GRID_SERVICE_PIXEL_HEIGHT
+            draw_sprite_ext(
+              texture_white, 
+              0.0, 
+              xx,
+              yy, 
+              ((GRID_SERVICE_PIXEL_WIDTH * GRID_ITEM_CHUNK_SERVICE_SIZE) / 64) * 0.9,
+              ((GRID_SERVICE_PIXEL_HEIGHT * GRID_ITEM_CHUNK_SERVICE_SIZE) / 64) * 0.9,
+              0.0,
+              shroomChunk.size() > 0 ? c_red : c_white,
+              0.6
+            )
+          }
 
-      bulletService.chunkService.chunks.forEach(function(chunk, key, view) {
-        var coords = String.split(key, "_")
-        var xx = ((real(coords.get(0)) * GRID_ITEM_CHUNK_SERVICE_SIZE) - view.x) * GRID_SERVICE_PIXEL_WIDTH
-        var yy = ((real(coords.get(1)) * GRID_ITEM_CHUNK_SERVICE_SIZE) - view.y) * GRID_SERVICE_PIXEL_HEIGHT
-        draw_sprite_ext(
-          texture_white, 
-          0.0, 
-          xx + 128, 
-          yy + 128, 
-          ((GRID_SERVICE_PIXEL_WIDTH * GRID_ITEM_CHUNK_SERVICE_SIZE) / 64) * 0.75,
-          ((GRID_SERVICE_PIXEL_HEIGHT * GRID_ITEM_CHUNK_SERVICE_SIZE) / 64) * 0.75,
-          0.0,
-          chunk.size() > 0 ? c_lime : c_white,
-          0.6
-        )
-      }, gridService.view)
+          var bulletChunk = bulletChunks.get(key)
+          if (bulletChunk != null) {
+            var xx = (((viewX + xIndex) * GRID_ITEM_CHUNK_SERVICE_SIZE) - view.x) * GRID_SERVICE_PIXEL_WIDTH
+            var yy = (((viewY + yIndex) * GRID_ITEM_CHUNK_SERVICE_SIZE) - view.y) * GRID_SERVICE_PIXEL_HEIGHT
+            draw_sprite_ext(
+              texture_white, 
+              0.0, 
+              xx,
+              yy, 
+              ((GRID_SERVICE_PIXEL_WIDTH * GRID_ITEM_CHUNK_SERVICE_SIZE) / 64) * 0.9,
+              ((GRID_SERVICE_PIXEL_HEIGHT * GRID_ITEM_CHUNK_SERVICE_SIZE) / 64) * 0.9,
+              0.0,
+              bulletChunk.size() > 0 ? c_lime : c_white,
+              0.6
+            )
+          }
+        }
+      }
     }
 
     this.editorRenderSpawners(gridService, shroomService, layout)

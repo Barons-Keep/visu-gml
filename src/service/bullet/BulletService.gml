@@ -228,7 +228,7 @@ function BulletService(config = null): Service(config) constructor {
   ///@return {BulletService}
   static spawnBulletEmitter = function(item, emitter) {
     var task = new Task("bullet-emitter")
-      .setTimeout(999.9)
+      .setTimeout(60.0)
       .setState({
         item: item,
         emitter: new GridItemEmitter(Struct.appendRecursive({
