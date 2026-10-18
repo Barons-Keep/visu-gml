@@ -694,7 +694,7 @@ function GridService(_config = null): Service(_config) constructor {
     return this
   }
 
-    ///@param {?Number} [duration]
+  ///@param {?Number} [duration]
   ///@return {GridService}
   loadingScreen = function(duration = null) {
     var task = new Task("init-foreground")
@@ -805,70 +805,16 @@ function GridService(_config = null): Service(_config) constructor {
     return this
   }
 
-  ///@param {Bullet} bullet
-  ///@param {Number} key
-  ///@param {Struct} acc
-  moveBullet = function(bullet, key, acc) {
-    if (bullet == null) {
-      return
-    }
-
-    bullet.move()
-    if (bullet.producer == Player) {
-      acc.chunkService.update(bullet)
-    }
-    
-    var view = acc.view
-    var length = Math.fetchLength(
-      bullet.x, bullet.y,
-      view.x + (view.width / 2.0), 
-      view.y + (view.height / 2.0)
-    )
-
-    if (!bullet.signals.kill && length > GRID_ITEM_FRUSTUM_RANGE) {
-      bullet.signals.freeReason = "expired"
-      //bullet.signal("kill")
-      bullet.signalKill()
-    }
-  }
-
-  ///@param {Shroom} shroom
-  ///@param {Number} key
-  ///@param {Struct} acc
-  moveShroom = function(shroom, key, acc) {
-    if (shroom == null) {
-      return
-    }
-
-    shroom.move()
-    acc.chunkService.update(shroom)
-    
-    var view = acc.view
-    if (!shroom.signals.kill
-          && Math.fetchLength(shroom.x, shroom.y, view.x + (view.width / 2.0), view.y + (view.height / 2.0)) > GRID_ITEM_FRUSTUM_RANGE) {
-      shroom.signals.freeReason = "expired"
-      //shroom.signal("kill")
-      shroom.signalKill()
-    }
-  }
-
-  moveGridItemsAcc = {
-    view: null,
-    chunkService: null,
-  }
   ///@private
+  ///@param {VisuController} controller
   ///@return {GridService}
-  moveGridItems = function() {
-    var controller = Beans.get(BeanVisuController)
+  moveGridItems = function(controller) {
     var view = controller.gridService.view
     var viewX = view.x
     var viewY = view.y
     var viewWidth = view.width
     var viewHeight = view.height
-    this.moveGridItemsAcc.view = view
-    
-    this.moveGridItemsAcc.chunkService = controller.bulletService.chunkService
-    //controller.bulletService.bullets.forEach(this.moveBullet, this.moveGridItemsAcc)
+
     var bulletChunkService = controller.bulletService.chunkService
     var bullets = controller.bulletService.bullets
     var bulletsSize = bullets.size()
@@ -887,13 +833,10 @@ function GridService(_config = null): Service(_config) constructor {
           && point_distance(bullet.x, bullet.y, viewX + (viewWidth / 2.0), viewY + (viewHeight / 2.0)) > GRID_ITEM_FRUSTUM_RANGE) {
 
         bullet.signals.freeReason = "expired"
-        //bullet.signal("kill")
         bullet.signalKill()
       }
     }
 
-    this.moveGridItemsAcc.chunkService = controller.shroomService.chunkService
-    //controller.shroomService.shrooms.forEach(this.moveShroom, this.moveGridItemsAcc)
     var shroomChunkService = controller.shroomService.chunkService
     var shrooms = controller.shroomService.shrooms
     var shroomsSize = shrooms.size()
@@ -908,7 +851,6 @@ function GridService(_config = null): Service(_config) constructor {
       if (!shroom.signals.kill
             && point_distance(shroom.x, shroom.y, viewX + (viewWidth / 2.0), viewY + (viewHeight / 2.0)) > GRID_ITEM_FRUSTUM_RANGE) {
         shroom.signals.freeReason = "expired"
-        //shroom.signal("kill")
         shroom.signalKill()
       }
     }
@@ -920,139 +862,87 @@ function GridService(_config = null): Service(_config) constructor {
     return this
   }
 
-  ///@param {Bullet} bullet
-  ///@param {Number} index
-  ///@param {VisuController} controller
-  bulletCollision = function(bullet, index, controller) {
-    static playerBullet = function(shroom, index, bullet) {
-      if (shroom.collide(bullet)) {
-        shroom.healthPoints = clamp(shroom.healthPoints - bullet.damage, 0, 9999.9)
-        shroom.signalBulletCollision(bullet)
-        shroom.signalDamage(true)
-        bullet.signalShroomCollision(shroom)
-        //shroom.signal("bulletCollision", bullet)
-        //shroom.signal("damage", true)
-        //bullet.signal("shroomCollision", shroom)
-      }
-    }
-
-    static shroomBullet = function(player, bullet) {
-      if (bullet.fadeIn >= 1.0 && player.collide(bullet)) {
-        player.signalBulletCollision(bullet)
-        bullet.signalPlayerCollision(player)
-        //player.signal("bulletCollision", bullet)
-        //bullet.signal("playerCollision", player)
-      }
-    }
-
-    if (bullet == null) {
-      return
-    }
-
-    switch (bullet.producer) {
-      case Player:
-        var keys = bullet.chunkPosition.keys
-        var size = keys.size()
-        for (var idx = 0; idx < size; idx++) {
-          var key = keys.get(idx)
-          controller.shroomService.chunkService
-            .get(key)
-            .forEach(playerBullet, bullet)
-        }
-        //controller.shroomService.shrooms.forEach(playerBullet, bullet)
-        break
-      case Shroom:
-        shroomBullet(controller.playerService.player, bullet)
-        break
-      default:
-        Logger.warn("GridService", "Found invalid bullet producer")
-        break
-    }
-  }
-
-  ///@param {Bullet} bullet
-  ///@param {Number} index
-  ///@param {VisuController} controller
-  bulletCollisionNoPlayer = function(bullet, index, controller) { }
-
-  ///@param {Shroom} shroom
-  ///@param {Number} index
-  ///@param {Player} player
-  shroomCollision = function(shroom, index, player) {
-    if (shroom == null) {
-      return
-    }
-
-    if (shroom.fadeIn >= 1.0 && shroom.collide(player)) {
-      shroom.healthPoints = clamp(shroom.healthPoints - 1.0, 0, 9999.9)
-      player.signalShroomCollision(shroom)
-      shroom.signalPlayerCollision(player)
-      shroom.signalDamage(true)
-      //player.signal("shroomCollision", shroom)
-      //shroom.signal("playerCollision", player)
-      //shroom.signal("damage", true)
-    }
-  }
-
-  ///@param {Shroom} shroom
-  ///@param {Number} index
-  ///@param {Player} player
-  shroomCollisionGodMode = function(shroom, index, player) {
-    if (shroom == null) {
-      return
-    }
-
-    if (shroom.collide(player)) {
-      shroom.signalPlayerCollision(player)
-      //shroom.signal("playerCollision", player)
-      if (!shroom.signals.kill) {
-        shroom.signals.freeReason = "shooted"
-        shroom.signalKill()
-        //shroom.signal("kill")
-      }
-    }
-  }
-
-  ///@param {Shroom} shroom
-  ///@param {Number} index
-  ///@param {?Player} player
-  shroomCollisionNoPlayer = function(shroom, index, player) { }
-
   ///@private
+  ///@param {VisuController} controller
   ///@return {GridService}
-  signalGridItemsCollision = function() {
-    var controller = Beans.get(BeanVisuController)
+  signalGridItemsCollision = function(controller) {
     var player = controller.playerService.player
-    var isPlayer = player != null
+    if (player == null) {
+      return this
+    }
   
-    controller.bulletService.bullets.forEach(
-      isPlayer
-        ? this.bulletCollision
-        : this.bulletCollisionNoPlayer,
-      controller
-    )
-     
-    controller.shroomService.shrooms.forEach(
-      isPlayer
-        ? (player.stats.godModeCooldown > 0.0 
-          ? this.shroomCollisionGodMode 
-          : this.shroomCollision)
-        : this.shroomCollisionNoPlayer, 
-      player
-    )
-    
-    return this
-  }
+    var bullets = controller.bulletService.bullets
+    var bulletsSize = bullets.size()
+    for (var idx = 0; idx < bulletsSize; idx++) {
+      var bullet = bullets.get(idx)
+      if (bullet == null) {
+        continue
+      }
 
-  ///@private
-  ///@return {GridService}
-  updateGridItems = function() {
-    var controller = Beans.get(BeanVisuController)
-    this.moveGridItems()
-    this.signalGridItemsCollision()
-    controller.playerService.update(this)
-    controller.shroomService.update(this)
-    controller.bulletService.update(this)
+      switch (bullet.producer) {
+        case Player:
+          var keys = bullet.chunkPosition.keys
+          var size = keys.size()
+          for (var index = 0; index < size; index++) {
+            var key = keys.get(index)
+            var shroomChunk = controller.shroomService.chunkService.get(key)
+            var shroomChunkSize = shroomChunk.size()
+            for (var shroomChunkIdx = 0; shroomChunkIdx < shroomChunkSize; shroomChunkIdx++) {
+              var shroom = shroomChunk.get(shroomChunkIdx)
+              if (shroom.collide(bullet)) {
+                shroom.healthPoints = clamp(shroom.healthPoints - bullet.damage, 0, 9999.9)
+                shroom.signalBulletCollision(bullet)
+                shroom.signalDamage(true)
+                bullet.signalShroomCollision(shroom)
+              }
+            }
+          }
+          break
+        case Shroom:
+          if (bullet.fadeIn >= 1.0 && player.collide(bullet)) {
+            player.signalBulletCollision(bullet)
+            bullet.signalPlayerCollision(player)
+          }
+          break
+        default:
+          Logger.warn("GridService", "Found invalid bullet producer")
+          break
+      }
+    }
+
+    var shrooms = controller.shroomService.shrooms
+    var shroomsSize = shrooms.size()
+    if (player.stats.godModeCooldown > 0.0) {
+      for (var idx = 0; idx < shroomsSize; idx++) {
+        var shroom = shrooms.get(idx)
+        if (shroom == null) {
+          continue
+        }
+
+        if (shroom.collide(player)) {
+          shroom.signalPlayerCollision(player)
+          if (!shroom.signals.kill) {
+            shroom.signals.freeReason = "shooted"
+            shroom.signalKill()
+          }
+        }
+      }
+    } else {
+      for (var idx = 0; idx < shroomsSize; idx++) {
+        var shroom = shrooms.get(idx)
+        if (shroom == null) {
+          continue
+        }
+
+        if (shroom.fadeIn >= 1.0 && shroom.collide(player)) {
+          shroom.healthPoints = clamp(shroom.healthPoints - 1.0, 0, 9999.9)
+          player.signalShroomCollision(shroom)
+          shroom.signalPlayerCollision(player)
+          shroom.signalDamage(true)
+        }
+      }
+    }
+    
     return this
   }
 
@@ -1064,11 +954,17 @@ function GridService(_config = null): Service(_config) constructor {
 
   ///@return {GridService}
   update = function() {
-    this.properties.update(this)
     this.dispatcher.update()
     this.executor.update()
+    this.properties.update(this)
     this.targetLocked.update(this)
-    this.updateGridItems()
+
+    var controller = Beans.get(BeanVisuController)
+    this.moveGridItems(controller)
+    this.signalGridItemsCollision(controller)
+    controller.playerService.update(this)
+    controller.shroomService.update(this)
+    controller.bulletService.update(this)
     
     return this
   }
