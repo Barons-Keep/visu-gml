@@ -49,12 +49,6 @@ function CoinFeature(json): GridItemFeature(json) constructor {
         item.x + ((verticalOffset + this.offsetX) / GRID_SERVICE_PIXEL_WIDTH),
         item.y + ((horizontalOffset + this.offsetY) / GRID_SERVICE_PIXEL_HEIGHT)
       )
-
-      //controller.coinService.send(new Event("spawn-coin", {
-      //  template: this.coin,
-      //  x: item.x + ((verticalOffset + this.offsetX) / GRID_SERVICE_PIXEL_WIDTH),
-      //  y: item.y + ((horizontalOffset + this.offsetY) / GRID_SERVICE_PIXEL_HEIGHT),
-      //}))
     }
   }
 }

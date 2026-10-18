@@ -4,10 +4,10 @@ show_debug_message("init CoinService.gml")
 
 function CoinService(): Service() constructor {
 
-  ///@type {Array<Coin>}
-  //coins = new Array(Coin).enableGC()
+  ///@type {DSList<Coin>}
   coins = new DSList(Coin)
 
+  ///@type {DSList<Number>>}
   coinsPool = new DSList(Number)
 
   ///@type {Map<String, CoinTemplate>}
@@ -24,25 +24,6 @@ function CoinService(): Service() constructor {
 
   ///@type {EventPump}
   dispatcher = new EventPump(this, new Map(String, Callable, {
-    "spawn-coin": function(event) {
-      if (event.data.template == "coin-empty") {
-        return
-      }
-      
-      var template = new CoinTemplate(event.data.template, this
-        .getTemplate(event.data.template)
-        .serialize())
-      Struct.set(template, "x", Assert.isType(event.data.x, Number))
-      Struct.set(template, "y", Assert.isType(event.data.y, Number))
-      Struct.set(template, "angle", Struct.get(event.data, "angle"))
-      if (Optional.is(Struct.get(event.data, "speed"))) {
-        Struct.append(template.speed, event.data.speed)
-      }
-      
-      var coin = new Coin(template)
-      this.coins.add(coin)
-      this.statistics.factoryCoin(coin)
-    },
     "clear-coins": function(event) {
       static freeCoin = function(coin, idx, coinService) {
         if (coin == null) {
@@ -221,30 +202,6 @@ function CoinService(): Service() constructor {
     },
   }
 
-  ///@private
-  ///@param {Coin} coin
-  ///@param {Number} index
-  ///@param {VisuController} controller
-  updateCoin = function(coin, index, controller) {
-    var player = controller.playerService.player
-    var coins = controller.coinService.coins
-    var view = controller.gridService.view
-    coin.move(player)
-    if (player != null && coin.collide(player)) {
-      player.stats.dispatchCoin(coin)
-      coins.addToGC(index)
-      coin.freeReason = "collected"
-      controller.coinService.statistics.freeCoin(coin, coin.freeReason)
-    } else {
-      var length = Math.fetchLength(coin.x, coin.y, view.x + (view.width / 2.0), view.y + (view.height / 2.0))
-      if (length > GRID_ITEM_FRUSTUM_RANGE) {
-        coins.addToGC(index)
-        coin.freeReason = "expired"
-        controller.coinService.statistics.freeCoin(coin, coin.freeReason)
-      }
-    }
-  }
-
   ///@param {String} name
   ///@param {Number} x
   ///@param {Number} y
@@ -262,7 +219,6 @@ function CoinService(): Service() constructor {
     }
     
     var coin = new Coin(template.serializeSpawn(x, y, angle, speed))
-    //this.coins.add(coin)
     var coinsPoolSize = this.coinsPool.size()
     if (coinsPoolSize > 0) {
       var idx = this.coinsPool.container[| coinsPoolSize - 1]
@@ -284,7 +240,6 @@ function CoinService(): Service() constructor {
   ///@return {CoinService}
   update = function() { 
     this.dispatcher.update()
-    //this.coins.forEach(this.updateCoin, Beans.get(BeanVisuController)).runGC(true)
     var controller = Beans.get(BeanVisuController)
     var player = controller.playerService.player
     var view = controller.gridService.view

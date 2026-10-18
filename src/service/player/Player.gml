@@ -582,19 +582,6 @@ function PlayerStats(_player, json) constructor {
           controller.coinService.spawnCoin("coin-force", _x, _y, angle, { 
             value: -1.0 * (2.0 + random(3.0)), 
           })
-          /*
-          var coin = {
-            template: "coin-force",
-            x: _x,
-            y: _y,
-            angle: angle,
-            speed: { 
-              value: -1.0 * speedValue, 
-              factor: speedFactor,
-            },
-          }
-          controller.coinService.send(new Event("spawn-coin", coin))
-          */
         }
 
         this.stats.player.x = view.x + (view.width / 2.0)
@@ -612,19 +599,6 @@ function PlayerStats(_player, json) constructor {
         )
 
         controller.playerService.statistics.freePlayer(this.stats.player, "life")
-
-        /*
-        controller.particleService.send(controller.particleService
-          .factoryEventSpawnParticleEmitter({
-            particleName: "particle-player-respawn",
-            beginX: (this.stats.player.x - view.x) * GRID_SERVICE_PIXEL_WIDTH,
-            beginY: (this.stats.player.y - view.y) * GRID_SERVICE_PIXEL_HEIGHT,
-            endX: (this.stats.player.x - view.x) * GRID_SERVICE_PIXEL_WIDTH,
-            endY: (this.stats.player.y - view.y) * GRID_SERVICE_PIXEL_HEIGHT,
-            duration: 0.0,
-            amount: 2,
-          }))
-        */
       }
       return this
     },
