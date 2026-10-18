@@ -3211,7 +3211,7 @@ function init_VETemplateToolbar() {
               area.getY() * GRID_SERVICE_PIXEL_HEIGHT,
               (area.getX() + area.getWidth()) * GRID_SERVICE_PIXEL_WIDTH,
               (area.getY() + area.getHeight()) * GRID_SERVICE_PIXEL_HEIGHT,
-              interval,
+              0.0,
               amount,
               interval,
               shape,
