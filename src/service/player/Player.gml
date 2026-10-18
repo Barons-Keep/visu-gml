@@ -579,18 +579,8 @@ function PlayerStats(_player, json) constructor {
             view.y
           )
 
-          var speedMin = 2.0
-          var speedMax = 5.0
-          var speedValue = speedMin + random(speedMax - speedMin)
-          var speedFactor = clamp(
-            random(speedValue) / (speedMax * 10.0), 
-            speedMin / (speedMax * 10.0), 
-            speedMax / (speedMax * 10.0)
-          )
-
           controller.coinService.spawnCoin("coin-force", _x, _y, angle, { 
-            value: -1.0 * speedValue, 
-            factor: speedFactor,
+            value: -1.0 * (2.0 + random(3.0)), 
           })
           /*
           var coin = {
