@@ -44,7 +44,7 @@ function template_shroom(json) {
       },
       "shroom_texture": {
         type: Sprite,
-        value: SpriteUtil.parse(json.sprite, { name: "texture_missing" }),
+        value: SpriteUtil.parse(json.sprite, GRID_ITEM_DEFAULT_SPRITE),
       },
       "use_shroom_mask": {
         type: Boolean,
