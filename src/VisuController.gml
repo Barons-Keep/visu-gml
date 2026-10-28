@@ -191,14 +191,16 @@ function VisuController(config = null): Service(config) constructor {
       var fsmEvent = new Event("transition", { 
         name: "rewind", 
         data: {
-          resume: Core.isType(Struct.get(event.data, "resume"), Boolean) 
-            ? event.data.resume : this.fsm.getStateName() == "play",
-          timestamp: Assert.isType(event.data.timestamp, Number),
-          videoServiceAttempts: Struct.getDefault(
-            event.data, 
-            "videoServiceAttempts", 
-            Core.getProperty("core.video-service.attempts", 3)
-          ),
+          resume: Struct.getIfType(event.data, "resume", Boolean, this.fsm.getStateName() == "play"),
+          timestamp: Assert.isType(event.data.timestamp, Number, "Timestamp must be type of Number"),
+          videoServiceAttempts: Struct.getDefault(event.data, "rewindVideo", false)
+            ? Struct.getIfType(
+                event.data,
+                "videoServiceAttempts",
+                Number,
+                Core.getProperty("core.video-service.attempts", 3)
+              )
+            : 0.0,
         }
       })
       

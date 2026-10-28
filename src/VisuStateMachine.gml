@@ -688,7 +688,8 @@ function VisuStateMachine(context, name) {
 
             var trackDuration = controller.trackService.duration
             var video = controller.videoService.getVideo()
-            if (Optional.is(video) && trackDuration > 0.0) {
+            var videoServiceAttempts = Struct.get(data, "videoServiceAttempts")
+            if (Optional.is(video) && trackDuration > 0.0 && videoServiceAttempts > 0.0) {
               var videoData = JSON.clone(data)
               var videoDuration = video.getDuration()
               if (videoData.timestamp > videoDuration) {
@@ -765,9 +766,10 @@ function VisuStateMachine(context, name) {
           }
         },
         transitions: {
-          "idle": null, 
-          "play": null, 
-          "pause": null, 
+          "idle": null,
+          "play": null,
+          "pause": null,
+          "rewind": null,
           "quit": null,
           "scene-close": null,
         },

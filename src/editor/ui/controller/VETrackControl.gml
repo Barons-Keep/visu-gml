@@ -429,12 +429,12 @@ function VETrackControl(_editor) constructor {
           onMousePressedLeft: function(event) {
             this.mousePressed = true
             this.updatePosition(event.data.x - this.context.area.getX(), event.data.y - this.context.area.getY())
-            this.sendEvent()
+            this.sendEvent(false)
           },
           onMouseReleasedLeft: function(event) {
             this.mousePressed = false
             this.updatePosition(event.data.x - this.context.area.getX(), event.data.y - this.context.area.getY())
-            this.sendEvent()
+            this.sendEvent(true)
           },
           onMouseDragLeft: function(event) {
             this.mousePressed = false
@@ -458,14 +458,14 @@ function VETrackControl(_editor) constructor {
                 callback: context.sendEvent,
               })
               .whenSuccess(function() {
-                Callable.run(Struct.get(this.state, "callback"))
+                Callable.run(Struct.get(this.state, "callback"), true)
               })
             )
           },
-          sendEvent: new BindIntent(function() {
+          sendEvent: new BindIntent(function(rewindVideo) {
             var controller = Beans.get(BeanVisuController)
             var timestamp = this.value * (controller.trackService.duration - (FRAME_MS * 4))
-            var event = new Event("rewind", { timestamp: timestamp }).setPromise(new Promise())
+            var event = new Event("rewind", { timestamp: timestamp, rewindVideo: rewindVideo, }).setPromise(new Promise())
             var promise = controller.dispatcher.execute(event)
             this.state.set("promise", promise)
             return promise

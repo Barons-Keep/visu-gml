@@ -24,24 +24,25 @@ function GridRenderer() constructor {
 
   ///@private
   ///@type {Surface}
-  backgroundSurface = new Surface({ width: GuiWidth(), height: GuiHeight() })
+  backgroundSurface = new Surface({ name: "gridRendererBackgroundSurface", width: GuiWidth(), height: GuiHeight() })
 
   ///@private
   ///@type {Surface}
-  gridSurface = new Surface({ width: GuiWidth(), height: GuiHeight(), depth: false })
+  gridSurface = new Surface({ name: "gridRendererGridSurface", width: GuiWidth(), height: GuiHeight(), depth: false })
 
   ///@private
   ///@type {Surface}
-  gridItemSurface = new Surface({ width: GuiWidth(), height: GuiHeight(), depth: false })
+  gridItemSurface = new Surface({ name: "gridRendererGridItemSurface", width: GuiWidth(), height: GuiHeight(), depth: false })
 
   ///@private
   ///@type {Surface}
-  gameSurface = new Surface({ width: GuiWidth(), height: GuiHeight() })
+  gameSurface = new Surface({ name: "gridRendererGameSurface", width: GuiWidth(), height: GuiHeight() })
 
   ///@private
   ///@type {Surface}
   ///*
   shaderBufferSurface = new Surface({ 
+    name: "gridRendererShaderBufferSurface", 
     width: ceil(GuiWidth() * Visu.settings.getValue("visu.graphics.shader-quality", 1.0)), 
     height: ceil(GuiHeight() * Visu.settings.getValue("visu.graphics.shader-quality", 1.0)),
   })

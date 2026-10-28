@@ -812,10 +812,10 @@ function VisuMenu(_config = null) constructor {
               return this.context.y() + this.margin.top
             },
             width: function() { 
-              return this.context.width() - Struct.get(this.context.nodes, "visu-menu.content").right() - this.margin.left - this.margin.right
+              return this.context.width() - Struct.get(this.context.nodes, "visu-menu.content").width() - this.margin.left - this.margin.right
             },
             height: function() { 
-             return this.context.height() - this.margin.top - this.margin.bottom
+              return this.context.height() - this.margin.top - this.margin.bottom
             },
           },
         }
@@ -858,7 +858,11 @@ function VisuMenu(_config = null) constructor {
           //var uiAlpha = clamp(this.state.get("uiAlpha") + DeltaTime.apply(this.state.get("uiAlphaFactor")), 0.0, 1.0) 
           this.state.set("uiAlpha", uiAlpha)
           if (this.surface == null) {
-            this.surface = new Surface({ width: this.area.getWidth(), height: this.area.getHeight() })
+            this.surface = new Surface({
+              name: $"{this.name}Surface",
+              width: this.area.getWidth(),
+              height: this.area.getHeight(),
+            })
           }
 
           this.surface.update(this.area.getWidth(), this.area.getHeight())
@@ -1277,8 +1281,12 @@ function VisuMenu(_config = null) constructor {
           this.state.set("uiAlpha", uiAlpha)
 
           this.updateVerticalSelectedIndex(VISU_MENU_ENTRY_HEIGHT)
-          if (!Optional.is(this.surface)) {
-            this.surface = new Surface()
+          if (this.surface == null) {
+            this.surface = new Surface({
+              name: $"{this.name}Surface",
+              width: this.area.getWidth(),
+              height: this.area.getHeight(),
+            })
           }
   
           this.surface.update(this.area.getWidth(), this.area.getHeight())
@@ -1678,7 +1686,7 @@ function VisuMenu(_config = null) constructor {
       this.backData = null
       this.enabled = false
       this.containers.forEach(function (container, key, uiService) {
-        uiService.send(new Event("remove", { 
+        uiService.dispatcher.execute(new Event("remove", { 
           name: key, 
           quiet: true,
         }))

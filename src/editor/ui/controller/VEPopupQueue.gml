@@ -140,7 +140,11 @@ function VEPopupQueue(_editor) constructor {
       },
       render: function() {
         if (!Optional.is(this.surface)) {
-          this.surface = new Surface()
+          this.surface = new Surface({
+            name: $"{this.name}Surface",
+            width: this.area.getWidth(),
+            height: this.area.getHeight(),
+          })
         }
 
         this.surface.update(this.area.getWidth(), this.area.getHeight())
