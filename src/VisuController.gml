@@ -814,6 +814,7 @@ function VisuController(config = null): Service(config) constructor {
         
         this.statistics = {
           playerReport: this.playerService.statistics.report(),
+          playerBReport: this.playerService.statisticsB.report(),
           coinReport: this.coinService.statistics.report(),
           shroomReport: this.shroomService.statistics.report(),
           bulletReport: this.bulletService.statistics.report(),
@@ -841,10 +842,15 @@ function VisuController(config = null): Service(config) constructor {
           this.playerService.statistics.freePlayer(this.playerService.player)
         }
         Logger.debug(BeanVisuController, $"PlayerService statistics:\n{JSON.stringify(this.statistics.playerReport, true)}")
+        if (this.playerService.playerB != null) {
+          this.playerService.statisticsB.freePlayer(this.playerService.playerB)
+        }
+        Logger.debug(BeanVisuController, $"PlayerService statisticsB:\n{JSON.stringify(this.statisticsB.playerReport, true)}")
         this.shroomService.statistics.validate()
         this.bulletService.statistics.validate()
         this.coinService.statistics.validate()
         this.playerService.statistics.validate()
+        this.playerService.statisticsB.validate()
       }
 
       if (this.trackService.isTrackLoaded()

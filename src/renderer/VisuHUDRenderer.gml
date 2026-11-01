@@ -31,12 +31,27 @@ function VisuHUDRenderer() constructor {
   }
 
   ///@private
+  ///@type {Struct}
+  cachedTextB = {
+    label: "",
+    point: "",
+    force: "",
+    mask: "",
+    life: "",
+    bomb: "",
+  }
+
+  ///@private
   ///@type {Boolean}
   enableGlitch = false
 
   ///@private
   ///@type {Number}
   lastGodMode = 0.0
+
+  ///@private
+  ///@type {Number}
+  lastGodModeB = 0.0
 
   ///@private
   ///@type {Font}
@@ -49,7 +64,18 @@ function VisuHUDRenderer() constructor {
   ///@type {Number}
   fadeIn = 0.0
 
+  ///@private
+  ///@type {Struct}
   hudPosition = {
+    x: 0.0,
+    y: 0.0,
+    width: 1.0,
+    height: 1.0,
+  }
+
+  ///@private
+  ///@type {Struct}
+  hudPositionB = {
     x: 0.0,
     y: 0.0,
     width: 1.0,
@@ -166,23 +192,25 @@ function VisuHUDRenderer() constructor {
     return this
   }
 
+  ///@param {Boolean} [isB]
   ///@return {VisuHUDRenderer}
-  sendPointParticleEvent = function() {
+  sendPointParticleEvent = function(isB = false) {
     var controller = Beans.get(BeanVisuController)
     var system = controller.particleService.systems.get("hud")
     if (system == null) {
       return this
     }
- 
-    var width = this.hudPosition.width / 2.0
-    var height = this.hudPosition.height / 4.0
+
+    var hudPosition = isB ? this.hudPositionB : this.hudPosition
+    var width = hudPosition.width / 2.0
+    var height = hudPosition.height / 4.0
     controller.particleService.spawnParticleEmitter(
       "hud",
       "particle-hud-point",
-      this.hudPosition.x + this.hudPosition.height,
-      this.hudPosition.y + height * 1.0 - height,
-      this.hudPosition.x + this.hudPosition.height + this.hudPosition.height,
-      this.hudPosition.y + height * 1.0,
+      hudPosition.x + hudPosition.height,
+      hudPosition.y + height * 1.0 - height,
+      hudPosition.x + hudPosition.height + hudPosition.height,
+      hudPosition.y + height * 1.0,
       FRAME_MS,
       1.0,
       FRAME_MS
@@ -197,23 +225,25 @@ function VisuHUDRenderer() constructor {
     return this
   }
 
+  ///@param {Boolean} [isB]
   ///@return {VisuHUDRenderer}
-  sendForceParticleEvent = function() {
+  sendForceParticleEvent = function(isB = false) {
     var controller = Beans.get(BeanVisuController)
     var system = controller.particleService.systems.get("hud")
     if (system == null) {
       return this
     }
  
-    var width = this.hudPosition.width / 2.0
-    var height = this.hudPosition.height / 4.0
+    var hudPosition = isB ? this.hudPositionB : this.hudPosition
+    var width = hudPosition.width / 2.0
+    var height = hudPosition.height / 4.0
     controller.particleService.spawnParticleEmitter(
       "hud",
       "particle-hud-force",
-      this.hudPosition.x + this.hudPosition.height,
-      this.hudPosition.y + height * 2.0 - height,
-      this.hudPosition.x + this.hudPosition.height + this.hudPosition.height,
-      this.hudPosition.y + height * 2.0,
+      hudPosition.x + hudPosition.height,
+      hudPosition.y + height * 2.0 - height,
+      hudPosition.x + hudPosition.height + hudPosition.height,
+      hudPosition.y + height * 2.0,
       FRAME_MS,
       3.0,
       FRAME_MS
@@ -228,23 +258,25 @@ function VisuHUDRenderer() constructor {
     return this
   }
 
+  ///@param {Boolean} [isB]
   ///@return {VisuHUDRenderer}
-  sendLifeParticleEvent = function() {
+  sendLifeParticleEvent = function(isB = false) {
     var controller = Beans.get(BeanVisuController)
     var system = controller.particleService.systems.get("hud")
     if (system == null) {
       return this
     }
  
-    var width = this.hudPosition.width / 2.0
-    var height = this.hudPosition.height / 4.0
+    var hudPosition = isB ? this.hudPositionB : this.hudPosition
+    var width = hudPosition.width / 2.0
+    var height = hudPosition.height / 4.0
     controller.particleService.spawnParticleEmitter(
       "hud",
       "particle-hud-life",
-      this.hudPosition.x + this.hudPosition.height,
-      this.hudPosition.y + height * 3.0 - height,
-      this.hudPosition.x + this.hudPosition.height + this.hudPosition.height,
-      this.hudPosition.y + height * 3.0,
+      hudPosition.x + hudPosition.height,
+      hudPosition.y + height * 3.0 - height,
+      hudPosition.x + hudPosition.height + hudPosition.height,
+      hudPosition.y + height * 3.0,
       FRAME_MS,
       1.0,
       FRAME_MS
@@ -253,23 +285,25 @@ function VisuHUDRenderer() constructor {
     return this
   }
 
+  ///@param {Boolean} [isB]
   ///@return {VisuHUDRenderer}
-  sendBombParticleEvent = function() {
+  sendBombParticleEvent = function(isB = false) {
     var controller = Beans.get(BeanVisuController)
     var system = controller.particleService.systems.get("hud")
     if (system == null) {
       return this
     }
  
-    var width = this.hudPosition.width / 2.0
-    var height = this.hudPosition.height / 4.0
+    var hudPosition = isB ? this.hudPositionB : this.hudPosition
+    var width = hudPosition.width / 2.0
+    var height = hudPosition.height / 4.0
     controller.particleService.spawnParticleEmitter(
       "hud",
       "particle-hud-bomb",
-      this.hudPosition.x + this.hudPosition.height,
-      this.hudPosition.y + height * 4.0 - height,
-      this.hudPosition.x + this.hudPosition.height + this.hudPosition.height,
-      this.hudPosition.y + height * 4.0,
+      hudPosition.x + hudPosition.height,
+      hudPosition.y + height * 4.0 - height,
+      hudPosition.x + hudPosition.height + hudPosition.height,
+      hudPosition.y + height * 4.0,
       FRAME_MS,
       1.0,
       FRAME_MS
@@ -303,7 +337,7 @@ function VisuHUDRenderer() constructor {
     var controller = Beans.get(BeanVisuController)
     var player = controller.playerService.player
     if (player != null) {
-      var screenFactor = 3.0
+      var screenFactor = 1.0
       var layoutWidth = layout.width()
       var layoutHeight = layout.height()
       var layoutX = layout.x()
@@ -330,6 +364,35 @@ function VisuHUDRenderer() constructor {
       this.hudPosition.y = _y + _height - yStart - this.hudPosition.height
     }
 
+    player = controller.playerService.playerB
+    if (player != null) {
+      var screenFactor = 1.0
+      var layoutWidth = layout.width()
+      var layoutHeight = layout.height()
+      var layoutX = layout.x()
+      var layoutY = layout.y()
+      var _width = layoutWidth / screenFactor
+      var _height = layoutHeight / screenFactor
+      var _x = layoutX
+      var _y = layoutY + (layoutHeight - _height)
+      var xStart = _width - (_width * 0.061 * screenFactor)
+      var yStart = _height * 0.08 * screenFactor
+      var offset = (this.glitchCooldown.duration - this.glitchCooldown.time) * 64.0
+      var scale = clamp((min(_width, _height) / (1536 / screenFactor)), 0.33, 1.5)
+
+      GPU.render.text(_x + xStart + offset, _y + _height - yStart, this.cachedTextB.mask,  scale, 0.0, 1.00 * this.fadeIn, c_white,   this.font, HAlign.RIGHT, VAlign.BOTTOM)
+      GPU.render.text(_x + xStart + offset, _y + _height - yStart, this.cachedTextB.label, scale, 0.0, 0.10 * this.fadeIn, c_fuchsia, this.font, HAlign.RIGHT, VAlign.BOTTOM)  
+      GPU.render.text(_x + xStart, _y + _height - yStart - offset, this.cachedTextB.point, scale, 0.0, 0.50 * this.fadeIn, c_blue,    this.font, HAlign.RIGHT, VAlign.BOTTOM)  
+      GPU.render.text(_x + xStart, _y + _height - yStart - offset, this.cachedTextB.force, scale, 0.0, 0.50 * this.fadeIn, c_red,     this.font, HAlign.RIGHT, VAlign.BOTTOM)  
+      GPU.render.text(_x + xStart, _y + _height - yStart + offset, this.cachedTextB.life,  scale, 0.0, 0.50 * this.fadeIn, c_lime,    this.font, HAlign.RIGHT, VAlign.BOTTOM)  
+      GPU.render.text(_x + xStart, _y + _height - yStart + offset, this.cachedTextB.bomb,  scale, 0.0, 0.50 * this.fadeIn, c_yellow,  this.font, HAlign.RIGHT, VAlign.BOTTOM)
+
+      this.hudPositionB.width = string_width(this.cachedTextB.mask) * scale
+      this.hudPositionB.height = string_height(this.cachedTextB.mask) * scale
+      this.hudPositionB.x = _x + xStart - this.hudPositionB.width
+      this.hudPositionB.y = _y + _height - yStart - this.hudPositionB.height
+    }
+
     this.renderParticleHUDSystem()
     return this
   }
@@ -344,8 +407,9 @@ function VisuHUDRenderer() constructor {
 
     var controller = Beans.get(BeanVisuController)
     var player = controller.playerService.player
+    var playerB = controller.playerService.playerB
     if (player != null) {
-      var screenFactor = 1.0
+      var screenFactor = controller.playerService.playerB != null ? 2.0 : 1.0
       var layoutWidth = layout.width()
       var layoutHeight = layout.height()
       var layoutX = layout.x()
@@ -396,6 +460,62 @@ function VisuHUDRenderer() constructor {
         )
       } else {
         this.lastGodMode = 0.0
+      }
+    }
+
+    player = controller.playerService.playerB
+    if (player != null) {
+      var screenFactor = controller.playerService.player != null ? 2.0 : 1.0
+      var layoutWidth = layout.width()
+      var layoutHeight = layout.height()
+      var layoutX = layout.x()
+      var layoutY = layout.y()
+      var _width = layoutWidth / screenFactor
+      var _height = layoutHeight / screenFactor
+      var _x = layoutX + (controller.playerService.player != null ? _width : 0.0)
+      var _y = layoutY + (layoutHeight - _height)
+      var xStart = _width * 0.061 * screenFactor
+      var yStart = _height * 0.08 * screenFactor
+      var offset = (this.glitchCooldown.duration - this.glitchCooldown.time) * 64.0
+      var scale = clamp((min(_width, _height) / (1536 / screenFactor)), 0.33, 1.5)
+      var factor = 1.0 - (ceil(player.stats.godModeCooldown) - player.stats.godModeCooldown)
+
+      if (player.stats.godModeCooldown > 0.0) {
+        if (this.lastGodModeB == 0.0) {
+          this.lastGodModeB = player.stats.godModeCooldown
+        }
+
+        GPU.render.text(
+          _x + (_width / 2.0),
+          //_y + _height - yStart - (this.hudPosition.height / 2.0),
+          _y + yStart + (yStart * factor) + (this.hudPositionB.height / 2.0),
+          $"{ceil(player.stats.godModeCooldown)}",
+          1.0 + factor,
+          0.0,
+          this.fadeIn * factor,
+          c_white,
+          this.fontGodMode,
+          HAlign.CENTER,
+          VAlign.CENTER,
+          c_black
+        )
+
+        GPU.render.text(
+          _x + (_width / 2.0),
+          //_y + _height - yStart,
+          _y + yStart + yStart,
+          Language.get("visu.gameplay.absolute-protection"),
+          1.0 + clamp(player.stats.godModeCooldown / this.lastGodModeB, 0.0, 1.0),
+          0.0,
+          this.fadeIn * (player.stats.godModeCooldown < 1.0 ? factor : 1.0) * 2.0,
+          c_white,
+          this.font,
+          HAlign.CENTER,
+          VAlign.BOTTOM,
+          c_black
+        )
+      } else {
+        this.lastGodModeB = 0.0
       }
     }
 
@@ -461,6 +581,39 @@ function VisuHUDRenderer() constructor {
           this.cachedText.force = $"              \n       {force}\n      \n      "
           this.cachedText.life = $"\n\n       {lifeString}\n\n"
           this.cachedText.bomb = $"\n\n\n       {bombString}"
+        }
+
+        player = controller.playerService.playerB
+        if (player != null) {
+          var lifeString = ""
+          repeat (player.stats.life.get()) {
+            lifeString = $" L{lifeString}"
+          }
+
+          var bombString = ""
+          repeat (player.stats.bomb.get()) {
+            bombString = $" B{bombString}"
+          }
+
+          var point = string(player.stats.point.get())
+          repeat (4 - String.size(point)) {
+            point = $"0{point}"
+          }
+
+          var forceLevel = player.stats.forceLevel
+          var forceTreshold = forceLevel.level < forceLevel.tresholds.size() - 1
+            ? forceLevel.tresholds.get(forceLevel.level + 1)
+            : (forceLevel.tresholds.size() == 0 ? 0 : forceLevel.tresholds.getLast())
+          var force = forceLevel.level == forceLevel.tresholds.size() - 1
+            ? "MAX"
+            : $"{player.stats.force.get()} / {forceTreshold}"
+
+          this.cachedTextB.mask = $"{point} :POINT\n{force} :FORCE\n{lifeString} :LIFE \n{bombString} :BOMB "
+          this.cachedTextB.label = $":POINT\n:FORCE\n:LIFE \n:BOMB "
+          this.cachedTextB.point = $"{point}       \n\n\n\n"
+          this.cachedTextB.force = $"{force}       \n\n\n"
+          this.cachedTextB.life = $"{lifeString}       \n\n"
+          this.cachedTextB.bomb = $"{bombString}       \n"
         }
         
       }

@@ -17,7 +17,7 @@ function FollowPlayerFeature(json): GridItemFeature(json) constructor {
   ///@param {GridItem} item
   ///@param {VisuController} controller
   static update = function(item, controller) {
-    var player = controller.playerService.player
+    var player = controller.playerService.getCloserPlayer(item)
     if (player == null) {
       return
     }

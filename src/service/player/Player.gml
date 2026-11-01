@@ -26,6 +26,9 @@ function PlayerTemplate(json) constructor {
   ///@type {Struct}
   handler = Struct.getIfType(json, "handler", Struct, {})
 
+  ///@type {Boolean}
+  isB = Struct.getIfType(json, "isB", Boolean, false)
+
   ///@return {Struct}
   serialize = function() {
     var json = {
@@ -33,6 +36,7 @@ function PlayerTemplate(json) constructor {
       handler: this.handler,
       keyboard: this.keyboard,
       mouse: this.mouse,
+      isB: this.isB,
     }
 
     if (Core.isType(this.mask, Struct)) {
@@ -202,12 +206,15 @@ function PlayerStats(_player, json) constructor {
       var value = this.get()
       if (previous < value) {
         controller.sfxService.play("player-collect-point-or-force")
-        controller.visuRenderer.hudRenderer.sendForceParticleEvent()
+        controller.visuRenderer.hudRenderer.sendForceParticleEvent(this.stats.player.isB)
         //Core.print("Force incremented from", previous, "to", value)
       } else if (previous > value) {
         //Core.print("Force decremented from", previous, "to", value)
       }
-      controller.playerService.statistics.freePlayer(this.stats.player, "force")
+      var statistics = this.stats.player.isB
+        ? controller.playerService.statisticsB
+        : controller.playerService.statistics
+      statistics.freePlayer(this.stats.player, "force")
       return this
     },
     onMinValueExceed: function() { 
@@ -246,7 +253,7 @@ function PlayerStats(_player, json) constructor {
       var value = this.get()
       if (previous < value) {
         controller.sfxService.play("player-collect-point-or-force")
-        controller.visuRenderer.hudRenderer.sendPointParticleEvent()
+        controller.visuRenderer.hudRenderer.sendPointParticleEvent(this.stats.player.isB)
         //Core.print("Points incremented from", previous, "to", value)
       } else if (previous > value) {
         //Core.print("Points decremented from", previous, "to", value)
@@ -289,8 +296,8 @@ function PlayerStats(_player, json) constructor {
       var value = this.get()
       if (previous < value) {
         /*//@log.level*/ Logger.debug("Player", $"Bombs increased from {previous} to {value}")
-        controller.visuRenderer.hudRenderer.sendBombParticleEvent()
-        controller.visuRenderer.hudRenderer.sendGlitchEvent()
+        controller.visuRenderer.hudRenderer.sendBombParticleEvent(this.stats.player.isB)
+        controller.visuRenderer.hudRenderer.sendGlitchEvent(this.stats.player.isB)
         controller.sfxService.play("player-collect-bomb")
         //Core.print("Bomb added from", previous, "to", value)
       } else if (previous > value) {
@@ -299,6 +306,7 @@ function PlayerStats(_player, json) constructor {
         this.stats.setGodModeCooldown(5.0)
 
         var view = controller.gridService.view
+        var playerService = controller.playerService
         var player = this.stats.player
 
         controller.particleService.spawnParticleEmitter(
@@ -332,6 +340,7 @@ function PlayerStats(_player, json) constructor {
           .setState({
             timer: new Timer(duration),
             cooldown: new Timer(interval, { loop: Infinity }),
+            isB: player.isB,
           })
           .whenUpdate(function() {
             if (this.state.timer.update().finished) {
@@ -340,14 +349,19 @@ function PlayerStats(_player, json) constructor {
 
             var controller = Beans.get(BeanVisuController)
             var view = controller.gridService.view
-            var player = controller.playerService.player
-            if (!Core.isType(player, Player)) {
+            var playerService = controller.playerService
+            var player = this.state.isB ? playerService.playerB : playerService.player
+            if (player == null) {
               return
             }
 
             if (!this.state.cooldown.update().finished) {
               return
             }
+            
+            var xOffset = this.state.isB
+              ? (playerService.player != null ? 0.25 : 0.0)
+              : (playerService.playerB != null ? -0.25 : 0.0)
 
             var time = round(this.state.timer.finished ? this.state.timer.duration : this.state.timer.time)
             var col1 = time mod 2 != 0 ? "#371848" : "#FF00FF"
@@ -368,7 +382,7 @@ function PlayerStats(_player, json) constructor {
                 h: HAlign.CENTER,
               },
               area: new Rectangle({ 
-                x: 0.25,
+                x: 0.25 + xOffset,
                 y: 0.4,
                 width: 0.5,
                 height: 0.2,
@@ -455,6 +469,11 @@ function PlayerStats(_player, json) constructor {
           })
         controller.executor.add(task)
 
+        
+        var xOffset = player.isB
+          ? (playerService.player != null ? 0.25 : 0.0)
+          : (playerService.playerB != null ? -0.25 : 0.0)
+
         var time = 1
         var col1 = time mod 2 != 0 ? "#371848" : "#FF00FF"
         var col2 = time mod 2 != 0 ? "#FF00FF" : "#371848"
@@ -474,7 +493,7 @@ function PlayerStats(_player, json) constructor {
             h: HAlign.CENTER,
           },
           area: new Rectangle({ 
-            x: 0.25,
+            x: 0.25 + xOffset,
             y: 0.4,
             width: 0.5,
             height: 0.2,
@@ -499,7 +518,10 @@ function PlayerStats(_player, json) constructor {
         }))
         controller.sfxService.play("player-use-bomb")
 
-        controller.playerService.statistics.freePlayer(this.stats.player, "bomb")
+        var statistics = this.stats.player.isB
+        ? controller.playerService.statisticsB
+        : controller.playerService.statistics
+        statistics.freePlayer(this.stats.player, "bomb")
       }
       return this
     },
@@ -523,8 +545,8 @@ function PlayerStats(_player, json) constructor {
       var value = this.get()
       if (previous < value) {
         /*//@log.level*/ Logger.debug("Player", $"Life increased from {previous} to {value}")
-        controller.visuRenderer.hudRenderer.sendLifeParticleEvent()
-        controller.visuRenderer.hudRenderer.sendGlitchEvent()
+        controller.visuRenderer.hudRenderer.sendLifeParticleEvent(this.stats.player.isB)
+        controller.visuRenderer.hudRenderer.sendGlitchEvent(this.stats.player.isB)
         controller.sfxService.play("player-collect-life")
       } else if (previous > value) {
         /*//@log.level*/ Logger.debug("Player", $"Life decreased from {previous} to {value}")
@@ -598,7 +620,10 @@ function PlayerStats(_player, json) constructor {
           2
         )
 
-        controller.playerService.statistics.freePlayer(this.stats.player, "life")
+        var statistics = this.stats.player.isB
+          ? controller.playerService.statisticsB
+          : controller.playerService.statistics
+        statistics.freePlayer(this.stats.player, "life")
       }
       return this
     },
@@ -612,7 +637,23 @@ function PlayerStats(_player, json) constructor {
       } else {
         /*//@log.level*/ Logger.debug("Player", $"GAME OVER: respawn is impossible")
         var controller = Beans.get(BeanVisuController)
-        controller.send(new Event("game-over"))
+        var playerService = controller.playerService
+
+        var player = controller.playerService.player
+        if (this.stats.player.isB) {
+          if (playerService.player != null) {
+            playerService.remove(this.stats.player.isB)
+          } else {
+            controller.send(new Event("game-over"))
+          }
+        } else {
+          if (playerService.playerB != null) {
+            playerService.remove(this.stats.player.isB)
+          } else {
+            controller.send(new Event("game-over"))
+          }
+        }
+        
       }
       
       //Core.print("Die!")
@@ -996,6 +1037,9 @@ function Player(template): GridItem(template) constructor {
   ///@type {PlayerHandler}
   handler = new PlayerHandler(Struct.getIfType(template, "handler", Struct, {})).onStart(this)
   
+  ///@type {Boolean}
+  isB = Struct.getIfType(template, "isB", Boolean, false)
+
   ///@override
   ///@param {VisuController} controller
   ///@return {GridItem}
@@ -1055,7 +1099,10 @@ function Player(template): GridItem(template) constructor {
     this.x = clamp(this.x, 0.0, view.worldWidth)
     this.y = clamp(this.y, 0.0, view.worldHeight)
 
-    controller.playerService.statistics.freePlayer(this)
+    var statistics = this.stats.player.isB
+      ? controller.playerService.statisticsB
+      : controller.playerService.statistics
+    statistics.freePlayer(this)
 
     return this
   }

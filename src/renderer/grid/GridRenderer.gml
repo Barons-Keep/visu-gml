@@ -206,66 +206,76 @@ function GridRenderer() constructor {
   ///@param {Number} baseY
   ///@return {GridRenderer}
   debugRenderPlayer = function(gridService, playerService, baseX, baseY) { 
-    var player = playerService.player
-    if (!gridService.properties.renderPlayer
-      || !Core.isType(player, Player)) {
-      this.player2DCoords.x = null
-      this.player2DCoords.y = null
-      return this
-    }
-
-    var godModeCooldown = player.stats.godModeCooldown
-    var useBlendAsZ = false
-    if (useBlendAsZ) {
-      var _x = (player.x - (player.sprite.texture.width / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) + ((player.sprite.texture.offsetX * player.sprite.scaleX) / GRID_SERVICE_PIXEL_WIDTH)  - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH
-      var _y = (player.y - (player.sprite.texture.height / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) + ((player.sprite.texture.offsetY * player.sprite.scaleY) / GRID_SERVICE_PIXEL_HEIGHT)  - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT
-      var blend = player.sprite.getBlend()
-      var alpha = player.sprite.getAlpha()
-      var angle = player.sprite.getAngle()
-      shader_set(shader_gml_use_blend_as_z)
-      shader_set_uniform_f(shader_get_uniform(shader_gml_use_blend_as_z, "size"), 1024.0)
+    static renderPlayer = function(gridRenderer, gridService, playerService, player, baseX, baseY) {
+      var godModeCooldown = player.stats.godModeCooldown
+      var useBlendAsZ = false
+      if (useBlendAsZ) {
+        var _x = (player.x - (player.sprite.texture.width / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) + ((player.sprite.texture.offsetX * player.sprite.scaleX) / GRID_SERVICE_PIXEL_WIDTH)  - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH
+        var _y = (player.y - (player.sprite.texture.height / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) + ((player.sprite.texture.offsetY * player.sprite.scaleY) / GRID_SERVICE_PIXEL_HEIGHT)  - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT
+        var blend = player.sprite.getBlend()
+        var alpha = player.sprite.getAlpha()
+        var angle = player.sprite.getAngle()
+        shader_set(shader_gml_use_blend_as_z)
+        shader_set_uniform_f(shader_get_uniform(shader_gml_use_blend_as_z, "size"), 1024.0)
+          player.sprite
+            .setBlend((sin(this.playerZTimer.update().time) * 0.5 + 0.5) * 255)
+            .setAlpha(alpha * ((cos(godModeCooldown * 15.0) + 2.0) / 3.0))
+            .setAngle(angle - 90)
+            .render(_x, _y)
+            .setBlend(blend)
+            .setAlpha(alpha)
+            .setAngle(angle)
+          
+          GPU.render.rectangle(
+            (player.x - ((player.mask.getWidth() * player.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH,
+            (player.y - ((player.mask.getHeight() * player.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT,
+            (player.x + ((player.mask.getWidth() * player.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH,
+            (player.y + ((player.mask.getHeight() * player.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT,
+            false, 
+            c_lime
+          )
+        shader_reset()
+      } else {
+        var _x = (player.x - ((player.sprite.texture.width * player.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) + ((player.sprite.texture.offsetX * player.sprite.scaleX) / GRID_SERVICE_PIXEL_WIDTH) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH
+        var _y = (player.y - ((player.sprite.texture.height * player.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) + ((player.sprite.texture.offsetY * player.sprite.scaleY) / GRID_SERVICE_PIXEL_HEIGHT) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT
+        var alpha = player.sprite.getAlpha()
+        var angle = player.sprite.getAngle()
         player.sprite
-          .setBlend((sin(this.playerZTimer.update().time) * 0.5 + 0.5) * 255)
           .setAlpha(alpha * ((cos(godModeCooldown * 15.0) + 2.0) / 3.0))
-          .setAngle(angle - 90)
+          .setAngle(angle - 90.0)
           .render(_x, _y)
-          .setBlend(blend)
           .setAlpha(alpha)
           .setAngle(angle)
-        
-        GPU.render.rectangle(
-          (player.x - ((player.mask.getWidth() * player.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH,
-          (player.y - ((player.mask.getHeight() * player.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT,
-          (player.x + ((player.mask.getWidth() * player.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH,
-          (player.y + ((player.mask.getHeight() * player.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT,
-          false, 
-          c_lime
-        )
-      shader_reset()
-    } else {
-      var _x = (player.x - ((player.sprite.texture.width * player.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) + ((player.sprite.texture.offsetX * player.sprite.scaleX) / GRID_SERVICE_PIXEL_WIDTH) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH
-      var _y = (player.y - ((player.sprite.texture.height * player.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) + ((player.sprite.texture.offsetY * player.sprite.scaleY) / GRID_SERVICE_PIXEL_HEIGHT) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT
-      var alpha = player.sprite.getAlpha()
-      var angle = player.sprite.getAngle()
-      player.sprite
-        .setAlpha(alpha * ((cos(godModeCooldown * 15.0) + 2.0) / 3.0))
-        .setAngle(angle - 90.0)
-        .render(_x, _y)
-        .setAlpha(alpha)
-        .setAngle(angle)
-      var player2DCoords = Math.project3DCoordsOn2D(_x + baseX, _y + baseY, gridService.properties.depths.playerZ, this.camera.viewMatrix, this.camera.projectionMatrix, this.gridSurface.width, this.gridSurface.height)
-      this.player2DCoords.x = player2DCoords != null ? player2DCoords[0] : null
-      this.player2DCoords.y = player2DCoords != null ? player2DCoords[1] : null
-      
-      this.player3DCoords.x = _x
-      this.player3DCoords.y = _y
-      this.player3DCoords.z = gridService.properties.depths.playerZ
+        if (!player.isB) {
+          var player2DCoords = Math.project3DCoordsOn2D(_x + baseX, _y + baseY, gridService.properties.depths.playerZ, gridRenderer.camera.viewMatrix, gridRenderer.camera.projectionMatrix, gridRenderer.gridSurface.width, gridRenderer.gridSurface.height)
+          gridRenderer.player2DCoords.x = player2DCoords != null ? player2DCoords[0] : null
+          gridRenderer.player2DCoords.y = player2DCoords != null ? player2DCoords[1] : null
+          
+          gridRenderer.player3DCoords.x = _x
+          gridRenderer.player3DCoords.y = _y
+          gridRenderer.player3DCoords.z = gridService.properties.depths.playerZ
+        }
 
-      _x = ((player.x - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH) - ((player.sprite.getWidth() * player.sprite.scaleX) / 2.0) + (player.mask.x * player.sprite.scaleX)
-      _y = ((player.y - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT) - ((player.sprite.getHeight() * player.sprite.scaleY) / 2.0) + (player.mask.y * player.sprite.scaleY)
-      var _width = player.mask.z * player.sprite.scaleX
-      var _height = player.mask.a * player.sprite.scaleY
-      GPU.render.ellipse(_x, _y, _x + _width, _y + _height, false, c_lime)
+        _x = ((player.x - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH) - ((player.sprite.getWidth() * player.sprite.scaleX) / 2.0) + (player.mask.x * player.sprite.scaleX)
+        _y = ((player.y - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT) - ((player.sprite.getHeight() * player.sprite.scaleY) / 2.0) + (player.mask.y * player.sprite.scaleY)
+        var _width = player.mask.z * player.sprite.scaleX
+        var _height = player.mask.a * player.sprite.scaleY
+        GPU.render.ellipse(_x, _y, _x + _width, _y + _height, false, c_lime)
+      }
+    }
+
+    this.player2DCoords.x = null
+    this.player2DCoords.y = null
+    if (!gridService.properties.renderPlayer) {
+      return this
+    }
+    
+    if (playerService.player != null) {
+      renderPlayer(this, gridService, playerService, playerService.player, baseX, baseY)
+    }
+
+    if (playerService.playerB != null) {
+      renderPlayer(this, gridService, playerService, playerService.playerB, baseX, baseY)
     }
     
     return this
@@ -1195,33 +1205,39 @@ function GridRenderer() constructor {
   ///@param {PlayerService} playerService
   ///@return {GridRenderer}
   entityRenderPlayerShadow = function(gridService, playerService) {
-    var player = playerService.player
-    if (!gridService.properties.playerShadowEnable
-        || !gridService.properties.renderPlayer
-        || player == null
-        || player.sprite.texture.asset == texture_empty) {
+    static renderPlayerShadow = function(gridRenderer, gridService, playerService, player) {
+      var supportColor = gridService.properties.supportColor
+      var luminance = (0.2126 * supportColor.red * 255.0) + (0.7152 * supportColor.green * 255.0) + (0.0722 * supportColor.blue * 255.0)
+      var contrastGMColor = luminance > 128 ? c_black : c_white
+      var focusCooldown = Struct.get(player.handler, "focusCooldown")
+      var focusTime = Struct.get(focusCooldown, "time")
+      var focusDuration = Struct.get(focusCooldown, "duration")
+      var focusFactor = focusTime != null && focusDuration != null ? focusTime / focusDuration : 0.0
+      var scaleFactor = clamp(player.stats.godModeCooldown, 1.0, 10.0)
+      var alpha = player.fadeIn
+      var swing = (sin(gridRenderer.playerZTimer.update().time * 2.0) + 1.0) / 4.0
+      var scaleX = ((player.sprite.texture.width * player.sprite.scaleX) / sprite_get_width(texture_player_shadow)) * (4.0 + (0.0 * focusFactor)) * (scaleFactor + swing)
+      var scaleY = ((player.sprite.texture.height * player.sprite.scaleY) / sprite_get_height(texture_player_shadow)) * (4.0 + (0.0 * focusFactor)) * (scaleFactor + swing)
+      var _x = (player.x - ((player.sprite.texture.width * player.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) + ((player.sprite.texture.offsetX * player.sprite.scaleX) / GRID_SERVICE_PIXEL_WIDTH) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH
+      var _y = (player.y - ((player.sprite.texture.height * player.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) + ((player.sprite.texture.offsetY * player.sprite.scaleY) / GRID_SERVICE_PIXEL_HEIGHT) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT
+      draw_sprite_ext(texture_player_shadow, 0, _x, _y, scaleX * 0.75, scaleY * 0.75, 0.0, contrastGMColor, alpha * 1.0)
+      draw_sprite_ext(texture_player_shadow, 0, _x, _y, scaleX * 2.25, scaleY * 2.25, 0.0, supportColor.toGMColor(), alpha * 0.85)
+    }
 
+    if (!gridService.properties.playerShadowEnable
+        || !gridService.properties.renderPlayer) {
       return this
     }
 
-    var supportColor = gridService.properties.supportColor
-    var luminance = (0.2126 * supportColor.red * 255.0) + (0.7152 * supportColor.green * 255.0) + (0.0722 * supportColor.blue * 255.0)
-    var contrastGMColor = luminance > 128 ? c_black : c_white
+    if (playerService.player != null
+        && playerService.player.sprite.texture.asset != texture_empty) {
+      renderPlayerShadow(this, gridService, playerService, playerService.player)
+    }
 
-    var focusCooldown = Struct.get(player.handler, "focusCooldown")
-    var focusTime = Struct.get(focusCooldown, "time")
-    var focusDuration = Struct.get(focusCooldown, "duration")
-    var focusFactor = focusTime != null && focusDuration != null ? focusTime / focusDuration : 0.0
-    var scaleFactor = clamp(player.stats.godModeCooldown, 1.0, 10.0)
-    var alpha = player.fadeIn
-    var swing = (sin(this.playerZTimer.update().time * 2.0) + 1.0) / 4.0
-    var scaleX = ((player.sprite.texture.width * player.sprite.scaleX) / sprite_get_width(texture_player_shadow)) * (4.0 + (0.0 * focusFactor)) * (scaleFactor + swing)
-    var scaleY = ((player.sprite.texture.height * player.sprite.scaleY) / sprite_get_height(texture_player_shadow)) * (4.0 + (0.0 * focusFactor)) * (scaleFactor + swing)
-    var _x = (player.x - ((player.sprite.texture.width * player.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) + ((player.sprite.texture.offsetX * player.sprite.scaleX) / GRID_SERVICE_PIXEL_WIDTH) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH
-    var _y = (player.y - ((player.sprite.texture.height * player.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) + ((player.sprite.texture.offsetY * player.sprite.scaleY) / GRID_SERVICE_PIXEL_HEIGHT) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT
-    draw_sprite_ext(texture_player_shadow, 0, _x, _y, scaleX * 0.75, scaleY * 0.75, 0.0, contrastGMColor, alpha * 1.0)
-    draw_sprite_ext(texture_player_shadow, 0, _x, _y, scaleX * 2.25, scaleY * 2.25, 0.0, supportColor.toGMColor(), alpha * 0.85)
-
+    if (playerService.playerB != null
+        && playerService.playerB.sprite.texture.asset != texture_empty) {
+      renderPlayerShadow(this, gridService, playerService, playerService.playerB)
+    }
     return this
   }
 
@@ -1232,63 +1248,76 @@ function GridRenderer() constructor {
   ///@param {Number} baseY
   ///@return {GridRenderer}
   entityRenderPlayer = function(gridService, playerService, baseX, baseY) { 
-    var player = playerService.player
-    if (!gridService.properties.renderPlayer
-        || player == null) {
-      this.player2DCoords.x = null
-      this.player2DCoords.y = null
+    static renderPlayer = function(gridRenderer, gridService, playerService, player, baseX, baseY) {
+      var alpha = player.sprite.getAlpha()
+      var angle = player.sprite.getAngle()
+      var scaleX = player.sprite.getScaleX()
+      var scaleY = player.sprite.getScaleY()
+      var godModeCooldown = player.stats.godModeCooldown
+      var focusAngle = Struct.get(player.handler, "focusAngle")
+      var scaleFactor = clamp(godModeCooldown * 1.5, 1.0, 15.0)
+      var useBlendAsZ = false
+      if (useBlendAsZ) {
+        shader_set(shader_gml_use_blend_as_z)
+        shader_set_uniform_f(shader_get_uniform(shader_gml_use_blend_as_z, "size"), 1024.0)
+        var _x = (player.x - (player.sprite.texture.width / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) + ((player.sprite.texture.offsetX * player.sprite.scaleX) / GRID_SERVICE_PIXEL_WIDTH)  - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH
+        var _y = (player.y - (player.sprite.texture.height / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) + ((player.sprite.texture.offsetY * player.sprite.scaleY) / GRID_SERVICE_PIXEL_HEIGHT)  - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT
+        var blend = player.sprite.getBlend()
+        player.sprite
+          .setBlend((sin(this.playerZTimer.update().time) * 0.5 + 0.5) * 255)
+          .setAlpha(alpha * ((cos(godModeCooldown * 15.0) + 2.0) / 3.0) * player.fadeIn)
+          .setAngle(angle - focusAngle - 90.0 - (30.0 * sin(2.0 * TAU * godModeCooldown)))// - (360.0 * godModeCooldown))
+          .setScaleX(scaleX * scaleFactor)
+          .setScaleY(scaleY * scaleFactor)
+          .render(_x, _y)
+          .setBlend(blend)
+          .setAlpha(alpha)
+          .setAngle(angle)
+          .setScaleX(scaleX)
+          .setScaleY(scaleY)
+        if (!player.isB) {
+          gridRenderer.player3DCoords.x = _x
+          gridRenderer.player3DCoords.y = _y
+          gridRenderer.player3DCoords.z = gridService.properties.depths.playerZ
+        }
+        shader_reset()
+      } else {
+        var _x = (player.x - ((player.sprite.texture.width * player.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) + ((player.sprite.texture.offsetX * player.sprite.scaleX) / GRID_SERVICE_PIXEL_WIDTH) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH
+        var _y = (player.y - ((player.sprite.texture.height * player.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) + ((player.sprite.texture.offsetY * player.sprite.scaleY) / GRID_SERVICE_PIXEL_HEIGHT) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT
+        player.sprite
+          .setAlpha(alpha * ((cos(godModeCooldown * 15.0) + 2.0) / 3.0) * player.fadeIn)
+          .setAngle(angle - focusAngle - 90.0 - (30.0 * sin(2.0 * TAU * godModeCooldown)))// - (360.0 * godModeCooldown))
+          .setScaleX(scaleX * scaleFactor)
+          .setScaleY(scaleY * scaleFactor)
+          .render(_x, _y)
+          .setAlpha(alpha)
+          .setAngle(angle)
+          .setScaleX(scaleX)
+          .setScaleY(scaleY)
+
+        if (!player.isB) {
+          var player2DCoords = Math.project3DCoordsOn2D(_x + baseX, _y + baseY, gridService.properties.depths.playerZ, gridRenderer.camera.viewMatrix, gridRenderer.camera.projectionMatrix, gridRenderer.gridSurface.width, gridRenderer.gridSurface.height)
+          gridRenderer.player2DCoords.x = player2DCoords != null ? player2DCoords[0] : null
+          gridRenderer.player2DCoords.y = player2DCoords != null ? player2DCoords[1] : null
+          gridRenderer.player3DCoords.x = _x
+          gridRenderer.player3DCoords.y = _y
+          gridRenderer.player3DCoords.z = gridService.properties.depths.playerZ
+        }
+      }
+    }
+ 
+    this.player2DCoords.x = null
+    this.player2DCoords.y = null
+    if (!gridService.properties.renderPlayer) {
       return this
     }
 
-    var alpha = player.sprite.getAlpha()
-    var angle = player.sprite.getAngle()
-    var scaleX = player.sprite.getScaleX()
-    var scaleY = player.sprite.getScaleY()
-    var godModeCooldown = player.stats.godModeCooldown
-    var focusAngle = Struct.get(player.handler, "focusAngle")
-    var scaleFactor = clamp(godModeCooldown * 1.5, 1.0, 15.0)
-    var useBlendAsZ = false
-    if (useBlendAsZ) {
-      shader_set(shader_gml_use_blend_as_z)
-      shader_set_uniform_f(shader_get_uniform(shader_gml_use_blend_as_z, "size"), 1024.0)
-      var _x = (player.x - (player.sprite.texture.width / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) + ((player.sprite.texture.offsetX * player.sprite.scaleX) / GRID_SERVICE_PIXEL_WIDTH)  - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH
-      var _y = (player.y - (player.sprite.texture.height / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) + ((player.sprite.texture.offsetY * player.sprite.scaleY) / GRID_SERVICE_PIXEL_HEIGHT)  - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT
-      var blend = player.sprite.getBlend()
-      player.sprite
-        .setBlend((sin(this.playerZTimer.update().time) * 0.5 + 0.5) * 255)
-        .setAlpha(alpha * ((cos(godModeCooldown * 15.0) + 2.0) / 3.0) * player.fadeIn)
-        .setAngle(angle - focusAngle - 90.0 - (30.0 * sin(2.0 * TAU * godModeCooldown)))// - (360.0 * godModeCooldown))
-        .setScaleX(scaleX * scaleFactor)
-        .setScaleY(scaleY * scaleFactor)
-        .render(_x, _y)
-        .setBlend(blend)
-        .setAlpha(alpha)
-        .setAngle(angle)
-        .setScaleX(scaleX)
-        .setScaleY(scaleY)
-      this.player3DCoords.x = _x
-      this.player3DCoords.y = _y
-      this.player3DCoords.z = gridService.properties.depths.playerZ
-      shader_reset()
-    } else {
-      var _x = (player.x - ((player.sprite.texture.width * player.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) + ((player.sprite.texture.offsetX * player.sprite.scaleX) / GRID_SERVICE_PIXEL_WIDTH) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH
-      var _y = (player.y - ((player.sprite.texture.height * player.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) + ((player.sprite.texture.offsetY * player.sprite.scaleY) / GRID_SERVICE_PIXEL_HEIGHT) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT
-      player.sprite
-        .setAlpha(alpha * ((cos(godModeCooldown * 15.0) + 2.0) / 3.0) * player.fadeIn)
-        .setAngle(angle - focusAngle - 90.0 - (30.0 * sin(2.0 * TAU * godModeCooldown)))// - (360.0 * godModeCooldown))
-        .setScaleX(scaleX * scaleFactor)
-        .setScaleY(scaleY * scaleFactor)
-        .render(_x, _y)
-        .setAlpha(alpha)
-        .setAngle(angle)
-        .setScaleX(scaleX)
-        .setScaleY(scaleY)
-      var player2DCoords = Math.project3DCoordsOn2D(_x + baseX, _y + baseY, gridService.properties.depths.playerZ, this.camera.viewMatrix, this.camera.projectionMatrix, this.gridSurface.width, this.gridSurface.height)
-      this.player2DCoords.x = player2DCoords != null ? player2DCoords[0] : null
-      this.player2DCoords.y = player2DCoords != null ? player2DCoords[1] : null
-      this.player3DCoords.x = _x
-      this.player3DCoords.y = _y
-      this.player3DCoords.z = gridService.properties.depths.playerZ
+    if (playerService.player != null) {
+      renderPlayer(this, gridService, playerService, playerService.player, baseX, baseY)
+    }
+
+    if (playerService.playerB != null) {
+      renderPlayer(this, gridService, playerService, playerService.playerB, baseX, baseY)
     }
     
     return this

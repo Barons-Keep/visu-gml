@@ -143,6 +143,7 @@ function VESceneConfigPreview(_config = null) constructor {
     entity: function() {
       var controller = Beans.get(BeanVisuController)
       var properties = controller.gridService.properties
+      var playerAmount = (controller.playerService.player != null ? 1 : 0) + (controller.playerService.playerB != null ? 1 : 0)
       var entity = $"Entity:\n"
         + $"  Shroom:\n"
         + $"    Enabled: {properties.renderShrooms}\n"
@@ -152,9 +153,9 @@ function VESceneConfigPreview(_config = null) constructor {
         + $"    Enabled: {properties.renderCoins}\n"
         + $"    Amount: {controller.coinService.coins.size()}\n"
         + $"    Z: {properties.depths.coinZ}\n"
-        + $"  Player:\n"
+        + $"  Players:\n"
         + $"    Enabled: {properties.renderPlayer}\n"
-        + $"    Amount: {controller.playerService.player != null ? 1 : 0}\n"
+        + $"    Amount: {playerAmount}\n"
         + $"    Z: {properties.depths.playerZ}\n"
         + $"  Bullet:\n"
         + $"    Enabled: {properties.renderBullets}\n"

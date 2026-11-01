@@ -241,7 +241,6 @@ function CoinService(): Service() constructor {
   update = function() { 
     this.dispatcher.update()
     var controller = Beans.get(BeanVisuController)
-    var player = controller.playerService.player
     var view = controller.gridService.view
     var viewX = view.x
     var viewY = view.y
@@ -254,6 +253,7 @@ function CoinService(): Service() constructor {
         continue
       }
 
+      var player = controller.playerService.getCloserPlayer(coin)
       coin.move(player)
       if (player != null && coin.collide(player)) {
         player.stats.dispatchCoin(coin)

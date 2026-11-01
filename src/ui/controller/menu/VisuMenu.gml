@@ -1533,30 +1533,36 @@ function VisuMenu(_config = null) constructor {
                       if (controller.statistics != null) {
                         var trackService = controller.trackService
                         var playerReport = controller.statistics.playerReport
+                        var playerBReport = controller.statistics.playerBReport
                         var coinReport = controller.statistics.coinReport
                         var shroomReport = controller.statistics.shroomReport
                         var bulletReport = controller.statistics.bulletReport
                         statisticsText = $"\n"
                           + $"\nDifficulty:            {Language.get(controller.difficulty)}"
                           + $"\nDuration:              {String.formatTimestampMilisecond(trackService.duration)}"
-                          + $"\nLongest Life Streak:   {String.formatTimestampMilisecond(playerReport.maxAliveTime)}"
-                          + $"\nFocus Mode Time:       {String.formatTimestampMilisecond(playerReport.focusedTime)}"
                           + "\n"
                           + $"\nPoints Collected:      {String.format(coinReport.collectedByPointValue, 8, 0)}" 
                           + $"\nForce Collected:       {String.format(coinReport.collectedByForceValue, 8, 0)}"
-                          + "\n"
-                          + $"\nLives Remaining:       {String.format(playerReport.lives, 8, 0)}"
                           + $"\nExtra Lives Collected: {String.format(coinReport.collectedByLifeValue, 8, 0)}"
-                          + $"\nLives Lost:            {String.format(playerReport.usedLives, 8, 0)}"
-                          + "\n"
-                          + $"\nBombs Remaining:       {String.format(playerReport.bombs, 8, 0)}"
                           + $"\nBombs Collected:       {String.format(coinReport.collectedByBombValue, 8, 0)}"
-                          + $"\nBombs Used:            {String.format(playerReport.usedBombs, 8, 0)}"
-                          + "\n"
-                          + $"\nShots Fired:           {String.format(bulletReport.spawnedByPlayer, 8, 0)}"
                           + $"\nTotal Enemies:         {String.format(shroomReport.spawned, 8, 0)}"
                           + $"\nEnemies Bombed:        {String.format(shroomReport.nuked, 8, 0)}"
                           + $"\nEnemies Hit:           {String.format(shroomReport.shooted, 8, 0)}"
+                          + $"\nShots Fired:           {String.format(bulletReport.spawnedByPlayer, 8, 0)}"
+                          + "\n\nPlayer:"
+                          + $"\nLongest Life Streak:   {String.formatTimestampMilisecond(playerReport.maxAliveTime)}"
+                          + $"\nFocus Mode Time:       {String.formatTimestampMilisecond(playerReport.focusedTime)}"
+                          + $"\nLives Remaining:       {String.format(playerReport.lives, 8, 0)}"
+                          + $"\nLives Lost:            {String.format(playerReport.usedLives, 8, 0)}"
+                          + $"\nBombs Used:            {String.format(playerReport.usedBombs, 8, 0)}"
+                        if (controller.playerService.isPlayerB) {
+                          statisticsText += "\n\nPlayer B:"
+                            + $"\nLongest Life Streak:   {String.formatTimestampMilisecond(playerBReport.maxAliveTime)}"
+                            + $"\nFocus Mode Time:       {String.formatTimestampMilisecond(playerBReport.focusedTime)}"
+                            + $"\nLives Remaining:       {String.format(playerBReport.lives, 8, 0)}"
+                            + $"\nLives Lost:            {String.format(playerBReport.usedLives, 8, 0)}"
+                            + $"\nBombs Used:            {String.format(playerBReport.usedBombs, 8, 0)}"
+                        }
                       }
 
                       this.context.state.set("text", statisticsText)

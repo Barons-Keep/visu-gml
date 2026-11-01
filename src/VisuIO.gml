@@ -114,6 +114,185 @@ function VisuIO(config = null): Service(config) constructor {
           return this
         }
 
+        if (Beans.get(BeanVisuController).playerService.isPlayerB) {
+          Struct.set(this, "gamepad", null)
+          return this
+        }
+
+        var keys = this.keys
+        var gamepad = initGamepad(this)
+        var index = gamepad.index
+        var axis = __IC.GetAxisSignal(index, 0)
+        var controls = Visu.settings.getValue("visu.gamepad.controls")
+        var updatePrevious = false
+        switch (Struct.get(controls, "ANALOG_L")) {
+          case VisuGamepadAnalogActions.MOVE:
+            gamepad.previous.up = updateAxisKeyboardKey(axis.up, keys.up, gamepad.previous.up)
+            gamepad.previous.down = updateAxisKeyboardKey(axis.down, keys.down, gamepad.previous.down)
+            gamepad.previous.left = updateAxisKeyboardKey(axis.left, keys.left, gamepad.previous.left)
+            gamepad.previous.right = updateAxisKeyboardKey(axis.right, keys.right, gamepad.previous.right)
+            updatePrevious = true
+            break
+          case VisuGamepadAnalogActions.AIM:
+            if (axis.value > 0.3) {
+              global.gamepadPlayerAimMouse = false
+              global.gamepadPlayerAimAngle = Math.lerpAngle(global.gamepadPlayerAimAngle, axis.angle, 0.2)
+              global.gamepadPlayerAimAlpha = global.gamepadPlayerAimAlphaDefault
+            } else if (!global.gamepadPlayerAimMouse) {
+              global.gamepadPlayerAimMouse = MouseUtil.hasMoved()
+            }
+            break
+        }
+
+        switch (Struct.get(controls, "ANALOG_R")) {
+          case VisuGamepadAnalogActions.MOVE:
+            gamepad.previous.up = updateAxisKeyboardKey(axis.rUp, keys.up, gamepad.previous.up)
+            gamepad.previous.down = updateAxisKeyboardKey(axis.rDown, keys.down, gamepad.previous.down)
+            gamepad.previous.left = updateAxisKeyboardKey(axis.rLeft, keys.left, gamepad.previous.left)
+            gamepad.previous.right = updateAxisKeyboardKey(axis.rRight, keys.right, gamepad.previous.right)
+            updatePrevious = true
+            break
+          case VisuGamepadAnalogActions.AIM:
+            if (axis.rValue > 0.3) {
+              global.gamepadPlayerAimMouse = false
+              global.gamepadPlayerAimAngle = Math.lerpAngle(global.gamepadPlayerAimAngle, axis.rAngle, 0.2)
+              global.gamepadPlayerAimAlpha = global.gamepadPlayerAimAlphaDefault
+            } else if (!global.gamepadPlayerAimMouse) {
+              global.gamepadPlayerAimMouse = global.gamepadPlayerAimMouse || MouseUtil.hasMoved()
+            }
+            break
+        }
+
+        if (!updatePrevious) {
+
+        }
+
+        updateKeyboardKey(index, gamepad.up, keys.up)
+        updateKeyboardKey(index, gamepad.down, keys.down)
+        updateKeyboardKey(index, gamepad.left, keys.left)
+        updateKeyboardKey(index, gamepad.right, keys.right)
+        updateKeyboardKey(index, gamepad.action, keys.action)
+        updateKeyboardKey(index, gamepad.focus, keys.focus)
+        updateKeyboardKey(index, gamepad.bomb, keys.bomb)
+        updateKeyboardKey(index, gamepad.openMenu, keys.openMenu)
+
+        gamepad.keyUpdater.updateKeyboard(this)
+        gamepad.axis = axis
+
+        return this
+      },
+    }),
+    "playerB": new Keyboard({
+      keys: {
+        up: Visu.settings.getValue("visu.keyboard.player-b.up", ord("Y")),
+        down: Visu.settings.getValue("visu.keyboard.player-b.down", ord("H")),
+        left: Visu.settings.getValue("visu.keyboard.player-b.left", ord("G")),
+        right: Visu.settings.getValue("visu.keyboard.player-b.right", ord("J")),
+        action: Visu.settings.getValue("visu.keyboard.player-b.action", ord("T")),
+        bomb: Visu.settings.getValue("visu.keyboard.player-b.bomb", ord("U")),
+        focus: Visu.settings.getValue("visu.keyboard.player-b.focus", ord("I")),
+        openMenu: KeyboardKeyType.ESC,
+      },
+      updateEnd: function() {
+        static initGamepad = function(context) {
+          var gamepad = Struct.get(context, "gamepad")
+          if (gamepad == null) {
+            gamepad = {
+              index: 1,
+              previous: {
+                up: false,
+                down: false,
+                left: false,
+                right: false,
+              },
+              keyUpdater: new PrioritizedPressedVirtualKeyUpdater({
+                keys: [
+                  "up",
+                  "down",
+                  "left",
+                  "right"
+                ],
+              }),
+              axis: null,
+              up: IC_GetAction("up"),
+              down: IC_GetAction("down"),
+              left: IC_GetAction("left"),
+              right: IC_GetAction("right"),
+              action: IC_GetAction("action"),
+              focus: IC_GetAction("focus"),
+              bomb: IC_GetAction("bomb"),
+              openMenu: IC_GetAction("openMenu"),
+            }
+
+            Struct.set(context, "gamepad", gamepad)
+          }
+
+          return gamepad
+        }
+
+        static updateKeyboardKey = function(index, action, key) {
+          if (action < 0.0 || action >= array_length(__INPUTCANDY.actions)) {
+            return
+          }
+
+          var _action = __INPUTCANDY.actions[action]
+          var _actionOn = key.on
+          var _actionPressed = key.pressed
+          var _actionReleased = key.released
+          if (is_array(_action.gamepad)) {
+            for (var idx = 0; idx < array_length(_action.gamepad); idx++) {
+              var ic_code = _action.gamepad[idx]
+              var signal = __IC.GetSignal(index, ic_code)
+              if (signal != null) {
+                _actionOn = _actionOn || signal.is_held
+                _actionPressed = _actionPressed || (signal.is_held && !signal.was_held)
+                _actionReleased = _actionReleased || (!signal.is_held && signal.was_held)
+              }
+            }
+          } else {
+            var ic_code = _action.gamepad
+            var signal = __IC.GetSignal(index, ic_code)
+            if (signal != null) {
+              _actionOn = _actionOn || signal.is_held
+              _actionPressed = _actionPressed || (signal.is_held && !signal.was_held)
+              _actionReleased = _actionReleased || (!signal.is_held && signal.was_held)
+            }
+          }
+
+          if (_actionPressed || _actionReleased) {
+            keyboard_lastkey = vk_nokey
+          }
+
+          key.on = _actionOn
+          key.pressed = _actionPressed
+          key.released = _actionReleased
+        }
+
+        static updateAxisKeyboardKey = function(axis, key, previous) {
+          if (axis) {
+            key.on = true
+            key.pressed = !previous
+            key.released = false
+          } else if (previous) {
+            key.on = false
+            key.pressed = false
+            key.released = true
+          }
+
+          return axis
+        }
+
+        var inputCandyLoader = Beans.get(BeanInputCandyLoader)
+        if (inputCandyLoader == null || !inputCandyLoader.enabled || !inputCandyLoader.initialized) {
+          Struct.set(Struct.get(this, "gamepad"), "axis", null)
+          return this
+        }
+
+        if (!Beans.get(BeanVisuController).playerService.isPlayerB) {
+          Struct.set(this, "gamepad", null)
+          return this
+        }
+
         var keys = this.keys
         var gamepad = initGamepad(this)
         var index = gamepad.index
@@ -188,6 +367,15 @@ function VisuIO(config = null): Service(config) constructor {
       action: Visu.settings.getValue("visu.mouse.player.action", MouseButtonType.NONE),
       bomb: Visu.settings.getValue("visu.mouse.player.bomb", MouseButtonType.NONE),
       focus: Visu.settings.getValue("visu.mouse.player.focus", MouseButtonType.NONE),
+    }),
+    "playerB": new Mouse({
+      up: Visu.settings.getValue("visu.mouse.player-b.up", MouseButtonType.NONE),
+      down: Visu.settings.getValue("visu.mouse.player-b.down", MouseButtonType.NONE),
+      left: Visu.settings.getValue("visu.mouse.player-b.left", MouseButtonType.NONE),
+      right: Visu.settings.getValue("visu.mouse.player-b.right", MouseButtonType.NONE),
+      action: Visu.settings.getValue("visu.mouse.player-b.action", MouseButtonType.NONE),
+      bomb: Visu.settings.getValue("visu.mouse.player-b.bomb", MouseButtonType.NONE),
+      focus: Visu.settings.getValue("visu.mouse.player-b.focus", MouseButtonType.NONE),
     })
   })
 

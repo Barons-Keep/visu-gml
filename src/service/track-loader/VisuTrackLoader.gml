@@ -103,7 +103,11 @@ function VisuTrackLoader(config = null): Service(config) constructor {
                 var playerService = Beans.get(BeanVisuController).playerService
                 playerService.dispatcher
                   .execute(new Event("clear-player"))
+                playerService.playerContext = null
+                playerService.playerBContext = null
                 playerService.statistics
+                  .reset()
+                playerService.statisticsB
                   .reset()
               },
               function() {

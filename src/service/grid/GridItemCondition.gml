@@ -79,7 +79,7 @@ global.__VISU_GRID_CONDITIONS = {
     }
   },
   "player-distance": function(item, controller, context) {
-    var player = controller.playerService.player
+    var player = controller.playerService.getCloserPlayer(item)
     if (player == null) {
       return false
     }

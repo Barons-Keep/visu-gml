@@ -354,13 +354,31 @@ function factoryVisuMenuOpenMainEvent(_config = null) {
             text: Language.get("visu.menu.continue"),
             callback: new BindIntent(function() {
               var controller = Beans.get(BeanVisuController)
+              var playerService = controller.playerService
+              var gridService = controller.gridService
+              var view = gridService.view
               //controller.menu.dispatcher.execute(new Event("close"))
               controller.fsm.transition("play")
               controller.sfxService.play("menu-select-entry")
 
-              var player = controller.playerService.player
-              if (player != null) {
-                player.stats.life.set(4.0)
+              if (playerService.player != null) {
+                playerService.player.stats.life.set(4.0)
+              } else if (playerService.isPlayerB
+                  && playerService.playerContext != null) {
+                playerService.player = playerService.playerContext
+                playerService.player.stats.life.set(4.0)
+                playerService.player.x = view.x + (view.width / 2.0) - 0.25
+                playerService.player.y = view.y + (view.height / 1.5)
+              }
+
+              if (playerService.playerB != null) {
+                playerService.playerB.stats.life.set(4.0)
+              } else if (playerService.isPlayerB
+                  && playerService.playerBContext != null) {
+                playerService.playerB = playerService.playerBContext
+                playerService.playerB.stats.life.set(4.0)
+                playerService.playerB.x = view.x + (view.width / 2.0) + 0.25
+                playerService.playerB.y = view.y + (view.height / 1.5)
               }
 
               var editor = Beans.get(BeanVisuEditorController)

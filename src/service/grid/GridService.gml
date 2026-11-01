@@ -290,13 +290,29 @@ function GridService(_config = null): Service(_config) constructor {
       var follow = view.follow
       var horizontal = gridService.properties.borderHorizontalLength / 2.0
       var vertical = gridService.properties.borderVerticalLength / 2.0
-      var player = Beans.get(BeanVisuController).playerService.player
+      var playerService = Beans.get(BeanVisuController).playerService
+      var player = playerService.player
       var isPlayer = player != null
       if (isPlayer) {
         this.setX(clamp(player.x, follow.xMargin, view.worldWidth - follow.xMargin))
         this.setY(clamp(player.y, follow.yMargin, view.worldHeight - follow.yMargin))
       }
-      
+
+      var playerB = playerService.playerB
+      var isPlayerB = playerB != null
+      if (isPlayerB) {
+        var _x = isPlayer ? player.x : playerB.x
+        var _y = isPlayer ? player.y : playerB.y
+        _x = _x + (playerB.x > _x 
+          ? (playerB.x - _x) / 2.0
+          : -1.0 * (_x - playerB.x) / 2.0)
+        _y = _y + (playerB.y > _y
+          ? (playerB.y - _y) / 2.0
+          : -1.0 * (_y - playerB.y) / 2.0)
+        this.setX(clamp(_x, follow.xMargin, view.worldWidth - follow.xMargin))
+        this.setY(clamp(_y, follow.yMargin, view.worldHeight - follow.yMargin))
+      }
+
       if (this.isLockedX) {
         this.lockX = Optional.is(this.lockX) 
           ? this.lockX 
@@ -342,6 +358,11 @@ function GridService(_config = null): Service(_config) constructor {
       if (isPlayer) {
         player.x = clamp(player.x, 0.0, view.worldWidth)
         player.y = clamp(player.y, 0.0, view.worldHeight)
+      }
+
+      if (isPlayerB) {
+        playerB.x = clamp(playerB.x, 0.0, view.worldWidth)
+        playerB.y = clamp(playerB.y, 0.0, view.worldHeight)
       }
 
       view.setFollowTarget(this).update()
@@ -859,6 +880,11 @@ function GridService(_config = null): Service(_config) constructor {
     if (player != null) {
       player.move()
     }
+
+    var playerB = controller.playerService.playerB
+    if (playerB != null) {
+      playerB.move()
+    }
     return this
   }
 
@@ -867,7 +893,8 @@ function GridService(_config = null): Service(_config) constructor {
   ///@return {GridService}
   signalGridItemsCollision = function(controller) {
     var player = controller.playerService.player
-    if (player == null) {
+    var playerB = controller.playerService.playerB
+    if (player == null && playerB == null) {
       return this
     }
   
@@ -899,9 +926,16 @@ function GridService(_config = null): Service(_config) constructor {
           }
           break
         case Shroom:
-          if (bullet.fadeIn >= 1.0 && player.collide(bullet)) {
-            player.signalBulletCollision(bullet)
-            bullet.signalPlayerCollision(player)
+          if (bullet.fadeIn >= 1.0) {
+            if (player != null && player.collide(bullet)) {
+              player.signalBulletCollision(bullet)
+              bullet.signalPlayerCollision(player)
+            }
+
+            if (playerB != null && playerB.collide(bullet)) {
+              playerB.signalBulletCollision(bullet)
+              bullet.signalPlayerCollision(playerB)
+            }
           }
           break
         default:
@@ -912,35 +946,44 @@ function GridService(_config = null): Service(_config) constructor {
 
     var shrooms = controller.shroomService.shrooms
     var shroomsSize = shrooms.size()
-    if (player.stats.godModeCooldown > 0.0) {
-      for (var idx = 0; idx < shroomsSize; idx++) {
-        var shroom = shrooms.get(idx)
-        if (shroom == null) {
-          continue
-        }
-
-        if (shroom.collide(player)) {
-          shroom.signalPlayerCollision(player)
-          if (!shroom.signals.kill) {
-            shroom.signals.freeReason = "shooted"
-            shroom.signalKill()
-          }
-        }
+    var playerGodMode = player != null && player.stats.godModeCooldown > 0.0
+    var playerBGodMode = playerB != null && playerB.stats.godModeCooldown > 0.0
+    for (var idx = 0; idx < shroomsSize; idx++) {
+      var shroom = shrooms.get(idx)
+      if (shroom == null) {
+        continue
       }
-    } else {
-      for (var idx = 0; idx < shroomsSize; idx++) {
-        var shroom = shrooms.get(idx)
-        if (shroom == null) {
-          continue
-        }
 
-        if (shroom.fadeIn >= 1.0 && shroom.collide(player)) {
-          shroom.healthPoints = clamp(shroom.healthPoints - 1.0, 0, 9999.9)
-          player.signalShroomCollision(shroom)
-          shroom.signalPlayerCollision(player)
-          shroom.signalDamage(true)
+      if (playerGodMode && shroom.collide(player)) {
+        shroom.signalPlayerCollision(player)
+        if (!shroom.signals.kill) {
+          shroom.signals.freeReason = "shooted"
+          shroom.signalKill()
         }
+      } else if (player != null
+          && shroom.fadeIn >= 1.0
+          && shroom.collide(player)) {
+        shroom.healthPoints = clamp(shroom.healthPoints - 1.0, 0, 9999.9)
+        player.signalShroomCollision(shroom)
+        shroom.signalPlayerCollision(player)
+        shroom.signalDamage(true)
       }
+
+      if (playerBGodMode && shroom.collide(playerB)) {
+        shroom.signalPlayerCollision(playerB)
+        if (!shroom.signals.kill) {
+          shroom.signals.freeReason = "shooted"
+          shroom.signalKill()
+        }
+      } else if (playerB != null
+          && shroom.fadeIn >= 1.0
+          && shroom.collide(playerB)) {
+        shroom.healthPoints = clamp(shroom.healthPoints - 1.0, 0, 9999.9)
+        playerB.signalShroomCollision(shroom)
+        shroom.signalPlayerCollision(playerB)
+        shroom.signalDamage(true)
+      }
+      
     }
     
     return this
